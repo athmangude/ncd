@@ -14,10 +14,7 @@
 
 import { writeObject, writeCollection } from "../db"
 import { LOGIN_DETAILS_KEY, getLoginDetails } from "../handlers/profile"
-import {
-  clearAllParticipantState,
-  clearMockKeys,
-} from "./reset"
+import { clearAllParticipantState, clearMockKeys } from "./reset"
 import {
   startMockSession,
   markMockAccountCreated,
@@ -58,10 +55,34 @@ function freshLoginDetails() {
     medicalRequests: [],
     loans: [],
     wallets: [
-      { id: "wallet-mpesa-001", type: "MPESA", remainingBalance: "0", createdAt: "", updatedAt: "" },
-      { id: "wallet-loan-001", type: "LOAN", remainingBalance: "0", createdAt: "", updatedAt: "" },
-      { id: "wallet-cashback-001", type: "CASHBACK", remainingBalance: "0", createdAt: "", updatedAt: "" },
-      { id: "wallet-card-001", type: "CARD", remainingBalance: "0", createdAt: "", updatedAt: "" },
+      {
+        id: "wallet-mpesa-001",
+        type: "MPESA",
+        remainingBalance: "0",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "wallet-loan-001",
+        type: "LOAN",
+        remainingBalance: "0",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "wallet-cashback-001",
+        type: "CASHBACK",
+        remainingBalance: "0",
+        createdAt: "",
+        updatedAt: "",
+      },
+      {
+        id: "wallet-card-001",
+        type: "CARD",
+        remainingBalance: "0",
+        createdAt: "",
+        updatedAt: "",
+      },
     ],
     patientCircle: null,
     hasAcceptedMedicalConsentForm: false,

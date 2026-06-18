@@ -77,9 +77,9 @@ describe("fast-track payment history", () => {
     const history = await (
       await fetch(ORIGIN + "/patients/payment-history")
     ).json()
-    expect(
-      history.payments.some((p: { id: string }) => p.id === txn.id)
-    ).toBe(true)
+    expect(history.payments.some((p: { id: string }) => p.id === txn.id)).toBe(
+      true
+    )
 
     const receipt = await fetch(
       ORIGIN + "/payments/user/payment-details?paymentId=" + txn.id

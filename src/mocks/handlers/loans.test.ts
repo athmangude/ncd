@@ -30,9 +30,9 @@ describe("recordPayment", () => {
     recordPayment({ ...base, splits: [{ type: "MPESA", amount: 1000 }] })
 
     expect(getCareFundBalance()).toBe(10050)
-    expect(
-      getCareFundTransactions().some((t) => t.type === "EARNED")
-    ).toBe(true)
+    expect(getCareFundTransactions().some((t) => t.type === "EARNED")).toBe(
+      true
+    )
   })
 
   it("spends cashback for a CASHBACK split", () => {

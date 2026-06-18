@@ -33,7 +33,9 @@ export default function FastTrackPaymentStatus() {
     trackEvent(EVENTS.FAST_TRACK_PAYMENT.RESULT_VIEW, {
       payment_id: transaction.id,
       payment_status: transaction.status,
-      amount_paid: safeAmount(transaction.totalBillAmount ?? transaction.grossAmount),
+      amount_paid: safeAmount(
+        transaction.totalBillAmount ?? transaction.grossAmount
+      ),
       currency: "KES",
       provider_name: transaction.providerName,
     })
@@ -60,24 +62,24 @@ export default function FastTrackPaymentStatus() {
 
   if (!transaction) {
     return (
-      <PatientPageWrapper
-        title="Payment Status"
-        onBack={handleBackToDashboard}
-      >
+      <PatientPageWrapper title="Payment Status" onBack={handleBackToDashboard}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 text-center">
           <Clock className="w-12 h-12 text-neutral-400" />
           <p className="text-neutral-600">No transaction information found.</p>
-          <Button onClick={handleBackToDashboard}>
-            Back to Dashboard
-          </Button>
+          <Button onClick={handleBackToDashboard}>Back to Dashboard</Button>
         </div>
       </PatientPageWrapper>
     )
   }
 
-  const totalBillAmount = Number(transaction.totalBillAmount ?? transaction.grossAmount ?? 0)
+  const totalBillAmount = Number(
+    transaction.totalBillAmount ?? transaction.grossAmount ?? 0
+  )
   const isHolding = transaction.status === "HOLDING"
-  const isSuccess = isHolding || transaction.status === "SETTLED" || transaction.status === "DISBURSED"
+  const isSuccess =
+    isHolding ||
+    transaction.status === "SETTLED" ||
+    transaction.status === "DISBURSED"
   const providerName = transaction.providerName
   // The recorded PaymentRecord is keyed by `transaction.id` (not the display
   // `transactionId`), so the receipt lookup must use `id` to resolve.
@@ -101,20 +103,24 @@ export default function FastTrackPaymentStatus() {
         ) : (
           <CircleAlert size={80} className="mx-auto text-orange-500" />
         )}
-        
-        <Title>
-          {isSuccess ? "Payment Successful" : "Payment Processing"}
-        </Title>
+
+        <Title>{isSuccess ? "Payment Successful" : "Payment Processing"}</Title>
 
         {isSuccess && (
           <p className="text-neutral-600 capitalize">
-            {formatMoney(totalBillAmount, "KES")} paid to {providerName || "the provider"} on
-            <span className="font-medium text-black"> {formatDateLong(displayDate)} at {formatTime(displayDate)}</span>
+            {formatMoney(totalBillAmount, "KES")} paid to{" "}
+            {providerName || "the provider"} on
+            <span className="font-medium text-black">
+              {" "}
+              {formatDateLong(displayDate)} at {formatTime(displayDate)}
+            </span>
           </p>
         )}
 
         <Button
-          onClick={() => navigate(`/patients/payments/payment-details/${transactionId}`)}
+          onClick={() =>
+            navigate(`/patients/payments/payment-details/${transactionId}`)
+          }
           className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200 hover:text-purple-800 mt-4"
           size="lg"
         >
