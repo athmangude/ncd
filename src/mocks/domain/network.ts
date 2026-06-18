@@ -59,12 +59,81 @@ export interface NetworkData {
   }
 }
 
+/** A selectable payee in the payment / gift flows. */
+export interface Connection {
+  id: string
+  name: string
+  value: string
+  status: string
+}
+
 export function getNetwork(): NetworkData {
   return readObject<NetworkData>(NETWORK_KEY, networkSeed as NetworkData)
 }
 
 export function setNetwork(data: NetworkData): void {
   writeObject<NetworkData>(NETWORK_KEY, data)
+}
+
+/** Which slot bucket a relationship/type falls into (juniors are auxiliary). */
+function slotCategory(
+  relationship?: string,
+  type?: string
+): "auxiliary" | "accountable" {
+  const value = (relationship || type || "").toUpperCase()
+  return value === "CHILD" || value === "AUXILIARY"
+    ? "auxiliary"
+    : "accountable"
+}
+
+/**
+ * The single source of truth for "who can I pay for / gift to": active circle
+ * members plus pending invites, shaped for the payment + gift pickers. Both the
+ * `/patient-network/connections` handler and the care-fund transfer handler read
+ * this, so anyone added anywhere (upgrade flow or mid-payment) shows up.
+ */
+export function getConnectionList(): Connection[] {
+  const data = getNetwork()
+  const fullName = (first: string, last: string) => `${first} ${last}`.trim()
+  return [
+    ...data.network.map((member) => ({
+      id: member.id,
+      name: fullName(member.firstName, member.lastName),
+      value: member.id,
+      status: member.status,
+    })),
+    ...data.invites.map((invite) => ({
+      id: invite.id,
+      name: fullName(invite.firstName, invite.lastName),
+      value: invite.id,
+      status: invite.status,
+    })),
+  ]
+}
+
+/**
+ * Append a sent invite and reserve a circle slot for it so the slot counts move
+ * the moment someone is added (in the upgrade flow or mid-payment). Accepting
+ * the invite later converts the reserved slot into a used one.
+ */
+export function addSentInvite(invite: SentInvite): NetworkData {
+  const data = getNetwork()
+  const category = slotCategory(invite.relationship)
+  const next: NetworkData = {
+    ...data,
+    invites: [...data.invites, invite],
+    slots: data.slots
+      ? {
+          ...data.slots,
+          [category]: {
+            ...data.slots[category],
+            reserved: data.slots[category].reserved + 1,
+          },
+        }
+      : data.slots,
+  }
+  setNetwork(next)
+  return next
 }
 
 /**
@@ -77,6 +146,7 @@ export function acceptInvite(inviteId: string): NetworkData {
   const invite = data.invites.find((item) => item.id === inviteId)
   if (!invite) return data
 
+  const category = slotCategory(invite.relationship)
   const member: NetworkMember = {
     id: invite.id,
     firstName: invite.firstName,
@@ -84,7 +154,7 @@ export function acceptInvite(inviteId: string): NetworkData {
     phoneNumber: invite.phoneNumber ?? null,
     profilePhoto: invite.profilePhoto ?? null,
     relationship: invite.relationship ?? "FRIEND",
-    type: "AUXILIARY",
+    type: category === "auxiliary" ? "AUXILIARY" : "ACCOUNTABLE",
     status: "ACTIVE",
     nickname: invite.nickname,
     joinedAt: new Date().toISOString(),
@@ -97,12 +167,15 @@ export function acceptInvite(inviteId: string): NetworkData {
     invites: data.invites.filter((item) => item.id !== inviteId),
   }
 
+  // Convert the slot reserved at invite time into a used one.
   if (next.slots) {
+    const slot = next.slots[category]
     next.slots = {
       ...next.slots,
-      auxiliary: {
-        ...next.slots.auxiliary,
-        used: next.slots.auxiliary.used + 1,
+      [category]: {
+        ...slot,
+        used: slot.used + 1,
+        reserved: Math.max(0, slot.reserved - 1),
       },
     }
   }

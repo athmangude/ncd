@@ -20,6 +20,48 @@ import manualRequestsSeed from "../fixtures/manual-requests.json"
 export const LOANS_KEY = "loans"
 export const PAYMENT_HISTORY_KEY = "payment-history"
 export const MANUAL_REQUESTS_KEY = "manual-requests"
+export const TRANSACTION_RESULTS_KEY = "transaction-results"
+
+/**
+ * Result payloads the `/patients/payments/transaction-result/:reference` screen
+ * reads, keyed by the payment reference. A loan repayment writes a real entry
+ * here so the result screen reflects the actual amount + cashback instead of a
+ * hardcoded stub.
+ */
+export interface TransactionResult {
+  id: string
+  status: string
+  totalBillAmount: number
+  transactionAmount: number
+  updatedAt: string
+  transactionDateTime: string
+  description: string
+  isLoanRepayment: boolean
+  loanId?: string
+  providerName?: string
+  paymentSplits: unknown[]
+  careFundPotentialAmount: number | null
+}
+
+type TransactionResultsShape = Record<string, TransactionResult>
+
+export function saveTransactionResult(
+  reference: string,
+  result: TransactionResult
+): void {
+  const all = readObject<TransactionResultsShape>(TRANSACTION_RESULTS_KEY, {})
+  writeObject<TransactionResultsShape>(TRANSACTION_RESULTS_KEY, {
+    ...all,
+    [reference]: result,
+  })
+}
+
+export function getTransactionResult(
+  reference: string
+): TransactionResult | null {
+  const all = readObject<TransactionResultsShape>(TRANSACTION_RESULTS_KEY, {})
+  return all[reference] ?? null
+}
 
 type Loan = (typeof loansSeed)[number]
 type ManualRequest = (typeof manualRequestsSeed)[number]
@@ -102,6 +144,128 @@ function addPayment(payment: PaymentRecord): void {
     ...history,
     payments: [payment, ...(history.payments || [])],
   })
+}
+
+/** A normalized split shared by the multi-payment and Fast Track pay flows. */
+export interface RecordPaymentSplit {
+  type: string
+  amount: number
+  repaymentPeriodDays?: number
+}
+
+/**
+ * Persist a bill payment and apply every side effect a "pay a bill" produces:
+ * create a loan for any LOAN split, spend cashback for any CASHBACK split, earn
+ * 5% cashback on the MPESA portion, and append the payment to history. Shared by
+ * `/payments/user/initiate-multi-payment` and `/fast-track/initiate` so both
+ * flows behave identically. Callers may supply `paymentId` so a record can be
+ * looked up by an id they already minted (Fast Track passes its transaction id).
+ */
+export function recordPayment(params: {
+  totalBillAmount: number
+  facilityId?: string
+  facilityName: string
+  patientName: string
+  splits: RecordPaymentSplit[]
+  paymentId?: string
+}): { payment: PaymentRecord; splitResults: PaymentSplitResult[] } {
+  const profile = getLoginDetails()
+  const { totalBillAmount, facilityName: name, patientName } = params
+  const nowIso = new Date().toISOString()
+  const paymentId = params.paymentId || makeId("pay")
+
+  const splitResults: PaymentSplitResult[] = []
+
+  const paymentSplits: PaymentSplitRecord[] = params.splits.map((split) => {
+    const amount = Number(split.amount) || 0
+    const walletType = split.type || "WALLET"
+    let loanRef: Record<string, unknown> | null = null
+
+    if (walletType === "LOAN") {
+      const loan = buildLoan({
+        amount,
+        totalBillAmount,
+        repaymentPeriodDays: split.repaymentPeriodDays,
+        facilityId: params.facilityId,
+        facilityName: name,
+        patientName,
+      })
+      writeCollection(LOANS_KEY, [loan, ...getLoans()])
+      loanRef = {
+        id: loan.id,
+        amount: loan.amount,
+        totalBillAmount: loan.totalBillAmount,
+        outstandingAmount: loan.outstandingAmount,
+        totalPaid: loan.totalPaid,
+        loanDueDate: loan.loanDueDate,
+        transactions: [],
+      }
+    }
+
+    if (walletType === "CASHBACK" && amount > 0) {
+      adjustCareFundBalance(-amount)
+      addCareFundTransaction({
+        transactionAmount: amount,
+        type: "SPENT",
+        description: `Applied to bill at ${name}`,
+        sender: {
+          accountOwner: {
+            id: profile.id,
+            firstName: profile.firstName,
+            lastName: profile.lastName,
+          },
+        },
+      })
+    }
+
+    splitResults.push({
+      id: makeId("split-result"),
+      splitAmount: String(amount),
+      walletId: makeId("wallet"),
+      walletType,
+      walletBalance: "0",
+    })
+
+    return {
+      id: makeId("split"),
+      createdAt: nowIso,
+      paymentSplitAmount: amount,
+      wallet: { type: walletType },
+      loan: loanRef,
+    }
+  })
+
+  // Earn 5% cashback on the amount paid from MPESA (matches the in-app copy).
+  const mpesaTotal = params.splits
+    .filter((split) => split.type === "MPESA")
+    .reduce((sum, split) => sum + (Number(split.amount) || 0), 0)
+  const cashbackEarned = Math.round(mpesaTotal * 0.05)
+  if (cashbackEarned > 0) {
+    earnCashback(cashbackEarned, `Cashback from ${name}`)
+  }
+
+  const payment: PaymentRecord = {
+    id: paymentId,
+    totalBillAmount,
+    createdAt: nowIso,
+    currency: { code: "KES" },
+    status: "COMPLETED",
+    patientMedicalInfoRequest: {
+      facility: { id: params.facilityId || "fac-unknown", name },
+      medicalInvoiceFile: { careProviderName: name },
+    },
+    user: { firstName: profile.firstName, lastName: profile.lastName },
+    disbursementTransaction: { description: `Payment to ${name}` },
+    paymentSplits,
+    cashbackDetails:
+      cashbackEarned > 0
+        ? [{ source: `Paid with Jireh at ${name}`, amount: cashbackEarned }]
+        : [],
+  }
+
+  addPayment(payment)
+
+  return { payment, splitResults }
 }
 
 /** Build a fully-disbursed loan record shared by the apply + pay flows. */
@@ -241,6 +405,12 @@ export const loansHandlers = [
 
     const loans = getLoans()
     const amount = Number(body.amount) || 0
+    const repaidLoan = loans.find(
+      (loan) => String(loan.id) === String(body.loanId)
+    )
+    const providerName =
+      repaidLoan?.patientMedicalInfoRequest?.facility?.name ||
+      "Healthcare Provider"
 
     const updated = loans.map((loan) => {
       if (String(loan.id) !== String(body.loanId)) {
@@ -277,14 +447,36 @@ export const loansHandlers = [
 
     // Reward repayments with 5% cashback (mirrors the in-app "earn when you
     // repay before the due date" messaging).
-    if (amount > 0 && !body.isTransactionFeePayment) {
+    const isLoanRepayment = amount > 0 && !body.isTransactionFeePayment
+    if (isLoanRepayment) {
       earnCashback(Math.round(amount * 0.05), "Loan repayment reward")
     }
+
+    // Persist a real result so the transaction-result screen reflects the
+    // actual repayment instead of a hardcoded stub.
+    const reference = makeId("ref")
+    const nowIso = new Date().toISOString()
+    saveTransactionResult(reference, {
+      id: reference,
+      status: "COMPLETED",
+      totalBillAmount: amount,
+      transactionAmount: amount,
+      updatedAt: nowIso,
+      transactionDateTime: nowIso,
+      description: body.isTransactionFeePayment
+        ? "transaction fee payment"
+        : "loan repayment",
+      isLoanRepayment,
+      loanId: body.loanId != null ? String(body.loanId) : undefined,
+      providerName,
+      paymentSplits: [],
+      careFundPotentialAmount: null,
+    })
 
     return HttpResponse.json({
       isChargeTransaction: true,
       authorizationUrl: "",
-      reference: makeId("ref"),
+      reference,
     })
   }),
 
@@ -315,103 +507,22 @@ export const loansHandlers = [
     const name = facilityName(body.kmpdcFacilityId)
     const patientName =
       body.patientName || `${profile.firstName} ${profile.lastName}`
-    const nowIso = new Date().toISOString()
-    const paymentId = makeId("pay")
 
-    const splitResults: PaymentSplitResult[] = []
-
-    const paymentSplits: PaymentSplitRecord[] = splits.map((split) => {
-      const amount = Number(split.paymentAmount) || 0
-      const walletType = split.type || "WALLET"
-      let loanRef: Record<string, unknown> | null = null
-
-      if (walletType === "LOAN") {
-        const loan = buildLoan({
-          amount,
-          totalBillAmount,
-          repaymentPeriodDays: body.repaymentPeriodDays,
-          facilityId: body.kmpdcFacilityId,
-          facilityName: name,
-          patientName,
-        })
-        writeCollection(LOANS_KEY, [loan, ...getLoans()])
-        loanRef = {
-          id: loan.id,
-          amount: loan.amount,
-          totalBillAmount: loan.totalBillAmount,
-          outstandingAmount: loan.outstandingAmount,
-          totalPaid: loan.totalPaid,
-          loanDueDate: loan.loanDueDate,
-          transactions: [],
-        }
-      }
-
-      if (walletType === "CASHBACK" && amount > 0) {
-        adjustCareFundBalance(-amount)
-        addCareFundTransaction({
-          transactionAmount: amount,
-          type: "SPENT",
-          description: `Applied to bill at ${name}`,
-          sender: {
-            accountOwner: {
-              id: profile.id,
-              firstName: profile.firstName,
-              lastName: profile.lastName,
-            },
-          },
-        })
-      }
-
-      splitResults.push({
-        id: makeId("split-result"),
-        splitAmount: String(amount),
-        walletId: split.walletId || makeId("wallet"),
-        walletType,
-        walletBalance: "0",
-      })
-
-      return {
-        id: makeId("split"),
-        createdAt: nowIso,
-        paymentSplitAmount: amount,
-        wallet: { type: walletType },
-        loan: loanRef,
-      }
-    })
-
-    // Earn 5% cashback on the amount paid from MPESA (matches the in-app copy).
-    const mpesaTotal = splits
-      .filter((split) => split.type === "MPESA")
-      .reduce((sum, split) => sum + (Number(split.paymentAmount) || 0), 0)
-    const cashbackEarned = Math.round(mpesaTotal * 0.05)
-    if (cashbackEarned > 0) {
-      earnCashback(cashbackEarned, `Cashback from ${name}`)
-    }
-
-    const payment: PaymentRecord = {
-      id: paymentId,
+    const { payment, splitResults } = recordPayment({
       totalBillAmount,
-      createdAt: nowIso,
-      currency: { code: "KES" },
-      status: "COMPLETED",
-      patientMedicalInfoRequest: {
-        facility: { id: body.kmpdcFacilityId || "fac-unknown", name },
-        medicalInvoiceFile: { careProviderName: name },
-      },
-      user: { firstName: profile.firstName, lastName: profile.lastName },
-      disbursementTransaction: { description: `Payment to ${name}` },
-      paymentSplits,
-      cashbackDetails:
-        cashbackEarned > 0
-          ? [{ source: `Paid with Jireh at ${name}`, amount: cashbackEarned }]
-          : [],
-    }
-
-    addPayment(payment)
+      facilityId: body.kmpdcFacilityId,
+      facilityName: name,
+      patientName,
+      splits: splits.map((split) => ({
+        type: split.type || "WALLET",
+        amount: Number(split.paymentAmount) || 0,
+        repaymentPeriodDays: body.repaymentPeriodDays,
+      })),
+    })
 
     return HttpResponse.json({
       message: "Payment successful",
-      paymentId,
+      paymentId: payment.id,
       totalBillAmount: String(totalBillAmount),
       status: "COMPLETED",
       paymentSplitResults: splitResults,

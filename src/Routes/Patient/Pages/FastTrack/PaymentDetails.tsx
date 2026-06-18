@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
 import axios from "axios"
@@ -36,6 +36,7 @@ const MIN_BILL_AMOUNT = 150
 
 export default function PaymentDetails() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { toast } = useToast()
   const { user } = usePatientAuthStore() as { user: any }
 
@@ -51,6 +52,15 @@ export default function PaymentDetails() {
   const selectedPatientId = useFastTrackStore((s) => s.selectedPatientId) || user?.id || ""
   const setSelectedPatientId = useFastTrackStore((s) => s.setSelectedPatientId)
   const setPatient = useFastTrackStore((s) => s.setPatient)
+
+  // Returning from "Add patient" preselects the person who was just added.
+  useEffect(() => {
+    const preselected = (location.state as { preselectedPatientId?: string })
+      ?.preselectedPatientId
+    if (preselected) {
+      setSelectedPatientId(preselected)
+    }
+  }, [location.state, setSelectedPatientId])
 
   const connectionsQuery = useQuery({
     queryKey: [patientConnectionsQueryKey],

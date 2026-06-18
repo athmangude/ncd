@@ -71,7 +71,7 @@ function freshLoginDetails() {
     idVerificationStatus: null,
     documentVerificationStatus: null,
     network: [],
-    type: "PATIENT",
+    type: "PUBLIC",
     canPayMedicalBill: false,
     orgBorrower: null,
     hasUploadedMpesaStatement: false,

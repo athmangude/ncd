@@ -79,7 +79,9 @@ export default function FastTrackPaymentStatus() {
   const isHolding = transaction.status === "HOLDING"
   const isSuccess = isHolding || transaction.status === "SETTLED" || transaction.status === "DISBURSED"
   const providerName = transaction.providerName
-  const transactionId = transaction.transactionId
+  // The recorded PaymentRecord is keyed by `transaction.id` (not the display
+  // `transactionId`), so the receipt lookup must use `id` to resolve.
+  const transactionId = transaction.id
   const displayDate = transaction.createdAt
 
   return (

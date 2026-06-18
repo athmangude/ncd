@@ -1,25 +1,11 @@
 import { http, HttpResponse } from "msw"
-import { readObject } from "../db"
 import { getLoginDetails } from "./profile"
 import {
   addCareFundTransaction,
   adjustCareFundBalance,
   getCareFundTransactions,
 } from "../domain/careFund"
-import connectionsSeed from "../fixtures/patient-connections.json"
-
-const CONNECTIONS_KEY = "patient-connections"
-
-interface ConnectionsData {
-  patients: { id: string; name: string; value: string; status: string }[]
-}
-
-function getConnections(): ConnectionsData {
-  return readObject<ConnectionsData>(
-    CONNECTIONS_KEY,
-    connectionsSeed as ConnectionsData
-  )
-}
+import { getConnectionList } from "../domain/network"
 
 async function handleTransfer(request: Request): Promise<Response> {
   const { patientId, transferAmount } = (await request.json()) as {
@@ -29,7 +15,7 @@ async function handleTransfer(request: Request): Promise<Response> {
 
   const amount = Number(transferAmount) || 0
   const profile = getLoginDetails()
-  const recipient = getConnections().patients.find(
+  const recipient = getConnectionList().find(
     (patient) => patient.value === patientId || patient.id === patientId
   )
 
