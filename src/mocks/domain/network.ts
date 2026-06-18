@@ -67,6 +67,13 @@ export interface Connection {
   status: string
 }
 
+/** The circle summary the loan gate + KYC checklist read off the profile. */
+export interface PatientCircleSummary {
+  filledAccountableSlots: number
+  status: string
+  isFrozen: boolean
+}
+
 export function getNetwork(): NetworkData {
   return readObject<NetworkData>(NETWORK_KEY, networkSeed as NetworkData)
 }
@@ -84,6 +91,25 @@ function slotCategory(
   return value === "CHILD" || value === "AUXILIARY"
     ? "auxiliary"
     : "accountable"
+}
+
+/**
+ * Loan eligibility needs at least 2 accountable (adult, non-junior) circle
+ * members. We derive that from the live network so the loan gate and KYC circle
+ * step agree with what the circle UI shows — completing the upgrade flow's
+ * "add 2 people" step makes loans usable, with no separate flag to keep in sync.
+ */
+export function getPatientCircleSummary(): PatientCircleSummary {
+  const accountableMembers = getNetwork().network.filter(
+    (member) =>
+      member.status === "ACTIVE" &&
+      slotCategory(member.relationship, member.type) === "accountable"
+  )
+  return {
+    filledAccountableSlots: accountableMembers.length,
+    status: "ACTIVE",
+    isFrozen: false,
+  }
 }
 
 /**

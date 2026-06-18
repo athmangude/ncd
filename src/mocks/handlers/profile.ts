@@ -1,20 +1,29 @@
 import { http, HttpResponse } from "msw"
 import { patchObject, readObject } from "../db"
+import {
+  getNetwork,
+  getPatientCircleSummary,
+  type PatientCircleSummary,
+  type NetworkMember,
+} from "../domain/network"
 import loginDetailsSeed from "../fixtures/patient-login-details.json"
 
 export const LOGIN_DETAILS_KEY = "login-details"
 
 // Derive the type from the fixture, but widen fields whose JSON literal is too
-// narrow: `profilePhoto: null` would reject a string data URL, and the
-// membership flags toggle between values the seed literal doesn't cover.
+// narrow: `profilePhoto: null` would reject a string data URL, the membership
+// flags toggle between values the seed literal doesn't cover, and network /
+// patientCircle are surfaced from the circle domain (see getLoginDetails).
 type LoginDetails = Omit<
   typeof loginDetailsSeed,
-  "profilePhoto" | "membershipStatus" | "type"
+  "profilePhoto" | "membershipStatus" | "type" | "network" | "patientCircle"
 > & {
   profilePhoto?: string | null
   membershipStatus?: string
   hasActiveMembership?: boolean
   type?: string
+  network?: NetworkMember[]
+  patientCircle?: PatientCircleSummary | null
 }
 
 // The account `type` is what the role gates (ProtectedRoute / ProtectedResource)
@@ -24,16 +33,29 @@ const VALID_ACCOUNT_TYPES = ["PUBLIC", "ORG", "PLUS"]
 
 /**
  * Current patient profile (seeded from the fixture, mutated by other handlers).
- * Normalizes an invalid account `type` to a real role so already-cached
- * profiles aren't locked out of the loan/limit pages (no reseed required): an
- * upgraded account reads as "PLUS", a basic one as "PUBLIC".
+ *
+ * Two derivations keep the profile coherent with the rest of the mock state:
+ * - `type` is normalized to a real role so already-cached profiles aren't
+ *   locked out of the loan/limit pages (upgraded → "PLUS", basic → "PUBLIC").
+ * - `network` + `patientCircle` are surfaced from the circle domain so the loan
+ *   gate and KYC "add 2 people" check (which read `user.network` /
+ *   `user.patientCircle`) agree with the actual circle. This is why completing
+ *   the upgrade flow's circle step activates the medical-loan option.
  */
 export function getLoginDetails(): LoginDetails {
-  const profile = readObject<LoginDetails>(LOGIN_DETAILS_KEY, loginDetailsSeed)
-  if (!VALID_ACCOUNT_TYPES.includes(profile.type ?? "")) {
-    return { ...profile, type: profile.hasActiveMembership ? "PLUS" : "PUBLIC" }
+  const stored = readObject<LoginDetails>(LOGIN_DETAILS_KEY, loginDetailsSeed)
+  const type = VALID_ACCOUNT_TYPES.includes(stored.type ?? "")
+    ? stored.type
+    : stored.hasActiveMembership
+      ? "PLUS"
+      : "PUBLIC"
+
+  return {
+    ...stored,
+    type,
+    network: getNetwork().network,
+    patientCircle: getPatientCircleSummary(),
   }
-  return profile
 }
 
 /** Shallow-merge a patch into the stored profile (used by onboarding handlers). */

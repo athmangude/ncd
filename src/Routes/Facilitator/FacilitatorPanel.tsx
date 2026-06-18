@@ -1,19 +1,14 @@
-import { useState } from "react"
+import { useReducer, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { queryClient } from "@/queryClient"
 import { Button } from "@/components/Button"
 import { Input } from "@/components/Input"
 import { Label } from "@/components/Label"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { readCollection, writeCollection } from "@/mocks/db"
 import { getLoginDetails, patchLoginDetails } from "@/mocks/handlers/profile"
-import {
-  LOANS_KEY,
-  MANUAL_REQUESTS_KEY,
-} from "@/mocks/handlers/loans"
-import {
-  getCareFundBalance,
-  setCareFundBalance,
-} from "@/mocks/domain/careFund"
+import { LOANS_KEY, MANUAL_REQUESTS_KEY } from "@/mocks/handlers/loans"
+import { getCareFundBalance, setCareFundBalance } from "@/mocks/domain/careFund"
 import {
   activateMembership,
   deactivateMembership,
@@ -61,9 +56,10 @@ function getPanelManualRequests(): PanelManualRequest[] {
 /**
  * Facilitator-only control panel for usability testing. Reachable at
  * #/facilitator (linked from Profile). It reads and writes the mock state
- * directly through the domain helpers, then reloads so the participant-facing
- * app refetches and reflects the change. Not part of any participant journey,
- * so it is intentionally unstyled-for-polish and untracked by analytics.
+ * directly through the domain helpers. Individual tweaks soft-refresh (the
+ * participant-facing app refetches without a disruptive restart); only the full
+ * resets hard-reload. Not part of any participant journey, so it is
+ * intentionally unstyled-for-polish and untracked by analytics.
  */
 export default function FacilitatorPanel() {
   const navigate = useNavigate()
@@ -80,6 +76,17 @@ export default function FacilitatorPanel() {
     String(profile.creditLimit?.remainingAmount ?? "0")
   )
   const [confirmingReset, setConfirmingReset] = useState(false)
+  const [, rerenderPanel] = useReducer((n: number) => n + 1, 0)
+
+  // Individual tweaks (membership, credit, balance, invites, requests, loans)
+  // refresh in place: invalidate the patient app's queries so it refetches the
+  // mutated mock state, and re-render this panel so its own readouts update.
+  // No full page reload — that would restart the participant's session, making
+  // the app "start afresh" when they return. Full resets below still reload.
+  function softRefresh() {
+    queryClient.invalidateQueries()
+    rerenderPanel()
+  }
 
   const pendingInvites = network.invites.filter(
     (invite) => invite.status === "PENDING"
@@ -90,7 +97,7 @@ export default function FacilitatorPanel() {
 
   function applyBalance() {
     setCareFundBalance(Number(balance) || 0)
-    reloadApp()
+    softRefresh()
   }
 
   function saveCreditLimit() {
@@ -102,22 +109,22 @@ export default function FacilitatorPanel() {
         remainingAmount: String(Number(creditRemaining) || 0),
       },
     })
-    reloadApp()
+    softRefresh()
   }
 
   function onActivateMembership() {
     activateMembership()
-    reloadApp()
+    softRefresh()
   }
 
   function onDeactivateMembership() {
     deactivateMembership()
-    reloadApp()
+    softRefresh()
   }
 
   function onAcceptInvite(inviteId: string) {
     acceptInvite(inviteId)
-    reloadApp()
+    softRefresh()
   }
 
   function setRequestStatus(id: string, status: "APPROVED" | "REJECTED") {
@@ -125,23 +132,23 @@ export default function FacilitatorPanel() {
       request.id === id ? { ...request, status } : request
     )
     writeCollection(MANUAL_REQUESTS_KEY, next)
-    reloadApp()
+    softRefresh()
   }
 
   function removeLoan(id: string) {
     const next = getPanelLoans().filter((loan) => loan.id !== id)
     writeCollection(LOANS_KEY, next)
-    reloadApp()
+    softRefresh()
   }
 
   function clearLoans() {
     writeCollection<PanelLoan>(LOANS_KEY, [])
-    reloadApp()
+    softRefresh()
   }
 
   function onResetCollection(key: string) {
     resetCollection(key)
-    reloadApp()
+    softRefresh()
   }
 
   function onResetToOnboarding() {
@@ -167,10 +174,14 @@ export default function FacilitatorPanel() {
             Facilitator Tools
           </h1>
           <p className="text-sm text-muted-foreground">
-            Edit this participant's account. Changes reload the app.
+            Edit this participant's account. Changes apply right away.
           </p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => navigate("/patients")}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate("/patients")}
+        >
           Back to app
         </Button>
       </header>
@@ -220,7 +231,10 @@ export default function FacilitatorPanel() {
             </div>
           </div>
         ) : (
-          <Button variant="destructive" onClick={() => setConfirmingReset(true)}>
+          <Button
+            variant="destructive"
+            onClick={() => setConfirmingReset(true)}
+          >
             Reset to base (empty — build from scratch)
           </Button>
         )}
@@ -431,13 +445,7 @@ function Field({
   )
 }
 
-function ResetLink({
-  label,
-  onClick,
-}: {
-  label: string
-  onClick: () => void
-}) {
+function ResetLink({ label, onClick }: { label: string; onClick: () => void }) {
   return (
     <button
       type="button"
