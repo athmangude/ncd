@@ -148,6 +148,9 @@ export default function PatientAddConnection() {
 
       navigate(redirectLink ?? "/patients/network", {
         state: {
+          // `preselectedPatientId` is what the payment patient-pickers read to
+          // auto-select the person who was just added.
+          preselectedPatientId: data.patientId,
           patient: {
             id: data.patientId,
             name: `${data.firstName} ${data.lastName}`,

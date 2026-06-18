@@ -60,6 +60,7 @@ function TransactionResultScreen({ query }: { query: any }) {
     description,
     careFundPotentialAmount,
     isLoanRepayment,
+    loanId,
   } = query.data || {}
 
   const navigate = useNavigate()
@@ -179,6 +180,17 @@ function TransactionResultScreen({ query }: { query: any }) {
         >
           <Receipt className="w-4 h-4 m-1" />
           View receipt
+        </Button>
+      )}
+
+      {isLoanRepayment && loanId && (
+        <Button
+          onClick={() => navigate(`/patients/loans/loan-details/${loanId}`)}
+          className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200 hover:text-purple-800"
+          size="lg"
+        >
+          <Receipt className="w-4 h-4 m-1" />
+          View loan
         </Button>
       )}
 

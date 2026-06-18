@@ -1,11 +1,15 @@
 import { http, HttpResponse } from "msw"
 import { readObject, writeObject } from "../db"
-import { NetworkData, getNetwork, setNetwork, acceptInvite } from "../domain/network"
+import {
+  NetworkData,
+  getNetwork,
+  setNetwork,
+  acceptInvite,
+  getConnectionList,
+} from "../domain/network"
 import circleActivitySeed from "../fixtures/circle-activity.json"
-import connectionsSeed from "../fixtures/patient-connections.json"
 
 const CIRCLE_ACTIVITY_KEY = "circle-activity"
-const CONNECTIONS_KEY = "patient-connections"
 
 type CircleActivityEventType =
   | "MEMBER_JOINED"
@@ -31,21 +35,10 @@ interface CircleActivityData {
   events: CircleActivityEvent[]
 }
 
-interface ConnectionsData {
-  patients: { id: string; name: string; value: string; status: string }[]
-}
-
 function getCircleActivity(): CircleActivityData {
   return readObject<CircleActivityData>(
     CIRCLE_ACTIVITY_KEY,
     circleActivitySeed as CircleActivityData
-  )
-}
-
-function getConnections(): ConnectionsData {
-  return readObject<ConnectionsData>(
-    CONNECTIONS_KEY,
-    connectionsSeed as ConnectionsData
   )
 }
 
@@ -141,7 +134,9 @@ export const networkHandlers = [
     }
   ),
 
+  // Selectable payees derive from the same circle network the upgrade + add
+  // flows write to, so newly added members/invites appear immediately.
   http.get("/patient-network/connections", () =>
-    HttpResponse.json(getConnections())
+    HttpResponse.json({ patients: getConnectionList() })
   ),
 ]

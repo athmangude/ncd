@@ -16,13 +16,13 @@
     --popover-foreground: 222.2 84% 4.9%;
     --primary: 286 100% 49%;
     --primary-foreground: 210 40% 98%;
-    --bubblegum: 280, 100%, 91%;
-    --bubblegum-light: 278, 100%, 98%;
+    --bubblegum: 286, 100%, 91%;
+    --bubblegum-light: 286, 100%, 98%;
     --secondary: 286 100% 94.9%;
     --secondary-foreground: 286 100% 40%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 179 40% 45.1%;
+    --accent: 179 40% 95%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
