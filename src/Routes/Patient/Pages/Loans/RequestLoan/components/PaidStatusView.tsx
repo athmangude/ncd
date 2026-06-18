@@ -1,0 +1,45 @@
+import { CheckCircle } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import ExitDialog from "./ExitDialog"
+
+interface PaidStatusViewProps {
+  isExitDialogOpen: boolean
+  onExitDialogChange: (open: boolean) => void
+  onExit: () => void
+}
+
+export default function PaidStatusView({
+  isExitDialogOpen,
+  onExitDialogChange,
+  onExit,
+}: PaidStatusViewProps) {
+  const navigate = useNavigate()
+
+  return (
+    <>
+      <ExitDialog
+        isOpen={isExitDialogOpen}
+        onOpenChange={onExitDialogChange}
+        onConfirm={onExit}
+        description="Are you sure you want to leave? You can find this payment request on your dashboard to finish the process ."
+      />
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+          <CheckCircle className="w-10 h-10 text-green-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+          Payment Already Made
+        </h1>
+        <p className="text-neutral-500">
+          This payment request has already been paid.
+        </p>
+        <button
+          onClick={() => navigate("/patients")}
+          className="mt-8 px-6 py-3 bg-neutral-900 text-white rounded-xl font-semibold"
+        >
+          Go Home
+        </button>
+      </div>
+    </>
+  )
+}

@@ -1,0 +1,28 @@
+import type { RequestHandler } from "msw"
+import { profileHandlers } from "./profile"
+import { discoveryHandlers } from "./discovery"
+import { loansHandlers } from "./loans"
+import { onboardingHandlers } from "./onboarding"
+import { networkHandlers } from "./network"
+import { careFundHandlers } from "./carefund"
+import { fastTrackHandlers } from "./fasttrack"
+import { notificationsHandlers } from "./notifications"
+import { miscHandlers } from "./misc"
+
+/**
+ * MSW request handlers for the standalone prototype. Each feature contributes
+ * its own handler module; they are aggregated here. Handlers read editable JSON
+ * fixtures (src/mocks/fixtures) and persist user-created records to localStorage
+ * via src/mocks/db.ts.
+ */
+export const handlers: RequestHandler[] = [
+  ...profileHandlers,
+  ...discoveryHandlers,
+  ...loansHandlers,
+  ...onboardingHandlers,
+  ...networkHandlers,
+  ...careFundHandlers,
+  ...fastTrackHandlers,
+  ...notificationsHandlers,
+  ...miscHandlers,
+]

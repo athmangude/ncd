@@ -1,0 +1,68 @@
+[
+  {
+    "id": "mrr-7001",
+    "careProviderName": "St. Mary's Hospital Langata",
+    "billAmount": "5400",
+    "paymentInfo": {
+      "type": "MPTILL",
+      "tillNumber": "823914",
+      "paybillNumber": "",
+      "accountNumber": ""
+    },
+    "reason": null,
+    "status": "PENDING",
+    "createdAt": "2026-06-14T07:30:00.000Z",
+    "updatedAt": "2026-06-14T07:30:00.000Z",
+    "patient": {
+      "id": "patient-001",
+      "firstName": "Wanjiru",
+      "lastName": "Kamau",
+      "phoneNumber": "+254712345678",
+      "email": "wanjiru.kamau@example.com"
+    },
+    "dependent": null,
+    "kmpdcFacility": {
+      "id": "fac-004",
+      "name": "St. Mary's Hospital Langata"
+    },
+    "invoiceFile": {
+      "id": "file-9001",
+      "filePath": "/uploads/invoice-9001.pdf",
+      "originalFileName": "invoice-stmarys.pdf",
+      "url": "/uploads/invoice-9001.pdf"
+    }
+  },
+  {
+    "id": "mrr-7002",
+    "careProviderName": "Gertrude's Children's Hospital",
+    "billAmount": "12300",
+    "paymentInfo": {
+      "type": "MPAYBILL",
+      "tillNumber": "",
+      "paybillNumber": "247247",
+      "accountNumber": "GCH-4471"
+    },
+    "reason": null,
+    "status": "APPROVED",
+    "createdAt": "2026-06-11T12:45:00.000Z",
+    "updatedAt": "2026-06-12T09:00:00.000Z",
+    "patient": {
+      "id": "patient-001",
+      "firstName": "Wanjiru",
+      "lastName": "Kamau",
+      "phoneNumber": "+254712345678",
+      "email": "wanjiru.kamau@example.com"
+    },
+    "dependent": null,
+    "kmpdcFacility": {
+      "id": "fac-005",
+      "name": "Gertrude's Children's Hospital"
+    },
+    "invoiceFile": {
+      "id": "file-9002",
+      "filePath": "/uploads/invoice-9002.pdf",
+      "originalFileName": "invoice-gertrudes.pdf",
+      "url": "/uploads/invoice-9002.pdf"
+    }
+  }
+]

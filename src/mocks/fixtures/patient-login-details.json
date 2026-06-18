@@ -1,0 +1,116 @@
+{
+  "id": "patient-001",
+  "firstName": "Amina",
+  "lastName": "Otieno",
+  "email": "amina.otieno@example.com",
+  "phoneNumber": "+254712345678",
+  "isVerified": true,
+  "hasVerifiedId": "APPROVED",
+  "membershipStatus": "ACTIVE",
+  "hasActiveMembership": true,
+  "creditLimit": {
+    "totalCreditLimitAmount": "5000",
+    "remainingAmount": "3200",
+    "currency": { "countryName": "Kenya", "code": "KES", "id": 1 }
+  },
+  "medicalRequests": [],
+  "loans": [
+    {
+      "id": "loan-1001",
+      "amount": 1800,
+      "totalBillAmount": 2400,
+      "outstandingAmount": 1200,
+      "status": "DISBURSED",
+      "currency": { "code": "KES" },
+      "createdAt": "2026-05-28T09:15:00.000Z",
+      "loanDueDate": "2026-06-28T09:15:00.000Z",
+      "patientMedicalInfoRequest": {
+        "patientName": "Wanjiru Kamau",
+        "facility": { "id": "fac-001", "name": "Aga Khan University Hospital" }
+      }
+    },
+    {
+      "id": "loan-1002",
+      "amount": 950,
+      "totalBillAmount": 950,
+      "outstandingAmount": 0,
+      "status": "PAID",
+      "currency": { "code": "KES" },
+      "createdAt": "2026-04-12T11:00:00.000Z",
+      "loanDueDate": "2026-05-12T11:00:00.000Z",
+      "patientMedicalInfoRequest": {
+        "patientName": "Wanjiru Kamau",
+        "facility": { "id": "fac-002", "name": "Nairobi Hospital" }
+      }
+    }
+  ],
+  "wallets": [
+    {
+      "id": "wallet-mpesa-001",
+      "type": "MPESA",
+      "remainingBalance": "0",
+      "createdAt": "2026-01-15T09:30:00.000Z",
+      "updatedAt": "2026-06-01T12:00:00.000Z"
+    },
+    {
+      "id": "wallet-loan-001",
+      "type": "LOAN",
+      "remainingBalance": "3200",
+      "createdAt": "2026-01-15T09:30:00.000Z",
+      "updatedAt": "2026-06-01T12:00:00.000Z"
+    },
+    {
+      "id": "wallet-cashback-001",
+      "type": "CASHBACK",
+      "remainingBalance": "1850",
+      "createdAt": "2026-01-15T09:30:00.000Z",
+      "updatedAt": "2026-06-01T12:00:00.000Z"
+    },
+    {
+      "id": "wallet-card-001",
+      "type": "CARD",
+      "remainingBalance": "0",
+      "createdAt": "2026-01-15T09:30:00.000Z",
+      "updatedAt": "2026-06-01T12:00:00.000Z"
+    }
+  ],
+  "patientCircle": {
+    "id": "circle-001",
+    "status": "ACTIVE",
+    "maxAccountableSlots": 2,
+    "maxAuxiliarySlots": 3,
+    "filledAccountableSlots": 2,
+    "filledAuxiliarySlots": 1,
+    "isFrozen": false,
+    "hasCompletedSetup": true,
+    "activatedAt": "2026-02-10T08:15:00.000Z",
+    "frozenAt": null,
+    "freezeReason": null,
+    "createdAt": "2026-02-10T08:15:00.000Z",
+    "updatedAt": "2026-06-01T12:00:00.000Z"
+  },
+  "hasAcceptedMedicalConsentForm": true,
+  "hasAcceptedLatestTermsAndConditions": true,
+  "hasBeenReferred": true,
+  "hasVerifiedCrbScore": true,
+  "idVerificationStatus": "APPROVED",
+  "documentVerificationStatus": "PASSED",
+  "network": [],
+  "type": "PATIENT",
+  "canPayMedicalBill": true,
+  "orgBorrower": null,
+  "hasUploadedMpesaStatement": true,
+  "careFundAccount": {
+    "id": 1,
+    "careFundBalance": "1850",
+    "createdAt": "2026-01-15T09:30:00.000Z",
+    "updatedAt": "2026-06-01T12:00:00.000Z",
+    "accountOwner": null,
+    "currency": { "countryName": "Kenya", "code": "KES", "id": 1 }
+  },
+  "accountReference": "JIR-AMINA-001",
+  "subscriptions": [],
+  "isBasicMember": false,
+  "hasSetPin": true,
+  "profilePhoto": null
+}

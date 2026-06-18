@@ -1,0 +1,16 @@
+[
+  { "countryCode": "KE", "name": "Kenya", "callingCode": "+254" },
+  { "countryCode": "UG", "name": "Uganda", "callingCode": "+256" },
+  { "countryCode": "TZ", "name": "Tanzania", "callingCode": "+255" },
+  { "countryCode": "RW", "name": "Rwanda", "callingCode": "+250" },
+  { "countryCode": "ET", "name": "Ethiopia", "callingCode": "+251" },
+  { "countryCode": "SO", "name": "Somalia", "callingCode": "+252" },
+  { "countryCode": "SS", "name": "South Sudan", "callingCode": "+211" },
+  { "countryCode": "NG", "name": "Nigeria", "callingCode": "+234" },
+  { "countryCode": "GH", "name": "Ghana", "callingCode": "+233" },
+  { "countryCode": "ZA", "name": "South Africa", "callingCode": "+27" },
+  { "countryCode": "GB", "name": "United Kingdom", "callingCode": "+44" },
+  { "countryCode": "US", "name": "United States", "callingCode": "+1" },
+  { "countryCode": "AE", "name": "United Arab Emirates", "callingCode": "+971" },
+  { "countryCode": "IN", "name": "India", "callingCode": "+91" }
+]

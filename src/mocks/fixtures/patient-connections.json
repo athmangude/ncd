@@ -1,0 +1,22 @@
+{
+  "patients": [
+    {
+      "id": "member-001",
+      "name": "Brian Kamau",
+      "value": "member-001",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "member-002",
+      "name": "Wanjiru Mwangi",
+      "value": "member-002",
+      "status": "ACTIVE"
+    },
+    {
+      "id": "member-003",
+      "name": "Esther Otieno",
+      "value": "member-003",
+      "status": "CHILD"
+    }
+  ]
+}

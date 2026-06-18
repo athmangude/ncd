@@ -1,0 +1,95 @@
+{
+  "transactions": [
+    {
+      "id": "cf-txn-001",
+      "transactionAmount": 500,
+      "currency": { "code": "KES", "symbol": "KSh", "name": "Kenyan Shilling" },
+      "type": "EARNED",
+      "status": "COMPLETED",
+      "sender": null,
+      "receiver": {
+        "accountOwner": { "id": "patient-001", "firstName": "Amina", "lastName": "Otieno" }
+      },
+      "receiverPhoneNumber": "+254712345678",
+      "description": "Cashback earned",
+      "loan": null,
+      "createdAt": "2026-06-10T09:30:00.000Z",
+      "updatedAt": "2026-06-10T09:30:00.000Z",
+      "expiresAt": "2026-12-10T09:30:00.000Z"
+    },
+    {
+      "id": "cf-txn-002",
+      "transactionAmount": 300,
+      "currency": { "code": "KES", "symbol": "KSh", "name": "Kenyan Shilling" },
+      "type": "TRANSFER",
+      "status": "COMPLETED",
+      "sender": {
+        "accountOwner": { "id": "patient-001", "firstName": "Amina", "lastName": "Otieno" }
+      },
+      "receiver": {
+        "accountOwner": { "id": "member-001", "firstName": "Brian", "lastName": "Kamau" }
+      },
+      "receiverPhoneNumber": "+254720112233",
+      "description": "Gift to Brian",
+      "loan": null,
+      "createdAt": "2026-06-08T13:15:00.000Z",
+      "updatedAt": "2026-06-08T13:15:00.000Z",
+      "expiresAt": null
+    },
+    {
+      "id": "cf-txn-003",
+      "transactionAmount": 250,
+      "currency": { "code": "KES", "symbol": "KSh", "name": "Kenyan Shilling" },
+      "type": "TRANSFER",
+      "status": "COMPLETED",
+      "sender": {
+        "accountOwner": { "id": "member-002", "firstName": "Wanjiru", "lastName": "Mwangi" }
+      },
+      "receiver": {
+        "accountOwner": { "id": "patient-001", "firstName": "Amina", "lastName": "Otieno" }
+      },
+      "receiverPhoneNumber": "+254712345678",
+      "description": "Gift from Wanjiru",
+      "loan": null,
+      "createdAt": "2026-06-05T18:40:00.000Z",
+      "updatedAt": "2026-06-05T18:40:00.000Z",
+      "expiresAt": null
+    },
+    {
+      "id": "cf-txn-004",
+      "transactionAmount": 800,
+      "currency": { "code": "KES", "symbol": "KSh", "name": "Kenyan Shilling" },
+      "type": "SPENT",
+      "status": "COMPLETED",
+      "sender": {
+        "accountOwner": { "id": "patient-001", "firstName": "Amina", "lastName": "Otieno" }
+      },
+      "receiver": null,
+      "receiverPhoneNumber": null,
+      "description": "Applied to medical bill",
+      "loan": null,
+      "createdAt": "2026-05-28T11:00:00.000Z",
+      "updatedAt": "2026-05-28T11:00:00.000Z",
+      "expiresAt": null
+    },
+    {
+      "id": "cf-txn-005",
+      "transactionAmount": 150,
+      "currency": { "code": "KES", "symbol": "KSh", "name": "Kenyan Shilling" },
+      "type": "TRANSFER",
+      "status": "PENDING",
+      "sender": {
+        "accountOwner": { "id": "patient-001", "firstName": "Amina", "lastName": "Otieno" }
+      },
+      "receiver": {
+        "accountOwner": { "id": "member-002", "firstName": "Wanjiru", "lastName": "Mwangi" }
+      },
+      "receiverPhoneNumber": "+254733445566",
+      "description": "Gift to Wanjiru",
+      "loan": null,
+      "createdAt": "2026-05-20T07:25:00.000Z",
+      "updatedAt": "2026-05-20T07:25:00.000Z",
+      "expiresAt": null
+    }
+  ]
+}

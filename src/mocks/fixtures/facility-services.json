@@ -1,0 +1,73 @@
+{
+  "1": [
+    { "id": "svc-1-1", "name": "General Outpatient Consultation", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-1-2", "name": "Specialist Clinics", "code": "OPD-SPEC", "category": "outpatient_primary_care" },
+    { "id": "svc-1-3", "name": "General Medical Ward", "code": "IPD-MED", "category": "inpatient_services" },
+    { "id": "svc-1-4", "name": "Surgical Ward", "code": "IPD-SURG", "category": "inpatient_services" },
+    { "id": "svc-1-5", "name": "Accident & Emergency", "code": "CC-AE", "category": "critical_care" },
+    { "id": "svc-1-6", "name": "Intensive Care Unit", "code": "CC-ICU", "category": "critical_care" },
+    { "id": "svc-1-7", "name": "Newborn Unit", "code": "NEO-NBU", "category": "neonatal_services" }
+  ],
+  "2": [
+    { "id": "svc-2-1", "name": "Family Medicine Clinic", "code": "OPD-FAM", "category": "outpatient_primary_care" },
+    { "id": "svc-2-2", "name": "Cardiology Clinic", "code": "OPD-CARD", "category": "outpatient_primary_care" },
+    { "id": "svc-2-3", "name": "Oncology Inpatient", "code": "IPD-ONC", "category": "inpatient_services" },
+    { "id": "svc-2-4", "name": "Critical Care Unit", "code": "CC-CCU", "category": "critical_care" },
+    { "id": "svc-2-5", "name": "Neonatal Intensive Care", "code": "NEO-NICU", "category": "neonatal_services" },
+    { "id": "svc-2-6", "name": "Health Screening Packages", "code": "PREV-SCR", "category": "preventive_public_health" }
+  ],
+  "3": [
+    { "id": "svc-3-1", "name": "Casualty & Outpatient", "code": "OPD-CAS", "category": "outpatient_primary_care" },
+    { "id": "svc-3-2", "name": "Renal Unit", "code": "IPD-REN", "category": "inpatient_services" },
+    { "id": "svc-3-3", "name": "Trauma Centre", "code": "CC-TRA", "category": "critical_care" },
+    { "id": "svc-3-4", "name": "Immunisation Clinic", "code": "PREV-IMM", "category": "preventive_public_health" }
+  ],
+  "4": [
+    { "id": "svc-4-1", "name": "Paediatric Outpatient", "code": "OPD-PAED", "category": "outpatient_primary_care" },
+    { "id": "svc-4-2", "name": "Child Wellness Clinic", "code": "OPD-WELL", "category": "outpatient_primary_care" },
+    { "id": "svc-4-3", "name": "Paediatric Inpatient Ward", "code": "IPD-PAED", "category": "inpatient_services" },
+    { "id": "svc-4-4", "name": "Newborn Unit", "code": "NEO-NBU", "category": "neonatal_services" }
+  ],
+  "5": [
+    { "id": "svc-5-1", "name": "Outpatient Consultation", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-5-2", "name": "Medical Ward", "code": "IPD-MED", "category": "inpatient_services" },
+    { "id": "svc-5-3", "name": "High Dependency Unit", "code": "CC-HDU", "category": "critical_care" },
+    { "id": "svc-5-4", "name": "Laboratory Services", "code": "PREV-LAB", "category": "preventive_public_health" }
+  ],
+  "6": [
+    { "id": "svc-6-1", "name": "Outpatient Department", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-6-2", "name": "General Wards", "code": "IPD-GEN", "category": "inpatient_services" },
+    { "id": "svc-6-3", "name": "Emergency Department", "code": "CC-ED", "category": "critical_care" },
+    { "id": "svc-6-4", "name": "Public Health Clinic", "code": "PREV-PH", "category": "preventive_public_health" }
+  ],
+  "7": [
+    { "id": "svc-7-1", "name": "Outpatient Clinic", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-7-2", "name": "Maternity Ward", "code": "IPD-MAT", "category": "inpatient_services" },
+    { "id": "svc-7-3", "name": "Newborn Care", "code": "NEO-NBU", "category": "neonatal_services" }
+  ],
+  "8": [
+    { "id": "svc-8-1", "name": "Outpatient Services", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-8-2", "name": "General Inpatient Wards", "code": "IPD-GEN", "category": "inpatient_services" },
+    { "id": "svc-8-3", "name": "Emergency & Casualty", "code": "CC-ED", "category": "critical_care" },
+    { "id": "svc-8-4", "name": "Reproductive Health Clinic", "code": "PREV-RH", "category": "preventive_public_health" }
+  ],
+  "9": [
+    { "id": "svc-9-1", "name": "Outpatient Consultation", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-9-2", "name": "Wellness & Screening", "code": "PREV-SCR", "category": "preventive_public_health" }
+  ],
+  "10": [
+    { "id": "svc-10-1", "name": "Pharmacy Dispensing", "code": "OPD-PHARM", "category": "outpatient_primary_care" },
+    { "id": "svc-10-2", "name": "Health Checks", "code": "PREV-CHK", "category": "preventive_public_health" }
+  ],
+  "11": [
+    { "id": "svc-11-1", "name": "Outpatient Department", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-11-2", "name": "Surgical Ward", "code": "IPD-SURG", "category": "inpatient_services" },
+    { "id": "svc-11-3", "name": "Emergency Unit", "code": "CC-ED", "category": "critical_care" }
+  ],
+  "12": [
+    { "id": "svc-12-1", "name": "Outpatient Services", "code": "OPD-GEN", "category": "outpatient_primary_care" },
+    { "id": "svc-12-2", "name": "Maternity Ward", "code": "IPD-MAT", "category": "inpatient_services" },
+    { "id": "svc-12-3", "name": "Newborn Unit", "code": "NEO-NBU", "category": "neonatal_services" },
+    { "id": "svc-12-4", "name": "Immunisation & Antenatal", "code": "PREV-ANC", "category": "preventive_public_health" }
+  ]
+}

@@ -1,0 +1,97 @@
+/**
+ * Reset helpers for usability testing.
+ *
+ * `resetMockState` wipes everything a previous participant did and re-seeds a
+ * fresh, fully-onboarded account so the next interview starts from scratch.
+ * `resetCollection` undoes a single area (e.g. restore the seeded cashback or
+ * clear applied loans) for mid-test recovery. Callers reload the app afterwards
+ * so React Query refetches against the reset state.
+ */
+
+import {
+  markMockAccountCreated,
+  startMockSession,
+} from "../auth/session"
+
+const MOCK_PREFIX = "mock:"
+
+// Mock-session + returning-user flags.
+export const SESSION_KEYS = [
+  "mock_session_exists",
+  "mock_user_id",
+  "mock_has_account",
+]
+
+// App-side flow keys written outside the `mock:` namespace (loan request flow,
+// KYC circle members, QR invite tokens, persisted payment state, etc.).
+export const APP_FLOW_KEYS = [
+  "approved_patient_phone_number",
+  "patientReviewInvoice",
+  "manualPaymentRequestId",
+  "paymentId",
+  "paymentResponse",
+  "patientSelectPatient",
+  "patientTreatmentDetails",
+  "kyc_circle_members",
+  "fast-track-storage",
+  "qrToken",
+  "qrSignature",
+  "inviteId",
+]
+
+/** Remove every `mock:*` localStorage entry. */
+export function clearMockKeys(): void {
+  const toRemove: string[] = []
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i)
+    if (key && key.startsWith(MOCK_PREFIX)) toRemove.push(key)
+  }
+  toRemove.forEach((key) => localStorage.removeItem(key))
+}
+
+/**
+ * Wipe all participant state and re-establish a fresh, fully-onboarded session.
+ * The handlers re-seed each collection from its fixture on the next read, so
+ * after the caller reloads the app the participant lands logged-in on the
+ * default seeded account.
+ */
+/**
+ * Wipe every trace of participant state: `mock:*` collections, session +
+ * returning-user flags, app-flow keys, the discovery tab cache and the offline
+ * IndexedDB. Leaves no session — callers decide whether to start one.
+ */
+export function clearAllParticipantState(): void {
+  clearMockKeys()
+  SESSION_KEYS.forEach((key) => localStorage.removeItem(key))
+  APP_FLOW_KEYS.forEach((key) => localStorage.removeItem(key))
+
+  try {
+    window.sessionStorage.removeItem("discovery_tab_state")
+    window.sessionStorage.removeItem("sw-purged")
+  } catch {
+    // ignore — sessionStorage may be unavailable
+  }
+
+  try {
+    window.indexedDB?.deleteDatabase("JirehHealthDB")
+  } catch {
+    // ignore — offline cache is best-effort
+  }
+}
+
+export function resetMockState(): void {
+  clearAllParticipantState()
+
+  // Land the next load straight in the app as the seeded returning user.
+  startMockSession()
+  markMockAccountCreated()
+}
+
+/**
+ * Reset a single mock collection by its key (without the `mock:` prefix), e.g.
+ * "care-fund-transactions", "loans", "payment-history", "patient-network",
+ * "login-details". The next handler read re-seeds it from the fixture.
+ */
+export function resetCollection(key: string): void {
+  localStorage.removeItem(MOCK_PREFIX + key)
+}

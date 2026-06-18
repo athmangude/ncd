@@ -1,0 +1,63 @@
+name: Run automated checks on Github Actions
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  automated-checks:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        environment: [testing]
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Run ESLint
+        run: npm run lint:ci
+
+      - name: Prettier check (changed files)
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin "$GITHUB_BASE_REF" --depth=50
+          git diff -z --name-only --diff-filter=ACMR \
+            "origin/$GITHUB_BASE_REF...HEAD" \
+            -- '*.ts' '*.tsx' '*.js' '*.jsx' > /tmp/prettier_changed
+          if [ ! -s /tmp/prettier_changed ]; then
+            echo "No formattable source files changed."
+            exit 0
+          fi
+          xargs -0 npx prettier --check -- < /tmp/prettier_changed
+
+      - name: Build the project
+        run: npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"

@@ -1,0 +1,32 @@
+{
+  "id": 101,
+  "name": "Outpatient Cashier",
+  "paymentNumber": "482913",
+  "paymentCode": "JH-482913",
+  "smsPhoneNumbers": ["+254720000111"],
+  "isActive": true,
+  "facility": {
+    "id": 55,
+    "name": "Cana Hospital",
+    "address": "Rimpa, Kajiado",
+    "POBox": "P.O. Box 30270-00100",
+    "orgName": "Cana Hospital Limited",
+    "facilityLevel": "Level 4",
+    "facilityVerificationStatus": "VERIFIED",
+    "locationName": "Rimpa",
+    "county": "Kajiado",
+    "subCounty": "Kajiado North",
+    "contactPhone": "+254203662000",
+    "latitude": "-1.262420",
+    "longitude": "36.815010",
+    "isOutOfNetwork": false,
+    "isPrimaryBranch": true,
+    "branchDisplayName": "Cana Hospital - Rimpa",
+    "createdAt": "2025-01-10T09:00:00.000Z",
+    "updatedAt": "2026-05-20T12:00:00.000Z",
+    "deletedAt": null
+  },
+  "createdAt": "2025-01-10T09:00:00.000Z",
+  "updatedAt": "2026-05-20T12:00:00.000Z",
+  "deletedAt": null
+}

@@ -1,0 +1,109 @@
+import { useState } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
+import { Button } from "@/components/Button"
+import { Textarea } from "@/components/Textarea"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { getFromLocalStorage, setToLocalStorage } from "@/utilities/localStorage"
+import { PENDING_INVITE_KEY } from "./InviteMethodPage"
+import { useToast } from "@/hooks/useToast"
+import { usePatientAuthStore } from "../../stores/patientAuthStore"
+import { resolveReturnPath } from "./PreviewInvitePage"
+
+export default function InviteTextPage() {
+  const navigate = useNavigate()
+  const { toast } = useToast()
+  const user = usePatientAuthStore((state: any) => state.user)
+  const location = useLocation()
+
+  const [message, setMessage] = useState(() => {
+    const existingData = getFromLocalStorage(PENDING_INVITE_KEY)
+    return existingData?.inviteMessage || ""
+  })
+
+  const MAX_CHARS = 140
+
+  const handleContinue = () => {
+    if (message.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please enter a message",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (message.length > MAX_CHARS) {
+      toast({
+        title: "Error",
+        description: `Message is too long. Please limit to ${MAX_CHARS} characters.`,
+        variant: "destructive",
+      })
+      return
+    }
+
+    const existingData = getFromLocalStorage(PENDING_INVITE_KEY) || {}
+    setToLocalStorage(PENDING_INVITE_KEY, {
+      ...existingData,
+      inviteMessage: message,
+    })
+
+    if (user?.profilePhoto) {
+      navigate("/patients/network/preview-invite", {
+        state: { ...location.state },
+      })
+    } else {
+      navigate("/patients/network/check-profile-photo", {
+        state: { ...location.state },
+      })
+    }
+  }
+
+  const handleBack = () => {
+    if (location.state?.returnPath) {
+      navigate(resolveReturnPath(location.state))
+      return
+    }
+    navigate(-1)
+  }
+
+  return (
+    <PatientPageWrapper title="Invite by SMS" onBack={handleBack}>
+      <div className="flex flex-col max-w-md mx-auto w-full p-4 pb-24">
+        <div className="flex flex-col mb-8">
+          <h2 className="text-2xl font-semibold text-neutral-900 mb-1">
+            Write up to 140 characters
+          </h2>
+          <p className="text-neutral-500 text-sm">
+            e.g. &ldquo;This is for managing Mom&apos;s care&rdquo;.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-neutral-900">
+            Text Message
+          </label>
+          <Textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder=""
+            className="min-h-[80px] p-3 text-base rounded-sm border-neutral-200 focus:border-purple-500 focus:ring-purple-500"
+          />
+          <div className="text-left text-xs text-neutral-400">
+            {message.length}/{MAX_CHARS} characters
+          </div>
+        </div>
+
+      </div>
+
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 max-w-md mx-auto">
+        <Button
+          className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-neutral-300 disabled:text-neutral-500"
+          onClick={handleContinue}
+          disabled={message.length === 0 || message.length > MAX_CHARS}
+        >
+          Preview your invite
+        </Button>
+      </div>
+    </PatientPageWrapper>
+  )
+}

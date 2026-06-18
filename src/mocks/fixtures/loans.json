@@ -1,0 +1,72 @@
+[
+  {
+    "id": "loan-1001",
+    "amount": 18000,
+    "totalBillAmount": 24000,
+    "outstandingAmount": 12000,
+    "totalPaid": 6000,
+    "careFundDiscountAmount": 0,
+    "accumulatedInterestAmount": 0,
+    "lateFees": 0,
+    "status": "DISBURSED",
+    "loanType": "MEMBERSHIP",
+    "currency": { "code": "KES" },
+    "createdAt": "2026-05-28T09:15:00.000Z",
+    "loanDueDate": "2026-06-28T09:15:00.000Z",
+    "firstPaymentDue": "2026-06-28T09:15:00.000Z",
+    "patientName": "Wanjiru Kamau",
+    "patientMedicalInfoRequest": {
+      "patientName": "Wanjiru Kamau",
+      "facility": { "id": "fac-001", "name": "Aga Khan University Hospital" }
+    },
+    "transactions": [
+      {
+        "id": "txn-2001",
+        "amount": 6000,
+        "description": "Loan repayment",
+        "transactionType": "COLLECTION",
+        "date": "2026-06-05T14:30:00.000Z",
+        "createdAt": "2026-06-05T14:30:00.000Z"
+      }
+    ]
+  },
+  {
+    "id": "loan-1002",
+    "amount": 9500,
+    "totalBillAmount": 9500,
+    "outstandingAmount": 0,
+    "totalPaid": 9500,
+    "careFundDiscountAmount": 475,
+    "accumulatedInterestAmount": 0,
+    "lateFees": 0,
+    "status": "PAID",
+    "loanType": "MEMBERSHIP",
+    "currency": { "code": "KES" },
+    "createdAt": "2026-04-12T11:00:00.000Z",
+    "loanDueDate": "2026-05-12T11:00:00.000Z",
+    "firstPaymentDue": "2026-05-12T11:00:00.000Z",
+    "patientName": "Wanjiru Kamau",
+    "patientMedicalInfoRequest": {
+      "patientName": "Wanjiru Kamau",
+      "facility": { "id": "fac-002", "name": "Nairobi Hospital" }
+    },
+    "transactions": [
+      {
+        "id": "txn-2002",
+        "amount": 4500,
+        "description": "Loan repayment",
+        "transactionType": "COLLECTION",
+        "date": "2026-04-25T10:00:00.000Z",
+        "createdAt": "2026-04-25T10:00:00.000Z"
+      },
+      {
+        "id": "txn-2003",
+        "amount": 5000,
+        "description": "Loan repayment",
+        "transactionType": "COLLECTION",
+        "date": "2026-05-10T16:45:00.000Z",
+        "createdAt": "2026-05-10T16:45:00.000Z"
+      }
+    ]
+  }
+]

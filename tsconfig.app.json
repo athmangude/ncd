@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "supertokens-auth-react/recipe/session": [
+        "./src/mocks/auth/recipe-session-react.tsx"
+      ],
+      "supertokens-auth-react/recipe/passwordless": [
+        "./src/mocks/auth/recipe-passwordless.ts"
+      ],
+      "supertokens-auth-react/recipe/emailverification": [
+        "./src/mocks/auth/recipe-emailverification.ts"
+      ],
+      "supertokens-web-js/recipe/session": [
+        "./src/mocks/auth/web-session.ts"
+      ],
+      "supertokens-web-js/recipe/thirdparty": [
+        "./src/mocks/auth/web-thirdparty.ts"
+      ],
+      "supertokens-web-js/types": ["./src/mocks/auth/web-types.ts"],
+      "@amplitude/analytics-browser": ["./src/mocks/vendor/amplitude.ts"]
+    },
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src", "src/Routes/Patient/Pages/Loans/RequestLoan/PatientSelectPatient/.tsx"]
+}
