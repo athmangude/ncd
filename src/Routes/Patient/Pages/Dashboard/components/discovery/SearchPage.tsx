@@ -146,9 +146,7 @@ export default function SearchPage() {
   serviceCategories.forEach((cat) => {
     chips.push({
       id: `category:${cat}`,
-      label: cat
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (m) => m.toUpperCase()),
+      label: cat.replace(/_/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()),
       onRemove: () => {
         trackEvent(EVENTS.DISCOVERY.FILTER_CHIP_REMOVE, {
           filterId: `category:${cat}`,
@@ -272,7 +270,7 @@ function SearchHeader({
             "flex items-center gap-1.5 h-6 px-3 text-sm font-medium rounded-full shrink-0 transition-colors",
             hasActiveFilters
               ? "bg-primary text-white"
-              : "bg-purple-100 text-purple-800",
+              : "bg-purple-100 text-purple-800"
           )}
         >
           <SlidersHorizontal className="h-3 w-3" />
@@ -293,6 +291,7 @@ function SearchHeader({
             type="button"
             role="switch"
             aria-checked={verifiedOnly}
+            aria-label="Show verified providers only"
             onClick={toggleVerified}
             className={cn(
               "h-[18px] w-[33px] rounded-full relative transition-colors shrink-0",
@@ -396,7 +395,9 @@ function EmptyState({
             preferred.map((p) => (
               <SimpleRow
                 key={p.id}
-                icon={<Building2 className="h-4 w-4 text-foreground shrink-0" />}
+                icon={
+                  <Building2 className="h-4 w-4 text-foreground shrink-0" />
+                }
                 label={p.facility.name}
                 chevron
                 onClick={() => onPreferredTap(p.facility.id)}
