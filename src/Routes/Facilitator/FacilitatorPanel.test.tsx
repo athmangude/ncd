@@ -23,14 +23,18 @@ beforeEach(() => {
 })
 
 describe("FacilitatorPanel", () => {
-  it("resets the account after confirmation and reloads", () => {
-    localStorage.setItem("mock:loans", "[]")
+  it("resets the account to base after confirmation and reloads", () => {
+    localStorage.setItem("mock:loans", '[{"id":"existing-loan"}]')
     renderPanel()
 
-    fireEvent.click(screen.getByText("Reset to fresh participant"))
-    fireEvent.click(screen.getByText("Yes, reset everything"))
+    fireEvent.click(
+      screen.getByText("Reset to base (empty — build from scratch)")
+    )
+    fireEvent.click(screen.getByText("Yes, reset to base"))
 
-    expect(localStorage.getItem("mock:loans")).toBeNull()
+    // "Reset to base" re-seeds a fresh account: collections are emptied (the
+    // loans collection becomes an empty array, not a removed key).
+    expect(localStorage.getItem("mock:loans")).toBe("[]")
     expect(reloadApp).toHaveBeenCalled()
   })
 

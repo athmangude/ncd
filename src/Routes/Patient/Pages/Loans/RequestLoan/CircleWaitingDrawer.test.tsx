@@ -1,7 +1,16 @@
-import { describe, it, expect, vi, beforeAll } from "vitest"
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeAll,
+  beforeEach,
+  afterEach,
+} from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { createElement, type ReactNode } from "react"
 import { CircleWaitingDrawer } from "./CircleWaitingDrawer"
 import type { ExtendedUser } from "./types"
@@ -36,8 +45,32 @@ const baseUser: ExtendedUser = {
   patientCircle: { filledAccountableSlots: 2, status: "ACTIVE" },
 }
 
+beforeEach(() => {
+  // CircleWaitingDrawer pulls circle data via usePatientNetwork (React Query);
+  // stub the fetch so the query resolves to an empty network.
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ network: [], invites: [], receivedInvites: [] }),
+    })
+  )
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
+})
+
 function wrap(ui: ReactNode) {
-  return createElement(MemoryRouter, {}, ui)
+  return createElement(
+    QueryClientProvider,
+    {
+      client: new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      }),
+    },
+    createElement(MemoryRouter, {}, ui)
+  )
 }
 
 describe("CircleWaitingDrawer", () => {

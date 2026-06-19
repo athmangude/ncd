@@ -11,22 +11,36 @@ import PatientKYCAddCircleMembers from "./PatientKYCAddCircleMembers"
 const mockNavigate = vi.fn()
 
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
   return {
     ...actual,
     useNavigate: () => mockNavigate,
-    useLocation: () => ({ pathname: "/patients/kyc-add-circle-members", state: {} }),
+    useLocation: () => ({
+      pathname: "/patients/kyc-add-circle-members",
+      state: {},
+    }),
   }
 })
 
 vi.mock("@/Routes/Patient/stores/patientAuthStore", () => ({
-  usePatientAuthStore: (sel: (s: { user: { firstName: string; lastName: string } }) => unknown) =>
-    sel({ user: { firstName: "Test", lastName: "User" } }),
+  usePatientAuthStore: (
+    sel: (s: { user: { firstName: string; lastName: string } }) => unknown
+  ) => sel({ user: { firstName: "Test", lastName: "User" } }),
 }))
 
-vi.mock("@/Routes/Patient/hooks/useNextKYCStep", () => ({
-  default: () => "/patients/pay-membership",
-}))
+// Keep the module's named exports (KYC_STEPS, getKYCSteps) — PatientPageWrapper
+// reads them to drive the stepper. Only the default hook is overridden.
+vi.mock("@/Routes/Patient/hooks/useNextKYCStep", async (importOriginal) => {
+  const actual =
+    await importOriginal<
+      typeof import("@/Routes/Patient/hooks/useNextKYCStep")
+    >()
+  return {
+    ...actual,
+    default: () => "/patients/pay-membership",
+  }
+})
 
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {
@@ -60,7 +74,9 @@ function wrap(ui: ReactNode) {
   return createElement(
     QueryClientProvider,
     {
-      client: new QueryClient({ defaultOptions: { queries: { retry: false } } }),
+      client: new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      }),
     },
     createElement(
       MemoryRouter,
@@ -115,17 +131,19 @@ describe("PatientKYCAddCircleMembers", () => {
     expect(
       await screen.findByText(/Add 2 people to your Jireh Circle/i)
     ).toBeInTheDocument()
-    expect(screen.getByText(/2 of 2 adults slots available/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/2 of 2 adults slots available/i)
+    ).toBeInTheDocument()
     expect(screen.queryByText(/Confirmed:/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/Invites sent to:/i)).not.toBeInTheDocument()
   })
 
-  it("partial state: shows 'Keep building' title and confirmed section", async () => {
+  it("partial state: shows the partial title and confirmed section", async () => {
     stubNetwork([adultAccepted], [])
     render(wrap(<PatientKYCAddCircleMembers />))
 
     expect(
-      await screen.findByText(/Keep building your Circle/i)
+      await screen.findByText(/Waiting for your Circle to confirm/i)
     ).toBeInTheDocument()
     expect(screen.getByText(/1 more adult needed/i)).toBeInTheDocument()
     expect(screen.getByText("Mary Wanjiku")).toBeInTheDocument()
@@ -138,13 +156,15 @@ describe("PatientKYCAddCircleMembers", () => {
     render(wrap(<PatientKYCAddCircleMembers />))
 
     expect(
-      await screen.findByText(/Keep building your Circle/i)
+      await screen.findByText(/Waiting for your Circle to confirm/i)
     ).toBeInTheDocument()
     expect(screen.getByText("Mary Wanjiku")).toBeInTheDocument()
     expect(screen.getByText("John Kamau")).toBeInTheDocument()
     expect(screen.getByText(/Confirmed:/i)).toBeInTheDocument()
     expect(screen.getByText(/Invites sent to:/i)).toBeInTheDocument()
-    expect(screen.getByText(/Waiting\.\.\./i)).toBeInTheDocument()
+    // A pending invite surfaces a "Waiting..." indicator (shown in both the
+    // circle viz and the pending list row).
+    expect(screen.getAllByText(/Waiting\.\.\./i).length).toBeGreaterThan(0)
   })
 
   it("waiting state: shows 'Waiting for your Circle to confirm' and orange warning", async () => {
@@ -154,14 +174,21 @@ describe("PatientKYCAddCircleMembers", () => {
     expect(
       await screen.findByText(/Waiting for your Circle to confirm/i)
     ).toBeInTheDocument()
-    expect(screen.getByText(/Your Circle is not yet active/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Your Circle is not yet active/i)
+    ).toBeInTheDocument()
     expect(screen.getByText(/2 of 2 adults slots pending/i)).toBeInTheDocument()
     expect(screen.getByText("John Kamau")).toBeInTheDocument()
     expect(screen.getByText("Alice Odhiambo")).toBeInTheDocument()
   })
 
   it("complete state: redirects to next step when 2 adults accepted", async () => {
-    const adultAccepted2 = { ...adultAccepted, id: "m2", firstName: "Grace", lastName: "Mutua" }
+    const adultAccepted2 = {
+      ...adultAccepted,
+      id: "m2",
+      firstName: "Grace",
+      lastName: "Mutua",
+    }
     stubNetwork([adultAccepted, adultAccepted2], [])
     render(wrap(<PatientKYCAddCircleMembers />))
 
