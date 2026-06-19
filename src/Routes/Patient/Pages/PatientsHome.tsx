@@ -1,7 +1,13 @@
 import ErrorBlock from "@/components/ErrorBlock"
 import RouteMetadata from "@/components/RouteMetadata"
 import LoadingPage from "@/Routes/LoadingPage"
-import { Navigate, Route, Routes, useNavigate, useLocation } from "react-router-dom"
+import {
+  Navigate,
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+} from "react-router-dom"
 import { SessionAuth } from "supertokens-auth-react/recipe/session"
 import { useOnboardingChecklist } from "../hooks/useOnboardingChecklist"
 import PatientDashboard from "./PatientDashboard"
@@ -83,17 +89,25 @@ import SearchPage from "./Dashboard/components/discovery/SearchPage"
 import FiltersPage from "./Dashboard/components/discovery/FiltersPage"
 import { lazy, Suspense } from "react"
 
-const PatientDashboardLoansTab = lazy(() => import("./Dashboard/PatientDashboardLoansTab"))
-const PatientDashboardCircleTab = lazy(() => import("./Dashboard/PatientDashboardCircleTab"))
-const PatientDashboardExploreTab = lazy(() => import("./Dashboard/PatientDashboardExploreTab"))
-const PatientDashboardProfileTab = lazy(() => import("./Dashboard/PatientDashboardProfileTab"))
+const PatientDashboardLoansTab = lazy(
+  () => import("./Dashboard/PatientDashboardLoansTab")
+)
+const PatientDashboardCircleTab = lazy(
+  () => import("./Dashboard/PatientDashboardCircleTab")
+)
+const PatientDashboardExploreTab = lazy(
+  () => import("./Dashboard/PatientDashboardExploreTab")
+)
+const PatientDashboardProfileTab = lazy(
+  () => import("./Dashboard/PatientDashboardProfileTab")
+)
 
 function PatientDashboardRedirect() {
   const location = useLocation()
   const tab = location.state?.tab || "home"
   const validTabs = ["home", "circle", "explore", "profile"]
   const target = validTabs.includes(tab) ? tab : "home"
-  
+
   return <Navigate to={target} replace state={location.state} />
 }
 
@@ -121,87 +135,74 @@ export default function PatientsHome() {
     return <ErrorBlock message={error.response?.data.message} />
   }
 
-  // Pages that need full bleed background (no padding/margins on mobile)
-  const normalizedPath = location.pathname.replace(/\/$/, '') // Remove trailing slash
+  const normalizedPath = location.pathname.replace(/\/$/, "") // Remove trailing slash
   const isDashboardWithIncompleteSignUp =
-    normalizedPath === '/patients' && !!query.data?.onboardingRedirectLink
+    normalizedPath === "/patients" && !!query.data?.onboardingRedirectLink
 
-  // Circle member details lives at /patients/network/:targetId — a catch-all
-  // dynamic segment. Match it as a /network/ path that is NOT one of the known
-  // static network sub-routes (those keep the padded shell unless listed below).
-  const STATIC_NETWORK_SEGMENTS = [
-    'invite-text', 'invite-voice', 'check-profile-photo', 'preview-invite',
-    'invitations-sent', 'invitations-received', 'add-connection',
-    'add-circle-member', 'invite-method', 'invite-info', 'accept-invite',
-    'accept-share-link', 'invite-expired', 'invite-accepted', 'invite-rejected',
+  // ── Layout ownership ────────────────────────────────────────────────────────
+  // Most screens now render their own self-contained shell (PatientPageWrapper /
+  // MobileWrapper, both built on AppShell) — they draw the neutral-100 frame +
+  // centered white max-w-md card at every breakpoint. For those, this container
+  // must be a pure passthrough (no width/padding/border at any breakpoint),
+  // otherwise the desktop card double-frames the screen.
+  //
+  // The exceptions below are the screens NOT yet migrated to a self-contained
+  // shell; they still rely on this container for their frame. Each group is
+  // peeled off in a later migration phase until this container can be deleted.
+
+  // Dashboard rolls its own fixed header + animated tab bar (migrated later).
+  const DASHBOARD_PATHS = [
+    "/patients",
+    "/patients/home",
+    "/patients/circle",
+    "/patients/explore",
+    "/patients/profile",
   ]
-  const networkSegment = normalizedPath.match(/^\/patients\/network\/([^/]+)$/)?.[1]
-  const isCircleMemberDetails =
-    !!networkSegment && !STATIC_NETWORK_SEGMENTS.includes(networkSegment)
+  const isDashboardRoute = DASHBOARD_PATHS.includes(normalizedPath)
 
-  // Static network screens migrated to MobileWrapper (its self-contained shell
-  // replaces the padded container). Stepper-journey screens (invite-text,
-  // invite-voice, check-profile-photo, preview-invite, add-circle-member) and
-  // accept-invite are NOT listed — they keep the padded shell.
-  const FULL_BLEED_NETWORK_SEGMENTS = [
-    'invite-method', 'invite-info', 'accept-share-link', 'invite-expired',
-    'invite-accepted', 'invite-rejected', 'invitations-sent',
-    'invitations-received', 'add-connection',
+  // Bare onboarding screens that still render plain content (no shell wrapper).
+  const LEGACY_BARE_PATHS = [
+    "/patients/add-whatsapp-number",
+    "/patients/id-verification-failure",
+    "/patients/resolve-type",
+    "/patients/referral-code",
+    "/patients/org-onboarding-success",
+    "/patients/complete-profile",
   ]
-  const isFullBleedNetworkScreen =
-    !!networkSegment && FULL_BLEED_NETWORK_SEGMENTS.includes(networkSegment)
+  const isLegacyBare = LEGACY_BARE_PATHS.includes(normalizedPath)
 
-  // The network landing page (/patients/network) itself is migrated too.
-  const isNetworkLanding = normalizedPath === '/patients/network'
+  // Discovery screens (own layout; migrated in a later phase).
+  const isDiscovery =
+    normalizedPath === "/patients/search" ||
+    normalizedPath === "/patients/search/filters" ||
+    normalizedPath.startsWith("/patients/facility/")
 
-  // Screens migrated to MobileWrapper are fully self-contained: MobileWrapper
-  // draws its own neutral-100 frame + centered white max-w-md card at ALL
-  // breakpoints. The PatientsHome container must be a pure passthrough for them
-  // (no width, padding, margin, or border at any breakpoint) — otherwise the
-  // sm: shell re-wraps and double-pads them on desktop.
-  const usesMobileWrapper =
-    isCircleMemberDetails ||
-    isFullBleedNetworkScreen ||
-    isNetworkLanding ||
-    location.pathname.includes('/circle-setup-intro') ||
-    location.pathname.includes('/circle-how-it-works') ||
-    location.pathname.includes('/scan-qr-intro') ||
-    location.pathname.includes('/notifications') ||
-    location.pathname.includes('/security-and-permissions') ||
-    location.pathname.includes('/help-and-support') ||
-    location.pathname.includes('/referral-and-earn') ||
-    location.pathname.includes('/change-pin') ||
-    location.pathname.includes('/set-pin') ||
-    location.pathname.includes('/pwa-setup-intro') ||
-    location.pathname.includes('/kyc-setup-intro') ||
-    location.pathname.includes('/care-profile-setup') ||
-    location.pathname.includes('/care-profile-success') ||
-    location.pathname.includes('/pwa-success') ||
-    // Patient onboarding success only — NOT /org-onboarding-success, which
-    // still uses PatientAuthWrapper and is not migrated.
-    (location.pathname.includes('/onboarding-success') &&
-      !location.pathname.includes('/org-onboarding-success'))
+  // Subscriptions transaction result renders its own full-bleed layout.
+  const isSubscriptions = normalizedPath.startsWith("/patients/subscriptions")
 
-  // Legacy full-bleed screens (NOT yet on MobileWrapper) that still want the
-  // padded desktop card but no mobile padding.
+  const usesLegacyContainer =
+    isDashboardRoute || isLegacyBare || isDiscovery || isSubscriptions
+
+  // Within the legacy container, these want the desktop card but no mobile padding.
   const needsFullBleed =
     isDashboardWithIncompleteSignUp ||
-    location.pathname.includes('/complete-profile') ||
-    location.pathname.includes('/facility/') ||
-    location.pathname.includes('/payments')
+    normalizedPath === "/patients/complete-profile" ||
+    normalizedPath.startsWith("/patients/facility/")
 
   return (
     <SessionAuth requireAuth={true}>
-      <div className={cn(
-        // MobileWrapper screens are fully self-contained — render the container
-        // as a pure passthrough (no shell classes at any breakpoint).
-        !usesMobileWrapper &&
-          "flex flex-col mx-auto sm:max-w-[450px] sm:border sm:border-input sm:px-10 py-7 sm:mt-10 gap-7",
-        !usesMobileWrapper &&
-          (needsFullBleed
-            ? "w-full max-w-full px-0 py-0 sm:max-w-[450px] sm:px-10 sm:py-7 sm:mt-10"
-            : "max-w-[450px] px-4 sm:px-10")
-      )}>
+      <div
+        className={cn(
+          // Self-shelled screens render as a pure passthrough (no shell classes at
+          // any breakpoint); only not-yet-migrated screens get the padded card.
+          usesLegacyContainer &&
+            "flex flex-col mx-auto sm:max-w-[450px] sm:border sm:border-input sm:px-10 py-7 sm:mt-10 gap-7",
+          usesLegacyContainer &&
+            (needsFullBleed
+              ? "w-full max-w-full px-0 py-0 sm:max-w-[450px] sm:px-10 sm:py-7 sm:mt-10"
+              : "max-w-[450px] px-4 sm:px-10")
+        )}
+      >
         <Routes>
           <Route
             path="/"
@@ -254,7 +255,7 @@ export default function PatientsHome() {
               </RouteMetadata>
             }
           />
-          
+
           <Route
             path="/payment-verification-request/:id"
             element={
@@ -303,9 +304,9 @@ export default function PatientsHome() {
             path="/pwa-install"
             element={
               <RouteMetadata title="Install App">
-                 <PatientPageWrapper>
-                    <InstallAppPage />
-                 </PatientPageWrapper>
+                <PatientPageWrapper>
+                  <InstallAppPage />
+                </PatientPageWrapper>
               </RouteMetadata>
             }
           />
@@ -313,9 +314,9 @@ export default function PatientsHome() {
             path="/pwa-notifications"
             element={
               <RouteMetadata title="Enable Notifications">
-                 <PatientPageWrapper>
-                    <EnableNotificationsPage />
-                 </PatientPageWrapper>
+                <PatientPageWrapper>
+                  <EnableNotificationsPage />
+                </PatientPageWrapper>
               </RouteMetadata>
             }
           />
@@ -323,9 +324,9 @@ export default function PatientsHome() {
             path="/pwa-location"
             element={
               <RouteMetadata title="Location Access">
-                 <PatientPageWrapper>
-                    <LocationAccessPage />
-                 </PatientPageWrapper>
+                <PatientPageWrapper>
+                  <LocationAccessPage />
+                </PatientPageWrapper>
               </RouteMetadata>
             }
           />
@@ -709,7 +710,6 @@ export default function PatientsHome() {
               </RouteMetadata>
             }
           />
-
 
           {/* Misc */}
           <Route
