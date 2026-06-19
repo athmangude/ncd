@@ -2,6 +2,7 @@
 import { setupServer } from "msw/node"
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest"
 import { handlers } from "./handlers"
+import { seedFreshAccount } from "./domain/seed"
 
 const server = setupServer(...handlers)
 const ORIGIN = window.location.origin
@@ -55,6 +56,32 @@ describe("circle ↔ payment patient picker", () => {
     expect(
       conns.patients.some((p: { name: string }) => p.name === "New Payee")
     ).toBe(true)
+  })
+})
+
+describe("dashboard loan stats", () => {
+  it("surfaces the profile credit limit as available-to-borrow", async () => {
+    // Demo seed (Amina): 5000 total / 3200 remaining.
+    const stats = await (await fetch(ORIGIN + "/loans/patient/me/stats")).json()
+    expect(Number(stats.totalCreditLimit)).toBe(5000)
+    expect(Number(stats.remainingCreditLimit)).toBe(3200)
+  })
+
+  it("reflects the KES 500 limit a fresh account gets after upgrading to Jireh Plus", async () => {
+    seedFreshAccount()
+
+    // Fresh account has no limit yet — the loan card would read KES 0.
+    const before = await (
+      await fetch(ORIGIN + "/loans/patient/me/stats")
+    ).json()
+    expect(Number(before.remainingCreditLimit)).toBe(0)
+
+    // Paying for Jireh Plus funds the default interest-free limit.
+    await fetch(ORIGIN + "/patients/submit-plan-details", json({}))
+
+    const after = await (await fetch(ORIGIN + "/loans/patient/me/stats")).json()
+    expect(Number(after.totalCreditLimit)).toBe(500)
+    expect(Number(after.remainingCreditLimit)).toBe(500)
   })
 })
 

@@ -6,7 +6,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/Button"
 import axios, { HttpStatusCode } from "axios"
 import { useToast } from "@/hooks/useToast"
-import { myNetworkQueryKey } from "./PatientMyNetwork"
+import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import fullLogo from "@/assets/icons/full-logo.svg"
 import { Check, User, Play, Pause } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
@@ -19,7 +19,10 @@ import {
 import { Checkbox } from "@/components/Checkbox"
 import { cn } from "@/lib/utils"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { SessionAuth, useSessionContext } from "supertokens-auth-react/recipe/session"
+import {
+  SessionAuth,
+  useSessionContext,
+} from "supertokens-auth-react/recipe/session"
 import { useForm, Controller } from "react-hook-form"
 import FormGroupSelect from "@/components/form/FormGroupSelect"
 import { relationshipOptions } from "./PatientAddConnection"
@@ -47,7 +50,7 @@ export default function PatientAcceptInvite() {
         return {
           token,
           signature,
-          isQr: true
+          isQr: true,
         }
       }
 
@@ -58,7 +61,7 @@ export default function PatientAcceptInvite() {
 
       return {
         inviteId,
-        isQr: false
+        isQr: false,
       }
     },
   })
@@ -90,7 +93,9 @@ function NoInviteFound() {
   return (
     <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
       <h2 className="text-2xl font-medium mb-2">No invite found</h2>
-      <p className="text-neutral-500 mb-6">We could not find the invite you are looking for.</p>
+      <p className="text-neutral-500 mb-6">
+        We could not find the invite you are looking for.
+      </p>
 
       <Link to="/patients" className="w-full max-w-sm">
         <Button className="w-full">Return to Dashboard</Button>
@@ -107,7 +112,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [playbackTime, setPlaybackTime] = useState(0)
-  
+
   const session = useSessionContext()
   const { data: currentUser } = usePatientLoginDetails()
 
@@ -138,7 +143,11 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
     const currentUserPhoneNumber = currentUser.phoneNumber
 
     // Check if invite status is ACCEPTED, REJECTED, or CANCELLED
-    if (status === "ACCEPTED" || status === "REJECTED" || status === "CANCELLED") {
+    if (
+      status === "ACCEPTED" ||
+      status === "REJECTED" ||
+      status === "CANCELLED"
+    ) {
       toast({
         title: "Invite Already Processed",
         description: `This invite has already been ${status.toLowerCase()}.`,
@@ -168,7 +177,15 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
 
     // All redirect guards passed — the invite will be shown to the user
     trackEvent(EVENTS.CIRCLE.INVITATION_VIEW)
-  }, [query.data, query.isLoading, query.isError, currentUser, session, toast, navigate])
+  }, [
+    query.data,
+    query.isLoading,
+    query.isError,
+    currentUser,
+    session,
+    toast,
+    navigate,
+  ])
 
   const mutation = useMutation({
     mutationFn: async (data: { inviteId: string; status: string }) => {
@@ -193,9 +210,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         title: "Success",
         description: data.message,
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      invalidateCircleQueries(queryClient)
       localStorage.removeItem("inviteId")
 
       let redirectLink = "/patients"
@@ -234,16 +249,15 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         title: "Invite Declined",
         description: "You have declined the invitation.",
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      invalidateCircleQueries(queryClient)
       localStorage.removeItem("inviteId")
       navigate("/patients")
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to decline invite",
+        description:
+          error.response?.data?.message || "Failed to decline invite",
         variant: "destructive",
       })
     },
@@ -297,7 +311,8 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
             setIsPlaying(false)
             toast({
               title: "Playback Error",
-              description: "Could not play audio. Please check your volume settings.",
+              description:
+                "Could not play audio. Please check your volume settings.",
               variant: "destructive",
             })
           })
@@ -354,8 +369,8 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
           <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
             <h2 className="text-2xl mb-2">Accept invitation?</h2>
             <p className="text-neutral-500 mb-6 leading-relaxed">
-              Before you join the Circle, please review and accept the terms of the
-              Jireh mutual support system.
+              Before you join the Circle, please review and accept the terms of
+              the Jireh mutual support system.
             </p>
 
             <Accordion
@@ -366,15 +381,22 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
             >
               <AccordionItem value="rewards" className="border rounded-xl px-0">
                 <AccordionTrigger className="px-4 hover:no-underline">
-                  <span className="text-left">
-                    Key Rewards (What you GAIN)
-                  </span>
+                  <span className="text-left">Key Rewards (What you GAIN)</span>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
                   <ul className="space-y-4 pt-2">
-                    <TermRewardItem text="Higher loan limits" subtext="Unlock higher limits together." />
-                    <TermRewardItem text="Shared discounts & rewards" subtext=" Earn and enjoy rewards together" />
-                    <TermRewardItem text="Support when needed" subtext="Get help when it matters most." />
+                    <TermRewardItem
+                      text="Higher loan limits"
+                      subtext="Unlock higher limits together."
+                    />
+                    <TermRewardItem
+                      text="Shared discounts & rewards"
+                      subtext=" Earn and enjoy rewards together"
+                    />
+                    <TermRewardItem
+                      text="Support when needed"
+                      subtext="Get help when it matters most."
+                    />
                   </ul>
                 </AccordionContent>
               </AccordionItem>
@@ -386,11 +408,23 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
-                <ul className="space-y-4 pt-2">
-                    <TermRewardItem text="Group access can pause" subtext="If one person delays repayment, some Circle benefits and rewards may pause." />
-                    <TermRewardItem text="Circle limits may reduce" subtext=" Late payments can affect limits for the whole Circle." />
-                    <TermRewardItem text="Cashbacks may be used to resolve unpaid bills" subtext="If a loan stays unpaid for long, cashbacks may help cover it." />
-                    <TermRewardItem text="Circle updates keep everyone informed" subtext="You’ll get updates when the Circle needs attention." />
+                  <ul className="space-y-4 pt-2">
+                    <TermRewardItem
+                      text="Group access can pause"
+                      subtext="If one person delays repayment, some Circle benefits and rewards may pause."
+                    />
+                    <TermRewardItem
+                      text="Circle limits may reduce"
+                      subtext=" Late payments can affect limits for the whole Circle."
+                    />
+                    <TermRewardItem
+                      text="Cashbacks may be used to resolve unpaid bills"
+                      subtext="If a loan stays unpaid for long, cashbacks may help cover it."
+                    />
+                    <TermRewardItem
+                      text="Circle updates keep everyone informed"
+                      subtext="You’ll get updates when the Circle needs attention."
+                    />
                   </ul>
                 </AccordionContent>
               </AccordionItem>
@@ -401,13 +435,16 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
                 id="accept-terms"
                 className="mt-1"
                 checked={termsAccepted}
-                onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+                onCheckedChange={(checked) =>
+                  setTermsAccepted(checked as boolean)
+                }
               />
               <label
                 htmlFor="accept-terms"
                 className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
               >
-                I have read and understood the shared rewards and responsibilities, and I agree to continue.
+                I have read and understood the shared rewards and
+                responsibilities, and I agree to continue.
               </label>
             </div>
           </div>
@@ -415,9 +452,16 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
           <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <div className="max-w-md mx-auto w-full flex flex-col gap-3">
               <Button
-                className={cn("w-full", !termsAccepted ? "bg-neutral-300 text-white hover:bg-neutral-400" : "")}
+                className={cn(
+                  "w-full",
+                  !termsAccepted
+                    ? "bg-neutral-300 text-white hover:bg-neutral-400"
+                    : ""
+                )}
                 type="button"
-                disabled={!termsAccepted || mutation.isPending || mutation.isSuccess}
+                disabled={
+                  !termsAccepted || mutation.isPending || mutation.isSuccess
+                }
                 isLoading={mutation.isPending}
                 onClick={(e) => {
                   e.preventDefault()
@@ -457,7 +501,6 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
             </div>
           </div>
         </PatientPageWrapper>
-
       </div>
     )
   }
@@ -466,7 +509,11 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
     <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[calc(100vh-140px)] justify-between pb-8 px-4">
       <div className="flex flex-col items-center w-full">
         <div className="mb-6 mt-4 flex justify-center">
-          <img src={fullLogo} alt="Jireh Logo" className="w-32 object-contain" />
+          <img
+            src={fullLogo}
+            alt="Jireh Logo"
+            className="w-32 object-contain"
+          />
         </div>
 
         <div className="mb-6 mt-4">
@@ -477,35 +524,39 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         </div>
 
         <h1 className="text-center text-xl leading-tight font-medium  font-bold block  ">
-            <span className="text-purple-600 font-semibold block mb-1 ">{referrerFirstName} {referrerLastName}</span>
-            <span className="">has invited you to their</span>
-            <br />
-            <span className="">Jireh Circle</span>
+          <span className="text-purple-600 font-semibold block mb-1 ">
+            {referrerFirstName} {referrerLastName}
+          </span>
+          <span className="">has invited you to their</span>
+          <br />
+          <span className="">Jireh Circle</span>
         </h1>
 
         {voiceNoteUrl && (
           <>
-          <p className="text-neutral-500 text-sm font-medium mb-4 pl-1">{referrerFirstName} {referrerLastName} sent you a personalized voice message</p>
+            <p className="text-neutral-500 text-sm font-medium mb-4 pl-1">
+              {referrerFirstName} {referrerLastName} sent you a personalized
+              voice message
+            </p>
           </>
         )}
-      {customMessage && (
-            <div className="flex items-center gap-3 w-full max-w-[90%] mx-auto mb-auto mt-3">
+        {customMessage && (
+          <div className="flex items-center gap-3 w-full max-w-[90%] mx-auto mb-auto mt-3">
             <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-200 flex-shrink-0 border border-neutral-100">
-                {referrerProfilePhoto ? (
-                    <img 
-                    src={referrerProfilePhoto || avatarPlaceholder}
-                    
-                    alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                    <User className="w-5 h-5 m-auto text-neutral-500 mt-2.5" />
-                )}
+              {referrerProfilePhoto ? (
+                <img
+                  src={referrerProfilePhoto || avatarPlaceholder}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <User className="w-5 h-5 m-auto text-neutral-500 mt-2.5" />
+              )}
             </div>
             <div className="bg-white border border-neutral-200 rounded-tr-2xl rounded-tl-2xl rounded-br-2xl px-4 py-3  flex-1">
-                <p className="text-neutral-600 text-[15px]">
-                    {customMessage}
-                </p>
+              <p className="text-neutral-600 text-[15px]">{customMessage}</p>
             </div>
-         </div>
+          </div>
         )}
 
         {voiceNoteUrl && (
@@ -542,7 +593,9 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         )}
 
         <div className="w-full">
-          <h3 className="text-neutral-500 text-sm font-medium mb-4 pl-1">Benefits</h3>
+          <h3 className="text-neutral-500 text-sm font-medium mb-4 pl-1">
+            Benefits
+          </h3>
           <ul className="space-y-4">
             <BenefitItem text="Get help paying medical bills" />
             <BenefitItem text="Access Lipa Baadaye " />
@@ -551,20 +604,19 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         </div>
       </div>
 
-
-        <div className="h-24" />
+      <div className="h-24" />
       <div className="fixed bottom-0 left-0 right-0 p-4  z-50 bg-white">
         <div className="max-w-md mx-auto w-full flex flex-col gap-3">
-        <Button
-          className="w-full "
-          type="button"
-          onClick={(e) => {
-            e.preventDefault()
-            setShowTerms(true)
-          }}
-        >
-          Read Terms & Accept invite
-        </Button>
+          <Button
+            className="w-full "
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              setShowTerms(true)
+            }}
+          >
+            Read Terms & Accept invite
+          </Button>
           {/* <Button
             variant="ghost"
             className="w-full text-red-600 hover:bg-red-50 hover:text-red-700"
@@ -589,195 +641,231 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
   )
 }
 
-function QRInviteDetails({ token, signature }: { token: string; signature: string }) {
-    const [termsAccepted, setTermsAccepted] = useState(false)
-    const session = useSessionContext()
-    const { toast } = useToast()
-    const navigate = useNavigate()
-    const queryClient = useQueryClient()
+function QRInviteDetails({
+  token,
+  signature,
+}: {
+  token: string
+  signature: string
+}) {
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const session = useSessionContext()
+  const { toast } = useToast()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
-    const { control, watch } = useForm<{ relationship: string }>()
-    const relationship = watch("relationship")
+  const { control, watch } = useForm<{ relationship: string }>()
+  const relationship = watch("relationship")
 
-    const mutation = useMutation({
-        mutationFn: async () => {
-          const response = await axios.post(
-            `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/qr/accept`,
-            {
-              token,
-              signature,
-              relationship
-            }
-          )
-    
-          return response.data
-        },
-        onSuccess: (data: any) => {
-          trackEvent(EVENTS.CIRCLE.INVITATION_ACCEPT, { type: "qr" })
-          toast({
-            title: "Success",
-            description: data.message,
-          })
-          queryClient.invalidateQueries({
-            queryKey: [myNetworkQueryKey],
-          })
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const response = await axios.post(
+        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/qr/accept`,
+        {
+          token,
+          signature,
+          relationship,
+        }
+      )
 
-          localStorage.removeItem("qrToken")
-          localStorage.removeItem("qrSignature")
+      return response.data
+    },
+    onSuccess: (data: any) => {
+      trackEvent(EVENTS.CIRCLE.INVITATION_ACCEPT, { type: "qr" })
+      toast({
+        title: "Success",
+        description: data.message,
+      })
+      invalidateCircleQueries(queryClient)
 
-          navigate("/patients", {
-            state: {
-              tab: "circle",
-            },
-          })
-        },
-        onError: (error: any) => {
-          toast({
-            title: "Error",
-            description: error.response?.data?.message || error.message,
-            variant: "destructive",
-          })
+      localStorage.removeItem("qrToken")
+      localStorage.removeItem("qrSignature")
+
+      navigate("/patients", {
+        state: {
+          tab: "circle",
         },
       })
-    
-    useEffect(() => {
-      trackEvent(EVENTS.CIRCLE.INVITATION_VIEW, { type: "qr" })
-    }, [])
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.response?.data?.message || error.message,
+        variant: "destructive",
+      })
+    },
+  })
 
-    // Filter out CHILD options as QR invites are targeted at ACCOUNTABLE members (Adults)
-    const adultRelationshipOptions = relationshipOptions.filter(r => r.value !== "CHILD" && r.value !== "CHILD_OVER_18")
+  useEffect(() => {
+    trackEvent(EVENTS.CIRCLE.INVITATION_VIEW, { type: "qr" })
+  }, [])
 
-    return (
-        <div className="flex flex-col min-h-screen bg-white mt-5 mx-2">
-        <PatientPageWrapper title="Join Circle via QR">
-          <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
-            <div className="mb-6 flex justify-center">
-               <img src={fullLogo} alt="Jireh Logo" className="w-32 object-contain" />
-            </div>
+  // Filter out CHILD options as QR invites are targeted at ACCOUNTABLE members (Adults)
+  const adultRelationshipOptions = relationshipOptions.filter(
+    (r) => r.value !== "CHILD" && r.value !== "CHILD_OVER_18"
+  )
 
-            <h2 className="text-2xl mb-2 text-center">Accept invitation?</h2>
-            <p className="text-neutral-500 mb-6 leading-relaxed text-center">
-              You have been invited to join a Jireh Circle. Please confirm your relationship to the inviter and accept the terms.
-            </p>
+  return (
+    <div className="flex flex-col min-h-screen bg-white mt-5 mx-2">
+      <PatientPageWrapper title="Join Circle via QR">
+        <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
+          <div className="mb-6 flex justify-center">
+            <img
+              src={fullLogo}
+              alt="Jireh Logo"
+              className="w-32 object-contain"
+            />
+          </div>
 
-            <div className="mb-6">
-                <Controller
-                    name="relationship"
-                    control={control}
-                    rules={{ required: "Relationship is required" }}
-                    render={({ field }) => (
-                        <FormGroupSelect
-                        id="relationship"
-                        label="Relationship to Inviter"
-                        placeholder="Select relationship"
-                        field={field}
-                        error={undefined} // handled by form state if needed, but button disabled logic covers it
-                        options={adultRelationshipOptions}
-                        />
-                    )}
+          <h2 className="text-2xl mb-2 text-center">Accept invitation?</h2>
+          <p className="text-neutral-500 mb-6 leading-relaxed text-center">
+            You have been invited to join a Jireh Circle. Please confirm your
+            relationship to the inviter and accept the terms.
+          </p>
+
+          <div className="mb-6">
+            <Controller
+              name="relationship"
+              control={control}
+              rules={{ required: "Relationship is required" }}
+              render={({ field }) => (
+                <FormGroupSelect
+                  id="relationship"
+                  label="Relationship to Inviter"
+                  placeholder="Select relationship"
+                  field={field}
+                  error={undefined} // handled by form state if needed, but button disabled logic covers it
+                  options={adultRelationshipOptions}
                 />
-            </div>
+              )}
+            />
+          </div>
 
-            <Accordion
-              type="single"
-              collapsible
-              defaultValue="rewards"
-              className="space-y-4"
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="rewards"
+            className="space-y-4"
+          >
+            <AccordionItem value="rewards" className="border rounded-xl px-0">
+              <AccordionTrigger className="px-4 hover:no-underline">
+                <span className="text-left">Key Rewards (What you GAIN)</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <ul className="space-y-4 pt-2">
+                  <TermRewardItem
+                    text="Unlock Higher Loan Limits"
+                    subtext="Access to loans and financial utility."
+                  />
+                  <TermRewardItem
+                    text="Lower Loan Interest Rates"
+                    subtext="Unlock better loan terms up to 5%"
+                  />
+                  <TermRewardItem
+                    text="Shared Circle discounts"
+                    subtext="Access to Circle grace periods and higher limits."
+                  />
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="risks" className="border rounded-xl px-0">
+              <AccordionTrigger className="px-4 hover:no-underline">
+                <span className=" text-left">Shared Risk (What you RISK)</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <ul className="space-y-4 pt-2">
+                  <li className="flex items-start gap-3">
+                    <span className="text-sm text-neutral-700 leading-relaxed">
+                      If a member of your circle defaults, your cashback or
+                      savings may be used to cover their debt. This is the core
+                      of our mutual support system.
+                    </span>
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+            <Checkbox
+              id="accept-terms"
+              className="mt-1"
+              checked={termsAccepted}
+              onCheckedChange={(checked) =>
+                setTermsAccepted(checked as boolean)
+              }
+            />
+            <label
+              htmlFor="accept-terms"
+              className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
             >
-              <AccordionItem value="rewards" className="border rounded-xl px-0">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  <span className="text-left">
-                    Key Rewards (What you GAIN)
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <ul className="space-y-4 pt-2">
-                    <TermRewardItem text="Unlock Higher Loan Limits" subtext="Access to loans and financial utility." />
-                    <TermRewardItem text="Lower Loan Interest Rates" subtext="Unlock better loan terms up to 5%" />
-                    <TermRewardItem text="Shared Circle discounts" subtext="Access to Circle grace periods and higher limits." />
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="risks" className="border rounded-xl px-0">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  <span className=" text-left">
-                    Shared Risk (What you RISK)
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <ul className="space-y-4 pt-2">
-                    <li className="flex items-start gap-3">
-                      <span className="text-sm text-neutral-700 leading-relaxed">
-                        If a member of your circle defaults, your cashback or savings may be used to cover their debt. This is the core of our mutual support system.
-                      </span>
-                    </li>
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
-              <Checkbox
-                id="accept-terms"
-                className="mt-1"
-                checked={termsAccepted}
-                onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-              />
-              <label
-                htmlFor="accept-terms"
-                className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
-              >
-                I understand and accept the shared rewards and the progressive
-                penalties, including the risk of cashback offset.
-              </label>
-            </div>
+              I understand and accept the shared rewards and the progressive
+              penalties, including the risk of cashback offset.
+            </label>
           </div>
+        </div>
 
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <div className="max-w-md mx-auto w-full">
-              <Button
-                className={cn("w-full", !termsAccepted ? "bg-neutral-300 text-white hover:bg-neutral-400" : "")}
-                type="button"
-                disabled={!termsAccepted || !relationship || mutation.isPending || mutation.isSuccess}
-                isLoading={mutation.isPending}
-                onClick={(e) => {
-                  e.preventDefault()
-                  if (session.loading) return
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="max-w-md mx-auto w-full">
+            <Button
+              className={cn(
+                "w-full",
+                !termsAccepted
+                  ? "bg-neutral-300 text-white hover:bg-neutral-400"
+                  : ""
+              )}
+              type="button"
+              disabled={
+                !termsAccepted ||
+                !relationship ||
+                mutation.isPending ||
+                mutation.isSuccess
+              }
+              isLoading={mutation.isPending}
+              onClick={(e) => {
+                e.preventDefault()
+                if (session.loading) return
 
-                  if (!session.doesSessionExist) {
-                    // Store QR params in localStorage or URL? 
-                    // JoinCircleRedirect handles URL, but if we go to auth we lose params.
-                    // We need to persist them.
-                    // Actually, PatientAcceptInvite is an authenticated route (or SessionAuth wrapped).
-                    // If !doesSessionExist, we redirect to /patients/auth
-                    // We should store params.
-                    localStorage.setItem("qrToken", token)
-                    localStorage.setItem("qrSignature", signature)
-                    navigate("/patients/auth")
-                    return
-                  }
-                  mutation.mutate()
-                }}
-              >
-                Accept & Join Circle
-              </Button>
-            </div>
+                if (!session.doesSessionExist) {
+                  // Store QR params in localStorage or URL?
+                  // JoinCircleRedirect handles URL, but if we go to auth we lose params.
+                  // We need to persist them.
+                  // Actually, PatientAcceptInvite is an authenticated route (or SessionAuth wrapped).
+                  // If !doesSessionExist, we redirect to /patients/auth
+                  // We should store params.
+                  localStorage.setItem("qrToken", token)
+                  localStorage.setItem("qrSignature", signature)
+                  navigate("/patients/auth")
+                  return
+                }
+                mutation.mutate()
+              }}
+            >
+              Accept & Join Circle
+            </Button>
           </div>
-        </PatientPageWrapper>
-      </div>
-    )
+        </div>
+      </PatientPageWrapper>
+    </div>
+  )
 }
 
-function TermRewardItem({ text, subtext }: { text: string, subtext?: string }) {
+function TermRewardItem({ text, subtext }: { text: string; subtext?: string }) {
   return (
     <li className="flex items-start gap-3 bg-white">
       <div className="mt-0.5 min-w-[20px]">
-         <Check className="w-5 h-5 text-neutral-500" />
+        <Check className="w-5 h-5 text-neutral-500" />
       </div>
       <div className="flex flex-col">
-        <span className="text-sm text-neutral-900 font-medium leading-snug">{text}</span>
-        {subtext && <span className="text-xs text-neutral-500 leading-snug mt-0.5">{subtext}</span>}
+        <span className="text-sm text-neutral-900 font-medium leading-snug">
+          {text}
+        </span>
+        {subtext && (
+          <span className="text-xs text-neutral-500 leading-snug mt-0.5">
+            {subtext}
+          </span>
+        )}
       </div>
     </li>
   )
@@ -787,9 +875,11 @@ function BenefitItem({ text }: { text: string }) {
   return (
     <li className="flex items-start gap-3 bg-white p-2 rounded-xl border border-neutral-100 shadow-sm">
       <div className="mt-0.5 min-w-[20px]">
-         <Check className="w-5 h-5 text-neutral-500" />
+        <Check className="w-5 h-5 text-neutral-500" />
       </div>
-      <span className="text-sm text-neutral-700 font-medium leading-snug">{text}</span>
+      <span className="text-sm text-neutral-700 font-medium leading-snug">
+        {text}
+      </span>
     </li>
   )
 }
@@ -797,39 +887,63 @@ function BenefitItem({ text }: { text: string }) {
 function StarburstAvatar({ src }: { src: string; alt: string }) {
   return (
     <div className="relative flex items-center justify-center w-64 h-64">
-       {/* Background Cross Decoration */}
-       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          {/* Vertical Bar */}
-          <div className="absolute w-28 h-64 bg-purple-50 rounded-2xl -z-10" />
-          {/* Horizontal Bar */}
-          <div className="absolute w-64 h-28 bg-purple-50 rounded-2xl -z-10" />
-       </div>
+      {/* Background Cross Decoration */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {/* Vertical Bar */}
+        <div className="absolute w-28 h-64 bg-purple-50 rounded-2xl -z-10" />
+        {/* Horizontal Bar */}
+        <div className="absolute w-64 h-28 bg-purple-50 rounded-2xl -z-10" />
+      </div>
 
-       {/* SVG Masked Avatar */}
-       <div className="w-48 h-48 drop-shadow-sm">
-         <svg viewBox="0 0 100 100" className="w-full h-full">
-           <defs>
-             <mask id="starburstMask">
-               <rect width="100" height="100" fill="black" />
-               <g transform="translate(50, 50)">
-                  {/* 3 Rotated Squares creating 12-point star */}
-                 <rect x="-35" y="-35" width="70" height="70" rx="4" fill="white" transform="rotate(0)" />
-                 <rect x="-35" y="-35" width="70" height="70" rx="4" fill="white" transform="rotate(30)" />
-                 <rect x="-35" y="-35" width="70" height="70" rx="4" fill="white" transform="rotate(60)" />
-               </g>
-             </mask>
-           </defs>
-           <image
-             href={src}
-             x="0"
-             y="0"
-             width="100"
-             height="100"
-             preserveAspectRatio="xMidYMid slice"
-             mask="url(#starburstMask)"
-           />
-         </svg>
-       </div>
+      {/* SVG Masked Avatar */}
+      <div className="w-48 h-48 drop-shadow-sm">
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <defs>
+            <mask id="starburstMask">
+              <rect width="100" height="100" fill="black" />
+              <g transform="translate(50, 50)">
+                {/* 3 Rotated Squares creating 12-point star */}
+                <rect
+                  x="-35"
+                  y="-35"
+                  width="70"
+                  height="70"
+                  rx="4"
+                  fill="white"
+                  transform="rotate(0)"
+                />
+                <rect
+                  x="-35"
+                  y="-35"
+                  width="70"
+                  height="70"
+                  rx="4"
+                  fill="white"
+                  transform="rotate(30)"
+                />
+                <rect
+                  x="-35"
+                  y="-35"
+                  width="70"
+                  height="70"
+                  rx="4"
+                  fill="white"
+                  transform="rotate(60)"
+                />
+              </g>
+            </mask>
+          </defs>
+          <image
+            href={src}
+            x="0"
+            y="0"
+            width="100"
+            height="100"
+            preserveAspectRatio="xMidYMid slice"
+            mask="url(#starburstMask)"
+          />
+        </svg>
+      </div>
     </div>
   )
 }

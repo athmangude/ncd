@@ -9,7 +9,7 @@ import ErrorBlock from "@/components/ErrorBlock"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import axios from "axios"
 import { useToast } from "@/hooks/useToast"
-import { myNetworkQueryKey } from "./PatientMyNetwork"
+import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import { PatientInviteInfo } from "./PatientInviteInfo"
 import { Controller } from "react-hook-form"
 import FormGroupSelect from "@/components/form/FormGroupSelect"
@@ -120,9 +120,9 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
         title: "Success",
         description: data.message,
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      // Accepting a share-link invite joins a circle — refresh the loan gate +
+      // payee pickers alongside the circle list, not just this page's query.
+      invalidateCircleQueries(queryClient)
       localStorage.removeItem("referrerId")
       navigate("/patients/network/invite-accepted", {
         state: {

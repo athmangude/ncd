@@ -5,6 +5,7 @@ import {
   addSentInvite,
   getConnectionList,
   getNetwork,
+  getPatientCircleSummary,
   type SentInvite,
 } from "./network"
 
@@ -83,5 +84,28 @@ describe("network domain — connections + slots", () => {
     expect(slot.used).toBe(usedBefore + 1)
     expect(slot.reserved).toBe(reservedBefore - 1)
     expect(getNetwork().network.some((m) => m.id === "invite-test")).toBe(true)
+  })
+})
+
+describe("network domain — patient circle summary (loan eligibility)", () => {
+  it("counts active accountable (adult) members; the seed qualifies for loans", () => {
+    // Seed network has 2 adults (Brian, Wanjiru) + 1 child (Esther).
+    const summary = getPatientCircleSummary()
+    expect(summary.filledAccountableSlots).toBe(2)
+    expect(summary.status).toBe("ACTIVE")
+    expect(summary.isFrozen).toBe(false)
+  })
+
+  it("a junior (CHILD) member does not count toward accountable slots", () => {
+    addSentInvite(makeInvite({ id: "invite-child", relationship: "CHILD" }))
+    acceptInvite("invite-child")
+    // Still 2 adults — the accepted child is auxiliary, not accountable.
+    expect(getPatientCircleSummary().filledAccountableSlots).toBe(2)
+  })
+
+  it("accepting an adult invite raises the accountable count", () => {
+    addSentInvite(makeInvite({ id: "invite-adult", relationship: "SPOUSE" }))
+    acceptInvite("invite-adult")
+    expect(getPatientCircleSummary().filledAccountableSlots).toBe(3)
   })
 })

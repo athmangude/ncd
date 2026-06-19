@@ -331,10 +331,37 @@ export const loansHandlers = [
       (sum, loan) => sum + Number(loan.outstandingAmount || 0),
       0
     )
+    const totalLoanAmount = loans.reduce(
+      (sum, loan) => sum + Number(loan.amount || 0),
+      0
+    )
+    // Repaid-to-date across all loans (borrowed minus what's still owed).
+    const totalPaid = loans.reduce(
+      (sum, loan) =>
+        sum +
+        Math.max(
+          0,
+          Number(loan.amount || 0) - Number(loan.outstandingAmount || 0)
+        ),
+      0
+    )
+
+    // "Available to borrow" + total limit drive the dashboard loan/balance
+    // cards. They come from the profile credit limit, which the Jireh Plus
+    // upgrade funds (KES 500 default) — without these the unlocked card would
+    // read "Available to Borrow: KES 0".
+    const creditLimit = getLoginDetails().creditLimit
+    const remainingCreditLimit = Number(creditLimit?.remainingAmount ?? 0)
+    const totalCreditLimit = Number(creditLimit?.totalCreditLimitAmount ?? 0)
+    const currency = creditLimit?.currency?.code || "KES"
 
     return HttpResponse.json({
       outstandingAmount,
-      currency: "KES",
+      totalLoanAmount,
+      totalPaid,
+      remainingCreditLimit,
+      totalCreditLimit,
+      currency,
       totalLoans: loans.length,
     })
   }),

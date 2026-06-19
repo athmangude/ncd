@@ -11,6 +11,7 @@ import { Button } from "@/components/Button"
 import { ProfileAvatar } from "@/components/ProfileAvatar"
 import { useOfflinePatientData } from "@/hooks/useOfflinePatientData"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
+import { useCircleSync } from "../../hooks/useCircleSync"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
@@ -156,6 +157,7 @@ export default function PatientKYCAddCircleMembers() {
   const location = useLocation()
   const nextStep = useNextKYCStep()
   const user = usePatientAuthStore((state: any) => state.user)
+  const syncCircle = useCircleSync()
 
   const {
     data: networkData,
@@ -257,6 +259,10 @@ export default function PatientKYCAddCircleMembers() {
         // best-effort — refetch below still reflects any server change
       }
       await refetchRef.current()
+      // The accepted invites just became accountable members. Refresh every
+      // circle cache (not just this page's) so the loan gate, circle tab, and
+      // payee pickers all see the now-active circle.
+      syncCircle()
     }, 20000)
     return () => clearTimeout(timer)
     // refetch is read through a ref to avoid resetting the 20s timer each render.
@@ -265,7 +271,10 @@ export default function PatientKYCAddCircleMembers() {
 
   const handleMemberClick = (memberId: string) => {
     navigate(`/patients/network/${memberId}`, {
-      state: { ...location.state, returnPath: "/patients/kyc-add-circle-members" },
+      state: {
+        ...location.state,
+        returnPath: "/patients/kyc-add-circle-members",
+      },
     })
   }
 
@@ -286,7 +295,10 @@ export default function PatientKYCAddCircleMembers() {
 
   const handleCircleInfo = () => {
     navigate("/patients/circle-how-it-works", {
-      state: { ...location.state, returnPath: "/patients/kyc-add-circle-members" },
+      state: {
+        ...location.state,
+        returnPath: "/patients/kyc-add-circle-members",
+      },
     })
   }
 
@@ -371,9 +383,15 @@ export default function PatientKYCAddCircleMembers() {
             {/* Left slot */}
             {slot1 ? (
               slot1.status === "PENDING" ? (
-                <PendingSlot member={slot1} onClick={() => handleMemberClick(slot1.id)} />
+                <PendingSlot
+                  member={slot1}
+                  onClick={() => handleMemberClick(slot1.id)}
+                />
               ) : (
-                <AcceptedSlot member={slot1} onClick={() => handleMemberClick(slot1.id)} />
+                <AcceptedSlot
+                  member={slot1}
+                  onClick={() => handleMemberClick(slot1.id)}
+                />
               )
             ) : (
               <EmptySlot onClick={handleAddPerson} />
@@ -394,9 +412,15 @@ export default function PatientKYCAddCircleMembers() {
             {/* Right slot */}
             {slot2 ? (
               slot2.status === "PENDING" ? (
-                <PendingSlot member={slot2} onClick={() => handleMemberClick(slot2.id)} />
+                <PendingSlot
+                  member={slot2}
+                  onClick={() => handleMemberClick(slot2.id)}
+                />
               ) : (
-                <AcceptedSlot member={slot2} onClick={() => handleMemberClick(slot2.id)} />
+                <AcceptedSlot
+                  member={slot2}
+                  onClick={() => handleMemberClick(slot2.id)}
+                />
               )
             ) : (
               <EmptySlot onClick={handleAddPerson} />
@@ -410,10 +434,17 @@ export default function PatientKYCAddCircleMembers() {
         <div className="flex flex-col gap-4 w-full">
           {acceptedAdults.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-neutral-500 px-2">Confirmed:</p>
+              <p className="text-xs font-medium text-neutral-500 px-2">
+                Confirmed:
+              </p>
               <div className="flex flex-col gap-1">
                 {acceptedAdults.map((m) => (
-                  <MemberRow key={m.id} member={m} badge="confirmed" onClick={() => handleMemberClick(m.id)} />
+                  <MemberRow
+                    key={m.id}
+                    member={m}
+                    badge="confirmed"
+                    onClick={() => handleMemberClick(m.id)}
+                  />
                 ))}
               </div>
             </div>
@@ -426,7 +457,12 @@ export default function PatientKYCAddCircleMembers() {
               </p>
               <div className="flex flex-col gap-1">
                 {pendingAdults.map((m) => (
-                  <MemberRow key={m.id} member={m} badge="pending" onClick={() => handleMemberClick(m.id)} />
+                  <MemberRow
+                    key={m.id}
+                    member={m}
+                    badge="pending"
+                    onClick={() => handleMemberClick(m.id)}
+                  />
                 ))}
               </div>
             </div>

@@ -1,5 +1,7 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import useNextMembershipSetupStep from "../../hooks/useNextMembershipSetupStep"
+import { useCircleSync } from "../../hooks/useCircleSync"
 import PatientPageWrapper from "../PatientPageWrapper"
 import successImage from "@/assets/icons/id-verification-success.png"
 import LoadingPage from "@/Routes/LoadingPage"
@@ -14,6 +16,15 @@ const getPatientCreditLimitKey = "patientCreditLimit"
 export function PatientMembershipSuccess() {
   const next = useNextMembershipSetupStep()
   const navigate = useNavigate()
+  const syncCircle = useCircleSync()
+
+  // Upgrade just completed: refresh the profile + circle caches so the rest of
+  // the app sees the new Plus role, default credit limit, and the circle that
+  // was filled during KYC — without this the loan gate keeps a stale snapshot
+  // ("Waiting on 2 Circle members") even though the circle now qualifies.
+  useEffect(() => {
+    syncCircle()
+  }, [syncCircle])
 
   const { isLoading, data, isError } = useQuery({
     queryKey: [getPatientCreditLimitKey],

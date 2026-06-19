@@ -1,16 +1,7 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "@/components/Toaster"
 import RouterWrapper from "./RouterWrapper"
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: false,
-      refetchOnMount: true,
-      retry: false,
-    },
-  },
-})
+import { queryClient } from "./queryClient"
 
 export default function App() {
   return (
