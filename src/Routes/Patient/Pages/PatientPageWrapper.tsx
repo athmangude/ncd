@@ -12,6 +12,7 @@ export default function PatientPageWrapper({
   backIcon,
   rightAction,
   footer,
+  bodyPadding = "default",
 }: {
   children: React.ReactNode
   title?: string // Made optional as sometimes we might not want a title or it's empty
@@ -27,6 +28,12 @@ export default function PatientPageWrapper({
    * later, per-screen step.
    */
   footer?: React.ReactNode
+  /**
+   * Body padding. Defaults to "default" (the canonical p-4). Pass "none" for
+   * full-bleed screens that manage their own edge spacing (e.g. an edge-to-edge
+   * background), so the shell's p-4 doesn't stack on the screen's own padding.
+   */
+  bodyPadding?: "default" | "none"
 }) {
   return (
     <AppShell
@@ -41,7 +48,7 @@ export default function PatientPageWrapper({
         />
       }
       footer={footer}
-      bodyPadding="default"
+      bodyPadding={bodyPadding}
     >
       <section className={cn("flex flex-col w-full gap-5", className)}>
         {children}

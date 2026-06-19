@@ -32,154 +32,209 @@ export default function PatientPaymentBreakdown() {
     totalBillAmount,
     currency,
     paymentSplits,
-    discountAmount = 0
+    discountAmount = 0,
   } = query.data
 
   const currencyCode = currency?.code ?? "KES"
 
   // Identify discount split
-  const discountSplit = paymentSplits?.find((split: any) => 
-    split.wallet?.type === "DISCOUNT" || 
-    split.wallet?.type === "DISCOUNTS"
+  const discountSplit = paymentSplits?.find(
+    (split: any) =>
+      split.wallet?.type === "DISCOUNT" || split.wallet?.type === "DISCOUNTS"
   )
 
   const discountWalletAmount = discountSplit?.paymentSplitAmount || 0
 
   // Filter out discount split from sources
-  const visibleSplits = paymentSplits?.filter((split: any) => 
-    split.wallet?.type !== "DISCOUNT" && 
-    split.wallet?.type !== "DISCOUNTS"
+  const visibleSplits = paymentSplits?.filter(
+    (split: any) =>
+      split.wallet?.type !== "DISCOUNT" && split.wallet?.type !== "DISCOUNTS"
   )
 
   // Calculate Invoiced Bill (Gross)
   // Assuming totalBillAmount is the Net amount paid
-  const invoicedBill = Number(totalBillAmount) - Number(discountWalletAmount || discountAmount)
-  
+  const invoicedBill =
+    Number(totalBillAmount) - Number(discountWalletAmount || discountAmount)
+
   // Payment Sources Mapping
-  const sources = visibleSplits?.map((split: any) => {
-    let icon = <Wallet className="w-5 h-5 text-neutral-500" />
-    let label = split.wallet?.name || formatEnum(split.wallet?.type || "")
-    let sublabel = ""
+  const sources =
+    visibleSplits?.map((split: any) => {
+      let icon = <Wallet className="w-5 h-5 text-neutral-500" />
+      let label = split.wallet?.name || formatEnum(split.wallet?.type || "")
+      let sublabel = ""
 
-    switch (split.wallet?.type) {
+      switch (split.wallet?.type) {
         case "MPESA":
-            icon = <Smartphone className="w-5 h-5 text-neutral-500" />
-            label = "MPESA"
-            sublabel = split.phoneNumber || split.wallet.phoneNumber || ""
-            break;
+          icon = <Smartphone className="w-5 h-5 text-neutral-500" />
+          label = "MPESA"
+          sublabel = split.phoneNumber || split.wallet.phoneNumber || ""
+          break
         case "LOAN":
-            icon = <Clock className="w-5 h-5 text-neutral-500" />
-            label = "Jireh Medical Loan"
-            break;
+          icon = <Clock className="w-5 h-5 text-neutral-500" />
+          label = "Jireh Medical Loan"
+          break
         case "CARE_FUND":
-             icon = <Percent className="w-5 h-5 text-neutral-500" />
-             label = "Jireh Care Fund"
-             break;
+          icon = <Percent className="w-5 h-5 text-neutral-500" />
+          label = "Jireh Care Fund"
+          break
         default:
-            break;
-    }
+          break
+      }
 
-    return {
+      return {
         id: split.id,
         label,
         amount: split.paymentSplitAmount,
         icon,
-        sublabel
-    }
-  }) || []
+        sublabel,
+      }
+    }) || []
 
   function formatEnum(str: string) {
-      if (!str) return ""
-      return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+    if (!str) return ""
+    return str
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ")
   }
-
 
   return (
     <PatientPageWrapper
-        title="How you paid"
-        onBack={() => navigate(-1)}
+      title="How you paid"
+      onBack={() => navigate(-1)}
+      bodyPadding="none"
     >
-        <div className="px-5 pb-2 flex flex-col items-center">
-             <div className="mb-4">
-                 <div className="relative w-16 h-16">
-                            <img
-                            src={landline}
-                            alt="Invoice"
-                            className="w-16 h-16 object-contain"
-                            />
-                 </div>
-             </div>
-
-             <h1 className="text-2xl font-medium text-neutral-900 mb-2">How you paid</h1>
-             <p className="text-center text-neutral-500 text-sm max-w-xs mb-8">
-                 The payment methods used to cover the bill & the amounts deducted from each.
-             </p>
-
-             {/* Bill Details Section */}
-             <div className="w-full mb-6">
-                 <p className="text-neutral-500 text-sm mb-3 pl-1">Bill details</p>
-                 <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
-                     <DetailRow 
-                        label="Invoiced bill" 
-                        value={formatMoney(invoicedBill, currencyCode)}
-                     />
-                     {discountSplit && (
-                         <DetailRow 
-                            label={discountSplit.wallet?.name || "Discount"} 
-                            value={`${formatMoney(discountSplit.paymentSplitAmount, currencyCode)}`} 
-                         />
-                     )}
-                     <DetailRow 
-                        label="Paid with Jireh Health" 
-                        value={formatMoney(totalBillAmount, currencyCode)} 
-                        isBold
-                        isLast
-                     />
-                 </div>
-             </div>
-
-             {/* Breakdown Section */}
-             <div className="w-full">
-                 <p className="text-neutral-500 text-sm mb-3 pl-1">Breakdown of payment sources</p>
-                 <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
-                     {sources.map((source: any, idx: number) => (
-                         <SourceRow 
-                            key={source.id}
-                            icon={source.icon}
-                            label={source.label}
-                            sublabel={source.sublabel}
-                            amount={formatMoney(source.amount, currencyCode)}
-                            isLast={idx === sources.length - 1}
-                         />
-                     ))}
-                 </div>
-             </div>
-
+      <div className="px-5 pb-2 flex flex-col items-center">
+        <div className="mb-4">
+          <div className="relative w-16 h-16">
+            <img
+              src={landline}
+              alt="Invoice"
+              className="w-16 h-16 object-contain"
+            />
+          </div>
         </div>
+
+        <h1 className="text-2xl font-medium text-neutral-900 mb-2">
+          How you paid
+        </h1>
+        <p className="text-center text-neutral-500 text-sm max-w-xs mb-8">
+          The payment methods used to cover the bill & the amounts deducted from
+          each.
+        </p>
+
+        {/* Bill Details Section */}
+        <div className="w-full mb-6">
+          <p className="text-neutral-500 text-sm mb-3 pl-1">Bill details</p>
+          <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
+            <DetailRow
+              label="Invoiced bill"
+              value={formatMoney(invoicedBill, currencyCode)}
+            />
+            {discountSplit && (
+              <DetailRow
+                label={discountSplit.wallet?.name || "Discount"}
+                value={`${formatMoney(discountSplit.paymentSplitAmount, currencyCode)}`}
+              />
+            )}
+            <DetailRow
+              label="Paid with Jireh Health"
+              value={formatMoney(totalBillAmount, currencyCode)}
+              isBold
+              isLast
+            />
+          </div>
+        </div>
+
+        {/* Breakdown Section */}
+        <div className="w-full">
+          <p className="text-neutral-500 text-sm mb-3 pl-1">
+            Breakdown of payment sources
+          </p>
+          <div className="bg-white rounded-xl border border-neutral-100 shadow-sm overflow-hidden">
+            {sources.map((source: any, idx: number) => (
+              <SourceRow
+                key={source.id}
+                icon={source.icon}
+                label={source.label}
+                sublabel={source.sublabel}
+                amount={formatMoney(source.amount, currencyCode)}
+                isLast={idx === sources.length - 1}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
     </PatientPageWrapper>
   )
 }
 
-function DetailRow({ label, value, isBold, isLast, isStrikethrough }: { label: string, value: React.ReactNode, isBold?: boolean, isLast?: boolean, isStrikethrough?: boolean }) {
-    return (
-        <div className={cn("flex justify-between items-center p-4", !isLast && "border-b border-neutral-100")}>
-            <span className={cn("text-neutral-900 text-sm", isBold && "font-medium")}>{label}</span>
-            <span className={cn("text-neutral-900 text-sm", isBold && "font-medium", isStrikethrough && "line-through text-neutral-400")}>{value}</span>
-        </div>
-    )
+function DetailRow({
+  label,
+  value,
+  isBold,
+  isLast,
+  isStrikethrough,
+}: {
+  label: string
+  value: React.ReactNode
+  isBold?: boolean
+  isLast?: boolean
+  isStrikethrough?: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        "flex justify-between items-center p-4",
+        !isLast && "border-b border-neutral-100"
+      )}
+    >
+      <span className={cn("text-neutral-900 text-sm", isBold && "font-medium")}>
+        {label}
+      </span>
+      <span
+        className={cn(
+          "text-neutral-900 text-sm",
+          isBold && "font-medium",
+          isStrikethrough && "line-through text-neutral-400"
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  )
 }
 
-function SourceRow({ icon, label, sublabel, amount, isLast }: { icon: React.ReactNode, label: string, sublabel?: string, amount: string, isLast?: boolean }) {
-    return (
-        <div className={cn("flex items-center gap-3 p-1", !isLast && "border-b border-neutral-100")}>
-            <div className="w-10 h-10  flex items-center justify-center shrink-0">
-                {icon}
-            </div>
-            <div className="flex-1">
-                <p className="text-neutral-900 text-sm">{label}</p>
-                {sublabel && <p className="text-neutral-500 text-xs mt-0.5">{sublabel}</p>}
-            </div>
-            <div className="font-medium text-neutral-900 text-sm">{amount}</div>
-        </div>
-    )
+function SourceRow({
+  icon,
+  label,
+  sublabel,
+  amount,
+  isLast,
+}: {
+  icon: React.ReactNode
+  label: string
+  sublabel?: string
+  amount: string
+  isLast?: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3 p-1",
+        !isLast && "border-b border-neutral-100"
+      )}
+    >
+      <div className="w-10 h-10  flex items-center justify-center shrink-0">
+        {icon}
+      </div>
+      <div className="flex-1">
+        <p className="text-neutral-900 text-sm">{label}</p>
+        {sublabel && (
+          <p className="text-neutral-500 text-xs mt-0.5">{sublabel}</p>
+        )}
+      </div>
+      <div className="font-medium text-neutral-900 text-sm">{amount}</div>
+    </div>
+  )
 }

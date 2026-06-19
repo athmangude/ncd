@@ -6,7 +6,19 @@ import { formatMoney } from "@/utilities/currencyUtilities"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { trackEvent, EVENTS } from "@/analytics"
-import { User, Building2, Banknote, Wallet, ChevronRight, RefreshCcw, Clock, AlertCircle, FileDown, CheckCircle2, Star } from "lucide-react"
+import {
+  User,
+  Building2,
+  Banknote,
+  Wallet,
+  ChevronRight,
+  RefreshCcw,
+  Clock,
+  AlertCircle,
+  FileDown,
+  CheckCircle2,
+  Star,
+} from "lucide-react"
 import { format, isBefore, differenceInDays } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useEffect, useRef } from "react"
@@ -60,7 +72,8 @@ export default function PatientViewPaymentDetails() {
     },
   })
 
-  const { status: receiptStatus, download: downloadReceipt } = useDownloadReceipt(id)
+  const { status: receiptStatus, download: downloadReceipt } =
+    useDownloadReceipt(id)
 
   const facilityId = query.data?.patientMedicalInfoRequest?.facility?.id
   const { data: reviewEligibility } = useReviewEligibility(
@@ -100,50 +113,62 @@ export default function PatientViewPaymentDetails() {
     patientMedicalInfoRequest,
     paymentSplits,
     user,
-    cashbackDetails
+    cashbackDetails,
   } = query.data
 
   const currencyCode = currency?.code ?? "KES"
-  const providerName = patientMedicalInfoRequest?.medicalInvoiceFile?.careProviderName || patientMedicalInfoRequest?.facility?.name || "Care Provider"
-  
-  const patientName = user 
+  const providerName =
+    patientMedicalInfoRequest?.medicalInvoiceFile?.careProviderName ||
+    patientMedicalInfoRequest?.facility?.name ||
+    "Care Provider"
+
+  const patientName = user
     ? `${user.firstName} ${user.lastName} (myself)`
     : "Me (myself)"
 
   const formattedDate = format(new Date(createdAt), "d MMM • h:mm a")
-  
-  // Extract Loan Data
-    const discountSplit = paymentSplits?.find((split: any) => 
-      split.wallet?.type === "DISCOUNT" || 
-      split.wallet?.type === "DISCOUNTS"
-    )
-    const discountAmount = discountSplit ? Number(discountSplit.paymentSplitAmount) : 0
-    const finalAmount = Number(totalBillAmount) - discountAmount
 
-    const loanSplit = paymentSplits?.find((split: any) => split.wallet?.type === "LOAN")
+  // Extract Loan Data
+  const discountSplit = paymentSplits?.find(
+    (split: any) =>
+      split.wallet?.type === "DISCOUNT" || split.wallet?.type === "DISCOUNTS"
+  )
+  const discountAmount = discountSplit
+    ? Number(discountSplit.paymentSplitAmount)
+    : 0
+  const finalAmount = Number(totalBillAmount) - discountAmount
+
+  const loanSplit = paymentSplits?.find(
+    (split: any) => split.wallet?.type === "LOAN"
+  )
   const loan = loanSplit?.loan
 
   // Loan Calculations
   const totalRepaid = loan ? Number(loan.totalPaid) : 0
-  const totalLoanAmount = loan ? Number(loan.totalBillAmount) : 0 
+  const totalLoanAmount = loan ? Number(loan.totalBillAmount) : 0
   const outstandingAmount = loan ? Number(loan.outstandingAmount) : 0
-  const progress = totalLoanAmount > 0 ? (totalRepaid / totalLoanAmount) * 100 : 0
+  const progress =
+    totalLoanAmount > 0 ? (totalRepaid / totalLoanAmount) * 100 : 0
   const isUnpaid = outstandingAmount > 0
   const loanDueDate = loan?.loanDueDate ? new Date(loan.loanDueDate) : null
   const isNotOverdue = loanDueDate ? isBefore(new Date(), loanDueDate) : false
-  
-  const daysUntilDue = loanDueDate ? differenceInDays(loanDueDate, new Date()) : null
-  const isWithinPenaltyWarningWindow = daysUntilDue !== null && daysUntilDue <= 5 && daysUntilDue >= 0
+
+  const daysUntilDue = loanDueDate
+    ? differenceInDays(loanDueDate, new Date())
+    : null
+  const isWithinPenaltyWarningWindow =
+    daysUntilDue !== null && daysUntilDue <= 5 && daysUntilDue >= 0
 
   const showPenaltyBanner = isUnpaid && isWithinPenaltyWarningWindow
-  const showCashbackBanner = isUnpaid && isNotOverdue && loan && !showPenaltyBanner
+  const showCashbackBanner =
+    isUnpaid && isNotOverdue && loan && !showPenaltyBanner
 
   const penaltyAmount = outstandingAmount * 0.02
 
   // Build Timeline Events
   interface TimelineEvent {
     id: string
-    type: 'PAYMENT' | 'REPAYMENT' | 'CASHBACK' | 'PAYMENT_SPLIT'
+    type: "PAYMENT" | "REPAYMENT" | "CASHBACK" | "PAYMENT_SPLIT"
     date: string
     title: string
     amount: string
@@ -157,13 +182,13 @@ export default function PatientViewPaymentDetails() {
 
   // 1. Main Payment
   const mainPaymentEvent: TimelineEvent = {
-    id: 'main-payment',
-    type: 'PAYMENT',
+    id: "main-payment",
+    type: "PAYMENT",
     date: createdAt,
     title: `Paid at ${providerName}`,
     amount: formatMoney(totalBillAmount, currencyCode),
     icon: <Wallet className="w-4 h-4 text-neutral-600" />,
-    subEvents: []
+    subEvents: [],
   }
 
   // // 2. Payment Splits (Sources) - Add as sub-events to main payment
@@ -171,7 +196,7 @@ export default function PatientViewPaymentDetails() {
   //   paymentSplits.forEach((split: any) => {
   //       mainPaymentEvent.subEvents?.push({
   //           id: split.id,
-  //           type: 'PAYMENT_SPLIT', 
+  //           type: 'PAYMENT_SPLIT',
   //           date: split.createdAt,
   //           title: `${formatEnum(split.wallet.type)} Wallet`,
   //           amount: formatMoney(split.paymentSplitAmount, currencyCode),
@@ -179,25 +204,27 @@ export default function PatientViewPaymentDetails() {
   //       })
   //   })
   // }
-  
+
   events.push(mainPaymentEvent)
 
   // 3. Repayments
   if (loan?.transactions) {
     const repayments = loan.transactions
-      .filter((t: any) => t.transactionType === 'COLLECTION')
-      .sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+      .filter((t: any) => t.transactionType === "COLLECTION")
+      .sort(
+        (a: any, b: any) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+      )
 
     repayments.forEach((t: any) => {
-
       events.push({
         id: t.id,
-        type: 'REPAYMENT',
+        type: "REPAYMENT",
         date: t.createdAt,
         title: t.description,
         amount: formatMoney(t.amount, currencyCode),
         isScore: true,
-        icon: <Clock className="w-4 h-4 text-neutral-600" />
+        icon: <Clock className="w-4 h-4 text-neutral-600" />,
       })
     })
   }
@@ -207,11 +234,11 @@ export default function PatientViewPaymentDetails() {
     cashbackDetails.forEach((c: any, index: number) => {
       events.push({
         id: `cashback-${index}`,
-        type: 'CASHBACK',
+        type: "CASHBACK",
         date: createdAt, // Assuming cashback happens at payment time
         title: `${c.source}`,
         amount: formatMoney(c.amount, currencyCode),
-        icon: <RefreshCcw className="w-4 h-4 text-neutral-600" />
+        icon: <RefreshCcw className="w-4 h-4 text-neutral-600" />,
       })
     })
   }
@@ -224,22 +251,27 @@ export default function PatientViewPaymentDetails() {
     const dateA = new Date(a.date).getTime()
     const dateB = new Date(b.date).getTime()
     if (dateA !== dateB) return dateB - dateA
-    
+
     // Secondary sort for same time
-    const typePriority = { REPAYMENT: 4, PAYMENT: 3, PAYMENT_SPLIT: 2, CASHBACK: 1 }
+    const typePriority = {
+      REPAYMENT: 4,
+      PAYMENT: 3,
+      PAYMENT_SPLIT: 2,
+      CASHBACK: 1,
+    }
     return typePriority[b.type] - typePriority[a.type]
   })
 
-  // Group by date for display? The design just shows a list. 
+  // Group by date for display? The design just shows a list.
   // But it shows "DD Mon" headers.
   // We can just render them and insert headers when date changes.
-  
-  const groupedEvents: { dateLabel: string, items: TimelineEvent[] }[] = []
-  
-  events.forEach(event => {
+
+  const groupedEvents: { dateLabel: string; items: TimelineEvent[] }[] = []
+
+  events.forEach((event) => {
     const dateLabel = format(new Date(event.date), "dd MMM yyyy")
     const lastGroup = groupedEvents[groupedEvents.length - 1]
-    
+
     if (lastGroup && lastGroup.dateLabel === dateLabel) {
       lastGroup.items.push(event)
     } else {
@@ -247,12 +279,12 @@ export default function PatientViewPaymentDetails() {
     }
   })
 
-
   return (
     <PatientPageWrapper
       title="Payment details"
       onBack={handleBack}
-      className="bg-neutral-50 min-h-screen !p-0"
+      bodyPadding="none"
+      className="bg-neutral-50 min-h-screen"
     >
       <div className="px-5 pb-10">
         {/* Header Section */}
@@ -265,36 +297,36 @@ export default function PatientViewPaymentDetails() {
 
         {/* Details Card */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-neutral-100 mb-6">
-          <DetailRow 
+          <DetailRow
             icon={<User className="w-5 h-5 text-neutral-500" />}
             label="Patient name"
             value={patientName}
           />
-          <DetailRow 
+          <DetailRow
             icon={<Building2 className="w-5 h-5 text-neutral-500" />}
             label="Healthcare provider"
             value={providerName}
           />
-          <DetailRow 
+          <DetailRow
             icon={<Banknote className="w-5 h-5 text-neutral-500" />}
             label="Total bill"
             value={
               discountAmount > 0 ? (
                 <div className="flex items-center gap-2 justify-end">
-                   <span className="line-through text-neutral-400 text-xs">
-                     {formatMoney(totalBillAmount, currencyCode)}
-                   </span>
-                   <span>
-                     {formatMoney(finalAmount, currencyCode)}
-                   </span>
+                  <span className="line-through text-neutral-400 text-xs">
+                    {formatMoney(totalBillAmount, currencyCode)}
+                  </span>
+                  <span>{formatMoney(finalAmount, currencyCode)}</span>
                 </div>
               ) : (
                 formatMoney(totalBillAmount, currencyCode)
               )
             }
             action={
-              <button 
-                onClick={() => navigate(`/patients/payments/how-you-paid/${id}`)}
+              <button
+                onClick={() =>
+                  navigate(`/patients/payments/how-you-paid/${id}`)
+                }
                 className="flex items-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-medium px-3 py-1.5 rounded-full transition-colors"
               >
                 How you paid <ChevronRight className="w-3 h-3" />
@@ -327,80 +359,91 @@ export default function PatientViewPaymentDetails() {
         {/* Loan Section */}
         {loan && isUnpaid && (
           <div className="bg-white border-2 border-dashed border-purple-200 rounded-lg p-5 mb-8 relative">
-             {/* Loan Header */}
-             <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-5 h-5 text-neutral-500" />
-                <p className="text-neutral-900 ">
-                  Your loan is due on <span className="font-medium">{loanDueDate ? format(loanDueDate, "dd MMM") : "N/A"}</span>
+            {/* Loan Header */}
+            <div className="flex items-center gap-2 mb-4">
+              <Clock className="w-5 h-5 text-neutral-500" />
+              <p className="text-neutral-900 ">
+                Your loan is due on{" "}
+                <span className="font-medium">
+                  {loanDueDate ? format(loanDueDate, "dd MMM") : "N/A"}
+                </span>
+              </p>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full bg-neutral-100 rounded-lg h-1.5 mb-2">
+              <div
+                className="bg-purple-600 h-1.5 rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(progress, 100)}%` }}
+              />
+            </div>
+
+            <div className="flex justify-between text-sm mb-6">
+              <div>
+                <p className="font-semibold text-neutral-900">
+                  {formatMoney(totalRepaid, currencyCode)}
                 </p>
-             </div>
+                <p className="text-neutral-500 text-xs">Repaid</p>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-neutral-900">
+                  {formatMoney(totalLoanAmount, currencyCode)}
+                </p>
+                <p className="text-neutral-500 text-xs">Total to repay</p>
+              </div>
+            </div>
 
-             {/* Progress Bar */}
-             <div className="w-full bg-neutral-100 rounded-lg h-1.5 mb-2">
-                <div 
-                  className="bg-purple-600 h-1.5 rounded-full transition-all duration-500" 
-                  style={{ width: `${Math.min(progress, 100)}%` }}
-                />
-             </div>
-             
-             <div className="flex justify-between text-sm mb-6">
+            {/* Penalty Banner */}
+            {showPenaltyBanner && (
+              <div className="bg-red-50 rounded-xl p-3 flex gap-3 mb-4">
+                <div className="mt-0.5">
+                  <AlertCircle className="w-5 h-5 text-red-600" />
+                </div>
                 <div>
-                  <p className="font-semibold text-neutral-900">{formatMoney(totalRepaid, currencyCode)}</p>
-                  <p className="text-neutral-500 text-xs">Repaid</p>
+                  <p className="text-red-800 text-sm leading-relaxed">
+                    If your loan payment is delayed, there will be a penalty fee
+                    of {formatMoney(penaltyAmount, currencyCode)} (2%) daily.
+                  </p>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold text-neutral-900">{formatMoney(totalLoanAmount, currencyCode)}</p>
-                  <p className="text-neutral-500 text-xs">Total to repay</p>
+              </div>
+            )}
+
+            {/* Cashback Banner */}
+            {showCashbackBanner && (
+              <div className="bg-green-50 rounded-xl p-3 flex gap-3 mb-4">
+                <div className="mt-0.5">
+                  <RefreshCcw className="w-5 h-5 text-green-600" />
                 </div>
-             </div>
+                <div>
+                  <p className="text-neutral-900 font-medium text-sm">
+                    Repay before{" "}
+                    {loanDueDate ? format(loanDueDate, "dd MMM") : ""} and earn!
+                  </p>
+                  <p className="text-neutral-500 text-xs mt-0.5 leading-relaxed">
+                    Earn {loan.amount * 0.05} cashback when you repay before the
+                    due date!
+                  </p>
+                </div>
+              </div>
+            )}
 
-             {/* Penalty Banner */}
-             {showPenaltyBanner && (
-               <div className="bg-red-50 rounded-xl p-3 flex gap-3 mb-4">
-                  <div className="mt-0.5">
-                    <AlertCircle className="w-5 h-5 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-red-800 text-sm leading-relaxed">
-                      If your loan payment is delayed, there will be a penalty fee of {formatMoney(penaltyAmount, currencyCode)} (2%) daily.
-                    </p>
-                  </div>
-               </div>
-             )}
-
-             {/* Cashback Banner */}
-             {showCashbackBanner && (
-               <div className="bg-green-50 rounded-xl p-3 flex gap-3 mb-4">
-                  <div className="mt-0.5">
-                    <RefreshCcw className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-neutral-900 font-medium text-sm">
-                      Repay before {loanDueDate ? format(loanDueDate, "dd MMM") : ""} and earn!
-                    </p>
-                    <p className="text-neutral-500 text-xs mt-0.5 leading-relaxed">
-                      Earn {loan.amount * 0.05} cashback when you repay before the due date!
-                    </p>
-                  </div>
-               </div>
-             )}
-
-             {/* Repayment Button */}
-             <PaymentPortal
-                loanId={loan.id}
-                initialPaymentAmount={outstandingAmount}
-                maxPayableAmount={outstandingAmount}
-                amountIsChangeable={true}
-                title="Make Loan Payment"
-                description={`Payment for treatment`}
-                isTransactionFeePayment={false}
-             >
-                <DialogTrigger className="w-full" asChild>
-                   <Button className="w-full ">
-                     Make a repayment {formatMoney(outstandingAmount, currencyCode)}
-                   </Button>
-                </DialogTrigger>
-             </PaymentPortal>
+            {/* Repayment Button */}
+            <PaymentPortal
+              loanId={loan.id}
+              initialPaymentAmount={outstandingAmount}
+              maxPayableAmount={outstandingAmount}
+              amountIsChangeable={true}
+              title="Make Loan Payment"
+              description={`Payment for treatment`}
+              isTransactionFeePayment={false}
+            >
+              <DialogTrigger className="w-full" asChild>
+                <Button className="w-full ">
+                  Make a repayment{" "}
+                  {formatMoney(outstandingAmount, currencyCode)}
+                </Button>
+              </DialogTrigger>
+            </PaymentPortal>
           </div>
         )}
 
@@ -408,17 +451,21 @@ export default function PatientViewPaymentDetails() {
         <div className="mt-4">
           {groupedEvents.map((group) => (
             <div key={group.dateLabel} className="mb-6">
-              <p className="text-neutral-500 text-xs font-medium mb-4 uppercase pl-2">{group.dateLabel}</p>
-              
-              <div className={cn(
-                "relative pl-4 ml-4 space-y-8 pb-2",
-                // Add border left only if not the last group or if it has multiple items? 
-                // The design shows a continuous line. 
-                // We can just put a border on the container and cover it up if needed.
-                "border-l-2 border-neutral-100"
-              )}>
+              <p className="text-neutral-500 text-xs font-medium mb-4 uppercase pl-2">
+                {group.dateLabel}
+              </p>
+
+              <div
+                className={cn(
+                  "relative pl-4 ml-4 space-y-8 pb-2",
+                  // Add border left only if not the last group or if it has multiple items?
+                  // The design shows a continuous line.
+                  // We can just put a border on the container and cover it up if needed.
+                  "border-l-2 border-neutral-100"
+                )}
+              >
                 {group.items.map((event) => (
-                  <TimelineItem 
+                  <TimelineItem
                     key={event.id}
                     icon={event.icon}
                     title={event.title}
@@ -431,8 +478,8 @@ export default function PatientViewPaymentDetails() {
             </div>
           ))}
         </div>
-                {/* Generate PDF Receipt */}
-                <Button
+        {/* Generate PDF Receipt */}
+        <Button
           className="w-full py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors mt-1"
           disabled={receiptStatus === "loading"}
           isLoading={receiptStatus === "loading"}
@@ -440,13 +487,22 @@ export default function PatientViewPaymentDetails() {
           aria-label="Generate PDF receipt for this transaction"
         >
           {receiptStatus === "success" ? (
-            <><CheckCircle2 className="mr-2 h-4 w-4 text-purple-600" /> Receipt Downloaded</>
+            <>
+              <CheckCircle2 className="mr-2 h-4 w-4 text-purple-600" /> Receipt
+              Downloaded
+            </>
           ) : receiptStatus === "error" ? (
-            <><FileDown className="mr-2 h-4 w-4 text-purple-600" /> Retry Download</>
+            <>
+              <FileDown className="mr-2 h-4 w-4 text-purple-600" /> Retry
+              Download
+            </>
           ) : receiptStatus === "loading" ? (
             <>Generating Receipt…</>
           ) : (
-            <><FileDown className="mr-2 h-4 w-4 text-purple-600" /> Download PDF Receipt</>
+            <>
+              <FileDown className="mr-2 h-4 w-4 text-purple-600" /> Download PDF
+              Receipt
+            </>
           )}
         </Button>
       </div>
@@ -454,15 +510,26 @@ export default function PatientViewPaymentDetails() {
   )
 }
 
-function DetailRow({ icon, label, value, action, isLast }: { 
-  icon: React.ReactNode, 
-  label: string, 
-  value: React.ReactNode, 
-  action?: React.ReactNode,
-  isLast?: boolean 
+function DetailRow({
+  icon,
+  label,
+  value,
+  action,
+  isLast,
+}: {
+  icon: React.ReactNode
+  label: string
+  value: React.ReactNode
+  action?: React.ReactNode
+  isLast?: boolean
 }) {
   return (
-    <div className={cn("flex gap-3 py-3", !isLast && "border-b border-neutral-100")}>
+    <div
+      className={cn(
+        "flex gap-3 py-3",
+        !isLast && "border-b border-neutral-100"
+      )}
+    >
       <div className="mt-1">{icon}</div>
       <div className="flex-1">
         <p className="text-neutral-900 font-medium text-sm">{label}</p>
@@ -473,17 +540,17 @@ function DetailRow({ icon, label, value, action, isLast }: {
   )
 }
 
-function TimelineItem({ 
-  icon, 
-  title, 
-  amount, 
-  time, 
-  subEvents
-}: { 
-  icon: React.ReactNode, 
-  title: string, 
-  amount?: string, 
-  time?: string,
+function TimelineItem({
+  icon,
+  title,
+  amount,
+  time,
+  subEvents,
+}: {
+  icon: React.ReactNode
+  title: string
+  amount?: string
+  time?: string
   subEvents?: any[]
 }) {
   return (
@@ -493,33 +560,40 @@ function TimelineItem({
       </div>
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-neutral-900 font-medium text-sm capitalize">{(title ?? '').toLocaleLowerCase()}</p>
+          <p className="text-neutral-900 font-medium text-sm capitalize">
+            {(title ?? "").toLocaleLowerCase()}
+          </p>
           <p className="text-neutral-500 text-sm mt-0.5">{amount}</p>
-          
+
           {/* Sub Events (Splits) */}
           {subEvents && subEvents.length > 0 && (
             <div className="mt-3 space-y-3">
               {subEvents.map((subEvent) => (
-                <div key={subEvent.id} className="flex items-start gap-2 relative">
-                   {/* Connector line */}
-                   <div className="absolute -left-[19px] top-2 w-3 h-[1px] bg-neutral-200"></div>
-                   
-                   <div className="bg-neutral-50 p-1 rounded-full border border-neutral-100">
-                      {subEvent.icon}
-                   </div>
-                   <div>
-                      <p className="text-neutral-700 text-xs font-medium">{subEvent.title}</p>
-                      <p className="text-neutral-500 text-xs">{subEvent.amount}</p>
-                   </div>
+                <div
+                  key={subEvent.id}
+                  className="flex items-start gap-2 relative"
+                >
+                  {/* Connector line */}
+                  <div className="absolute -left-[19px] top-2 w-3 h-[1px] bg-neutral-200"></div>
+
+                  <div className="bg-neutral-50 p-1 rounded-full border border-neutral-100">
+                    {subEvent.icon}
+                  </div>
+                  <div>
+                    <p className="text-neutral-700 text-xs font-medium">
+                      {subEvent.title}
+                    </p>
+                    <p className="text-neutral-500 text-xs">
+                      {subEvent.amount}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
-        
-        {time && (
-          <span className="text-neutral-400 text-xs">{time}</span>
-        )}
+
+        {time && <span className="text-neutral-400 text-xs">{time}</span>}
       </div>
     </div>
   )

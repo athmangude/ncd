@@ -58,4 +58,9 @@ describe("PatientPageWrapper", () => {
     expect(section?.className).toContain("custom-class")
     expect(section?.className).toContain("gap-5")
   })
+
+  it('drops the shell p-4 when bodyPadding is "none" (full-bleed screens)', () => {
+    render(<PatientPageWrapper bodyPadding="none">x</PatientPageWrapper>)
+    expect(screen.getByRole("main").className).not.toContain("p-4")
+  })
 })

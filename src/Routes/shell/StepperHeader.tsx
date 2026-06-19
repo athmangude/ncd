@@ -101,7 +101,7 @@ export default function StepperHeader({
   const showCircleInviteStepper = circleInviteStepIndex !== -1
 
   return (
-    <header className="sticky top-0 z-50 flex w-full flex-col bg-white px-4 pt-3 pb-1">
+    <header className="flex w-full flex-col bg-white px-4 pt-3 pb-1">
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           {!isRoot && (
