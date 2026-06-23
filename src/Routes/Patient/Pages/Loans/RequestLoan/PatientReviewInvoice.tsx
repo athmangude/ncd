@@ -17,7 +17,11 @@ import {
 import { Button } from "@/components/Button"
 import PatientPageWrapper from "../../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
-import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage } from "@/utilities/localStorage"
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+  removeFromLocalStorage,
+} from "@/utilities/localStorage"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
 import invoiceIcon from "@/assets/icons/invoice.png"
@@ -44,14 +48,23 @@ interface ReviewItemProps {
   onEdit: () => void
 }
 
-const ReviewItem = ({ icon: Icon, label, value, subValue, isValid, onEdit }: ReviewItemProps) => (
+const ReviewItem = ({
+  icon: Icon,
+  label,
+  value,
+  subValue,
+  isValid,
+  onEdit,
+}: ReviewItemProps) => (
   <div className="p-4 border-b border-neutral-100 last:border-0 flex items-start gap-3">
     <div className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center flex-shrink-0">
       <Icon className="w-5 h-5 text-neutral-600" />
     </div>
     <div className="flex-1 min-w-0">
       <p className="text-sm font-medium text-neutral-900">{label}</p>
-      <p className={`text-sm truncate ${isValid ? "text-neutral-500" : "text-red-500"}`}>
+      <p
+        className={`text-sm truncate ${isValid ? "text-neutral-500" : "text-red-500"}`}
+      >
         {value}
         {isValid && subValue && <span className="ml-1">({subValue})</span>}
       </p>
@@ -66,11 +79,14 @@ const ReviewItem = ({ icon: Icon, label, value, subValue, isValid, onEdit }: Rev
   </div>
 )
 
-
 const Header = () => (
   <div className="flex flex-col items-center text-center gap-4 mt-4">
     <div className="relative">
-      <img src={invoiceIcon} alt="Invoice" className="w-16 h-16 object-contain" />
+      <img
+        src={invoiceIcon}
+        alt="Invoice"
+        className="w-16 h-16 object-contain"
+      />
       <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white">
         <Sparkles className="w-3 h-3 text-white" />
       </div>
@@ -86,9 +102,14 @@ const extractPaymentInfo = (data: any): PaymentInfo | null => {
   if (!paymentInfoData) return null
 
   const paymentType = paymentInfoData["payment-type"] || paymentInfoData["type"]
-  const tillNumber = paymentInfoData["till-number"] || paymentInfoData["tillNumber"] || ""
-  const businessNumber = paymentInfoData["business-number"] || paymentInfoData["businessNumber"] || ""
-  const accountNumber = paymentInfoData["account-number"] || paymentInfoData["accountNumber"] || ""
+  const tillNumber =
+    paymentInfoData["till-number"] || paymentInfoData["tillNumber"] || ""
+  const businessNumber =
+    paymentInfoData["business-number"] ||
+    paymentInfoData["businessNumber"] ||
+    ""
+  const accountNumber =
+    paymentInfoData["account-number"] || paymentInfoData["accountNumber"] || ""
 
   if (paymentType === "MPTILL") {
     return {
@@ -114,13 +135,23 @@ const getPaymentInfoDisplay = (info: PaymentInfo | null) => {
   if (!info) return "Missing payment information"
 
   if (info.type === "MPTILL") {
-    return info.tillNumber ? `Till Number: ${info.tillNumber}` : "Missing Till Number"
+    return info.tillNumber
+      ? `Till Number: ${info.tillNumber}`
+      : "Missing Till Number"
   }
 
   if (info.type === "MPAYBILL") {
     const parts = []
-    parts.push(info.businessNumber ? `Business Number: ${info.businessNumber}` : "Missing Business Number")
-    parts.push(info.accountNumber ? `Account: ${info.accountNumber}` : "Missing Account Number")
+    parts.push(
+      info.businessNumber
+        ? `Business Number: ${info.businessNumber}`
+        : "Missing Business Number"
+    )
+    parts.push(
+      info.accountNumber
+        ? `Account: ${info.accountNumber}`
+        : "Missing Account Number"
+    )
     return parts.join(", ")
   }
 
@@ -131,25 +162,39 @@ export default function PatientReviewInvoice() {
   const navigate = useNavigate()
   const { toast } = useToast()
   // Data Extraction
-  const extractedData = useMemo(() => getFromLocalStorage(patientReviewInvoiceStorageKey) || {}, [])
-  
-  const paymentInfo = useMemo(() => extractPaymentInfo(extractedData), [extractedData])
-  const isNetworkFacility = extractedData.kmpdcFacility?.facility?.facilityVerificationStatus === "APPROVED"
+  const extractedData = useMemo(
+    () => getFromLocalStorage(patientReviewInvoiceStorageKey) || {},
+    []
+  )
+
+  const paymentInfo = useMemo(
+    () => extractPaymentInfo(extractedData),
+    [extractedData]
+  )
+  const isNetworkFacility =
+    extractedData.kmpdcFacility?.facility?.facilityVerificationStatus ===
+    "APPROVED"
 
   // Derived State
-  const hasPatient = !!(extractedData.dependent || (extractedData.patient?.firstName && extractedData.patient?.lastName))
+  const hasPatient = !!(
+    extractedData.dependent ||
+    (extractedData.patient?.firstName && extractedData.patient?.lastName)
+  )
   const patientName = hasPatient
     ? extractedData.dependent
       ? `${extractedData.dependent.firstName} ${extractedData.dependent.lastName}`
       : `${extractedData.patient.firstName} ${extractedData.patient.lastName}`
     : "Missing patient information"
-  const patientSubValue = hasPatient && extractedData.dependent 
-    ? extractedData.dependent.type 
-    : hasPatient && extractedData.patient?.status 
-      ? extractedData.patient.status 
-      : null
+  const patientSubValue =
+    hasPatient && extractedData.dependent
+      ? extractedData.dependent.type
+      : hasPatient && extractedData.patient?.status
+        ? extractedData.patient.status
+        : null
 
-  const hasFacility = !!(extractedData.kmpdcFacility?.name || extractedData.facilityName)
+  const hasFacility = !!(
+    extractedData.kmpdcFacility?.name || extractedData.facilityName
+  )
   const facilityName = hasFacility
     ? extractedData.kmpdcFacility?.name || extractedData.facilityName
     : "Missing facility information"
@@ -162,10 +207,13 @@ export default function PatientReviewInvoice() {
   const hasPaymentInfo = !!(
     paymentInfo &&
     ((paymentInfo.type === "MPTILL" && paymentInfo.tillNumber) ||
-      (paymentInfo.type === "MPAYBILL" && paymentInfo.businessNumber && paymentInfo.accountNumber))
+      (paymentInfo.type === "MPAYBILL" &&
+        paymentInfo.businessNumber &&
+        paymentInfo.accountNumber))
   )
 
-  const isFormValid = hasPatient && hasFacility && hasBillAmount && hasPaymentInfo
+  const isFormValid =
+    hasPatient && hasFacility && hasBillAmount && hasPaymentInfo
 
   const amountValue = extractedData.billAmount || 0
   const cashbackAmount = formatMoney(amountValue * 0.05 || 0, "KES")
@@ -173,11 +221,15 @@ export default function PatientReviewInvoice() {
   // Side Effects
   useEffect(() => {
     if (paymentInfo) {
-      const currentData = getFromLocalStorage(patientReviewInvoiceStorageKey) || {}
-      if (JSON.stringify(currentData.selectedPaymentInfo) !== JSON.stringify(paymentInfo)) {
+      const currentData =
+        getFromLocalStorage(patientReviewInvoiceStorageKey) || {}
+      if (
+        JSON.stringify(currentData.selectedPaymentInfo) !==
+        JSON.stringify(paymentInfo)
+      ) {
         setToLocalStorage(patientReviewInvoiceStorageKey, {
           ...currentData,
-          selectedPaymentInfo: paymentInfo
+          selectedPaymentInfo: paymentInfo,
         })
       }
     }
@@ -189,16 +241,19 @@ export default function PatientReviewInvoice() {
       const payload = {
         dependentId: extractedData.dependent?.id,
         kmpdcFacilityId: extractedData.kmpdcFacility?.id,
-        careProviderName: extractedData.kmpdcFacility?.name || extractedData.facilityName,
+        careProviderName:
+          extractedData.kmpdcFacility?.name || extractedData.facilityName,
         billAmount: Math.round(extractedData.billAmount),
         invoiceFileId: extractedData.invoiceFile?.id,
-        paymentInfo: paymentInfo ? {
-          type: paymentInfo.type,
-          tillNumber: paymentInfo.tillNumber,
-          businessNumber: paymentInfo.businessNumber,
-          accountNumber: paymentInfo.accountNumber,
-          paybillAccountNumber: paymentInfo.paybillAccountNumber,
-        } : null,
+        paymentInfo: paymentInfo
+          ? {
+              type: paymentInfo.type,
+              tillNumber: paymentInfo.tillNumber,
+              businessNumber: paymentInfo.businessNumber,
+              accountNumber: paymentInfo.accountNumber,
+              paybillAccountNumber: paymentInfo.paybillAccountNumber,
+            }
+          : null,
       }
 
       const { data } = await axios.post(
@@ -210,13 +265,17 @@ export default function PatientReviewInvoice() {
     onSuccess: (data) => {
       if (data?.id) {
         setToLocalStorage("manualPaymentRequestId", data.id)
-        const currentData = getFromLocalStorage(patientReviewInvoiceStorageKey) || {}
+        const currentData =
+          getFromLocalStorage(patientReviewInvoiceStorageKey) || {}
         const discountCode = currentData.discountCode
         const appliedDiscount = currentData.appliedDiscount
         removeFromLocalStorage(patientReviewInvoiceStorageKey)
         navigate("/patients/payment/request-payment/verification-pending", {
           state: [discountCode, appliedDiscount].some(Boolean)
-            ? { discountCode: discountCode ?? undefined, appliedDiscount: appliedDiscount ?? undefined }
+            ? {
+                discountCode: discountCode ?? undefined,
+                appliedDiscount: appliedDiscount ?? undefined,
+              }
             : undefined,
         })
       } else {
@@ -235,7 +294,10 @@ export default function PatientReviewInvoice() {
   // Handlers
   const handleEdit = (field: "patient" | "amount" | "provider" | "payment") => {
     const commonState = {
-      patient: { name: patientName, id: extractedData.dependent?.id || extractedData.patient?.id },
+      patient: {
+        name: patientName,
+        id: extractedData.dependent?.id || extractedData.patient?.id,
+      },
       careProvider: extractedData || extractedData.kmpdcFacility,
       fromReview: true,
     }
@@ -243,12 +305,18 @@ export default function PatientReviewInvoice() {
     switch (field) {
       case "patient":
         navigate("/patients/payment/request-payment/select-patient", {
-          state: { patientId: extractedData.patient?.id || extractedData.dependent?.id },
+          state: {
+            patientId: extractedData.patient?.id || extractedData.dependent?.id,
+          },
         })
         break
       case "amount":
         navigate("/patients/payment/request-payment/set-bill-amount", {
-          state: { totalBillAmount: extractedData.billAmount, careProvider: extractedData || extractedData.kmpdcFacility, fromReview: true },
+          state: {
+            totalBillAmount: extractedData.billAmount,
+            careProvider: extractedData || extractedData.kmpdcFacility,
+            fromReview: true,
+          },
         })
         break
       case "provider":
@@ -261,8 +329,33 @@ export default function PatientReviewInvoice() {
   }
 
   return (
-    <PatientPageWrapper title="Review invoice details" showHelp>
-      <div className="flex flex-col gap-6 pb-20">
+    <PatientPageWrapper
+      title="Review invoice details"
+      showHelp
+      footer={
+        <div className="p-4 bg-white border-t border-neutral-200">
+          <Button
+            className={`w-full font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg ${
+              isFormValid
+                ? "bg-[#A826FF] hover:bg-[#9220DE] text-white"
+                : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+            }`}
+            onClick={() => mutation.mutate()}
+            disabled={mutation.isPending || !isFormValid}
+          >
+            {mutation.isPending ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <>
+                Choose how to pay
+                <ChevronRight className="w-5 h-5" />
+              </>
+            )}
+          </Button>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-6">
         <Header />
 
         <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
@@ -291,36 +384,21 @@ export default function PatientReviewInvoice() {
           <ReviewItem
             icon={CreditCard}
             label="Payment method"
-            value={hasPaymentInfo ? getPaymentInfoDisplay(paymentInfo) : "Missing payment information"}
+            value={
+              hasPaymentInfo
+                ? getPaymentInfoDisplay(paymentInfo)
+                : "Missing payment information"
+            }
             isValid={hasPaymentInfo}
             onEdit={() => handleEdit("payment")}
           />
         </div>
-
 
         <CashbackBanner
           visible={isNetworkFacility}
           title="Pay the full bill via Jireh and earn!"
           description={`With a bill of ${billAmountFormatted}, you could earn up to ${cashbackAmount} cashback!`}
         />
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-200 md:static md:border-0 md:p-0 md:bg-transparent z-10">
-          <Button
-            className={`w-full font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg ${
-              isFormValid ? "bg-[#A826FF] hover:bg-[#9220DE] text-white" : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-            }`}
-            onClick={() => mutation.mutate()}
-            disabled={mutation.isPending || !isFormValid}
-          >
-            {mutation.isPending ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                Choose how to pay
-                <ChevronRight className="w-5 h-5" />
-              </>
-            )}
-          </Button>
-        </div>
       </div>
     </PatientPageWrapper>
   )
