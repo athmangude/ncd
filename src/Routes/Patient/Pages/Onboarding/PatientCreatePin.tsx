@@ -4,7 +4,6 @@ import FormGroup from "@/components/form/FormGroupInput"
 import { SessionAuth } from "supertokens-auth-react/recipe/session"
 import { useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
-import { Button } from "@/components/Button"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import ErrorMessage from "@/components/ErrorMessage"
@@ -13,6 +12,7 @@ import { patientLoginDetailsQueryKey } from "../PatientsHome"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useToast } from "@/hooks/useToast"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 
 type Inputs = {
   patientPIN: string
@@ -112,8 +112,19 @@ export default function PatientCreatePin() {
 
   return (
     <SessionAuth requireAuth={true}>
-      <PatientAuthWrapper>
+      <PatientAuthWrapper
+        footer={
+          <PrimaryCTAFooter
+            label="Submit"
+            form="create-pin-form"
+            type="submit"
+            isLoading={createPatientMutation.isPending}
+            disabled={createPatientMutation.isPending}
+          />
+        }
+      >
         <form
+          id="create-pin-form"
           className="flex flex-col gap-7"
           onSubmit={handleSubmit(async (data) =>
             createPatientMutation.mutate(data)
@@ -169,20 +180,6 @@ export default function PatientCreatePin() {
           {createPatientMutation.isError && (
             <ErrorMessage message={createPatientMutation.error.message} />
           )}
-          <div className="fixed bottom-0 left-0 right-0 p-4  z-50">
-            <div className="max-w-md mx-auto w-full">
-              <Button
-                className="w-full"
-                size="lg"
-                role="link"
-                type="submit"
-                isLoading={createPatientMutation.isPending}
-                disabled={createPatientMutation.isPending}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
         </form>
       </PatientAuthWrapper>
     </SessionAuth>

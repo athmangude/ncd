@@ -161,12 +161,13 @@ export default function PatientsHome() {
   const isDashboardRoute = DASHBOARD_PATHS.includes(normalizedPath)
 
   // Bare onboarding screens that still render plain content (no shell wrapper).
+  // The PatientAuthWrapper-based bare screens (add-whatsapp-number,
+  // id-verification-failure, referral-code, org-onboarding-success) now
+  // self-shell via AppShell, so they're passthrough. Only resolve-type (plain)
+  // and complete-profile (renders the not-yet-migrated IncompleteSignUp) still
+  // rely on this container; both are migrated in Phase 4 with the dashboard.
   const LEGACY_BARE_PATHS = [
-    "/patients/add-whatsapp-number",
-    "/patients/id-verification-failure",
     "/patients/resolve-type",
-    "/patients/referral-code",
-    "/patients/org-onboarding-success",
     "/patients/complete-profile",
   ]
   const isLegacyBare = LEGACY_BARE_PATHS.includes(normalizedPath)

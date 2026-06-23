@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/useToast"
 import LoadingPage from "./LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
+import AppShell from "@/Routes/AppShell"
 
 export const getTenantIdQueryKey = "getTenantIdQueryKey"
 
@@ -53,26 +54,28 @@ export default function InvalidTenantPage() {
   }
 
   return (
-    <main className="flex flex-col max-w-[400px] mx-auto text-center gap-10 p-5">
-      <h1 className="text-2xl font-bold">Invalid Tenant</h1>
+    <AppShell header={null} footer={null}>
+      <div className="flex flex-col max-w-[400px] mx-auto text-center gap-10">
+        <h1 className="text-2xl font-bold">Invalid Tenant</h1>
 
-      <p>
-        It seems you are trying to access a restricted page while already logged
-        into another account. Please log out of your other account and try
-        again.
-      </p>
+        <p>
+          It seems you are trying to access a restricted page while already
+          logged into another account. Please log out of your other account and
+          try again.
+        </p>
 
-      <Button
-        onClick={async () => {
-          await mutation.mutate()
-        }}
-        className="w-full"
-        isLoading={mutation.isPending}
-        disabled={mutation.isPending}
-      >
-        Log Out
-      </Button>
-    </main>
+        <Button
+          onClick={async () => {
+            await mutation.mutate()
+          }}
+          className="w-full"
+          isLoading={mutation.isPending}
+          disabled={mutation.isPending}
+        >
+          Log Out
+        </Button>
+      </div>
+    </AppShell>
   )
 }
 
