@@ -1,5 +1,5 @@
-import { Button } from "@/components/Button"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { DualActionFooter } from "@/Routes/shell/footers"
 import { useNavigate, useLocation } from "react-router-dom"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import { useMutation } from "@tanstack/react-query"
@@ -115,8 +115,42 @@ export default function PatientPayMembership() {
     },
   })
 
+  const handlePay = () => {
+    try {
+      trackEvent(EVENTS.KYC.MEMBERSHIP_SUBMIT)
+    } catch {
+      // Silent fail
+    }
+    mutation.mutate()
+  }
+
   return (
-    <PatientPageWrapper title="Pay Membership" className="items-center px-4">
+    <PatientPageWrapper
+      title="Pay Membership"
+      className="items-center"
+      footer={
+        <DualActionFooter
+          secondary={{
+            label: "Later",
+            onClick: () =>
+              navigate(nextStep || "/patients/", { state: location.state }),
+            disabled: mutation.isPending,
+          }}
+          primary={{
+            label: mutation.isPending ? (
+              <div className="flex items-center gap-2">
+                <Loader className="w-4 h-4 animate-spin" />
+                <span>Sending payment prompt</span>
+              </div>
+            ) : (
+              "Pay KES 499"
+            ),
+            onClick: handlePay,
+            disabled: mutation.isPending || mutation.isSuccess,
+          }}
+        />
+      }
+    >
       <div className="w-full flex flex-col gap-6 h-full">
         <div className="flex flex-col items-center gap-2 mt-4">
           <h1 className="text-xl  text-center">
@@ -141,44 +175,6 @@ export default function PatientPayMembership() {
             You will receive a prompt to pay KES 499 to Jireh Health via MPesa,
             MPesa Till or Airtel Money.
           </p>
-
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white  z-50">
-            <div className="max-w-md mx-auto w-full flex gap-4">
-              <Button
-                className="w-1/3 "
-                variant="secondary"
-                type="button"
-                onClick={() =>
-                  navigate(nextStep || "/patients/", { state: location.state })
-                }
-                disabled={mutation.isPending}
-              >
-                Later
-              </Button>
-              <Button
-                className="w-full"
-                onClick={() => {
-                  try {
-                    trackEvent(EVENTS.KYC.MEMBERSHIP_SUBMIT)
-                  } catch {
-                    // Silent fail
-                  }
-                  mutation.mutate()
-                }}
-                disabled={mutation.isPending || mutation.isSuccess}
-                variant={mutation.isPending ? "secondary" : "default"}
-              >
-                {mutation.isPending ? (
-                  <div className="flex items-center gap-2">
-                    <Loader className="w-4 h-4 animate-spin" />
-                    <span>Sending payment prompt</span>
-                  </div>
-                ) : (
-                  "Pay KES 499"
-                )}
-              </Button>
-            </div>
-          </div>
         </div>
       </div>
     </PatientPageWrapper>
