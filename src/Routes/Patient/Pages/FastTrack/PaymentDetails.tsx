@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
 import axios from "axios"
@@ -14,11 +14,7 @@ import ErrorBlock from "@/components/ErrorBlock"
 import { patientConnectionsQueryKey } from "../Loans/RequestLoan/PatientSelectPatient"
 import { useFastTrackStore } from "./useFastTrackStore"
 import { verifyInvoice } from "./api"
-import {
-  FileText,
-  ChevronRight,
-  Loader2,
-} from "lucide-react"
+import { FileText, ChevronRight, Loader2 } from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { CashbackBanner } from "@/components/CashbackBanner"
 import ErrorMessage from "@/components/ErrorMessage"
@@ -36,6 +32,7 @@ const MIN_BILL_AMOUNT = 150
 
 export default function PaymentDetails() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { toast } = useToast()
   const { user } = usePatientAuthStore() as { user: any }
 
@@ -48,9 +45,19 @@ export default function PaymentDetails() {
   const setInvoiceNumber = useFastTrackStore((s) => s.setInvoiceNumber)
   const invoiceAmount = useFastTrackStore((s) => s.invoiceAmount)
   const setInvoiceAmount = useFastTrackStore((s) => s.setInvoiceAmount)
-  const selectedPatientId = useFastTrackStore((s) => s.selectedPatientId) || user?.id || ""
+  const selectedPatientId =
+    useFastTrackStore((s) => s.selectedPatientId) || user?.id || ""
   const setSelectedPatientId = useFastTrackStore((s) => s.setSelectedPatientId)
   const setPatient = useFastTrackStore((s) => s.setPatient)
+
+  // Returning from "Add patient" preselects the person who was just added.
+  useEffect(() => {
+    const preselected = (location.state as { preselectedPatientId?: string })
+      ?.preselectedPatientId
+    if (preselected) {
+      setSelectedPatientId(preselected)
+    }
+  }, [location.state, setSelectedPatientId])
 
   const connectionsQuery = useQuery({
     queryKey: [patientConnectionsQueryKey],
@@ -78,9 +85,7 @@ export default function PaymentDetails() {
 
   const selectedPatient = useMemo(() => {
     if (!selectedPatientId) return null
-    const match = patientOptions.find(
-      (p: any) => p.value === selectedPatientId
-    )
+    const match = patientOptions.find((p: any) => p.value === selectedPatientId)
     if (!match) return null
     return {
       id: match.value,
@@ -130,7 +135,8 @@ export default function PaymentDetails() {
     if (!facilityId) {
       toast({
         title: "Error",
-        description: "Could not determine the healthcare facility. Please go back and re-enter the payment number.",
+        description:
+          "Could not determine the healthcare facility. Please go back and re-enter the payment number.",
         variant: "destructive",
       })
       return
@@ -186,7 +192,8 @@ export default function PaymentDetails() {
             Fill these details from your invoice.
           </h2>
           <p className="text-sm text-neutral-500 max-w-xs">
-            You might need to ask the cashier for your invoice if one is not provided to you.
+            You might need to ask the cashier for your invoice if one is not
+            provided to you.
           </p>
         </div>
 
@@ -259,7 +266,7 @@ export default function PaymentDetails() {
             htmlFor="invoiceAmount"
             className="text-sm font-medium text-neutral-700"
           >
-          Total Bill Amount
+            Total Bill Amount
           </label>
           <div className="relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-500">
@@ -295,10 +302,10 @@ export default function PaymentDetails() {
 
         {parsedAmount > 0 && (
           <CashbackBanner
-          visible={true}
-          title="Pay the full bill via Jireh and earn!"
-          description={`With a bill of ${formatMoney(parsedAmount, "KES")}, you could earn up to ${formatMoney(parsedAmount * 0.05, "KES")} cashback!`}
-        />
+            visible={true}
+            title="Pay the full bill via Jireh and earn!"
+            description={`With a bill of ${formatMoney(parsedAmount, "KES")}, you could earn up to ${formatMoney(parsedAmount * 0.05, "KES")} cashback!`}
+          />
         )}
 
         {/* Continue */}

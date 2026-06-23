@@ -11,6 +11,7 @@ import { Button } from "@/components/Button"
 import { ProfileAvatar } from "@/components/ProfileAvatar"
 import { useOfflinePatientData } from "@/hooks/useOfflinePatientData"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
+import { useCircleSync } from "../../hooks/useCircleSync"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
@@ -156,6 +157,7 @@ export default function PatientKYCAddCircleMembers() {
   const location = useLocation()
   const nextStep = useNextKYCStep()
   const user = usePatientAuthStore((state: any) => state.user)
+  const syncCircle = useCircleSync()
 
   const {
     data: networkData,
@@ -257,6 +259,10 @@ export default function PatientKYCAddCircleMembers() {
         // best-effort — refetch below still reflects any server change
       }
       await refetchRef.current()
+      // The accepted invites just became accountable members. Refresh every
+      // circle cache (not just this page's) so the loan gate, circle tab, and
+      // payee pickers all see the now-active circle.
+      syncCircle()
     }, 20000)
     return () => clearTimeout(timer)
     // refetch is read through a ref to avoid resetting the 20s timer each render.

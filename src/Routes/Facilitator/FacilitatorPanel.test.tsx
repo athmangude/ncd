@@ -23,8 +23,8 @@ beforeEach(() => {
 })
 
 describe("FacilitatorPanel", () => {
-  it("resets the account to base after confirmation and reloads", () => {
-    localStorage.setItem("mock:loans", '[{"id":"existing-loan"}]')
+  it("resets the account after confirmation and reloads", () => {
+    localStorage.setItem("mock:loans", JSON.stringify([{ id: "loan-1" }]))
     renderPanel()
 
     fireEvent.click(
@@ -32,12 +32,14 @@ describe("FacilitatorPanel", () => {
     )
     fireEvent.click(screen.getByText("Yes, reset to base"))
 
-    // "Reset to base" re-seeds a fresh account: collections are emptied (the
-    // loans collection becomes an empty array, not a removed key).
-    expect(localStorage.getItem("mock:loans")).toBe("[]")
+    // Reset-to-base empties every collection (loans become an empty array).
+    expect(JSON.parse(localStorage.getItem("mock:loans") || "null")).toEqual([])
+    // A full reset still hard-reloads so the app re-bootstraps cleanly.
     expect(reloadApp).toHaveBeenCalled()
   })
 
+  // Individual tweaks soft-refresh (invalidate queries) instead of a full page
+  // reload, so the participant's session isn't restarted ("started afresh").
   it("sets the cashback balance through the domain helper", () => {
     renderPanel()
 
@@ -46,7 +48,7 @@ describe("FacilitatorPanel", () => {
     fireEvent.click(screen.getByText("Set balance"))
 
     expect(getCareFundBalance()).toBe(4321)
-    expect(reloadApp).toHaveBeenCalled()
+    expect(reloadApp).not.toHaveBeenCalled()
   })
 
   it("toggles membership off", () => {
@@ -55,7 +57,7 @@ describe("FacilitatorPanel", () => {
     fireEvent.click(screen.getByText("Deactivate"))
 
     expect(isMembershipActive()).toBe(false)
-    expect(reloadApp).toHaveBeenCalled()
+    expect(reloadApp).not.toHaveBeenCalled()
   })
 
   it("marks a pending circle invite as accepted", () => {
@@ -69,7 +71,7 @@ describe("FacilitatorPanel", () => {
     expect(network.network.some((member) => member.firstName === "Kevin")).toBe(
       true
     )
-    expect(reloadApp).toHaveBeenCalled()
+    expect(reloadApp).not.toHaveBeenCalled()
   })
 
   it("approves a pending payment request", () => {
@@ -84,7 +86,7 @@ describe("FacilitatorPanel", () => {
       expect(requests.some((request) => request.status === "APPROVED")).toBe(
         true
       )
-      expect(reloadApp).toHaveBeenCalled()
+      expect(reloadApp).not.toHaveBeenCalled()
     }
   })
 })

@@ -24,6 +24,7 @@ import { format } from "date-fns"
 import { cn } from "@/lib/utils"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useNetworkData } from "./hooks/useNetworkData"
+import { useCircleSync } from "../../hooks/useCircleSync"
 
 const addNewConnectionStorageKey = "add-new-connection-drawer"
 
@@ -59,13 +60,14 @@ export default function AddCircleMemberPage() {
 
   const { data: networkData, refetch } = useNetworkData()
   const slots = networkData?.slots
+  const syncCircle = useCircleSync()
 
-  const pendingInviteData = getFromLocalStorage(PENDING_INVITE_KEY) as
-    | Partial<Inputs>
-    | null
-  const savedFormState = getFromLocalStorage(addNewConnectionStorageKey) as
-    | Partial<Inputs>
-    | null
+  const pendingInviteData = getFromLocalStorage(
+    PENDING_INVITE_KEY
+  ) as Partial<Inputs> | null
+  const savedFormState = getFromLocalStorage(
+    addNewConnectionStorageKey
+  ) as Partial<Inputs> | null
 
   const { toast } = useToast()
 
@@ -73,7 +75,8 @@ export default function AddCircleMemberPage() {
     savedFormState?.relationship || pendingInviteData?.relationship
 
   const isAccountableFull = slots?.accountable
-    ? slots.accountable.used + slots.accountable.reserved >= slots.accountable.max
+    ? slots.accountable.used + slots.accountable.reserved >=
+      slots.accountable.max
     : false
   const isAuxiliaryFull = slots?.auxiliary
     ? slots.auxiliary.used + slots.auxiliary.reserved >= slots.auxiliary.max
@@ -95,7 +98,9 @@ export default function AddCircleMemberPage() {
     setValue,
     formState: { errors },
   } = usePersistentForm<Inputs>(addNewConnectionStorageKey, {
-    defaultValues: pendingInviteData ? (pendingInviteData as Inputs) : undefined,
+    defaultValues: pendingInviteData
+      ? (pendingInviteData as Inputs)
+      : undefined,
   })
 
   useEffect(() => {
@@ -135,7 +140,7 @@ export default function AddCircleMemberPage() {
       const response = await axios.post(
         import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
           "/patient-network/send-invite",
-        payload,
+        payload
       )
 
       return response.data
@@ -147,6 +152,9 @@ export default function AddCircleMemberPage() {
       })
 
       refetch()
+      // Keep the loan gate + payee pickers in sync with the just-added member,
+      // not just this page's network query.
+      syncCircle()
       reset()
       navigate(returnPath, { state })
     },
@@ -169,7 +177,7 @@ export default function AddCircleMemberPage() {
       const response = await axios.post(
         import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
           "/circles/invites/validate",
-        data,
+        data
       )
 
       return response.data as {
@@ -277,10 +285,7 @@ export default function AddCircleMemberPage() {
         </TabsList>
       </Tabs>
 
-      <form
-        className="flex flex-col gap-5"
-        onSubmit={handleSubmit(handleSave)}
-      >
+      <form className="flex flex-col gap-5" onSubmit={handleSubmit(handleSave)}>
         <div className="grid grid-cols-2 gap-2">
           <FormGroupInput
             id="firstName"
@@ -397,7 +402,8 @@ export default function AddCircleMemberPage() {
                 const today = new Date()
                 today.setHours(0, 0, 0, 0)
                 birth.setHours(0, 0, 0, 0)
-                if (birth > today) return "Date of birth cannot be in the future"
+                if (birth > today)
+                  return "Date of birth cannot be in the future"
                 const minBirth = new Date(today)
                 minBirth.setFullYear(minBirth.getFullYear() - 18)
                 if (birth < minBirth) return "Child must be under 18 years"
@@ -412,7 +418,7 @@ export default function AddCircleMemberPage() {
               const minBirth = new Date(
                 today.getFullYear() - 18,
                 today.getMonth(),
-                today.getDate(),
+                today.getDate()
               )
               return (
                 <div className="flex flex-col gap-1.5">
@@ -424,7 +430,7 @@ export default function AddCircleMemberPage() {
                     className={cn(
                       "flex items-center h-10 w-full rounded-md border bg-background px-3 py-2 text-sm text-left ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A020F0] focus-visible:ring-offset-2",
                       !field.value && "text-muted-foreground",
-                      errors.dateOfBirth ? "border-destructive" : "border-input",
+                      errors.dateOfBirth ? "border-destructive" : "border-input"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-neutral-500" />
@@ -436,8 +442,7 @@ export default function AddCircleMemberPage() {
                         mode="single"
                         selected={selectedDate}
                         onSelect={(date) => {
-                          if (date)
-                            field.onChange(format(date, "yyyy-MM-dd"))
+                          if (date) field.onChange(format(date, "yyyy-MM-dd"))
                           setCalendarOpen(false)
                         }}
                         disabled={(date) => date > today || date < minBirth}

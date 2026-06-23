@@ -2,7 +2,8 @@ import { http, HttpResponse } from "msw"
 import { makeId, readCollection, writeCollection } from "../db"
 import { getLoginDetails, patchLoginDetails } from "./profile"
 import { activateMembership } from "../domain/membership"
-import { getNetwork, setNetwork, type SentInvite } from "../domain/network"
+import { addSentInvite, type SentInvite } from "../domain/network"
+import { getTransactionResult } from "./loans"
 import discountCodesSeed from "../fixtures/discount-codes.json"
 
 /**
@@ -14,7 +15,7 @@ function persistSentInvite(
   body: Record<string, unknown>,
   inviteId: string,
   inviteLink: string
-): void {
+): SentInvite {
   const str = (...keys: string[]): string => {
     for (const key of keys) {
       const value = body[key]
@@ -34,8 +35,9 @@ function persistSentInvite(
     createdAt: new Date().toISOString(),
     relationship: str("relationship") || "FRIEND",
   }
-  const data = getNetwork()
-  setNetwork({ ...data, invites: [...data.invites, invite] })
+  // Appends the invite and reserves a circle slot (so slot counts update).
+  addSentInvite(invite)
+  return invite
 }
 
 /**
@@ -56,6 +58,9 @@ function persistSentInvite(
 
 const MPESA_STATEMENTS_KEY = "mpesa-statements"
 const CANCELLED_MANUAL_REQUESTS_KEY = "cancelled-manual-requests"
+
+// Uploading an M-Pesa statement raises the interest-free limit up to this amount.
+const RAISED_CREDIT_LIMIT = 6000
 
 // The loans module already owns the manual-requests collection. We read the
 // same key here (read-only / mark-cancelled) so a detail fetch stays coherent
@@ -250,12 +255,18 @@ export const miscHandlers = [
     >
     const inviteId = makeId("invite")
     const inviteLink = `/patients/network/accept-invite/${inviteId}`
-    persistSentInvite(body, inviteId, inviteLink)
+    const invite = persistSentInvite(body, inviteId, inviteLink)
     return HttpResponse.json({
       message: "Invite sent",
       inviteId,
       inviteLink,
       link: inviteLink,
+      // Echo the invitee so the payment flow can preselect the new patient.
+      patientId: invite.id,
+      firstName: invite.firstName,
+      lastName: invite.lastName,
+      status: invite.status,
+      relationship: invite.relationship,
     })
   }),
 
@@ -407,9 +418,21 @@ export const miscHandlers = [
   }),
 
   // PatientTransactionResult reads status + amount/date/description fields off
-  // the result. Return a COMPLETED payment so the success screen renders.
+  // the result. Return the real result persisted by the repayment handler when
+  // present, else a generic COMPLETED payment so the success screen renders.
   http.get("/patients/payments/transaction-result/:reference", ({ params }) => {
     const reference = String(params.reference)
+    const stored = getTransactionResult(reference)
+    if (stored) {
+      return HttpResponse.json({
+        ...stored,
+        disbursementTransaction: {
+          id: makeId("disb"),
+          description: stored.description,
+        },
+      })
+    }
+
     return HttpResponse.json({
       id: reference,
       status: "COMPLETED",
@@ -457,7 +480,24 @@ export const miscHandlers = [
       passcode,
     }
     writeCollection(MPESA_STATEMENTS_KEY, [...statements, record])
-    patchLoginDetails({ hasUploadedMpesaStatement: true })
+
+    // Uploading a statement raises the interest-free limit up to KES 6,000
+    // (matches the "Increase your limit up to KES 6,000" in-app copy). Grant the
+    // newly unlocked headroom to the spendable balance too.
+    const { creditLimit } = getLoginDetails()
+    const currentTotal = Number(creditLimit?.totalCreditLimitAmount || 0)
+    const currentRemaining = Number(creditLimit?.remainingAmount || 0)
+    const newTotal = Math.max(currentTotal, RAISED_CREDIT_LIMIT)
+    const delta = Math.max(0, newTotal - currentTotal)
+
+    patchLoginDetails({
+      hasUploadedMpesaStatement: true,
+      creditLimit: {
+        ...creditLimit,
+        totalCreditLimitAmount: String(newTotal),
+        remainingAmount: String(currentRemaining + delta),
+      },
+    })
     return HttpResponse.json({ message: "File uploaded successfully" })
   }),
 

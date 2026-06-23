@@ -96,7 +96,7 @@
   "idVerificationStatus": "APPROVED",
   "documentVerificationStatus": "PASSED",
   "network": [],
-  "type": "PATIENT",
+  "type": "PLUS",
   "canPayMedicalBill": true,
   "orgBorrower": null,
   "hasUploadedMpesaStatement": true,

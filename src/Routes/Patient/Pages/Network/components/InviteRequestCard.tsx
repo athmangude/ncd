@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { useToast } from "@/hooks/useToast"
-import { myNetworkQueryKey } from "../PatientMyNetwork"
+import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 
 interface InviteRequestCardProps {
   id: string
@@ -20,7 +20,7 @@ export function InviteRequestCard({
   inviterFirstName,
   inviterLastName,
   phoneNumber,
-  profilePhoto
+  profilePhoto,
 }: InviteRequestCardProps) {
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -38,14 +38,14 @@ export function InviteRequestCard({
         title: "Invite Declined",
         description: "You have declined the invitation.",
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      // Keep the circle list, payee pickers, and loan gate consistent.
+      invalidateCircleQueries(queryClient)
     },
     onError: (error: any) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to decline invite",
+        description:
+          error.response?.data?.message || "Failed to decline invite",
         variant: "destructive",
       })
     },
@@ -62,7 +62,9 @@ export function InviteRequestCard({
     >
       <Button
         className="flex-1 bg-purple-100 text-purple-700 hover:bg-purple-200 border-none shadow-none"
-        onClick={() => navigate(`/patients/network/accept-invite?inviteId=${id}`)}
+        onClick={() =>
+          navigate(`/patients/network/accept-invite?inviteId=${id}`)
+        }
       >
         Accept
       </Button>

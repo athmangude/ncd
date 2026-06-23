@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/useToast"
 import axios from "axios"
 import { validatePhoneNumber } from "@/utilities/validators"
 import { patientTreatmentDetailsStorageKey } from "../Loans/RequestLoan/PatientTreatmentDetails"
-import { patientConnectionsQueryKey } from "../Loans/RequestLoan/PatientSelectPatient"
+import { invalidateCircleQueries } from "../../hooks/useCircleSync"
 import { useEffect } from "react"
 import { trackEvent, EVENTS } from "@/analytics"
 import { setToLocalStorage } from "@/utilities/localStorage"
@@ -131,23 +131,24 @@ export default function PatientAddConnection() {
         description: data.message,
       })
 
+      // Adding anyone changes the circle — refresh every cache that mirrors it
+      // (payee pickers, circle tab, and the loan-eligibility gate) so the new
+      // person shows up everywhere immediately, regardless of which flow we
+      // came from (payment, gift, or plain circle add).
+      invalidateCircleQueries(queryClient)
+
       const redirectLink = state?.from ? callbackMap[state.from] : undefined
       if (redirectLink) {
         queryClient.invalidateQueries({
           queryKey: [patientTreatmentDetailsStorageKey],
         })
-        if (
-          state?.from === "select-patient" ||
-          state?.from === "fast-track-payment-details"
-        ) {
-          queryClient.invalidateQueries({
-            queryKey: [patientConnectionsQueryKey],
-          })
-        }
       }
 
       navigate(redirectLink ?? "/patients/network", {
         state: {
+          // `preselectedPatientId` is what the payment patient-pickers read to
+          // auto-select the person who was just added.
+          preselectedPatientId: data.patientId,
           patient: {
             id: data.patientId,
             name: `${data.firstName} ${data.lastName}`,

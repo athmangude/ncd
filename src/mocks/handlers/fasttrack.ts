@@ -1,5 +1,7 @@
 import { http, HttpResponse } from "msw"
 import { readObject, writeObject, makeId } from "../db"
+import { recordPayment } from "./loans"
+import { getLoginDetails } from "./profile"
 import type {
   FastTrackPaymentPoint,
   FastTrackTransaction,
@@ -86,6 +88,23 @@ export const fastTrackHandlers = [
 
     const existing = readObject<FastTrackTransaction[]>(TRANSACTIONS_KEY, [])
     writeObject(TRANSACTIONS_KEY, [transaction, ...existing])
+
+    // Record the payment in history with full parity to the multi-wallet flow:
+    // create a loan for any LOAN split, spend/earn cashback, and append a
+    // PaymentRecord whose id matches this transaction so the receipt resolves.
+    const profile = getLoginDetails()
+    recordPayment({
+      totalBillAmount: grossAmount,
+      facilityId: String(baseProvider.facility.id),
+      facilityName: baseProvider.facility.name,
+      patientName: `${profile.firstName} ${profile.lastName}`.trim(),
+      paymentId: transaction.id,
+      splits: dto.splits.map((s) => ({
+        type: s.mode,
+        amount: s.amount,
+        repaymentPeriodDays: s.repaymentPeriodDays,
+      })),
+    })
 
     return HttpResponse.json(transaction)
   }),

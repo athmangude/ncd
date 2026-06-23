@@ -6,7 +6,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/Button"
 import axios, { HttpStatusCode } from "axios"
 import { useToast } from "@/hooks/useToast"
-import { myNetworkQueryKey } from "./PatientMyNetwork"
+import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import fullLogo from "@/assets/icons/full-logo.svg"
 import { Check, User, Play, Pause } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
@@ -93,18 +93,16 @@ export default function PatientAcceptInvite() {
 
 function NoInviteFound() {
   return (
-    <AppShell header={null} footer={null} className="grid place-items-center">
-      <div className="flex flex-col items-center text-center">
-        <h2 className="text-2xl font-medium mb-2">No invite found</h2>
-        <p className="text-neutral-500 mb-6">
-          We could not find the invite you are looking for.
-        </p>
+    <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
+      <h2 className="text-2xl font-medium mb-2">No invite found</h2>
+      <p className="text-neutral-500 mb-6">
+        We could not find the invite you are looking for.
+      </p>
 
-        <Link to="/patients" className="w-full max-w-sm">
-          <Button className="w-full">Return to Dashboard</Button>
-        </Link>
-      </div>
-    </AppShell>
+      <Link to="/patients" className="w-full max-w-sm">
+        <Button className="w-full">Return to Dashboard</Button>
+      </Link>
+    </div>
   )
 }
 
@@ -214,9 +212,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         title: "Success",
         description: data.message,
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      invalidateCircleQueries(queryClient)
       localStorage.removeItem("inviteId")
 
       let redirectLink = "/patients"
@@ -255,9 +251,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         title: "Invite Declined",
         description: "You have declined the invitation.",
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      invalidateCircleQueries(queryClient)
       localStorage.removeItem("inviteId")
       navigate("/patients")
     },
@@ -371,11 +365,94 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
 
   if (showTerms) {
     return (
-      <PatientPageWrapper
-        title="Read and Accept Shared Terms"
-        footer={
-          <div className="p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-            <div className="flex flex-col gap-3">
+      <div className="flex flex-col min-h-screen bg-white mt-5 mx-2">
+        {/* Header */}
+        <PatientPageWrapper title="Read and Accept Shared Terms">
+          <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
+            <h2 className="text-2xl mb-2">Accept invitation?</h2>
+            <p className="text-neutral-500 mb-6 leading-relaxed">
+              Before you join the Circle, please review and accept the terms of
+              the Jireh mutual support system.
+            </p>
+
+            <Accordion
+              type="single"
+              collapsible
+              defaultValue="rewards"
+              className="space-y-4"
+            >
+              <AccordionItem value="rewards" className="border rounded-xl px-0">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <span className="text-left">Key Rewards (What you GAIN)</span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <ul className="space-y-4 pt-2">
+                    <TermRewardItem
+                      text="Higher loan limits"
+                      subtext="Unlock higher limits together."
+                    />
+                    <TermRewardItem
+                      text="Shared discounts & rewards"
+                      subtext=" Earn and enjoy rewards together"
+                    />
+                    <TermRewardItem
+                      text="Support when needed"
+                      subtext="Get help when it matters most."
+                    />
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="risks" className="border rounded-xl px-0">
+                <AccordionTrigger className="px-4 hover:no-underline">
+                  <span className=" text-left">
+                    Shared Risk (What you RISK)
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-4">
+                  <ul className="space-y-4 pt-2">
+                    <TermRewardItem
+                      text="Group access can pause"
+                      subtext="If one person delays repayment, some Circle benefits and rewards may pause."
+                    />
+                    <TermRewardItem
+                      text="Circle limits may reduce"
+                      subtext=" Late payments can affect limits for the whole Circle."
+                    />
+                    <TermRewardItem
+                      text="Cashbacks may be used to resolve unpaid bills"
+                      subtext="If a loan stays unpaid for long, cashbacks may help cover it."
+                    />
+                    <TermRewardItem
+                      text="Circle updates keep everyone informed"
+                      subtext="You’ll get updates when the Circle needs attention."
+                    />
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+
+            <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+              <Checkbox
+                id="accept-terms"
+                className="mt-1"
+                checked={termsAccepted}
+                onCheckedChange={(checked) =>
+                  setTermsAccepted(checked as boolean)
+                }
+              />
+              <label
+                htmlFor="accept-terms"
+                className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
+              >
+                I have read and understood the shared rewards and
+                responsibilities, and I agree to continue.
+              </label>
+            </div>
+          </div>
+
+          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <div className="max-w-md mx-auto w-full flex flex-col gap-3">
               <Button
                 className={cn(
                   "w-full",
@@ -425,89 +502,8 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
               </Button>
             </div>
           </div>
-        }
-      >
-        <div className="flex flex-col">
-          <h2 className="text-2xl mb-2">Accept invitation?</h2>
-          <p className="text-neutral-500 mb-6 leading-relaxed">
-            Before you join the Circle, please review and accept the terms of
-            the Jireh mutual support system.
-          </p>
-
-          <Accordion
-            type="single"
-            collapsible
-            defaultValue="rewards"
-            className="space-y-4"
-          >
-            <AccordionItem value="rewards" className="border rounded-xl px-0">
-              <AccordionTrigger className="px-4 hover:no-underline">
-                <span className="text-left">Key Rewards (What you GAIN)</span>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <ul className="space-y-4 pt-2">
-                  <TermRewardItem
-                    text="Higher loan limits"
-                    subtext="Unlock higher limits together."
-                  />
-                  <TermRewardItem
-                    text="Shared discounts & rewards"
-                    subtext=" Earn and enjoy rewards together"
-                  />
-                  <TermRewardItem
-                    text="Support when needed"
-                    subtext="Get help when it matters most."
-                  />
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="risks" className="border rounded-xl px-0">
-              <AccordionTrigger className="px-4 hover:no-underline">
-                <span className=" text-left">Shared Risk (What you RISK)</span>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <ul className="space-y-4 pt-2">
-                  <TermRewardItem
-                    text="Group access can pause"
-                    subtext="If one person delays repayment, some Circle benefits and rewards may pause."
-                  />
-                  <TermRewardItem
-                    text="Circle limits may reduce"
-                    subtext=" Late payments can affect limits for the whole Circle."
-                  />
-                  <TermRewardItem
-                    text="Cashbacks may be used to resolve unpaid bills"
-                    subtext="If a loan stays unpaid for long, cashbacks may help cover it."
-                  />
-                  <TermRewardItem
-                    text="Circle updates keep everyone informed"
-                    subtext="You’ll get updates when the Circle needs attention."
-                  />
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-
-          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
-            <Checkbox
-              id="accept-terms"
-              className="mt-1"
-              checked={termsAccepted}
-              onCheckedChange={(checked) =>
-                setTermsAccepted(checked as boolean)
-              }
-            />
-            <label
-              htmlFor="accept-terms"
-              className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
-            >
-              I have read and understood the shared rewards and
-              responsibilities, and I agree to continue.
-            </label>
-          </div>
-        </div>
-      </PatientPageWrapper>
+        </PatientPageWrapper>
+      </div>
     )
   }
 
@@ -621,6 +617,38 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
   )
 }
 
+      <div className="h-24" />
+      <div className="fixed bottom-0 left-0 right-0 p-4  z-50 bg-white">
+        <div className="max-w-md mx-auto w-full flex flex-col gap-3">
+          <Button
+            className="w-full "
+            type="button"
+            onClick={(e) => {
+              e.preventDefault()
+              setShowTerms(true)
+            }}
+          >
+            Read Terms & Accept invite
+          </Button>
+          {/* <Button
+            variant="ghost"
+            className="w-full text-red-600 hover:bg-red-50 hover:text-red-700"
+            disabled={rejectMutation.isPending}
+            isLoading={rejectMutation.isPending}
+            onClick={() => {
+              if (session.loading) return
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      const response = await axios.post(
+        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/qr/accept`,
+        {
+          token,
+          signature,
+          relationship,
+        }
+      )
+
 function QRInviteDetails({
   token,
   signature,
@@ -656,9 +684,7 @@ function QRInviteDetails({
         title: "Success",
         description: data.message,
       })
-      queryClient.invalidateQueries({
-        queryKey: [myNetworkQueryKey],
-      })
+      invalidateCircleQueries(queryClient)
 
       localStorage.removeItem("qrToken")
       localStorage.removeItem("qrSignature")
@@ -688,139 +714,148 @@ function QRInviteDetails({
   )
 
   return (
-    <PatientPageWrapper
-      title="Join Circle via QR"
-      footer={
-        <div className="p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-          <Button
-            className={cn(
-              "w-full",
-              !termsAccepted
-                ? "bg-neutral-300 text-white hover:bg-neutral-400"
-                : ""
-            )}
-            type="button"
-            disabled={
-              !termsAccepted ||
-              !relationship ||
-              mutation.isPending ||
-              mutation.isSuccess
-            }
-            isLoading={mutation.isPending}
-            onClick={(e) => {
-              e.preventDefault()
-              if (session.loading) return
+    <div className="flex flex-col min-h-screen bg-white mt-5 mx-2">
+      <PatientPageWrapper title="Join Circle via QR">
+        <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
+          <div className="mb-6 flex justify-center">
+            <img
+              src={fullLogo}
+              alt="Jireh Logo"
+              className="w-32 object-contain"
+            />
+          </div>
 
-              if (!session.doesSessionExist) {
-                localStorage.setItem("qrToken", token)
-                localStorage.setItem("qrSignature", signature)
-                navigate("/patients/auth")
-                return
+          <h2 className="text-2xl mb-2 text-center">Accept invitation?</h2>
+          <p className="text-neutral-500 mb-6 leading-relaxed text-center">
+            You have been invited to join a Jireh Circle. Please confirm your
+            relationship to the inviter and accept the terms.
+          </p>
+
+          <div className="mb-6">
+            <Controller
+              name="relationship"
+              control={control}
+              rules={{ required: "Relationship is required" }}
+              render={({ field }) => (
+                <FormGroupSelect
+                  id="relationship"
+                  label="Relationship to Inviter"
+                  placeholder="Select relationship"
+                  field={field}
+                  error={undefined} // handled by form state if needed, but button disabled logic covers it
+                  options={adultRelationshipOptions}
+                />
+              )}
+            />
+          </div>
+
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="rewards"
+            className="space-y-4"
+          >
+            <AccordionItem value="rewards" className="border rounded-xl px-0">
+              <AccordionTrigger className="px-4 hover:no-underline">
+                <span className="text-left">Key Rewards (What you GAIN)</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <ul className="space-y-4 pt-2">
+                  <TermRewardItem
+                    text="Unlock Higher Loan Limits"
+                    subtext="Access to loans and financial utility."
+                  />
+                  <TermRewardItem
+                    text="Lower Loan Interest Rates"
+                    subtext="Unlock better loan terms up to 5%"
+                  />
+                  <TermRewardItem
+                    text="Shared Circle discounts"
+                    subtext="Access to Circle grace periods and higher limits."
+                  />
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="risks" className="border rounded-xl px-0">
+              <AccordionTrigger className="px-4 hover:no-underline">
+                <span className=" text-left">Shared Risk (What you RISK)</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <ul className="space-y-4 pt-2">
+                  <li className="flex items-start gap-3">
+                    <span className="text-sm text-neutral-700 leading-relaxed">
+                      If a member of your circle defaults, your cashback or
+                      savings may be used to cover their debt. This is the core
+                      of our mutual support system.
+                    </span>
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+            <Checkbox
+              id="accept-terms"
+              className="mt-1"
+              checked={termsAccepted}
+              onCheckedChange={(checked) =>
+                setTermsAccepted(checked as boolean)
               }
-              mutation.mutate()
-            }}
-          >
-            Accept & Join Circle
-          </Button>
-        </div>
-      }
-    >
-      <div className="flex flex-col">
-        <div className="mb-6 flex justify-center">
-          <img
-            src={fullLogo}
-            alt="Jireh Logo"
-            className="w-32 object-contain"
-          />
+            />
+            <label
+              htmlFor="accept-terms"
+              className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
+            >
+              I understand and accept the shared rewards and the progressive
+              penalties, including the risk of cashback offset.
+            </label>
+          </div>
         </div>
 
-        <h2 className="text-2xl mb-2 text-center">Accept invitation?</h2>
-        <p className="text-neutral-500 mb-6 leading-relaxed text-center">
-          You have been invited to join a Jireh Circle. Please confirm your
-          relationship to the inviter and accept the terms.
-        </p>
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="max-w-md mx-auto w-full">
+            <Button
+              className={cn(
+                "w-full",
+                !termsAccepted
+                  ? "bg-neutral-300 text-white hover:bg-neutral-400"
+                  : ""
+              )}
+              type="button"
+              disabled={
+                !termsAccepted ||
+                !relationship ||
+                mutation.isPending ||
+                mutation.isSuccess
+              }
+              isLoading={mutation.isPending}
+              onClick={(e) => {
+                e.preventDefault()
+                if (session.loading) return
 
-        <div className="mb-6">
-          <Controller
-            name="relationship"
-            control={control}
-            rules={{ required: "Relationship is required" }}
-            render={({ field }) => (
-              <FormGroupSelect
-                id="relationship"
-                label="Relationship to Inviter"
-                placeholder="Select relationship"
-                field={field}
-                error={undefined} // handled by form state if needed, but button disabled logic covers it
-                options={adultRelationshipOptions}
-              />
-            )}
-          />
+                if (!session.doesSessionExist) {
+                  // Store QR params in localStorage or URL?
+                  // JoinCircleRedirect handles URL, but if we go to auth we lose params.
+                  // We need to persist them.
+                  // Actually, PatientAcceptInvite is an authenticated route (or SessionAuth wrapped).
+                  // If !doesSessionExist, we redirect to /patients/auth
+                  // We should store params.
+                  localStorage.setItem("qrToken", token)
+                  localStorage.setItem("qrSignature", signature)
+                  navigate("/patients/auth")
+                  return
+                }
+                mutation.mutate()
+              }}
+            >
+              Accept & Join Circle
+            </Button>
+          </div>
         </div>
-
-        <Accordion
-          type="single"
-          collapsible
-          defaultValue="rewards"
-          className="space-y-4"
-        >
-          <AccordionItem value="rewards" className="border rounded-xl px-0">
-            <AccordionTrigger className="px-4 hover:no-underline">
-              <span className="text-left">Key Rewards (What you GAIN)</span>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
-              <ul className="space-y-4 pt-2">
-                <TermRewardItem
-                  text="Unlock Higher Loan Limits"
-                  subtext="Access to loans and financial utility."
-                />
-                <TermRewardItem
-                  text="Lower Loan Interest Rates"
-                  subtext="Unlock better loan terms up to 5%"
-                />
-                <TermRewardItem
-                  text="Shared Circle discounts"
-                  subtext="Access to Circle grace periods and higher limits."
-                />
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="risks" className="border rounded-xl px-0">
-            <AccordionTrigger className="px-4 hover:no-underline">
-              <span className=" text-left">Shared Risk (What you RISK)</span>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
-              <ul className="space-y-4 pt-2">
-                <li className="flex items-start gap-3">
-                  <span className="text-sm text-neutral-700 leading-relaxed">
-                    If a member of your circle defaults, your cashback or
-                    savings may be used to cover their debt. This is the core of
-                    our mutual support system.
-                  </span>
-                </li>
-              </ul>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
-        <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
-          <Checkbox
-            id="accept-terms"
-            className="mt-1"
-            checked={termsAccepted}
-            onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
-          />
-          <label
-            htmlFor="accept-terms"
-            className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
-          >
-            I understand and accept the shared rewards and the progressive
-            penalties, including the risk of cashback offset.
-          </label>
-        </div>
-      </div>
-    </PatientPageWrapper>
+      </PatientPageWrapper>
+    </div>
   )
 }
 

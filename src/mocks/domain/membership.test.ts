@@ -4,6 +4,7 @@ import {
   activateMembership,
   deactivateMembership,
   isMembershipActive,
+  DEFAULT_CREDIT_LIMIT,
 } from "./membership"
 import { getLoginDetails, patchLoginDetails } from "../handlers/profile"
 
@@ -34,5 +35,22 @@ describe("membership domain", () => {
     expect(Number(credit.remainingAmount)).toBe(
       Number(credit.totalCreditLimitAmount)
     )
+  })
+
+  it("seeds the default limit for a fresh upgrade with no limit yet", () => {
+    const current = getLoginDetails()
+    patchLoginDetails({
+      creditLimit: {
+        ...current.creditLimit,
+        totalCreditLimitAmount: "0",
+        remainingAmount: "0",
+      },
+    })
+
+    activateMembership()
+
+    const credit = getLoginDetails().creditLimit
+    expect(Number(credit.totalCreditLimitAmount)).toBe(DEFAULT_CREDIT_LIMIT)
+    expect(Number(credit.remainingAmount)).toBe(DEFAULT_CREDIT_LIMIT)
   })
 })

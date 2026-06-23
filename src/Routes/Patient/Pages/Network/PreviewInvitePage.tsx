@@ -15,7 +15,7 @@ import {
 } from "@/utilities/localStorage"
 import { PENDING_INVITE_KEY } from "./InviteMethodPage"
 import { patientTreatmentDetailsStorageKey } from "@/Routes/Patient/Pages/Loans/RequestLoan/PatientTreatmentDetails"
-import { myNetworkQueryKey } from "./PatientMyNetwork"
+import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import { InvitePreviewCard } from "./components/InvitePreviewCard"
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -97,7 +97,7 @@ export default function PreviewInvitePage() {
     queryClient.invalidateQueries({
       queryKey: [patientTreatmentDetailsStorageKey],
     })
-    queryClient.invalidateQueries({ queryKey: [myNetworkQueryKey] })
+    invalidateCircleQueries(queryClient)
     const link =
       data.inviteLink ||
       import.meta.env.VITE_APP_DOMAIN +
