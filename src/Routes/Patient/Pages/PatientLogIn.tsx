@@ -1,10 +1,10 @@
 import PatientAuthWrapper from "@/Routes/Patient/components/PatientAuthWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { useState, useEffect } from "react"
 import VerifyOTPForm from "../components/VerifyOTPForm"
 import { useForm } from "react-hook-form"
 import PatientAuthHeadline from "../components/PatientAuthHeadline"
 import FormGroup from "@/components/form/FormGroupInput"
-import { Button } from "@/components/Button"
 import { Link } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import { createCode } from "supertokens-auth-react/recipe/passwordless"
@@ -16,14 +16,13 @@ import { trackEvent, EVENTS, maskPhoneNumber } from "@/analytics"
 export default function PatientLogIn() {
   const [showOtpPage, setShowOtpPage] = useState(false)
 
-  return (
-    <PatientAuthWrapper>
-      {!showOtpPage ? (
-        <LogInForm setShowOtpPage={setShowOtpPage} />
-      ) : (
-        <VerifyOTPForm />
-      )}
-    </PatientAuthWrapper>
+  // Both branches self-shell (LogInForm via PatientAuthWrapper, VerifyOTPForm via
+  // its own MobileWrapper), so this is a pure switch — wrapping either here would
+  // nest a second AppShell.
+  return !showOtpPage ? (
+    <LogInForm setShowOtpPage={setShowOtpPage} />
+  ) : (
+    <VerifyOTPForm />
   )
 }
 
@@ -93,65 +92,64 @@ function LogInForm({ setShowOtpPage }: { setShowOtpPage: Function }) {
     },
   })
   return (
-    <form
-      className="flex flex-col gap-7"
-      onSubmit={handleSubmit(async (data) => {
-        await mutation.mutate(data)
-      })}
+    <PatientAuthWrapper
+      footer={
+        <PrimaryCTAFooter
+          label="Send OTP"
+          form="patient-login-form"
+          type="submit"
+          disabled={mutation.isPending}
+          isLoading={mutation.isPending}
+        />
+      }
     >
-      <PatientAuthHeadline text="Please type in your phone number" />
-
-      <input type="hidden" {...register("countryCode")} />
-
-      <FormGroup
-        id="phoneNumber"
-        label="Phone Number"
-        type="phone"
-        placeholder="Enter your phone number"
-        register={register("phoneNumber", {
-          required: {
-            value: true,
-            message: "Please enter your phone number",
-          },
-          validate: (value) => {
-            if (
-              !validatePhoneNumber({
-                countryCode: watch("countryCode"),
-                phoneNumber: value,
-              })
-            ) {
-              return "Please enter a valid phone number"
-            }
-
-            return true
-          },
+      <form
+        id="patient-login-form"
+        className="flex flex-col gap-7"
+        onSubmit={handleSubmit(async (data) => {
+          await mutation.mutate(data)
         })}
-        error={errors.phoneNumber?.message}
-        countryCode={currentCountryCode}
-        onCountryCodeChange={(code) => setValue("countryCode", code)}
-        isDevMode={
-          import.meta.env.DEV ||
-          import.meta.env.VITE_NODE_ENV === "development"
-        }
-      />
-      <div className="fixed bottom-0 left-0 right-0 p-4  z-50">
-          <div className="max-w-md mx-auto w-full">
-            <Button
-            className="w-full"
-            size="lg"
-            role="link"
-            type="submit"
-            disabled={mutation.isPending}
-            isLoading={mutation.isPending}
-          >
-            Send OTP
-          </Button>
-        </div>
-      </div>
+      >
+        <PatientAuthHeadline text="Please type in your phone number" />
 
-      <Link to="/patients/auth" className="font-bold  mx-auto">
-        Sign Up
-      </Link>
-    </form>
+        <input type="hidden" {...register("countryCode")} />
+
+        <FormGroup
+          id="phoneNumber"
+          label="Phone Number"
+          type="phone"
+          placeholder="Enter your phone number"
+          register={register("phoneNumber", {
+            required: {
+              value: true,
+              message: "Please enter your phone number",
+            },
+            validate: (value) => {
+              if (
+                !validatePhoneNumber({
+                  countryCode: watch("countryCode"),
+                  phoneNumber: value,
+                })
+              ) {
+                return "Please enter a valid phone number"
+              }
+
+              return true
+            },
+          })}
+          error={errors.phoneNumber?.message}
+          countryCode={currentCountryCode}
+          onCountryCodeChange={(code) => setValue("countryCode", code)}
+          isDevMode={
+            import.meta.env.DEV ||
+            import.meta.env.VITE_NODE_ENV === "development"
+          }
+        />
+
+        <Link to="/patients/auth" className="font-bold  mx-auto">
+          Sign Up
+        </Link>
+      </form>
+    </PatientAuthWrapper>
   )
 }
