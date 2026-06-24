@@ -1,4 +1,7 @@
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import MobileWrapper, {
+  BackTitleHeader,
+  PrimaryCTAFooter,
+} from "@/Routes/MobileWrapper"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
@@ -8,11 +11,21 @@ import { InvitationsReceivedSection } from "./components/InvitationsReceivedSect
 import { InvitationsSentSection } from "./components/InvitationsSentSection"
 import { ActiveMembersSection } from "./components/ActiveMembersSection"
 import { NetworkSkeleton } from "./components/NetworkSkeleton"
-import { AddMemberButton } from "./components/AddMemberButton"
 import { useNetworkData } from "./hooks/useNetworkData"
 
 export default function PatientMyNetworkPage() {
   const navigate = useNavigate()
+  // React Query dedupes on myNetworkQueryKey, so reading isAllFull here for the
+  // pinned footer shares the same cache entry MyNetwork uses below — no extra
+  // request.
+  const { data } = useNetworkData()
+  const isAllFull = data?.isAllFull ?? false
+
+  const goToAddMember = () =>
+    navigate("/patients/circle-setup-intro", {
+      state: { source: "network", returnPath: "/patients/network" },
+    })
+
   return (
     <MobileWrapper
       header={
@@ -21,24 +34,30 @@ export default function PatientMyNetworkPage() {
           onBack={() => navigate("/patients", { state: { tab: "circle" } })}
         />
       }
-      footer={null}
+      footer={
+        <PrimaryCTAFooter
+          label={isAllFull ? "Max circle size reached" : "Add New member"}
+          onClick={goToAddMember}
+          disabled={isAllFull}
+        />
+      }
     >
       <PatientMyNetwork />
     </MobileWrapper>
   )
 }
 
-export function PatientMyNetwork({ hasBottomNav = false }: { hasBottomNav?: boolean }) {
+export function PatientMyNetwork() {
   return (
     <div className="w-full">
-      <MyNetwork hasBottomNav={hasBottomNav} />
+      <MyNetwork />
     </div>
   )
 }
 
 export const myNetworkQueryKey = "myConnectionsKey"
 
-function MyNetwork({ hasBottomNav }: { hasBottomNav: boolean }) {
+function MyNetwork() {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -84,22 +103,17 @@ function MyNetwork({ hasBottomNav }: { hasBottomNav: boolean }) {
     return () => clearTimeout(timer)
   }, [searchParams, setSearchParams])
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useNetworkData()
+  const { data, isLoading, isError, error } = useNetworkData()
 
   // Simple offline check for error message
   const isOffline = !navigator.onLine
 
   if (isError) {
     return (
-      <ErrorBlock 
+      <ErrorBlock
         message={
-          isOffline 
-            ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard." 
+          isOffline
+            ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard."
             : (error as any)?.response?.data?.message || (error as any)?.message
         }
       />
@@ -131,7 +145,9 @@ function MyNetwork({ hasBottomNav }: { hasBottomNav: boolean }) {
         <NetworkSkeleton />
       ) : (
         <>
-          <InvitationsReceivedSection receivedInvites={networkData.receivedInvites} />
+          <InvitationsReceivedSection
+            receivedInvites={networkData.receivedInvites}
+          />
           <InvitationsSentSection invites={networkData.invites} />
           <ActiveMembersSection
             network={networkData.network}
@@ -143,12 +159,6 @@ function MyNetwork({ hasBottomNav }: { hasBottomNav: boolean }) {
           />
         </>
       )}
-      
-      <AddMemberButton
-        hasBottomNav={hasBottomNav}
-        isAllFull={networkData.isAllFull}
-        onAddClick={handleInviteClick}
-      />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
+import AppShell from "@/Routes/AppShell"
 import {
   ArrowLeft,
   BadgeCheck,
@@ -158,20 +159,22 @@ export default function SearchPage() {
 
   const hasActiveFilters = chips.length > 0
 
-  return (
-    <div className="flex flex-col w-full h-[100dvh] overflow-y-auto no-scrollbar bg-white">
-      <SearchHeader
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        verifiedOnly={verifiedOnly}
-        toggleVerified={() => setActiveTab(verifiedOnly ? "all" : "jireh")}
-        locationName={locationName}
-        onBack={() => navigate(-1)}
-        chips={chips}
-        hasActiveFilters={hasActiveFilters}
-        onFilterTap={() => navigate("/patients/search/filters")}
-      />
+  const header = (
+    <SearchHeader
+      searchQuery={searchQuery}
+      setSearchQuery={setSearchQuery}
+      verifiedOnly={verifiedOnly}
+      toggleVerified={() => setActiveTab(verifiedOnly ? "all" : "jireh")}
+      locationName={locationName}
+      onBack={() => navigate(-1)}
+      chips={chips}
+      hasActiveFilters={hasActiveFilters}
+      onFilterTap={() => navigate("/patients/search/filters")}
+    />
+  )
 
+  return (
+    <AppShell header={header} footer={null} bodyPadding="none">
       <div className="flex flex-col gap-6 p-4 w-full">
         {!isSearching && (
           <EmptyState
@@ -206,7 +209,7 @@ export default function SearchPage() {
           </div>
         )}
       </div>
-    </div>
+    </AppShell>
   )
 }
 
@@ -232,7 +235,7 @@ function SearchHeader({
   onFilterTap: () => void
 }) {
   return (
-    <div className="sticky top-0 z-10 bg-white flex flex-col gap-2 p-4 w-full shrink-0 border-b border-neutral-100">
+    <div className="bg-white flex flex-col gap-2 p-4 w-full border-b border-neutral-100">
       <div className="flex items-center gap-2 self-start">
         <button
           type="button"

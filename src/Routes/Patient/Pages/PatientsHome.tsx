@@ -136,59 +136,21 @@ export default function PatientsHome() {
   }
 
   const normalizedPath = location.pathname.replace(/\/$/, "") // Remove trailing slash
-  const isDashboardWithIncompleteSignUp =
-    normalizedPath === "/patients" && !!query.data?.onboardingRedirectLink
 
   // ── Layout ownership ────────────────────────────────────────────────────────
   // Most screens now render their own self-contained shell (PatientPageWrapper /
-  // MobileWrapper, both built on AppShell) — they draw the neutral-100 frame +
+  // MobileWrapper / AppShell directly) — they draw the neutral-100 frame +
   // centered white max-w-md card at every breakpoint. For those, this container
   // must be a pure passthrough (no width/padding/border at any breakpoint),
   // otherwise the desktop card double-frames the screen.
   //
-  // The exceptions below are the screens NOT yet migrated to a self-contained
-  // shell; they still rely on this container for their frame. Each group is
-  // peeled off in a later migration phase until this container can be deleted.
-
-  // Dashboard rolls its own fixed header + animated tab bar (migrated later).
-  const DASHBOARD_PATHS = [
-    "/patients",
-    "/patients/home",
-    "/patients/circle",
-    "/patients/explore",
-    "/patients/profile",
-  ]
-  const isDashboardRoute = DASHBOARD_PATHS.includes(normalizedPath)
-
-  // Bare onboarding screens that still render plain content (no shell wrapper).
-  // The PatientAuthWrapper-based bare screens (add-whatsapp-number,
-  // id-verification-failure, referral-code, org-onboarding-success) now
-  // self-shell via AppShell, so they're passthrough. Only resolve-type (plain)
-  // and complete-profile (renders the not-yet-migrated IncompleteSignUp) still
-  // rely on this container; both are migrated in Phase 4 with the dashboard.
-  const LEGACY_BARE_PATHS = [
-    "/patients/resolve-type",
-    "/patients/complete-profile",
-  ]
-  const isLegacyBare = LEGACY_BARE_PATHS.includes(normalizedPath)
-
-  // Discovery screens (own layout; migrated in a later phase).
-  const isDiscovery =
-    normalizedPath === "/patients/search" ||
-    normalizedPath === "/patients/search/filters" ||
-    normalizedPath.startsWith("/patients/facility/")
-
-  // Subscriptions transaction result renders its own full-bleed layout.
+  // After Phase 4 only two route groups still rely on this container for their
+  // frame; both are removed in Phase 5 when the whole switch is deleted:
+  //   - resolve-type: plain onboarding screen, not yet shelled
+  //   - subscriptions/*: renders its own layout inside the padded card
+  const isLegacyBare = normalizedPath === "/patients/resolve-type"
   const isSubscriptions = normalizedPath.startsWith("/patients/subscriptions")
-
-  const usesLegacyContainer =
-    isDashboardRoute || isLegacyBare || isDiscovery || isSubscriptions
-
-  // Within the legacy container, these want the desktop card but no mobile padding.
-  const needsFullBleed =
-    isDashboardWithIncompleteSignUp ||
-    normalizedPath === "/patients/complete-profile" ||
-    normalizedPath.startsWith("/patients/facility/")
+  const usesLegacyContainer = isLegacyBare || isSubscriptions
 
   return (
     <SessionAuth requireAuth={true}>
@@ -197,11 +159,7 @@ export default function PatientsHome() {
           // Self-shelled screens render as a pure passthrough (no shell classes at
           // any breakpoint); only not-yet-migrated screens get the padded card.
           usesLegacyContainer &&
-            "flex flex-col mx-auto sm:max-w-[450px] sm:border sm:border-input sm:px-10 py-7 sm:mt-10 gap-7",
-          usesLegacyContainer &&
-            (needsFullBleed
-              ? "w-full max-w-full px-0 py-0 sm:max-w-[450px] sm:px-10 sm:py-7 sm:mt-10"
-              : "max-w-[450px] px-4 sm:px-10")
+            "flex flex-col mx-auto max-w-[450px] px-4 py-7 gap-7 sm:border sm:border-input sm:px-10 sm:mt-10"
         )}
       >
         <Routes>

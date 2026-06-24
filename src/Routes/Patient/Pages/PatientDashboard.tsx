@@ -6,6 +6,7 @@ import { useOnboardingChecklist } from "../hooks/useOnboardingChecklist"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import IncompleteSignUp from "../components/IncompleteSignUp"
+import AppShell from "@/Routes/AppShell"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import PatientDashboardTabs from "./Dashboard/PatientDashboardTabs"
@@ -60,15 +61,18 @@ export default function PatientDashboard() {
       return null
     }
 
-    // For other errors, show error block
+    // For other errors, show error block. Wrapped in AppShell because the
+    // dashboard route is now a passthrough in PatientsHome (no legacy frame).
     return (
-      <ErrorBlock
-        message={
-          isOffline
-            ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard."
-            : error.response?.data?.message || error.message
-        }
-      />
+      <AppShell header={null} footer={null}>
+        <ErrorBlock
+          message={
+            isOffline
+              ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard."
+              : error.response?.data?.message || error.message
+          }
+        />
+      </AppShell>
     )
   }
 
@@ -145,63 +149,71 @@ function Dashboard({ data }: { data: any }) {
     )
   }
 
-  return (
-    <div className="flex flex-col gap-5 pb-24 relative min-h-screen bg-white">
-      {/* Fixed Header */}
-      <div className="flex justify-between items-center fixed top-0 left-0 px-5 py-3 w-full bg-white/95 backdrop-blur-sm z-50 shadow-sm border-b border-neutral-100">
-        <div className=" scale-90 sm:scale-100 origin-top-right">
-          <img src={logoIcon} alt="Jireh Logo" width="150" className="h-auto" />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="WhatsApp"
-            className="relative hover:bg-green-50 rounded-full"
-          >
-            <a
-              href="https://wa.me/254117118511"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <img
-                src={whatsApp}
-                alt="Chat with Us on WhatsApp"
-                className="w-6 h-6"
-              />
-            </a>
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Notifications"
-            className="relative hover:bg-neutral-100 rounded-full"
-            onClick={() => navigate("/patients/notifications")}
-          >
-            <Bell className="w-6 h-6 text-neutral-600" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-[10px] text-white ring-2 ring-white">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </Button>
-        </div>
+  // The top bar lives in the AppShell header slot (not a `fixed` overlay) so its
+  // height is reserved in the flex column — nothing is hidden beneath it — and it
+  // aligns to the centered max-w-md card. The bottom tab bar stays `fixed`
+  // (framer-motion measured) and the tab content reserves space for it via its
+  // own pb-* padding.
+  const header = (
+    <div className="flex justify-between items-center px-5 py-3 w-full bg-white/95 backdrop-blur-sm shadow-sm border-b border-neutral-100">
+      <div className=" scale-90 sm:scale-100 origin-top-right">
+        <img src={logoIcon} alt="Jireh Logo" width="150" className="h-auto" />
       </div>
 
-      {isOffline && (
-        <div className="mb-1 rounded-md bg-amber-100 text-amber-800 border border-amber-300 px-3 py-2 text-sm font-medium flex items-center gap-2 sticky top-16 z-40">
-          <CloudOff className="h-4 w-4" />
-          You are in offline mode. Some features may be unavailable.
-        </div>
-      )}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="WhatsApp"
+          className="relative hover:bg-green-50 rounded-full"
+        >
+          <a
+            href="https://wa.me/254117118511"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <img
+              src={whatsApp}
+              alt="Chat with Us on WhatsApp"
+              className="w-6 h-6"
+            />
+          </a>
+        </Button>
 
-      {!user.hasSetPin && <SetPinCTA />}
-
-      <PatientDashboardTabs />
-      <AccountLockedDrawer />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Notifications"
+          className="relative hover:bg-neutral-100 rounded-full"
+          onClick={() => navigate("/patients/notifications")}
+        >
+          <Bell className="w-6 h-6 text-neutral-600" />
+          {unreadCount > 0 && (
+            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-[10px] text-white ring-2 ring-white">
+              {unreadCount > 9 ? "9+" : unreadCount}
+            </span>
+          )}
+        </Button>
+      </div>
     </div>
+  )
+
+  return (
+    <AppShell header={header} footer={null}>
+      <div className="flex flex-col gap-5 relative min-h-full bg-white">
+        {isOffline && (
+          <div className="mb-1 rounded-md bg-amber-100 text-amber-800 border border-amber-300 px-3 py-2 text-sm font-medium flex items-center gap-2 sticky top-0 z-40">
+            <CloudOff className="h-4 w-4" />
+            You are in offline mode. Some features may be unavailable.
+          </div>
+        )}
+
+        {!user.hasSetPin && <SetPinCTA />}
+
+        <PatientDashboardTabs />
+        <AccountLockedDrawer />
+      </div>
+    </AppShell>
   )
 }
 

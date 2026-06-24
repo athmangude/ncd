@@ -11,10 +11,15 @@ interface DashboardTabBarProps {
   pathD: MotionValue<string>
 }
 
-export function DashboardTabBar({ listRef, tabRefs, cx, pathD }: DashboardTabBarProps) {
+export function DashboardTabBar({
+  listRef,
+  tabRefs,
+  cx,
+  pathD,
+}: DashboardTabBarProps) {
   return (
-    <section className="w-full flex justify-center fixed bottom-0 left-0 z-50">
-      <div className="relative max-w-[450px] w-full mt-5 h-20">
+    <section className="w-full flex justify-center fixed bottom-0 left-0 z-50 safe-pb">
+      <div className="relative max-w-md w-full mt-5 h-20">
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none drop-shadow-sm"
           style={{ filter: "drop-shadow(0px -1px 2px rgba(0,0,0,0.05))" }}

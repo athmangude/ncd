@@ -6,11 +6,12 @@ import IncompleteSignUp from "./IncompleteSignUp"
 
 const wrap = (ui: ReactNode) => createElement(MemoryRouter, null, ui)
 
-// IncompleteSignUp is decoupled from PatientAuthWrapper (it renders inside the
-// not-yet-migrated dashboard / complete-profile legacy container, so it keeps
-// its plain logo-header layout until Phase 4). These tests guard that layout.
+// IncompleteSignUp self-shells via AppShell (Phase 4): the routes that render it
+// (the "/patients" incomplete state and "/complete-profile") are now passthrough
+// in PatientsHome, so the canonical shell draws the frame. These tests guard the
+// shell slots and the (intentionally preserved) bespoke tint.
 describe("IncompleteSignUp", () => {
-  it("renders the sign-up steps and a Continue CTA", () => {
+  it("renders the sign-up steps and a Continue CTA inside the shell", () => {
     render(
       wrap(
         <IncompleteSignUp onboardingRedirectLink="/patients/personal-details" />
@@ -18,7 +19,7 @@ describe("IncompleteSignUp", () => {
     )
     expect(screen.getByText("Phone number")).toBeInTheDocument()
     expect(screen.getByText("ID Verification")).toBeInTheDocument()
-    expect(screen.getByText("Continue")).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: "Continue" })).toBeInTheDocument()
     expect(screen.getByRole("main")).toBeInTheDocument()
   })
 

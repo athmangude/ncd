@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button"
+import AppShell from "@/Routes/AppShell"
 import PatientAuthHeadline from "./PatientAuthHeadline"
 import { useNavigate } from "react-router-dom"
 import { Check, Clock } from "lucide-react"
@@ -80,150 +81,150 @@ export default function IncompleteSignUp({
     }
   }
 
-  // NOTE: This screen is reached via the dashboard ("/patients" incomplete state)
-  // and "/complete-profile", both of which still render inside PatientsHome's
-  // legacy container. It therefore renders its own plain layout (logo header +
-  // content) rather than the canonical AppShell — migrating it to the shell here
-  // would double-frame it on desktop. It is migrated alongside the dashboard in
-  // Phase 4.
-  return (
+  // Self-shells via AppShell (migrated in Phase 4 alongside the dashboard): the
+  // routes that render it (the "/patients" incomplete state and
+  // "/complete-profile") are now passthrough in PatientsHome's container, so the
+  // canonical shell draws the frame here. The bespoke #FDF4FF tint and its
+  // (buggy but intentional) conditional are preserved verbatim — relocate, not
+  // restyle.
+  const header = (
+    <header className="w-full max-w-[400px] mx-auto py-5 flex justify-center">
+      <img src={fullLogo} alt="Jireh Logo" className="w-1/2" />
+    </header>
+  )
+
+  const footer = (
     <div
       className={cn(
-        "min-h-screen w-full",
+        "p-4",
+        !fromPayMedicalBill || !isCompletingProfile
+          ? "bg-[#FDF4FF]"
+          : "bg-white"
+      )}
+    >
+      <Button
+        className="w-full"
+        role="link"
+        onClick={() => {
+          const nextRoute =
+            onboardingRedirectLink ||
+            (fromPayMedicalBill || isCompletingProfile
+              ? "/patients/payment/request-payment/how-to-pay"
+              : "/patients")
+          navigate(nextRoute, {
+            state: {
+              fromDashboard: true,
+            },
+          })
+        }}
+      >
+        Continue
+      </Button>
+    </div>
+  )
+
+  return (
+    <AppShell
+      header={header}
+      footer={footer}
+      cardClassName={cn(
         !fromPayMedicalBill || (!isCompletingProfile && "bg-[#FDF4FF]")
       )}
     >
-      <header className="w-full max-w-[400px] mx-auto py-5 flex justify-center">
-        <img src={fullLogo} alt="Jireh Logo" className="w-1/2" />
-      </header>
-      <main className="flex justify-center py-5 px-5">
-        <section className="max-w-[400px] rounded-sm w-full flex flex-col gap-7">
-          <div className="flex flex-col items-center gap-2 mb-2">
-            <div className="flex flex-col items-center justify-center mb-6">
-              <img
-                src={
-                  fromPayMedicalBill || isCompletingProfile
-                    ? successIcon
-                    : createAccount
-                }
-                alt="createAccount"
-                className="w-[50px] mb-3"
-                aria-hidden="true"
-              />
-              <PatientAuthHeadline
-                text={
-                  fromPayMedicalBill || isCompletingProfile
-                    ? "Complete your profile"
-                    : "Create your account in 4 easy steps!"
-                }
-              />
-            </div>
-            <p className="text-neutral-500 text-center text-sm">
-              {fromPayMedicalBill || isCompletingProfile
-                ? "Unlock cashback when you pay with Jireh Health."
-                : "Secure your identity to unlock healthcare support."}
-            </p>
-            <div className="bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
-              <Clock size={14} />
-              Only takes 2mins!
-            </div>
+      <section className="max-w-[400px] rounded-sm w-full mx-auto flex flex-col gap-7">
+        <div className="flex flex-col items-center gap-2 mb-2">
+          <div className="flex flex-col items-center justify-center mb-6">
+            <img
+              src={
+                fromPayMedicalBill || isCompletingProfile
+                  ? successIcon
+                  : createAccount
+              }
+              alt="createAccount"
+              className="w-[50px] mb-3"
+              aria-hidden="true"
+            />
+            <PatientAuthHeadline
+              text={
+                fromPayMedicalBill || isCompletingProfile
+                  ? "Complete your profile"
+                  : "Create your account in 4 easy steps!"
+              }
+            />
           </div>
+          <p className="text-neutral-500 text-center text-sm">
+            {fromPayMedicalBill || isCompletingProfile
+              ? "Unlock cashback when you pay with Jireh Health."
+              : "Secure your identity to unlock healthcare support."}
+          </p>
+          <div className="bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
+            <Clock size={14} />
+            Only takes 2mins!
+          </div>
+        </div>
 
-          <div className="flex flex-col gap-4 w-full">
-            <p className="text-neutral-500 text-sm font-medium">
-              Information being collected:
-            </p>
-            <div className="flex flex-col gap-3">
-              {STEPS.map((step, index) => {
-                // Use user data if available, fallback to sequential logic
-                const isCompleted = user
-                  ? checkStepCompletion(step.id)
-                  : index < currentStepIndex
+        <div className="flex flex-col gap-4 w-full">
+          <p className="text-neutral-500 text-sm font-medium">
+            Information being collected:
+          </p>
+          <div className="flex flex-col gap-3">
+            {STEPS.map((step, index) => {
+              // Use user data if available, fallback to sequential logic
+              const isCompleted = user
+                ? checkStepCompletion(step.id)
+                : index < currentStepIndex
 
-                const isCurrent = index === currentStepIndex
+              const isCurrent = index === currentStepIndex
 
-                return (
-                  <div
-                    key={step.id}
-                    className={cn(
-                      "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                      isCompleted
-                        ? "bg-green-50 border-green-500"
-                        : "bg-white border-neutral-200"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={cn(
-                          "text-sm font-medium",
-                          isCompleted ? "text-green-700" : "text-neutral-400"
-                        )}
-                      >
-                        {String(step.id).padStart(2, "0")}
-                      </span>
-                      <span
-                        className={cn(
-                          "font-medium text-sm",
-                          isCompleted ? "text-green-900" : "text-neutral-900"
-                        )}
-                      >
-                        {step.label}
-                      </span>
-                    </div>
-
-                    {isCompleted && (
-                      <div className="rounded-full border border-green-500 p-0.5">
-                        <Check
-                          className="text-green-500 w-3 h-3"
-                          strokeWidth={3}
-                        />
-                      </div>
-                    )}
-
-                    {isCurrent && !isCompleted && (
-                      <span className="text-sm text-neutral-400 font-medium">
-                        Next
-                      </span>
-                    )}
+              return (
+                <div
+                  key={step.id}
+                  className={cn(
+                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
+                    isCompleted
+                      ? "bg-green-50 border-green-500"
+                      : "bg-white border-neutral-200"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={cn(
+                        "text-sm font-medium",
+                        isCompleted ? "text-green-700" : "text-neutral-400"
+                      )}
+                    >
+                      {String(step.id).padStart(2, "0")}
+                    </span>
+                    <span
+                      className={cn(
+                        "font-medium text-sm",
+                        isCompleted ? "text-green-900" : "text-neutral-900"
+                      )}
+                    >
+                      {step.label}
+                    </span>
                   </div>
-                )
-              })}
-            </div>
-          </div>
 
-          <div className="pb-20" />
+                  {isCompleted && (
+                    <div className="rounded-full border border-green-500 p-0.5">
+                      <Check
+                        className="text-green-500 w-3 h-3"
+                        strokeWidth={3}
+                      />
+                    </div>
+                  )}
 
-          <div
-            className={cn(
-              "fixed bottom-0 left-0 right-0 p-4 z-50",
-              !fromPayMedicalBill || !isCompletingProfile
-                ? "bg-[#FDF4FF]"
-                : "bg-white"
-            )}
-          >
-            <div className="max-w-md mx-auto w-full">
-              <Button
-                className="w-full"
-                role="link"
-                onClick={() => {
-                  const nextRoute =
-                    onboardingRedirectLink ||
-                    (fromPayMedicalBill || isCompletingProfile
-                      ? "/patients/payment/request-payment/how-to-pay"
-                      : "/patients")
-                  navigate(nextRoute, {
-                    state: {
-                      fromDashboard: true,
-                    },
-                  })
-                }}
-              >
-                Continue
-              </Button>
-            </div>
+                  {isCurrent && !isCompleted && (
+                    <span className="text-sm text-neutral-400 font-medium">
+                      Next
+                    </span>
+                  )}
+                </div>
+              )
+            })}
           </div>
-        </section>
-      </main>
-    </div>
+        </div>
+      </section>
+    </AppShell>
   )
 }
