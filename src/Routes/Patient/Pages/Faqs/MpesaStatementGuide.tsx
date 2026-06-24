@@ -1,24 +1,19 @@
 import { useState } from "react"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { ProtectedRoute } from "@/components/ProtectedResource"
-import { usePatientAuthStore } from "../../stores/patientAuthStore"
-import { MEMBER_LOAN_ROLES } from "../../constants/userTypes"
 import { Button } from "@/components/Button"
 import { Check, ChevronLeft, ChevronRight } from "lucide-react"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/Tabs"
 import { mpesaStatementGuide } from "@/data/mpesaStatementGuide"
 import { formatParenthesizedText } from "@/utilities/textUtilities"
 
-const steps = mpesaStatementGuide;
+const steps = mpesaStatementGuide
+// Loan-role access is enforced once at the route level (MemberLoanRouteGuard in
+// PatientsHome); this page no longer self-guards.
 export default function MpesaStatementGuide() {
-  const user = usePatientAuthStore((state) => state.user)
-
   return (
-    <ProtectedRoute userRole={user?.type} allowedRoles={MEMBER_LOAN_ROLES}>
-      <PatientPageWrapper title="How to get your MPESA statement">
-        <InstructionsSection />
-      </PatientPageWrapper>
-    </ProtectedRoute>
+    <PatientPageWrapper title="How to get your MPESA statement">
+      <InstructionsSection />
+    </PatientPageWrapper>
   )
 }
 
@@ -26,13 +21,11 @@ function InstructionsSection() {
   const [currentMethod, setCurrentMethod] = useState("ussd")
   const [currentSubStep, setCurrentSubStep] = useState(0)
 
+  const currentMethodData = steps.find((step) => step.id === currentMethod)
 
-
-  const currentMethodData = steps.find(step => step.id === currentMethod)
-  
   const maxSubSteps = currentMethodData?.subSteps.length || 0
   const safeCurrentSubStep = Math.min(currentSubStep, maxSubSteps - 1)
-  
+
   if (currentSubStep !== safeCurrentSubStep) {
     setCurrentSubStep(safeCurrentSubStep)
   }
@@ -58,33 +51,32 @@ function InstructionsSection() {
           setCurrentSubStep(0)
         }}
       >
-      <div className="overflow-x-auto pb-2 -mb-2 no-scrollbar">
-        <TabsList
-          className="bg-purple-200 text-black w-fit min-w-full sm:min-w-0"
-        >
-          {steps.map((step) => (
-            <TabsTrigger
-              key={step.id}
-              value={step.id}
-              className="px-4 py-2 whitespace-nowrap"
-            >
-              <div className="flex items-center justify-center gap-2">
-              <Check
-                  className="h-4 w-4 opacity-0 transition-opacity data-[state=active]:opacity-100 text-primary"
-                  data-state={step.id === currentMethod ? "active" : "inactive"}
-                />
-                <span className="data-[state=active]:text-primary">{step.method}</span>
-              </div>
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </div>
+        <div className="overflow-x-auto pb-2 -mb-2 no-scrollbar">
+          <TabsList className="bg-purple-200 text-black w-fit min-w-full sm:min-w-0">
+            {steps.map((step) => (
+              <TabsTrigger
+                key={step.id}
+                value={step.id}
+                className="px-4 py-2 whitespace-nowrap"
+              >
+                <div className="flex items-center justify-center gap-2">
+                  <Check
+                    className="h-4 w-4 opacity-0 transition-opacity data-[state=active]:opacity-100 text-primary"
+                    data-state={
+                      step.id === currentMethod ? "active" : "inactive"
+                    }
+                  />
+                  <span className="data-[state=active]:text-primary">
+                    {step.method}
+                  </span>
+                </div>
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
 
         {steps.map((step) => (
-          <TabsContent
-            key={step.id}
-            value={step.id}
-          >
+          <TabsContent key={step.id} value={step.id}>
             <div className="flex flex-col items-center gap-6">
               {/* Step Counter */}
               <div className="w-full text-center mb-2">
@@ -95,16 +87,18 @@ function InstructionsSection() {
 
               {/* Main Content */}
               <div className="flex flex-col items-center gap-6 w-full max-w-md mx-auto px-4 sm:px-0">
-                  {step.subSteps[safeCurrentSubStep] && (
-                    <img
-                      src={step.subSteps[safeCurrentSubStep].image}
-                      alt={step.subSteps[safeCurrentSubStep].description}
-                      className="w-full h-full object-contain"
-                    />
-                  )}
+                {step.subSteps[safeCurrentSubStep] && (
+                  <img
+                    src={step.subSteps[safeCurrentSubStep].image}
+                    alt={step.subSteps[safeCurrentSubStep].description}
+                    className="w-full h-full object-contain"
+                  />
+                )}
                 <div className="text-center w-full">
                   <p className="text-neutral-600 text-sm sm:text-base">
-                    {formatParenthesizedText(step.subSteps[safeCurrentSubStep]?.description || '')}
+                    {formatParenthesizedText(
+                      step.subSteps[safeCurrentSubStep]?.description || ""
+                    )}
                   </p>
                 </div>
               </div>
@@ -149,5 +143,3 @@ function InstructionsSection() {
     </div>
   )
 }
-
-

@@ -74,7 +74,7 @@ import EnableNotificationsPage from "./PWAOnboarding/EnableNotificationsPage"
 import LocationAccessPage from "./PWAOnboarding/LocationAccessPage"
 import PWASuccessPage from "./PWAOnboarding/PWASuccessPage"
 import PatientPageWrapper from "./PatientPageWrapper"
-import { cn } from "@/lib/utils"
+import MemberLoanRouteGuard from "../components/MemberLoanRouteGuard"
 
 import PatientScanQRIntro from "./PatientScanQRIntro"
 import FastTrackWrapper from "./FastTrack/FastTrackWrapper"
@@ -116,7 +116,6 @@ export default function PatientsHome() {
   const query = useOnboardingChecklist()
   const signOut = usePatientAuthStore((state: any) => state.signOut)
   const navigate = useNavigate()
-  const location = useLocation()
 
   if (query.isLoading) {
     return <LoadingPage />
@@ -135,481 +134,462 @@ export default function PatientsHome() {
     return <ErrorBlock message={error.response?.data.message} />
   }
 
-  const normalizedPath = location.pathname.replace(/\/$/, "") // Remove trailing slash
-
-  // ── Layout ownership ────────────────────────────────────────────────────────
-  // Most screens now render their own self-contained shell (PatientPageWrapper /
-  // MobileWrapper / AppShell directly) — they draw the neutral-100 frame +
-  // centered white max-w-md card at every breakpoint. For those, this container
-  // must be a pure passthrough (no width/padding/border at any breakpoint),
-  // otherwise the desktop card double-frames the screen.
-  //
-  // After Phase 4 only two route groups still rely on this container for their
-  // frame; both are removed in Phase 5 when the whole switch is deleted:
-  //   - resolve-type: plain onboarding screen, not yet shelled
-  //   - subscriptions/*: renders its own layout inside the padded card
-  const isLegacyBare = normalizedPath === "/patients/resolve-type"
-  const isSubscriptions = normalizedPath.startsWith("/patients/subscriptions")
-  const usesLegacyContainer = isLegacyBare || isSubscriptions
-
+  // Every patient screen now renders its own canonical shell (via
+  // PatientPageWrapper / MobileWrapper / AppShell directly), so this component is
+  // a pure router — no layout container, no path allowlist. Adding any wrapper
+  // here would double-frame the self-shelled screens on desktop.
   return (
     <SessionAuth requireAuth={true}>
-      <div
-        className={cn(
-          // Self-shelled screens render as a pure passthrough (no shell classes at
-          // any breakpoint); only not-yet-migrated screens get the padded card.
-          usesLegacyContainer &&
-            "flex flex-col mx-auto max-w-[450px] px-4 py-7 gap-7 sm:border sm:border-input sm:px-10 sm:mt-10"
-        )}
-      >
-        <Routes>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <RouteMetadata title="Dashboard">
+              <PatientDashboard />
+            </RouteMetadata>
+          }
+        >
+          <Route index element={<PatientDashboardRedirect />} />
           <Route
-            path="/"
+            path="home"
             element={
-              <RouteMetadata title="Dashboard">
-                <PatientDashboard />
-              </RouteMetadata>
+              <Suspense fallback={<LoadingPage />}>
+                <PatientDashboardLoansTab />
+              </Suspense>
             }
-          >
-            <Route index element={<PatientDashboardRedirect />} />
-            <Route
-              path="home"
-              element={
-                <Suspense fallback={<LoadingPage />}>
-                  <PatientDashboardLoansTab />
-                </Suspense>
-              }
-            />
-            <Route
-              path="circle"
-              element={
-                <Suspense fallback={<LoadingPage />}>
-                  <PatientDashboardCircleTab />
-                </Suspense>
-              }
-            />
-            <Route
-              path="explore"
-              element={
-                <Suspense fallback={<LoadingPage />}>
-                  <PatientDashboardExploreTab isActive={true} />
-                </Suspense>
-              }
-            />
-            <Route
-              path="profile"
-              element={
-                <Suspense fallback={<LoadingPage />}>
-                  <PatientDashboardProfileTab />
-                </Suspense>
-              }
-            />
-          </Route>
+          />
+          <Route
+            path="circle"
+            element={
+              <Suspense fallback={<LoadingPage />}>
+                <PatientDashboardCircleTab />
+              </Suspense>
+            }
+          />
+          <Route
+            path="explore"
+            element={
+              <Suspense fallback={<LoadingPage />}>
+                <PatientDashboardExploreTab isActive={true} />
+              </Suspense>
+            }
+          />
+          <Route
+            path="profile"
+            element={
+              <Suspense fallback={<LoadingPage />}>
+                <PatientDashboardProfileTab />
+              </Suspense>
+            }
+          />
+        </Route>
 
-          <Route
-            path="/scan-qr-intro"
-            element={
-              <RouteMetadata title="Scan QR Code">
-                <PatientScanQRIntro />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/scan-qr-intro"
+          element={
+            <RouteMetadata title="Scan QR Code">
+              <PatientScanQRIntro />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/payment-verification-request/:id"
-            element={
-              <RouteMetadata title="Payment Verification Request">
-                <PatientManualRequestStatus />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/payment-verification-request/:id"
+          element={
+            <RouteMetadata title="Payment Verification Request">
+              <PatientManualRequestStatus />
+            </RouteMetadata>
+          }
+        />
 
-          {/* Onboarding */}
-          <Route
-            path="/add-whatsapp-number"
-            element={
-              <RouteMetadata title="Add Whatsapp Number">
-                <PatientAddWhatsAppNumber />
-              </RouteMetadata>
-            }
-          />
+        {/* Onboarding */}
+        <Route
+          path="/add-whatsapp-number"
+          element={
+            <RouteMetadata title="Add Whatsapp Number">
+              <PatientAddWhatsAppNumber />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/personal-details"
-            element={
-              <RouteMetadata title="Personal Details">
-                <PatientPersonalDetails />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/kyc-setup-intro"
-            element={
-              <RouteMetadata title="KYC Setup Intro">
-                <PatientKYCSetupIntro />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/personal-details"
+          element={
+            <RouteMetadata title="Personal Details">
+              <PatientPersonalDetails />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/kyc-setup-intro"
+          element={
+            <RouteMetadata title="KYC Setup Intro">
+              <PatientKYCSetupIntro />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/pwa-setup-intro"
-            element={
-              <RouteMetadata title="PWA Setup Intro">
-                <PWAOnboardingIntro />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/pwa-install"
-            element={
-              <RouteMetadata title="Install App">
-                <PatientPageWrapper>
-                  <InstallAppPage />
-                </PatientPageWrapper>
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/pwa-notifications"
-            element={
-              <RouteMetadata title="Enable Notifications">
-                <PatientPageWrapper>
-                  <EnableNotificationsPage />
-                </PatientPageWrapper>
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/pwa-location"
-            element={
-              <RouteMetadata title="Location Access">
-                <PatientPageWrapper>
-                  <LocationAccessPage />
-                </PatientPageWrapper>
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/pwa-success"
-            element={
-              <RouteMetadata title="PWA Setup Success">
-                <PWASuccessPage />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/pwa-setup-intro"
+          element={
+            <RouteMetadata title="PWA Setup Intro">
+              <PWAOnboardingIntro />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/pwa-install"
+          element={
+            <RouteMetadata title="Install App">
+              <PatientPageWrapper>
+                <InstallAppPage />
+              </PatientPageWrapper>
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/pwa-notifications"
+          element={
+            <RouteMetadata title="Enable Notifications">
+              <PatientPageWrapper>
+                <EnableNotificationsPage />
+              </PatientPageWrapper>
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/pwa-location"
+          element={
+            <RouteMetadata title="Location Access">
+              <PatientPageWrapper>
+                <LocationAccessPage />
+              </PatientPageWrapper>
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/pwa-success"
+          element={
+            <RouteMetadata title="PWA Setup Success">
+              <PWASuccessPage />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-verification"
-            element={
-              <RouteMetadata title="ID Verification">
-                <PatientIdVerification />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-verification"
+          element={
+            <RouteMetadata title="ID Verification">
+              <PatientIdVerification />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-verification-onboarding"
-            element={
-              <RouteMetadata title="ID Verification">
-                <PatientIdVerificationOnboarding />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-verification-onboarding"
+          element={
+            <RouteMetadata title="ID Verification">
+              <PatientIdVerificationOnboarding />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/document-verification"
-            element={
-              <RouteMetadata title="Identity Verification">
-                <PatientDocumentVerification />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/document-verification"
+          element={
+            <RouteMetadata title="Identity Verification">
+              <PatientDocumentVerification />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-photo-front-upload"
-            element={
-              <RouteMetadata title="ID Photo Front Upload">
-                <PatientIdPhotoFrontUpload />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-photo-front-upload"
+          element={
+            <RouteMetadata title="ID Photo Front Upload">
+              <PatientIdPhotoFrontUpload />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-photo-guide"
-            element={
-              <RouteMetadata title="Taking a good ID photo">
-                <PatientIdPhotoGuide />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-photo-guide"
+          element={
+            <RouteMetadata title="Taking a good ID photo">
+              <PatientIdPhotoGuide />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-selfie-guide"
-            element={
-              <RouteMetadata title="Taking a good selfie">
-                <PatientSelfieGuide />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-selfie-guide"
+          element={
+            <RouteMetadata title="Taking a good selfie">
+              <PatientSelfieGuide />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-selfie"
-            element={
-              <RouteMetadata title="ID Selfie">
-                <PatientIdSelfie />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-selfie"
+          element={
+            <RouteMetadata title="ID Selfie">
+              <PatientIdSelfie />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/complete-profile"
-            element={
-              <RouteMetadata title="Complete Profile">
-                <CompleteProfilePage />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/complete-profile"
+          element={
+            <RouteMetadata title="Complete Profile">
+              <CompleteProfilePage />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/pay-membership"
-            element={
-              <RouteMetadata title="Pay Membership">
-                <PatientPayMembership />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/pay-membership"
+          element={
+            <RouteMetadata title="Pay Membership">
+              <PatientPayMembership />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/set-pin"
-            element={
-              <RouteMetadata title="Set PIN">
-                <PatientSetPin />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/set-pin"
+          element={
+            <RouteMetadata title="Set PIN">
+              <PatientSetPin />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/security-and-permissions"
-            element={
-              <RouteMetadata title="Security & Permissions">
-                <PatientSecurityAndPermissions />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/change-pin"
-            element={
-              <RouteMetadata title="Set PIN">
-                <PatientChangePin />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/security-and-permissions"
+          element={
+            <RouteMetadata title="Security & Permissions">
+              <PatientSecurityAndPermissions />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/change-pin"
+          element={
+            <RouteMetadata title="Set PIN">
+              <PatientChangePin />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/account-locked"
-            element={
-              <RouteMetadata title="Account Locked">
-                <PatientAccountLocked />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/account-locked"
+          element={
+            <RouteMetadata title="Account Locked">
+              <PatientAccountLocked />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/id-verification-failure"
-            element={
-              <RouteMetadata title="ID Verification Failure">
-                <PatientIdVerificationFailure />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/id-verification-failure"
+          element={
+            <RouteMetadata title="ID Verification Failure">
+              <PatientIdVerificationFailure />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/resolve-type"
-            element={
-              <RouteMetadata title="Resolve Type">
-                <PatientResolveType />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/resolve-type"
+          element={
+            <RouteMetadata title="Resolve Type">
+              <PatientResolveType />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/onboarding-success"
-            element={
-              <RouteMetadata title="Onboarding Success">
-                <PatientOnboardingSuccess />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/onboarding-success"
+          element={
+            <RouteMetadata title="Onboarding Success">
+              <PatientOnboardingSuccess />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/org-onboarding-success"
-            element={
-              <RouteMetadata title="Organization Onboarding Success">
-                <PatientOrgOnboardingSuccess />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/org-onboarding-success"
+          element={
+            <RouteMetadata title="Organization Onboarding Success">
+              <PatientOrgOnboardingSuccess />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/referral-code"
-            element={
-              <RouteMetadata title="Referral Code">
-                <PatientReferralCode />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/referral-code"
+          element={
+            <RouteMetadata title="Referral Code">
+              <PatientReferralCode />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/choose-healthcare-plan"
-            element={
-              <RouteMetadata title="Choose Healthcare Plan">
-                <PatientChooseHealthcarePlan />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="plans-how-it-works"
-            element={
-              <RouteMetadata title="How it works">
-                <PatientPlansHowItWorks />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/choose-healthcare-plan"
+          element={
+            <RouteMetadata title="Choose Healthcare Plan">
+              <PatientChooseHealthcarePlan />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="plans-how-it-works"
+          element={
+            <RouteMetadata title="How it works">
+              <PatientPlansHowItWorks />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/select-Insurance"
-            element={
-              <RouteMetadata title="Select Insurance">
-                <PatientSelectInsurance />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/payment-result"
-            element={
-              <RouteMetadata title="Transaction Result">
-                <PatientPaymentStatus />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/select-Insurance"
+          element={
+            <RouteMetadata title="Select Insurance">
+              <PatientSelectInsurance />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/payment-result"
+          element={
+            <RouteMetadata title="Transaction Result">
+              <PatientPaymentStatus />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/payment-status"
-            element={
-              <RouteMetadata title="Payment Status">
-                <PatientPaymentStatus />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/payment-status"
+          element={
+            <RouteMetadata title="Payment Status">
+              <PatientPaymentStatus />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/select-favorite-care-providers"
-            element={
-              <RouteMetadata title="Select Favorite Hospitals">
-                <PatientFavoriteCareProviders />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/select-favorite-care-providers"
+          element={
+            <RouteMetadata title="Select Favorite Hospitals">
+              <PatientFavoriteCareProviders />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/care-profile-setup"
-            element={
-              <RouteMetadata title="Jireh Profile Setup">
-                <CareProfileSetupIndicator />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/care-profile-setup"
+          element={
+            <RouteMetadata title="Jireh Profile Setup">
+              <CareProfileSetupIndicator />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/care-profile-success"
-            element={
-              <RouteMetadata title="Jireh Profile Complete">
-                <CareProfileSuccess />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/care-profile-success"
+          element={
+            <RouteMetadata title="Jireh Profile Complete">
+              <CareProfileSuccess />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/add-to-circle"
-            element={
-              <RouteMetadata title="Add To Circle">
-                <PatientAddToCircle />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/add-to-circle"
+          element={
+            <RouteMetadata title="Add To Circle">
+              <PatientAddToCircle />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/circle-setup-intro"
-            element={
-              <RouteMetadata title="Circle Setup Intro">
-                <PatientCircleSetupIntro />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/circle-setup-intro"
+          element={
+            <RouteMetadata title="Circle Setup Intro">
+              <PatientCircleSetupIntro />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/circle-how-it-works"
-            element={
-              <RouteMetadata title="How Circles Work">
-                <PatientHowCirclesWork />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/circle-how-it-works"
+          element={
+            <RouteMetadata title="How Circles Work">
+              <PatientHowCirclesWork />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/kyc-add-circle-members"
-            element={
-              <RouteMetadata title="Add Circle Members">
-                <PatientKYCAddCircleMembers />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/kyc-add-circle-members"
+          element={
+            <RouteMetadata title="Add Circle Members">
+              <PatientKYCAddCircleMembers />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/healthcare-focus"
-            element={
-              <RouteMetadata title="Healthcare Focus">
-                <PatientHealthcareFocus />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/healthcare-focus"
+          element={
+            <RouteMetadata title="Healthcare Focus">
+              <PatientHealthcareFocus />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/ncd-status"
-            element={
-              <RouteMetadata title="NCD Status">
-                <PatientNCDStatus />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/ncd-status"
+          element={
+            <RouteMetadata title="NCD Status">
+              <PatientNCDStatus />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/review-membership-details"
-            element={
-              <RouteMetadata title="Review Membership Details">
-                <PatientReviewMembershipDetails />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/review-membership-details"
+          element={
+            <RouteMetadata title="Review Membership Details">
+              <PatientReviewMembershipDetails />
+            </RouteMetadata>
+          }
+        />
 
-          <Route
-            path="/membership-success"
-            element={
-              <RouteMetadata title="Membership Success">
-                <PatientMembershipSuccess />
-              </RouteMetadata>
-            }
-          />
+        <Route
+          path="/membership-success"
+          element={
+            <RouteMetadata title="Membership Success">
+              <PatientMembershipSuccess />
+            </RouteMetadata>
+          }
+        />
 
-          {/* Loans */}
-          <Route path="/loans/*" element={<LoanWrapper />} />
+        {/* Loans */}
+        <Route path="/loans/*" element={<LoanWrapper />} />
 
-          {/* Payment request flow (request-payment) */}
-          <Route path="/payment/*" element={<PaymentRequestWrapper />} />
+        {/* Payment request flow (request-payment) */}
+        <Route path="/payment/*" element={<PaymentRequestWrapper />} />
 
-          {/* Fast-Track (in-network) payment flow */}
-          <Route path="/fast-track/*" element={<FastTrackWrapper />} />
+        {/* Fast-Track (in-network) payment flow */}
+        <Route path="/fast-track/*" element={<FastTrackWrapper />} />
 
+        {/* Loan-only screens — role-gated once at the route level. */}
+        <Route element={<MemberLoanRouteGuard />}>
           <Route
             path="/financial-statements"
             element={
@@ -628,165 +608,7 @@ export default function PatientsHome() {
             }
           />
 
-          {/* Network */}
-          <Route
-            path="/network/*"
-            element={
-              <RouteMetadata title="My Network">
-                <PatientNetworkWrapper />
-              </RouteMetadata>
-            }
-          />
-
-          {/* Payment */}
-          <Route path="/payments/*" element={<PaymentWrapper />} />
-
-          <Route
-            path="/transaction-result"
-            element={
-              <RouteMetadata title="Transaction Result">
-                <TransactionResult />
-              </RouteMetadata>
-            }
-          />
-
-          {/* Org Pages */}
-          <Route
-            path="/organizations/how-it-works"
-            element={
-              <RouteMetadata title="Your Advance Health Plan">
-                <PatientOrgHowItWorks />
-              </RouteMetadata>
-            }
-          />
-
-          {/* Patient Care Fund */}
-          <Route
-            path="/care-fund/*"
-            element={
-              <RouteMetadata title="Your Care Fund">
-                <PatientCareFundRoutes />
-              </RouteMetadata>
-            }
-          />
-
-          {/* Misc */}
-          <Route
-            path="/notifications"
-            element={
-              <RouteMetadata title="Notifications">
-                <PatientNotificationsPage />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/referral-and-earn"
-            element={
-              <RouteMetadata title="Refer & Earn">
-                <PatientReferralAndEarn />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/help-and-support"
-            element={
-              <RouteMetadata title="Help & Support">
-                <PatientHelpAndSupport />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/terms-and-conditions"
-            element={
-              <RouteMetadata title="Terms and COnditions">
-                <PatientTermsAndConditions />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/medical-consent-form"
-            element={
-              <RouteMetadata title="Medical Consent Form">
-                <PatientMedicalConsentForm />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/discover-hospitals"
-            element={
-              <RouteMetadata title="Discover Hospitals">
-                <PatientDiscoverHospitals />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/search"
-            element={
-              <RouteMetadata title="Search">
-                <SearchPage />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/search/filters"
-            element={
-              <RouteMetadata title="Filters">
-                <FiltersPage />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/facility/:id"
-            element={
-              <RouteMetadata title="Facility Details">
-                <FacilityDetailsPage />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/facility/:id/review"
-            element={
-              <RouteMetadata title="Add a review">
-                <FacilityReviewFormPage />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/discounts"
-            element={
-              <RouteMetadata title="Active discounts">
-                <PatientDiscountsList />
-              </RouteMetadata>
-            }
-          />
-
-          <Route
-            path="/discounts/:id"
-            element={
-              <RouteMetadata title="Discount details">
-                <PatientDiscountDetails />
-              </RouteMetadata>
-            }
-          />
-
-          {/* Insurance */}
-          <Route path="/insurance/*" element={<PatientInsuranceWrapper />} />
-
-          {/* Subscriptions */}
-          <Route
-            path="/subscriptions/*"
-            element={<PatientSubscriptionsWrapper />}
-          />
-
-          {/* FAQs */}
+          {/* FAQs (loan-only) */}
           <Route
             path="/faqs/downloaded-files"
             element={
@@ -811,8 +633,166 @@ export default function PatientsHome() {
               </RouteMetadata>
             }
           />
-        </Routes>
-      </div>
+        </Route>
+
+        {/* Network */}
+        <Route
+          path="/network/*"
+          element={
+            <RouteMetadata title="My Network">
+              <PatientNetworkWrapper />
+            </RouteMetadata>
+          }
+        />
+
+        {/* Payment */}
+        <Route path="/payments/*" element={<PaymentWrapper />} />
+
+        <Route
+          path="/transaction-result"
+          element={
+            <RouteMetadata title="Transaction Result">
+              <TransactionResult />
+            </RouteMetadata>
+          }
+        />
+
+        {/* Org Pages */}
+        <Route
+          path="/organizations/how-it-works"
+          element={
+            <RouteMetadata title="Your Advance Health Plan">
+              <PatientOrgHowItWorks />
+            </RouteMetadata>
+          }
+        />
+
+        {/* Patient Care Fund */}
+        <Route
+          path="/care-fund/*"
+          element={
+            <RouteMetadata title="Your Care Fund">
+              <PatientCareFundRoutes />
+            </RouteMetadata>
+          }
+        />
+
+        {/* Misc */}
+        <Route
+          path="/notifications"
+          element={
+            <RouteMetadata title="Notifications">
+              <PatientNotificationsPage />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/referral-and-earn"
+          element={
+            <RouteMetadata title="Refer & Earn">
+              <PatientReferralAndEarn />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/help-and-support"
+          element={
+            <RouteMetadata title="Help & Support">
+              <PatientHelpAndSupport />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/terms-and-conditions"
+          element={
+            <RouteMetadata title="Terms and COnditions">
+              <PatientTermsAndConditions />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/medical-consent-form"
+          element={
+            <RouteMetadata title="Medical Consent Form">
+              <PatientMedicalConsentForm />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/discover-hospitals"
+          element={
+            <RouteMetadata title="Discover Hospitals">
+              <PatientDiscoverHospitals />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/search"
+          element={
+            <RouteMetadata title="Search">
+              <SearchPage />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/search/filters"
+          element={
+            <RouteMetadata title="Filters">
+              <FiltersPage />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/facility/:id"
+          element={
+            <RouteMetadata title="Facility Details">
+              <FacilityDetailsPage />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/facility/:id/review"
+          element={
+            <RouteMetadata title="Add a review">
+              <FacilityReviewFormPage />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/discounts"
+          element={
+            <RouteMetadata title="Active discounts">
+              <PatientDiscountsList />
+            </RouteMetadata>
+          }
+        />
+
+        <Route
+          path="/discounts/:id"
+          element={
+            <RouteMetadata title="Discount details">
+              <PatientDiscountDetails />
+            </RouteMetadata>
+          }
+        />
+
+        {/* Insurance */}
+        <Route path="/insurance/*" element={<PatientInsuranceWrapper />} />
+
+        {/* Subscriptions */}
+        <Route
+          path="/subscriptions/*"
+          element={<PatientSubscriptionsWrapper />}
+        />
+      </Routes>
     </SessionAuth>
   )
 }
