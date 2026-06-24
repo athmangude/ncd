@@ -66,8 +66,13 @@ export default defineConfig(({ command }) => ({
     drop: ["console", "debugger"],
   },
   plugins: [react()],
+  // Single source of truth for the Vitest config too (this file imports from
+  // "vitest/config"). Tests share the resolve aliases + define above, so the
+  // SuperTokens / Amplitude stubs resolve in tests exactly as they do in builds.
   test: {
     globals: true,
-    environment: "node",
+    environment: "jsdom",
+    setupFiles: ["./src/test/setup.ts"],
+    css: false,
   },
 }))

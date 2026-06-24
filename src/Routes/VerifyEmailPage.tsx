@@ -8,6 +8,7 @@ import LoadingPage from "./LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
 import CheckEmail from "@/components/auth/CheckEmail"
+import AppShell from "@/Routes/AppShell"
 import axios from "axios"
 
 const tenantIdRoutes: Record<string, { auth: string; home: string }> = {
@@ -82,31 +83,33 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <div className="flex flex-col gap-5 text-center items-center p-5">
-      {showCheckEmail ? (
-        <CheckEmail />
-      ) : (
-        <>
-          <h1 className="text-3xl text-black font-medium">
-            Email Verification
-          </h1>
+    <AppShell header={null} footer={null}>
+      <div className="flex flex-col gap-5 text-center items-center">
+        {showCheckEmail ? (
+          <CheckEmail />
+        ) : (
+          <>
+            <h1 className="text-3xl text-black font-medium">
+              Email Verification
+            </h1>
 
-          <p className="max-w-[55ch] text-sm">
-            It seems your email has not been verified yet. Click on the button
-            below to send a new verification email.
-          </p>
+            <p className="max-w-[55ch] text-sm">
+              It seems your email has not been verified yet. Click on the button
+              below to send a new verification email.
+            </p>
 
-          <Button
-            onClick={async () => {
-              await mutation.mutate()
-            }}
-            isLoading={mutation.isPending}
-            disabled={mutation.isPending}
-          >
-            Send new Link
-          </Button>
-        </>
-      )}
-    </div>
+            <Button
+              onClick={async () => {
+                await mutation.mutate()
+              }}
+              isLoading={mutation.isPending}
+              disabled={mutation.isPending}
+            >
+              Send new Link
+            </Button>
+          </>
+        )}
+      </div>
+    </AppShell>
   )
 }

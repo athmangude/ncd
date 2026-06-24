@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/Button"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 
 export default function PatientIdPhotoGuide() {
   const navigate = useNavigate()
@@ -10,7 +10,11 @@ export default function PatientIdPhotoGuide() {
   }
 
   return (
-    <PatientPageWrapper title="Taking a good ID photo" showHelp={false}>
+    <PatientPageWrapper
+      title="Taking a good ID photo"
+      showHelp={false}
+      footer={<PrimaryCTAFooter label="Back" onClick={handleBack} />}
+    >
       <div className="flex flex-col h-full">
         <div className="flex-1">
           <div className="mb-6">
@@ -23,9 +27,12 @@ export default function PatientIdPhotoGuide() {
             <div className="flex gap-4">
               <span className="text-neutral-400 font-mono text-lg">01</span>
               <div>
-                <h3 className="font-medium text-neutral-900 mb-1">Ensure good lighting</h3>
+                <h3 className="font-medium text-neutral-900 mb-1">
+                  Ensure good lighting
+                </h3>
                 <p className="text-neutral-500 text-sm leading-relaxed">
-                  Make sure the ID is well-lit and in focus. Natural light works best.
+                  Make sure the ID is well-lit and in focus. Natural light works
+                  best.
                 </p>
               </div>
             </div>
@@ -33,9 +40,12 @@ export default function PatientIdPhotoGuide() {
             <div className="flex gap-4">
               <span className="text-neutral-400 font-mono text-lg">02</span>
               <div>
-                <h3 className="font-medium text-neutral-900 mb-1">Include all corners</h3>
+                <h3 className="font-medium text-neutral-900 mb-1">
+                  Include all corners
+                </h3>
                 <p className="text-neutral-500 text-sm leading-relaxed">
-                  Capture the entire card including all four corners to ensure all information is visible.
+                  Capture the entire card including all four corners to ensure
+                  all information is visible.
                 </p>
               </div>
             </div>
@@ -43,9 +53,12 @@ export default function PatientIdPhotoGuide() {
             <div className="flex gap-4">
               <span className="text-neutral-400 font-mono text-lg">03</span>
               <div>
-                <h3 className="font-medium text-neutral-900 mb-1">Avoid shadows and glare</h3>
+                <h3 className="font-medium text-neutral-900 mb-1">
+                  Avoid shadows and glare
+                </h3>
                 <p className="text-neutral-500 text-sm leading-relaxed">
-                  Position the camera to minimize shadows and avoid reflective glare on the card.
+                  Position the camera to minimize shadows and avoid reflective
+                  glare on the card.
                 </p>
               </div>
             </div>
@@ -53,27 +66,18 @@ export default function PatientIdPhotoGuide() {
             <div className="flex gap-4">
               <span className="text-neutral-400 font-mono text-lg">04</span>
               <div>
-                <h3 className="font-medium text-neutral-900 mb-1">Hold camera steady</h3>
+                <h3 className="font-medium text-neutral-900 mb-1">
+                  Hold camera steady
+                </h3>
                 <p className="text-neutral-500 text-sm leading-relaxed">
-                  Keep your device steady or place the ID card on a flat surface for a clear, non-blurry image.
+                  Keep your device steady or place the ID card on a flat surface
+                  for a clear, non-blurry image.
                 </p>
               </div>
             </div>
           </div>
         </div>
-
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white  z-50">
-        <div className="max-w-md mx-auto w-full flex gap-4">
-          <Button
-            onClick={handleBack}
-            className="w-full "
-          >
-            Back
-          </Button>
-        </div>
-        </div>
       </div>
     </PatientPageWrapper>
   )
 }
-

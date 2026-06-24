@@ -74,6 +74,12 @@
   * {
     @apply border-border;
   }
+  /* Anchor 100dvh / min-h-screen shells reliably, including installed-PWA
+     standalone display mode where the viewport box can differ. */
+  html,
+  body {
+    height: 100%;
+  }
   body {
     @apply bg-background text-foreground;
   }
@@ -95,12 +101,30 @@
 }
 
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
+  .no-scrollbar::-webkit-scrollbar,
+  .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  .no-scrollbar {
+  /* .scrollbar-hide is an alias kept because several screens already reference
+     it (it was previously undefined and silently a no-op). */
+  .no-scrollbar,
+  .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* iOS / installed-PWA safe-area insets. Centralizes the ad-hoc
+     env(safe-area-inset-*) handling that lived inline across screens. */
+  .safe-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* Footer variant: keeps a 0.75rem base while clearing the home indicator.
+     Mirrors the value previously hardcoded on discovery-page action bars. */
+  .safe-pb-3 {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
   }
 
   @keyframes shimmer {

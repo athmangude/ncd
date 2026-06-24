@@ -5,9 +5,9 @@ import { useToast } from "@/hooks/useToast"
 import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { Button } from "@/components/Button"
 import { patientLoginDetailsQueryKey } from "../../hooks/useOnboardingChecklist"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { useEffect } from "react"
 import { trackEvent, EVENTS } from "@/analytics"
 
@@ -78,14 +78,24 @@ export function PatientPersonalDetails() {
   return (
     <PatientPageWrapper
       title=" "
-      className="bg-white p-6 max-w-md mx-auto pb-32"
+      footer={
+        <PrimaryCTAFooter
+          label="Submit personal details"
+          form="personal-details-form"
+          type="submit"
+          isLoading={mutation.isPending}
+        />
+      }
     >
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900 mb-2">What is your full name?</h1>
+        <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+          What is your full name?
+        </h1>
         <p className="text-neutral-500">This should match your National ID.</p>
       </div>
 
       <form
+        id="personal-details-form"
         className="flex flex-col flex-1"
         onSubmit={handleSubmit(async (data) => {
           await mutation.mutateAsync(data)
@@ -119,21 +129,6 @@ export function PatientPersonalDetails() {
             })}
             error={errors.lastName?.message}
           />
-        </div>
-
-        <div className="fixed bottom-0 left-0 right-0 p-4 z-50">
-          <div className="max-w-md mx-auto w-full">
-            <Button
-              className="w-full py-6 text-lg"
-              size="lg"
-              role="link"
-              type="submit"
-              disabled={mutation.isPending}
-              isLoading={mutation.isPending}
-            >
-              Submit personal details
-            </Button>
-          </div>
         </div>
       </form>
     </PatientPageWrapper>

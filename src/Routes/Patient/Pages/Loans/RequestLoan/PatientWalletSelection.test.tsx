@@ -152,9 +152,7 @@ function wrap(ui: ReactNode) {
 describe("PatientWalletSelection — loan wallet circle-criteria state", () => {
   it("shows orange badge when Plus user has insufficient circle members", () => {
     render(wrap(createElement(PatientWalletSelection)))
-    expect(
-      screen.getByText(/Waiting on 2 Circle members/)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Waiting on 2 Circle members/)).toBeInTheDocument()
   })
 
   it("does not show the gray lock message when circle criteria not met", () => {
@@ -170,5 +168,13 @@ describe("PatientWalletSelection — loan wallet circle-criteria state", () => {
     expect(
       screen.getByText("Waiting on your Circle members")
     ).toBeInTheDocument()
+  })
+
+  it("renders the Proceed CTA in the footer, disabled until fully allocated", () => {
+    render(wrap(createElement(PatientWalletSelection)))
+    // Nothing allocated yet (allocated 0 ≠ bill 1000) → CTA disabled.
+    expect(
+      screen.getByRole("button", { name: /Proceed to pay/i })
+    ).toBeDisabled()
   })
 })

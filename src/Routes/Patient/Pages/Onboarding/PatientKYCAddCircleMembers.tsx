@@ -353,9 +353,42 @@ export default function PatientKYCAddCircleMembers() {
   const slot2 = displaySlots[1] ?? null
 
   return (
-    <PatientPageWrapper title="Upgrade to Jireh Plus">
-      {/* Scrollable body */}
-      <div className="flex-1 overflow-y-auto px-4 pt-6 pb-40">
+    <PatientPageWrapper
+      title="Upgrade to Jireh Plus"
+      footer={
+        <div className="bg-white border-t border-neutral-100 p-4">
+          <div className="flex flex-col gap-3">
+            {viewState === "waiting" && (
+              <div className="flex gap-2 items-start bg-orange-50 px-3 py-2 rounded-md">
+                <CircleAlert className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-neutral-900">
+                    Your Circle is not yet active.
+                  </p>
+                  <p className="text-sm text-neutral-500">
+                    Slots stay open until each person accepts your invite.
+                  </p>
+                  {isAwaitingInviteAcceptance && (
+                    <p className="text-sm font-medium text-orange-700 mt-1">
+                      Confirming your Circle automatically…
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <Button
+              className="w-full bg-[#b325ff] hover:bg-[#9a1fd4] text-white"
+              onClick={handleAddPerson}
+            >
+              {ctaLabel}
+            </Button>
+          </div>
+        </div>
+      }
+    >
+      {/* Body */}
+      <div className="pt-2">
         {/* Header */}
         <div className="flex flex-col items-center gap-2 mb-6">
           <h1 className="text-xl font-medium text-neutral-900 text-center leading-tight whitespace-pre-line">
@@ -467,37 +500,6 @@ export default function PatientKYCAddCircleMembers() {
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Fixed footer */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 p-4 z-50">
-        <div className="max-w-md mx-auto flex flex-col gap-3">
-          {viewState === "waiting" && (
-            <div className="flex gap-2 items-start bg-orange-50 px-3 py-2 rounded-md">
-              <CircleAlert className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-medium text-neutral-900">
-                  Your Circle is not yet active.
-                </p>
-                <p className="text-sm text-neutral-500">
-                  Slots stay open until each person accepts your invite.
-                </p>
-                {isAwaitingInviteAcceptance && (
-                  <p className="text-sm font-medium text-orange-700 mt-1">
-                    Confirming your Circle automatically…
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
-
-          <Button
-            className="w-full bg-[#b325ff] hover:bg-[#9a1fd4] text-white"
-            onClick={handleAddPerson}
-          >
-            {ctaLabel}
-          </Button>
         </div>
       </div>
     </PatientPageWrapper>

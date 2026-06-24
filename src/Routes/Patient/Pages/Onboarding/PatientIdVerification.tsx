@@ -5,9 +5,9 @@ import { useToast } from "@/hooks/useToast"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
-import { Button } from "@/components/Button"
 import { patientLoginDetailsQueryKey } from "../../hooks/useOnboardingChecklist"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { useEffect } from "react"
 import { trackEvent, EVENTS, maskIdNumber } from "@/analytics"
 
@@ -81,14 +81,31 @@ export function PatientIdVerification() {
   })
 
   return (
-    <PatientPageWrapper title="" className="items-center px-4">
-      <div className="w-full flex flex-col gap-6 pb-24">
+    <PatientPageWrapper
+      title=""
+      className="items-center"
+      footer={
+        <PrimaryCTAFooter
+          label="Submit"
+          form="id-verification-form"
+          type="submit"
+          disabled={!idNumber || mutation.isPending}
+          isLoading={mutation.isPending}
+        />
+      }
+    >
+      <div className="w-full flex flex-col gap-6">
         <div className="flex flex-col gap-2">
-           <h1 className="text-xl  text-center">Enter your National ID number</h1>
-           <p className="text-neutral-500 text-center">Verify your identity and keep your account secure </p>
+          <h1 className="text-xl  text-center">
+            Enter your National ID number
+          </h1>
+          <p className="text-neutral-500 text-center">
+            Verify your identity and keep your account secure{" "}
+          </p>
         </div>
 
         <form
+          id="id-verification-form"
           className="flex flex-col gap-5"
           onSubmit={handleSubmit(async (data) => {
             try {
@@ -118,21 +135,6 @@ export function PatientIdVerification() {
             })}
             error={errors.idNumber?.message}
           />
-
-          <div className="fixed bottom-0 left-0 right-0 p-4 z-50">
-            <div className="max-w-md mx-auto w-full">
-              <Button
-                className="w-full"
-                size="lg"
-                role="link"
-                type="submit"
-                disabled={!idNumber || mutation.isPending}
-                isLoading={mutation.isPending}
-              >
-                Submit
-              </Button>
-            </div>
-          </div>
         </form>
       </div>
     </PatientPageWrapper>
@@ -140,4 +142,3 @@ export function PatientIdVerification() {
 }
 
 export default PatientIdVerification
-

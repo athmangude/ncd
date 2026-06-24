@@ -700,8 +700,23 @@ export default function PatientWalletSelection() {
   })
 
   return (
-    <PatientPageWrapper title="Choose how to pay" showHelp>
-      <div className="flex flex-col gap-6 pb-32">
+    <PatientPageWrapper
+      title="Choose how to pay"
+      showHelp
+      footer={
+        <div className="p-4 bg-white border-t border-neutral-200">
+          <Button
+            className="w-full bg-[#A826FF] hover:bg-[#9220DE] text-white font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-lg shadow-purple-200"
+            onClick={() => handleProceed()}
+            disabled={Math.round(totalAllocated) !== originalBillAmount}
+          >
+            Proceed to pay
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-6">
         {/* Header Content */}
         <div className="flex flex-col items-center gap-4 text-center px-4 mt-2">
           <div className="relative">
@@ -715,7 +730,9 @@ export default function PatientWalletSelection() {
             <h1 className="text-2xl font-bold text-neutral-900">
               Select How You Want To Pay
             </h1>
-            <p className="text-neutral-500 mt-1">Add as many as you want to .</p>
+            <p className="text-neutral-500 mt-1">
+              Add as many as you want to .
+            </p>
           </div>
         </div>
 
@@ -900,7 +917,9 @@ export default function PatientWalletSelection() {
 
         {/* Unallocated Wallets */}
         <div className="flex flex-col gap-2">
-          <p className="text-neutral-500 font-medium px-1">Add source of funds</p>
+          <p className="text-neutral-500 font-medium px-1">
+            Add source of funds
+          </p>
           <div className="flex flex-col gap-3">
             {unallocatedWallets
               .filter((wallet) => {
@@ -1028,17 +1047,6 @@ export default function PatientWalletSelection() {
                 )
               })}
           </div>
-        </div>
-
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-200 md:static md:border-0 md:p-0 md:bg-transparent z-10">
-          <Button
-            className="w-full bg-[#A826FF] hover:bg-[#9220DE] text-white font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-lg shadow-purple-200"
-            onClick={() => handleProceed()}
-            disabled={Math.round(totalAllocated) !== originalBillAmount}
-          >
-            Proceed to pay
-            <ChevronRight className="w-5 h-5" />
-          </Button>
         </div>
 
         <WalletDrawer

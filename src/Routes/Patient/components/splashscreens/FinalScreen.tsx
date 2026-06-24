@@ -63,19 +63,25 @@ export default function FinalScreen({
               </p>
               <ol className="text-neutral-600 text-sm space-y-4 pl-6">
                 <li className="mt-6">
-                  <span className="font-semibold">1) Financial Statements:</span>
+                  <span className="font-semibold">
+                    1) Financial Statements:
+                  </span>
                   <ul className="list-disc pl-6 leading-8 font-semibold">
                     <li>Bank statements (past 12 months)</li>
                     <li>Mpesa statements (past 12 months)</li>
                   </ul>
                 </li>
-                <a
-                  className="text-[#29AB0B] underline py-4 cursor-pointer"
-                  onClick={() => setCurrentScreen(currentScreen + 1)}
-                >
-                  Not sure how to get these?
-                  <span className=" cursor-pointer">[Click here for help]</span>
-                </a>
+                <li className="list-none">
+                  <a
+                    className="text-[#29AB0B] underline py-4 cursor-pointer"
+                    onClick={() => setCurrentScreen(currentScreen + 1)}
+                  >
+                    Not sure how to get these?
+                    <span className=" cursor-pointer">
+                      [Click here for help]
+                    </span>
+                  </a>
+                </li>
                 <li>
                   <span className=" font-semibold">2) Guarantor:</span>
                   <p className="text-neutral-600 text-sm leading-6">

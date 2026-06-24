@@ -35,7 +35,9 @@ export default function CheckProfilePhotoPage() {
 
   const hasProfilePhoto = !!user?.profilePhoto
 
-  const pendingData = getFromLocalStorage(PENDING_INVITE_KEY) as PendingInvite | null
+  const pendingData = getFromLocalStorage(
+    PENDING_INVITE_KEY
+  ) as PendingInvite | null
   const inviteeName = pendingData?.firstName || "them"
   const inviteMethod = pendingData?.inviteMethod === "voice" ? "voice" : "text"
   const recordingDuration = pendingData?.recordingDuration ?? 0
@@ -139,53 +141,12 @@ export default function CheckProfilePhotoPage() {
   const isLoading = uploadPhotoMutation.isPending
 
   return (
-    <PatientPageWrapper title="Preview invite" onBack={handleBack}>
-      <div className="flex flex-col h-full max-w-md mx-auto w-full">
-        <div className="flex flex-col gap-6 px-4 flex-1 overflow-y-auto pb-32">
-          <div className="flex flex-col gap-1">
-            <h2 className="text-xl font-medium text-neutral-900 tracking-tight leading-snug">
-              Let {inviteeName} know it&apos;s you
-            </h2>
-            <p className="text-sm text-neutral-600">
-              Add a photo so they recognise your invite straight away.
-            </p>
-          </div>
-
-          <div className="flex justify-center">
-            <InvitePreviewCard
-              senderName={senderName}
-              senderPhoto={displayPhoto}
-              inviteMethod={inviteMethod}
-              inviteMessage={inviteMessage}
-              recordingDuration={recordingDuration}
-            />
-          </div>
-
-          {selectedFile && previewUrl && (
-            <div className="bg-white rounded-xl border border-neutral-200 p-2 pr-4 flex items-center gap-3">
-              <ProfileAvatar
-                src={previewUrl}
-                name={selectedFile.name}
-                className="w-12 h-12 rounded-lg bg-neutral-100"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium text-neutral-900 truncate text-sm">
-                  {selectedFile.name}
-                </div>
-                <div className="text-sm text-neutral-500">Ready to upload</div>
-              </div>
-              <button
-                onClick={handleRemoveFile}
-                className="p-2 hover:bg-red-50 rounded-full transition-colors group"
-              >
-                <Trash2 className="w-5 h-5 text-red-500 group-hover:text-red-600" />
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 z-50">
-          <div className="max-w-md mx-auto flex flex-col gap-2">
+    <PatientPageWrapper
+      title="Preview invite"
+      onBack={handleBack}
+      footer={
+        <div className="p-4 bg-white border-t border-neutral-100">
+          <div className="flex flex-col gap-2">
             <Button
               variant="outline"
               className="w-full border-neutral-200 text-neutral-800"
@@ -217,6 +178,49 @@ export default function CheckProfilePhotoPage() {
             )}
           </div>
         </div>
+      }
+    >
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xl font-medium text-neutral-900 tracking-tight leading-snug">
+            Let {inviteeName} know it&apos;s you
+          </h2>
+          <p className="text-sm text-neutral-600">
+            Add a photo so they recognise your invite straight away.
+          </p>
+        </div>
+
+        <div className="flex justify-center">
+          <InvitePreviewCard
+            senderName={senderName}
+            senderPhoto={displayPhoto}
+            inviteMethod={inviteMethod}
+            inviteMessage={inviteMessage}
+            recordingDuration={recordingDuration}
+          />
+        </div>
+
+        {selectedFile && previewUrl && (
+          <div className="bg-white rounded-xl border border-neutral-200 p-2 pr-4 flex items-center gap-3">
+            <ProfileAvatar
+              src={previewUrl}
+              name={selectedFile.name}
+              className="w-12 h-12 rounded-lg bg-neutral-100"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-neutral-900 truncate text-sm">
+                {selectedFile.name}
+              </div>
+              <div className="text-sm text-neutral-500">Ready to upload</div>
+            </div>
+            <button
+              onClick={handleRemoveFile}
+              className="p-2 hover:bg-red-50 rounded-full transition-colors group"
+            >
+              <Trash2 className="w-5 h-5 text-red-500 group-hover:text-red-600" />
+            </button>
+          </div>
+        )}
       </div>
     </PatientPageWrapper>
   )

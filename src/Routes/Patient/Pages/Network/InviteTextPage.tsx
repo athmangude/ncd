@@ -3,7 +3,10 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { Button } from "@/components/Button"
 import { Textarea } from "@/components/Textarea"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { getFromLocalStorage, setToLocalStorage } from "@/utilities/localStorage"
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+} from "@/utilities/localStorage"
 import { PENDING_INVITE_KEY } from "./InviteMethodPage"
 import { useToast } from "@/hooks/useToast"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -67,8 +70,22 @@ export default function InviteTextPage() {
   }
 
   return (
-    <PatientPageWrapper title="Invite by SMS" onBack={handleBack}>
-      <div className="flex flex-col max-w-md mx-auto w-full p-4 pb-24">
+    <PatientPageWrapper
+      title="Invite by SMS"
+      onBack={handleBack}
+      footer={
+        <div className="p-4 bg-white border-t border-neutral-100">
+          <Button
+            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-neutral-300 disabled:text-neutral-500"
+            onClick={handleContinue}
+            disabled={message.length === 0 || message.length > MAX_CHARS}
+          >
+            Preview your invite
+          </Button>
+        </div>
+      }
+    >
+      <div className="flex flex-col">
         <div className="flex flex-col mb-8">
           <h2 className="text-2xl font-semibold text-neutral-900 mb-1">
             Write up to 140 characters
@@ -92,17 +109,6 @@ export default function InviteTextPage() {
             {message.length}/{MAX_CHARS} characters
           </div>
         </div>
-
-      </div>
-
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 max-w-md mx-auto">
-        <Button
-          className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-neutral-300 disabled:text-neutral-500"
-          onClick={handleContinue}
-          disabled={message.length === 0 || message.length > MAX_CHARS}
-        >
-          Preview your invite
-        </Button>
       </div>
     </PatientPageWrapper>
   )
