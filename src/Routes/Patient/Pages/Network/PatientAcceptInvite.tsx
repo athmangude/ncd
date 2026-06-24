@@ -93,16 +93,18 @@ export default function PatientAcceptInvite() {
 
 function NoInviteFound() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[50vh] p-4 text-center">
-      <h2 className="text-2xl font-medium mb-2">No invite found</h2>
-      <p className="text-neutral-500 mb-6">
-        We could not find the invite you are looking for.
-      </p>
+    <AppShell header={null} footer={null} className="grid place-items-center">
+      <div className="flex flex-col items-center text-center">
+        <h2 className="text-2xl font-medium mb-2">No invite found</h2>
+        <p className="text-neutral-500 mb-6">
+          We could not find the invite you are looking for.
+        </p>
 
-      <Link to="/patients" className="w-full max-w-sm">
-        <Button className="w-full">Return to Dashboard</Button>
-      </Link>
-    </div>
+        <Link to="/patients" className="w-full max-w-sm">
+          <Button className="w-full">Return to Dashboard</Button>
+        </Link>
+      </div>
+    </AppShell>
   )
 }
 
@@ -616,38 +618,6 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
     </AppShell>
   )
 }
-
-      <div className="h-24" />
-      <div className="fixed bottom-0 left-0 right-0 p-4  z-50 bg-white">
-        <div className="max-w-md mx-auto w-full flex flex-col gap-3">
-          <Button
-            className="w-full "
-            type="button"
-            onClick={(e) => {
-              e.preventDefault()
-              setShowTerms(true)
-            }}
-          >
-            Read Terms & Accept invite
-          </Button>
-          {/* <Button
-            variant="ghost"
-            className="w-full text-red-600 hover:bg-red-50 hover:text-red-700"
-            disabled={rejectMutation.isPending}
-            isLoading={rejectMutation.isPending}
-            onClick={() => {
-              if (session.loading) return
-
-  const mutation = useMutation({
-    mutationFn: async () => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/qr/accept`,
-        {
-          token,
-          signature,
-          relationship,
-        }
-      )
 
 function QRInviteDetails({
   token,
