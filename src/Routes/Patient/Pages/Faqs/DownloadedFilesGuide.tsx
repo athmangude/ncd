@@ -1,21 +1,16 @@
 import { useState, useRef } from "react"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { ProtectedRoute } from "@/components/ProtectedResource"
-import { usePatientAuthStore } from "../../stores/patientAuthStore"
-import { MEMBER_LOAN_ROLES } from "../../constants/userTypes"
 import { Alert, AlertDescription } from "@/components/Alert"
 import { InfoIcon, XIcon } from "lucide-react"
 import { Button } from "@/components/Button"
 
+// Loan-role access is enforced once at the route level (MemberLoanRouteGuard in
+// PatientsHome); this page no longer self-guards.
 export default function DownloadedFilesGuide() {
-  const user = usePatientAuthStore((state) => state.user)
-
   return (
-    <ProtectedRoute userRole={user?.type} allowedRoles={MEMBER_LOAN_ROLES}>
-      <PatientPageWrapper title="Financial Statements">
-        <InstructionsSection />
-      </PatientPageWrapper>
-    </ProtectedRoute>
+    <PatientPageWrapper title="Financial Statements">
+      <InstructionsSection />
+    </PatientPageWrapper>
   )
 }
 

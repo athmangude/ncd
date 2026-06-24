@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
+import AppShell from "@/Routes/AppShell"
 import { Button } from "@/components/Button"
 import facilityIcon from "@/assets/icons/hospital.png"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/Tabs"
@@ -161,19 +162,27 @@ export default function FacilityDetailsPage() {
 
   if (isOffline) {
     return (
-      <OfflinePlaceholder message="Connect to the internet to view facility details." />
+      <AppShell header={null} footer={null}>
+        <OfflinePlaceholder message="Connect to the internet to view facility details." />
+      </AppShell>
     )
   }
 
   if (isLoading) {
-    return <Skeleton />
+    return (
+      <AppShell header={null} footer={null} bodyPadding="none">
+        <Skeleton />
+      </AppShell>
+    )
   }
 
   if (isError || !facility) {
     return (
-      <NotFoundState
-        onBack={() => navigate("/patients", { state: { tab: "explore" } })}
-      />
+      <AppShell header={null} footer={null} bodyPadding="none">
+        <NotFoundState
+          onBack={() => navigate("/patients", { state: { tab: "explore" } })}
+        />
+      </AppShell>
     )
   }
 
@@ -184,24 +193,70 @@ export default function FacilityDetailsPage() {
       : "—"
   const showRating = !!reviewAggregate && reviewAggregate.reviewCount > 0
 
-  return (
-    <div className="flex flex-col min-h-screen bg-white pb-24">
-      <header className="sticky top-0 z-50 flex w-full flex-col bg-white">
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="bg-white p-2 rounded-lg border border-neutral-100 shadow-sm"
-              aria-label="Back"
-            >
-              <ArrowLeft className="w-6 h-6 text-neutral-600" />
-            </button>
-            <h1 className="text-md capitalize">Facility details</h1>
-          </div>
+  const header = (
+    <header className="flex w-full flex-col bg-white px-4 py-3">
+      <div className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="bg-white p-2 rounded-lg border border-neutral-100 shadow-sm"
+            aria-label="Back"
+          >
+            <ArrowLeft className="w-6 h-6 text-neutral-600" />
+          </button>
+          <h1 className="text-md capitalize">Facility details</h1>
         </div>
-      </header>
+      </div>
+    </header>
+  )
 
+  const footer = (
+    <div className="bg-white border-t border-neutral-100 px-4 py-3 flex gap-3 w-full">
+      {activeTab === "about" && (
+        <>
+          <Button
+            className="flex-1 min-w-0 h-12 rounded-xl border-0 bg-purple-100 text-primary hover:bg-purple-200 shadow-none text-sm sm:text-base"
+            onClick={handleDirections}
+            disabled={!destination}
+          >
+            Get directions
+          </Button>
+          <Button
+            className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
+            onClick={handlePayHere}
+          >
+            Pay here
+          </Button>
+        </>
+      )}
+      {activeTab === "reviews" && (
+        <div className="flex flex-col w-full">
+          {eligibility && !eligibility.canReview && eligibility.reason && (
+            <ReviewGateHelperText reason={eligibility.reason} />
+          )}
+          <Button
+            className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
+            onClick={handleAddReview}
+            disabled={eligibilityLoading || !eligibility?.canReview}
+          >
+            Add a review
+          </Button>
+        </div>
+      )}
+      {activeTab === "activity" && (
+        <Button
+          className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
+          onClick={handlePayHere}
+        >
+          Pay here
+        </Button>
+      )}
+    </div>
+  )
+
+  return (
+    <AppShell header={header} footer={footer} bodyPadding="none">
       <section className="bg-white px-4 pt-6 pb-4 border-b border-neutral-100 flex flex-col items-center text-center">
         <img
           src={facilityIcon}
@@ -279,49 +334,7 @@ export default function FacilityDetailsPage() {
           <MyActivityTab facilityId={facility.id} />
         </TabsContent>
       </Tabs>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex gap-3 w-full max-w-md mx-auto">
-        {activeTab === "about" && (
-          <>
-            <Button
-              className="flex-1 min-w-0 h-12 rounded-xl border-0 bg-purple-100 text-primary hover:bg-purple-200 shadow-none text-sm sm:text-base"
-              onClick={handleDirections}
-              disabled={!destination}
-            >
-              Get directions
-            </Button>
-            <Button
-              className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
-              onClick={handlePayHere}
-            >
-              Pay here
-            </Button>
-          </>
-        )}
-        {activeTab === "reviews" && (
-          <div className="flex flex-col w-full">
-            {eligibility && !eligibility.canReview && eligibility.reason && (
-              <ReviewGateHelperText reason={eligibility.reason} />
-            )}
-            <Button
-              className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
-              onClick={handleAddReview}
-              disabled={eligibilityLoading || !eligibility?.canReview}
-            >
-              Add a review
-            </Button>
-          </div>
-        )}
-        {activeTab === "activity" && (
-          <Button
-            className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
-            onClick={handlePayHere}
-          >
-            Pay here
-          </Button>
-        )}
-      </div>
-    </div>
+    </AppShell>
   )
 }
 

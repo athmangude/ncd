@@ -9,29 +9,24 @@ import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
 import { patientLoginDetailsQueryKey } from "../PatientsHome"
-import { ProtectedRoute } from "@/components/ProtectedResource"
-import { usePatientAuthStore } from "../../stores/patientAuthStore"
-import { MEMBER_LOAN_ROLES } from "../../constants/userTypes"
 import FAQSection from "@/components/FAQSection"
 import StatementUploadForm from "@/components/StatementUploadForm"
 import { useFAQs } from "@/data/faqs"
 
 export const getFinancialStatementsQueryKey = "getFinancialStatements"
+// Loan-role access is enforced once at the route level (MemberLoanRouteGuard in
+// PatientsHome); this page no longer self-guards.
 export default function PatientFinancialStatementsWithCreditUpdate() {
   const [showSuccessScreen, setShowSuccessScreen] = useState(false)
 
-  const user = usePatientAuthStore((state) => state.user)
-
   return (
-    <ProtectedRoute userRole={user?.type} allowedRoles={MEMBER_LOAN_ROLES}>
-      <PatientPageWrapper title="Financial Statements">
-        {showSuccessScreen ? (
-          <SuccessScreen />
-        ) : (
-          <UploadStatements setShowSuccessScreen={setShowSuccessScreen} />
-        )}
-      </PatientPageWrapper>
-    </ProtectedRoute>
+    <PatientPageWrapper title="Financial Statements">
+      {showSuccessScreen ? (
+        <SuccessScreen />
+      ) : (
+        <UploadStatements setShowSuccessScreen={setShowSuccessScreen} />
+      )}
+    </PatientPageWrapper>
   )
 }
 
@@ -43,11 +38,11 @@ function UploadStatements({
   // Move all hooks to the top level
   const [showUploadSection, setShowUploadSection] = useState(false)
   const faqs = useFAQs() // Call hook at the top level
-  
+
   const handleChooseFile = () => {
     setShowUploadSection(true)
   }
-  
+
   const query = useQuery({
     queryKey: [getFinancialStatementsQueryKey],
     queryFn: async () => {
@@ -70,7 +65,10 @@ function UploadStatements({
 
   return (
     <>
-      <h1 className="text-2xl font-medium capitalize ">Upload your MPESA statement for the <span className="font-medium text-primary">last 6 months</span></h1>
+      <h1 className="text-2xl font-medium capitalize ">
+        Upload your MPESA statement for the{" "}
+        <span className="font-medium text-primary">last 6 months</span>
+      </h1>
       <p>
         Increase your limit up to{" "}
         <span className="font-medium">{formatMoney(6_000, "KES")}</span> by
@@ -79,36 +77,41 @@ function UploadStatements({
       <div>
         <p className=" font-medium">What you'll need</p>
         <ul className="list-disc pl-6 text-neutral-500 text-sm mt-0">
-          <li>Must be a <strong>PDF</strong> file from Safaricom</li>
-          <li>Maximum file size is <strong>10MB</strong></li>
-          <li>File may be <strong>password</strong> protected(we'll ask for it)</li>
+          <li>
+            Must be a <strong>PDF</strong> file from Safaricom
+          </li>
+          <li>
+            Maximum file size is <strong>10MB</strong>
+          </li>
+          <li>
+            File may be <strong>password</strong> protected(we'll ask for it)
+          </li>
         </ul>
       </div>
 
       {!showUploadSection && (
-        <Button onClick={handleChooseFile}>
-          Choose file
-        </Button>
+        <Button onClick={handleChooseFile}>Choose file</Button>
       )}
 
-      {!showUploadSection && <FAQSection
-        faqs={faqs}
-        supportAction={{
-          label: "Contact Jireh Support",
-          icon: <PhoneOutgoing className="h-4 w-4" />,
-          onClick: () => {
-            window.open("https://wa.me/254117118511", "_blank");
-          },
-        }}
-      />}
+      {!showUploadSection && (
+        <FAQSection
+          faqs={faqs}
+          supportAction={{
+            label: "Contact Jireh Support",
+            icon: <PhoneOutgoing className="h-4 w-4" />,
+            onClick: () => {
+              window.open("https://wa.me/254117118511", "_blank")
+            },
+          }}
+        />
+      )}
 
-      {showUploadSection &&
+      {showUploadSection && (
         <>
           <StatementUploadForm
             title="MPESA Statements"
             description="Upload your latest MPESA statement for the last 6 months"
             files={query.data?.mpesaStatements || []}
-
           />
           <Button
             onClick={() => {
@@ -119,13 +122,10 @@ function UploadStatements({
             Continue
           </Button>
         </>
-      }
-
-
+      )}
     </>
   )
 }
-
 
 function SuccessScreen() {
   const queryClient = useQueryClient()

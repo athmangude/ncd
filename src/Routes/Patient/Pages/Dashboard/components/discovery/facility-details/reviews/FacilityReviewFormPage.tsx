@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { ArrowLeft } from "lucide-react"
+import AppShell from "@/Routes/AppShell"
 import { Button } from "@/components/Button"
 import FormGroupTextarea from "@/components/form/FormGroupTextarea"
 import { useToast } from "@/hooks/useToast"
@@ -178,121 +179,135 @@ export default function FacilityReviewFormPage() {
 
   if (isOffline) {
     return (
-      <OfflinePlaceholder message="Connect to the internet to leave a review." />
+      <AppShell header={null} footer={null}>
+        <OfflinePlaceholder message="Connect to the internet to leave a review." />
+      </AppShell>
     )
   }
 
   if (facilityLoading || eligibilityLoading) {
     return (
-      <div className="flex flex-col gap-4 p-6 animate-pulse">
-        <div className="h-5 w-40 bg-neutral-200 rounded" />
-        <div className="h-32 w-full bg-neutral-200 rounded" />
-      </div>
+      <AppShell header={null} footer={null} bodyPadding="none">
+        <div className="flex flex-col gap-4 p-6 animate-pulse">
+          <div className="h-5 w-40 bg-neutral-200 rounded" />
+          <div className="h-32 w-full bg-neutral-200 rounded" />
+        </div>
+      </AppShell>
     )
   }
 
   if (isError || !facility) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 gap-4">
-        <p className="text-sm text-muted-foreground">
-          Facility details are not available.
-        </p>
-        <Button onClick={() => navigate(-1)}>Back</Button>
-      </div>
+      <AppShell header={null} footer={null} bodyPadding="none">
+        <div className="flex flex-col items-center justify-center min-h-full p-6 gap-4">
+          <p className="text-sm text-muted-foreground">
+            Facility details are not available.
+          </p>
+          <Button onClick={() => navigate(-1)}>Back</Button>
+        </div>
+      </AppShell>
     )
   }
 
+  const header = (
+    <header className="flex w-full items-center gap-2 bg-white p-2">
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm"
+        aria-label="Back"
+      >
+        <ArrowLeft className="w-6 h-6 text-gray-600" />
+      </button>
+      <h1 className="text-md">Add a review</h1>
+    </header>
+  )
+
+  const footer = (
+    <div className="bg-white border-t border-neutral-100 px-4 py-3 w-full">
+      <Button
+        type="submit"
+        form="facility-review-form"
+        className="w-full h-12 rounded-xl text-sm sm:text-base"
+        disabled={!canSubmit}
+      >
+        {submit.isPending ? "Submitting…" : "Add a review"}
+      </Button>
+    </div>
+  )
+
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col min-h-screen bg-white pb-28"
-    >
-      <header className="sticky top-0 z-50 flex w-full items-center gap-2 bg-white p-2">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm"
-          aria-label="Back"
-        >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
-        </button>
-        <h1 className="text-md">Add a review</h1>
-      </header>
+    <AppShell header={header} footer={footer} bodyPadding="none">
+      <form
+        id="facility-review-form"
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col bg-white"
+      >
+        <section className="px-6 py-6 flex flex-col items-center text-center">
+          <p className="text-base font-semibold text-foreground max-w-[34ch]">
+            How likely are you to recommend this provider to friends or family?
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">0 → not at all</p>
+          <p className="text-xs text-muted-foreground">10 → extremely likely</p>
 
-      <section className="px-6 py-6 flex flex-col items-center text-center">
-        <p className="text-base font-semibold text-foreground max-w-[34ch]">
-          How likely are you to recommend this provider to friends or family?
-        </p>
-        <p className="text-xs text-muted-foreground mt-2">0 → not at all</p>
-        <p className="text-xs text-muted-foreground">10 → extremely likely</p>
-
-        <div className="grid grid-cols-6 gap-2 mt-6 max-w-xs">
-          {NPS_SCORES.map((score) => {
-            const selected = npsScore === score
-            const filled = typeof npsScore === "number" && score <= npsScore
-            return (
-              <button
-                key={score}
-                type="button"
-                onClick={() => handleScoreSelect(score)}
-                className={cn(
-                  "h-10 w-10 rounded-full text-sm font-semibold transition-colors",
-                  filled
-                    ? "bg-teal-500 text-white"
-                    : "bg-neutral-100 text-foreground hover:bg-neutral-200"
-                )}
-                aria-pressed={selected}
-                aria-label={`Score ${score}`}
-              >
-                {score}
-              </button>
-            )
-          })}
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-4 px-6 pb-6">
-        {bucket === "promoter" && (
-          <div className="sensitive-data">
-            <FormGroupTextarea
-              id="lovedMost"
-              label="What did you love most? (optional)"
-              register={register("lovedMost", { maxLength: MAX_LEN })}
-              error={errors.lovedMost ? "Too long" : undefined}
-            />
+          <div className="grid grid-cols-6 gap-2 mt-6 max-w-xs">
+            {NPS_SCORES.map((score) => {
+              const selected = npsScore === score
+              const filled = typeof npsScore === "number" && score <= npsScore
+              return (
+                <button
+                  key={score}
+                  type="button"
+                  onClick={() => handleScoreSelect(score)}
+                  className={cn(
+                    "h-10 w-10 rounded-full text-sm font-semibold transition-colors",
+                    filled
+                      ? "bg-teal-500 text-white"
+                      : "bg-neutral-100 text-foreground hover:bg-neutral-200"
+                  )}
+                  aria-pressed={selected}
+                  aria-label={`Score ${score}`}
+                >
+                  {score}
+                </button>
+              )
+            })}
           </div>
-        )}
-        {bucket === "passive" && (
-          <div className="sensitive-data">
-            <FormGroupTextarea
-              id="makeItATen"
-              label="What would make your experience a 10? (optional)"
-              register={register("makeItATen", { maxLength: MAX_LEN })}
-              error={errors.makeItATen ? "Too long" : undefined}
-            />
-          </div>
-        )}
-        {bucket === "detractor" && (
-          <div className="sensitive-data">
-            <FormGroupTextarea
-              id="couldDoBetter"
-              label={`How can ${facility.name} do better in future? (optional)`}
-              register={register("couldDoBetter", { maxLength: MAX_LEN })}
-              error={errors.couldDoBetter ? "Too long" : undefined}
-            />
-          </div>
-        )}
-      </section>
+        </section>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] w-full max-w-md mx-auto">
-        <Button
-          type="submit"
-          className="w-full h-12 rounded-xl text-sm sm:text-base"
-          disabled={!canSubmit}
-        >
-          {submit.isPending ? "Submitting…" : "Add a review"}
-        </Button>
-      </div>
-    </form>
+        <section className="flex flex-col gap-4 px-6 pb-6">
+          {bucket === "promoter" && (
+            <div className="sensitive-data">
+              <FormGroupTextarea
+                id="lovedMost"
+                label="What did you love most? (optional)"
+                register={register("lovedMost", { maxLength: MAX_LEN })}
+                error={errors.lovedMost ? "Too long" : undefined}
+              />
+            </div>
+          )}
+          {bucket === "passive" && (
+            <div className="sensitive-data">
+              <FormGroupTextarea
+                id="makeItATen"
+                label="What would make your experience a 10? (optional)"
+                register={register("makeItATen", { maxLength: MAX_LEN })}
+                error={errors.makeItATen ? "Too long" : undefined}
+              />
+            </div>
+          )}
+          {bucket === "detractor" && (
+            <div className="sensitive-data">
+              <FormGroupTextarea
+                id="couldDoBetter"
+                label={`How can ${facility.name} do better in future? (optional)`}
+                register={register("couldDoBetter", { maxLength: MAX_LEN })}
+                error={errors.couldDoBetter ? "Too long" : undefined}
+              />
+            </div>
+          )}
+        </section>
+      </form>
+    </AppShell>
   )
 }
