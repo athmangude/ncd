@@ -5,12 +5,7 @@ import AppShell from "@/Routes/AppShell"
 // canonical page shell. The slot sub-components live in src/Routes/shell/* and
 // are re-exported here unchanged so existing imports keep working.
 export { LogoHeader, BackTitleHeader } from "@/Routes/shell/headers"
-export {
-  NavFooter,
-  PrimaryCTAFooter,
-  DualActionFooter,
-  type NavTab,
-} from "@/Routes/shell/footers"
+export { PrimaryCTAFooter, DualActionFooter } from "@/Routes/shell/footers"
 
 interface MobileWrapperProps {
   children: React.ReactNode
