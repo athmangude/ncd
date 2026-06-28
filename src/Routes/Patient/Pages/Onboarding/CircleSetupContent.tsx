@@ -85,8 +85,12 @@ export function CircleSetupContent({
         message={
           isOffline
             ? "You are offline and no cached data is available. Please connect to the internet to load your Circle."
-            : (error as { response?: { data?: { message?: string } }; message?: string })
-                ?.response?.data?.message ||
+            : (
+                error as {
+                  response?: { data?: { message?: string } }
+                  message?: string
+                }
+              )?.response?.data?.message ||
               (error as { message?: string })?.message
         }
       />
@@ -95,8 +99,8 @@ export function CircleSetupContent({
 
   return (
     <div className="flex flex-col items-center gap-6">
-      <div className="flex flex-col items-center gap-1">
-        <h1 className="font-medium text-2xl text-center">
+      <div className="flex flex-col items-center text-center gap-1">
+        <h1>
           {isEmpty ? (
             <>
               Build a group that
