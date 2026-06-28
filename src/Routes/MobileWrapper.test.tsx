@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react"
 import MobileWrapper, {
   LogoHeader,
   BackTitleHeader,
-  NavFooter,
   PrimaryCTAFooter,
   DualActionFooter,
 } from "./MobileWrapper"
@@ -39,7 +38,6 @@ describe("MobileWrapper (back-compat)", () => {
   it("re-exports the header and footer slot sub-components", () => {
     expect(LogoHeader).toBeTypeOf("function")
     expect(BackTitleHeader).toBeTypeOf("function")
-    expect(NavFooter).toBeTypeOf("function")
     expect(PrimaryCTAFooter).toBeTypeOf("function")
     expect(DualActionFooter).toBeTypeOf("function")
   })

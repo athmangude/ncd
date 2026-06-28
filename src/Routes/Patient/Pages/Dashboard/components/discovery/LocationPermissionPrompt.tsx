@@ -43,11 +43,9 @@ export function LocationPermissionPrompt({
         value="explore"
         className="flex flex-col w-full h-[calc(100vh-100px)] overflow-y-auto"
       >
-        <div className="flex flex-col items-center gap-2 w-full p-4">
+        <div className="flex flex-col items-center gap-2 text-center w-full p-4">
           {illustration}
-          <h2 className="text-xl font-semibold text-foreground tracking-tight text-center">
-            Finding facilities near you...
-          </h2>
+          <h1>Finding facilities near you...</h1>
           <div className="flex items-center gap-2 px-2 py-1.5">
             <Loader2 className="h-4 w-4 text-foreground animate-spin" />
             <span className="text-sm text-foreground">Loading...</span>
@@ -63,11 +61,9 @@ export function LocationPermissionPrompt({
         value="explore"
         className="flex flex-col w-full h-[calc(100vh-100px)] overflow-y-auto"
       >
-        <div className="flex flex-col items-center gap-2 w-full p-4">
+        <div className="flex flex-col items-center gap-2 text-center w-full p-4">
           {illustration}
-          <h2 className="text-xl font-semibold text-foreground tracking-tight text-center">
-            Finding facilities near you...
-          </h2>
+          <h1>Finding facilities near you...</h1>
           <div className="flex items-start justify-between gap-3 w-full bg-orange-50 border border-orange-700 rounded-lg px-3.5 py-3 mt-2">
             <div className="flex gap-3 items-start flex-1 min-w-0">
               <div className="pt-0.5 shrink-0">
@@ -100,10 +96,8 @@ export function LocationPermissionPrompt({
       <div className="flex flex-col items-center justify-center gap-6 w-full max-w-md p-4 flex-1">
         <div className="flex flex-col items-center gap-2 w-full text-center">
           {illustration}
-          <div className="flex flex-col gap-1 w-full">
-            <h2 className="text-xl font-semibold text-foreground tracking-tight">
-              Find care near you
-            </h2>
+          <div className="flex flex-col gap-1 text-center w-full">
+            <h1>Find care near you</h1>
             <p className="text-sm text-muted-foreground">
               Search by name, area, or service...
             </p>

@@ -87,6 +87,18 @@
   a {
     @apply text-primary font-medium underline;
   }
+
+  h1 {
+    @apply text-foreground font-medium text-2xl tracking-tight;
+  }
+
+  h2 {
+    @apply text-foreground font-medium text-lg tracking-tight;
+  }
+  
+  h3 {
+    @apply text-foreground font-medium text-base;
+  }
 }
 
 .curved-edge {

@@ -23,18 +23,30 @@ beforeEach(() => {
 })
 
 describe("FacilitatorPanel", () => {
-  it("resets the account after confirmation and reloads", () => {
+  it("empties the account to a blank onboarded profile and reloads", () => {
     localStorage.setItem("mock:loans", JSON.stringify([{ id: "loan-1" }]))
     renderPanel()
 
-    fireEvent.click(
-      screen.getByText("Reset to base (empty — build from scratch)")
-    )
-    fireEvent.click(screen.getByText("Yes, reset to base"))
+    fireEvent.click(screen.getByText("Empty onboarded (skip phone)"))
 
-    // Reset-to-base empties every collection (loans become an empty array).
+    // Seeding a fresh account writes empty collections (loans become []).
     expect(JSON.parse(localStorage.getItem("mock:loans") || "null")).toEqual([])
     // A full reset still hard-reloads so the app re-bootstraps cleanly.
+    expect(reloadApp).toHaveBeenCalled()
+  })
+
+  it("starts a fresh participant after confirmation and reloads", () => {
+    localStorage.setItem("mock:loans", JSON.stringify([{ id: "loan-1" }]))
+    renderPanel()
+
+    // The destructive full wipe is gated behind an inline confirmation.
+    fireEvent.click(
+      screen.getByText("Start fresh — new participant (phone input)")
+    )
+    fireEvent.click(screen.getByText("Yes, start fresh"))
+
+    // Start fresh removes every mock:* collection key outright.
+    expect(localStorage.getItem("mock:loans")).toBeNull()
     expect(reloadApp).toHaveBeenCalled()
   })
 

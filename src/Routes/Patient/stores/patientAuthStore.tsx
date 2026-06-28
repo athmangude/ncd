@@ -1,6 +1,7 @@
 import { create } from "zustand"
 import Session from "supertokens-web-js/recipe/session"
 import { CountryCode } from "libphonenumber-js"
+import { clearAllParticipantState } from "@/mocks/domain/reset"
 
 interface SignUpDetails {
   phoneNumber: string
@@ -67,45 +68,13 @@ export const usePatientAuthStore = create<PatientAuthState>((set) => ({
   signOut: async () => {
     await Session.signOut()
 
-    // Clear all patient-specific client state when logging out
+    // Sign out is the single path back to a fresh, unseeded participant. Wipe
+    // every trace of this participant — mock collections, session + returning-user
+    // flags, app-flow keys, the discovery tab cache and the offline IndexedDB — so
+    // the next load starts logged-out at the phone-number entry. (Reloading without
+    // signing out preserves everything; only this clears state.)
     try {
-      if (typeof window !== "undefined") {
-        const patientLocalStorageKeys = [
-          // Auth / onboarding
-          "approved_patient_phone_number",
-          // Loan request flow
-          "patientReviewInvoice",
-          "manualPaymentRequestId",
-          "paymentId",
-          "paymentResponse",
-          "patientSelectPatient",
-          "patientTreatmentDetails",
-          // KYC circle members
-          "kyc_circle_members",
-        ]
-
-        patientLocalStorageKeys.forEach((key) => {
-          try {
-            window.localStorage.removeItem(key)
-          } catch {
-            // ignore
-          }
-        })
-
-        // Clear discovery tab state persisted in sessionStorage
-        try {
-          window.sessionStorage.removeItem("discovery_tab_state")
-        } catch {
-          // ignore
-        }
-
-        // Clear offline IndexedDB cache used by useOfflinePatientData
-        try {
-          window.indexedDB?.deleteDatabase("JirehHealthDB")
-        } catch {
-          // ignore
-        }
-      }
+      clearAllParticipantState()
     } catch {
       // Best-effort cleanup; don't block logout on failure
     }

@@ -5,11 +5,9 @@ export function DashboardSearch() {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col gap-2 items-center w-full mt-8">
-      <div className="flex flex-col gap-1 items-center w-full text-center">
-        <h2 className="text-xl font-semibold text-foreground tracking-tight">
-          Find care near you
-        </h2>
+    <div className="flex flex-col gap-2 items-center w-full">
+      <div className="flex flex-col items-center w-full text-center">
+        <h1>Find care near you</h1>
         <p className="text-sm text-muted-foreground">
           Search by name, area, or service.
         </p>
