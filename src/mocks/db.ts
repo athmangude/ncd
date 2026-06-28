@@ -22,7 +22,11 @@ const SEED_VERSION_KEY = PREFIX + "__seed_version__"
 // Session + returning-user flags live outside the `mock:` namespace; a version
 // bump clears them too so existing participants re-enter the new fresh-default
 // model instead of keeping a stale fully-onboarded "Amina" session.
-const SESSION_FLAG_KEYS = ["mock_session_exists", "mock_user_id", "mock_has_account"]
+const SESSION_FLAG_KEYS = [
+  "mock_session_exists",
+  "mock_user_id",
+  "mock_has_account",
+]
 
 function deepClone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value))
