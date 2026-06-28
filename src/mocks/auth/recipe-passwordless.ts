@@ -5,6 +5,7 @@ import {
   markMockAccountCreated,
   startMockSession,
 } from "./session"
+import { seedEmptyProfile } from "../domain/seed"
 
 interface CreateCodeResult {
   status: string
@@ -51,7 +52,12 @@ export async function consumeCode(_input?: {
   const isReturning = hasMockAccount()
   const userId = getMockUserId()
   startMockSession(userId)
-  if (!isReturning) markMockAccountCreated()
+  if (!isReturning) {
+    markMockAccountCreated()
+    // Brand-new participant: give them a blank profile so the onboarding journey
+    // runs, rather than reading the rich "Amina" fixture as a fully-onboarded user.
+    seedEmptyProfile()
+  }
 
   return {
     status: "OK",

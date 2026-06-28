@@ -1,8 +1,6 @@
 import { setupWorker } from "msw/browser"
 import { handlers } from "./handlers"
 import { migrateSeedVersion } from "./db"
-import { hasMockAccount } from "./auth/session"
-import { seedFreshAccount } from "./domain/seed"
 
 export const worker = setupWorker(...handlers)
 
@@ -16,13 +14,11 @@ export async function startMockServiceWorker(): Promise<void> {
   // sessions pick up new fields (wallets, patientCircle, loans, …).
   migrateSeedVersion()
 
-  // Default to a fresh, empty, logged-in participant who builds their own
-  // profile through onboarding. A returning participant (account flag set) keeps
-  // whatever they have already built; only a brand-new / just-migrated browser
-  // is seeded fresh.
-  if (!hasMockAccount()) {
-    seedFreshAccount()
-  }
+  // No auto-login. A brand-new (or signed-out) browser starts logged-out at the
+  // splash / phone-number entry; the OTP flow creates the account and seeds an
+  // empty profile (see consumeCode). A returning participant keeps whatever they
+  // already built — reloading never restarts them. Only "Sign out" wipes back to
+  // the fresh, unseeded phone-input state.
 
   await worker.start({
     serviceWorker: {

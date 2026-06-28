@@ -136,13 +136,24 @@ function writeEmptyCollections(): void {
 }
 
 /**
- * Fresh, empty, logged-in account that lands mid-onboarding. Used as the default
- * for a brand-new browser and by the "Reset to base" facilitator control.
+ * Write an empty, unonboarded profile + empty collections, leaving the session
+ * untouched. Called when a brand-new participant completes OTP sign-up so they
+ * land mid-onboarding with their own blank profile (instead of reading the rich
+ * "Amina" fixture). Does NOT clear existing state or start a session.
+ */
+export function seedEmptyProfile(): void {
+  writeObject(LOGIN_DETAILS_KEY, freshLoginDetails())
+  writeEmptyCollections()
+}
+
+/**
+ * Fresh, empty, logged-in account that lands mid-onboarding. Used by the
+ * "Empty onboarded (skip phone)" facilitator control to jump straight into
+ * onboarding without going through the phone / OTP entry.
  */
 export function seedFreshAccount(): void {
   clearAllParticipantState()
-  writeObject(LOGIN_DETAILS_KEY, freshLoginDetails())
-  writeEmptyCollections()
+  seedEmptyProfile()
   startMockSession()
   markMockAccountCreated()
 }
