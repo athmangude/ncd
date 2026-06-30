@@ -53,6 +53,7 @@ export interface NetworkData {
   network: NetworkMember[]
   invites: SentInvite[]
   receivedInvites: ReceivedInvite[]
+  frozen?: boolean
   slots?: {
     auxiliary: { used: number; max: number; reserved: number }
     accountable: { used: number; max: number; reserved: number }
@@ -108,7 +109,7 @@ export function getPatientCircleSummary(): PatientCircleSummary {
   return {
     filledAccountableSlots: accountableMembers.length,
     status: "ACTIVE",
-    isFrozen: false,
+    isFrozen: getNetwork().frozen === true,
   }
 }
 
@@ -206,6 +207,93 @@ export function acceptInvite(inviteId: string): NetworkData {
     }
   }
 
+  setNetwork(next)
+  return next
+}
+
+/** Remove an active circle member by id. Returns the updated network. */
+export function removeMember(memberId: string): NetworkData {
+  const data = getNetwork()
+  const next: NetworkData = {
+    ...data,
+    network: data.network.filter((member) => member.id !== memberId),
+  }
+  setNetwork(next)
+  return next
+}
+
+/** Drop a pending sent invite by id (freeing its reserved slot). */
+export function removeInvite(inviteId: string): NetworkData {
+  const data = getNetwork()
+  const invite = data.invites.find((item) => item.id === inviteId)
+  const category = slotCategory(invite?.relationship)
+  const next: NetworkData = {
+    ...data,
+    invites: data.invites.filter((item) => item.id !== inviteId),
+    slots:
+      data.slots && invite
+        ? {
+            ...data.slots,
+            [category]: {
+              ...data.slots[category],
+              reserved: Math.max(0, data.slots[category].reserved - 1),
+            },
+          }
+        : data.slots,
+  }
+  setNetwork(next)
+  return next
+}
+
+/** Freeze or unfreeze the circle (surfaced through `getPatientCircleSummary`). */
+export function setCircleFrozen(frozen: boolean): NetworkData {
+  const next: NetworkData = { ...getNetwork(), frozen }
+  setNetwork(next)
+  return next
+}
+
+/**
+ * Accept an invite the participant received: move the inviter into the active
+ * circle and drop it from the received list. No-op for an unknown id.
+ */
+export function acceptReceivedInvite(inviteId: string): NetworkData {
+  const data = getNetwork()
+  const invite = data.receivedInvites.find((item) => item.id === inviteId)
+  if (!invite) return data
+
+  const member: NetworkMember = {
+    id: invite.id,
+    firstName: invite.inviterFirstName,
+    lastName: invite.inviterLastName,
+    phoneNumber: invite.phoneNumber ?? null,
+    profilePhoto: invite.profilePhoto ?? null,
+    relationship: "FRIEND",
+    type: "ACCOUNTABLE",
+    status: "ACTIVE",
+    joinedAt: new Date().toISOString(),
+    hasDefaultedLoan: false,
+  }
+
+  const next: NetworkData = {
+    ...data,
+    network: [...data.network, member],
+    receivedInvites: data.receivedInvites.filter(
+      (item) => item.id !== inviteId
+    ),
+  }
+  setNetwork(next)
+  return next
+}
+
+/** Decline a received invite by id (drops it from the received list). */
+export function declineReceivedInvite(inviteId: string): NetworkData {
+  const data = getNetwork()
+  const next: NetworkData = {
+    ...data,
+    receivedInvites: data.receivedInvites.filter(
+      (item) => item.id !== inviteId
+    ),
+  }
   setNetwork(next)
   return next
 }

@@ -8,10 +8,8 @@
  * so React Query refetches against the reset state.
  */
 
-import {
-  markMockAccountCreated,
-  startMockSession,
-} from "../auth/session"
+import { markMockAccountCreated, startMockSession } from "../auth/session"
+import { writeCollection, writeObject } from "../db"
 
 const MOCK_PREFIX = "mock:"
 
@@ -94,4 +92,39 @@ export function resetMockState(): void {
  */
 export function resetCollection(key: string): void {
   localStorage.removeItem(MOCK_PREFIX + key)
+}
+
+/**
+ * Empty a single mock collection while preserving its shape. Unlike
+ * `resetCollection` (which re-seeds from the fixture on next read), this writes
+ * the empty value so the area reads as genuinely cleared — used by the
+ * Facilitator Tools "Clear" actions. Object-shaped collections (payment-history,
+ * the network, the ledgers) get their empty object so a consumer never reads an
+ * array where it expects `{ payments, … }`. Unknown keys fall back to `[]`.
+ */
+export function clearCollection(key: string): void {
+  switch (key) {
+    case "payment-history":
+      writeObject(key, { payments: [], medicalRequests: [] })
+      return
+    case "patient-network":
+      writeObject(key, {
+        network: [],
+        invites: [],
+        receivedInvites: [],
+        slots: {
+          auxiliary: { used: 0, max: 3, reserved: 0 },
+          accountable: { used: 0, max: 2, reserved: 0 },
+        },
+      })
+      return
+    case "care-fund-transactions":
+      writeObject(key, { transactions: [] })
+      return
+    case "circle-activity":
+      writeObject(key, { events: [] })
+      return
+    default:
+      writeCollection(key, [])
+  }
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, fireEvent } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import StepperHeader from "./StepperHeader"
 import { LOAN_APPLICATION_STEPS } from "@/Routes/Patient/hooks/useNextLoanApplicationStep"
@@ -85,6 +85,48 @@ describe("StepperHeader", () => {
     renderHeader()
     expect(screen.getByText("A title")).toBeInTheDocument()
     expect(screen.getByRole("button")).toBeInTheDocument()
+  })
+
+  // Phase 7: the bar matches the canonical BackTitleHeader look so the title is
+  // "enclosed on the bar" identically across every titled patient screen.
+  it("encloses the title in the canonical bordered/blurred/sticky bar", () => {
+    mockPathname = "/patients/notifications"
+    renderHeader()
+    const header = screen.getByRole("banner")
+    expect(header.className).toContain("border-b")
+    expect(header.className).toContain("backdrop-blur-md")
+    expect(header.className).toContain("sticky")
+  })
+
+  it("renders the title as a text-base paragraph (not a capitalized heading)", () => {
+    mockPathname = "/patients/notifications"
+    renderHeader()
+    const title = screen.getByText("A title")
+    expect(title.tagName).toBe("P")
+    expect(title.className).toContain("text-base")
+    expect(title.className).not.toContain("capitalize")
+  })
+
+  it("defaults the back button to navigate(-1)", () => {
+    mockPathname = "/patients/notifications"
+    renderHeader()
+    fireEvent.click(screen.getByLabelText("Go back"))
+    expect(mockNavigate).toHaveBeenCalledWith(-1)
+  })
+
+  it("calls a custom onBack instead of navigating", () => {
+    mockPathname = "/patients/notifications"
+    const onBack = vi.fn()
+    renderHeader({ onBack })
+    fireEvent.click(screen.getByLabelText("Go back"))
+    expect(onBack).toHaveBeenCalledTimes(1)
+    expect(mockNavigate).not.toHaveBeenCalled()
+  })
+
+  it("renders a custom backIcon inside the back button", () => {
+    mockPathname = "/patients/notifications"
+    renderHeader({ backIcon: <span data-testid="custom-back" /> })
+    expect(screen.getByTestId("custom-back")).toBeInTheDocument()
   })
 
   it("hides the back button when isRoot", () => {

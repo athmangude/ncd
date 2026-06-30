@@ -11,7 +11,7 @@ import {
 } from "@/components/Drawer"
 import { useToast } from "@/hooks/useToast"
 import { useState } from "react"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { Button } from "@/components/Button"
 import cashIcon from "@/assets/icons/cash.png"
@@ -39,6 +39,7 @@ export default function PaymentPortal({
 }) {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   const [amount, setAmount] = useState<number | string>(initialPaymentAmount)
 
@@ -70,6 +71,20 @@ export default function PaymentPortal({
     },
     onSuccess: (data) => {
       const { isChargeTransaction, authorizationUrl, reference } = data
+
+      // A repayment changes several server-derived views at once: the loan's
+      // outstanding/repaid/timeline, the dashboard loan + payments cards
+      // (available-to-borrow restored, outstanding reduced), and the cashback
+      // balance + ledger (5% reward). Invalidate every query that reads those so
+      // the UI reflects even a partial repayment immediately, not only after a
+      // remount-driven refetch.
+      ;[
+        "loanStats", // dashboard loan + payments cards (available to borrow, outstanding)
+        "paymentHistory", // payments history + cashback balance/records
+        "careFundTransactions", // cashback ledger (progressive earnings)
+        "getPatientLoanDetails", // loan details: outstanding, repaid, reminder, CTA, timeline
+        "patientLoginDetails", // profile creditLimit / careFund balance
+      ].forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }))
 
       try {
         trackEvent(EVENTS.LOAN_REPAYMENT.PAYMENT_SUCCESS, {

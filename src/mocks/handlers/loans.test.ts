@@ -12,10 +12,14 @@ import {
   getCareFundTransactions,
   setCareFundBalance,
 } from "../domain/careFund"
+import { getLoginDetails } from "./profile"
 
 beforeEach(() => {
   localStorage.clear()
 })
+
+const remainingLimit = () =>
+  Number(getLoginDetails().creditLimit.remainingAmount)
 
 const base = {
   totalBillAmount: 1000,
@@ -53,6 +57,37 @@ describe("recordPayment", () => {
     const loanSplit = payment.paymentSplits.find((s) => s.loan)
     expect(loanSplit?.loan).toBeTruthy()
     expect((loanSplit?.loan as { id: string }).id).toBeTruthy()
+  })
+
+  it("draws Available to Borrow down by the borrowed principal", () => {
+    // Demo fixture starts at 3200 remaining.
+    expect(remainingLimit()).toBe(3200)
+
+    recordPayment({
+      ...base,
+      splits: [{ type: "LOAN", amount: 2000, repaymentPeriodDays: 31 }],
+    })
+
+    expect(remainingLimit()).toBe(1200)
+  })
+
+  it("only the LOAN portion of a mixed split affects the limit", () => {
+    setCareFundBalance(10000)
+
+    recordPayment({
+      ...base,
+      totalBillAmount: 3000,
+      splits: [
+        { type: "MPESA", amount: 1000 },
+        { type: "CASHBACK", amount: 500 },
+        { type: "LOAN", amount: 1500, repaymentPeriodDays: 31 },
+      ],
+    })
+
+    // Limit: 3200 - 1500 (loan only). Cashback: 10000 - 500 spent + 50 earned
+    // (5% of the 1000 MPESA portion).
+    expect(remainingLimit()).toBe(1700)
+    expect(getCareFundBalance()).toBe(9550)
   })
 
   it("appends the payment to history under the supplied id", () => {

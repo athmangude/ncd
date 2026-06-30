@@ -1,6 +1,6 @@
 import React from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { Button } from "@/components/Button"
 import { Stepper } from "@/components/Stepper"
 import { LOAN_APPLICATION_STEPS } from "@/Routes/Patient/hooks/useNextLoanApplicationStep"
@@ -101,19 +101,21 @@ export default function StepperHeader({
   const showCircleInviteStepper = circleInviteStepIndex !== -1
 
   return (
-    <header className="flex w-full flex-col bg-white px-4 pt-3 pb-1">
-      <div className="flex w-full items-center justify-between">
+    <header className="sticky top-0 z-10 flex w-full flex-col border-b bg-white/80 backdrop-blur-md dark:bg-neutral-950/80">
+      <div className="flex w-full items-center justify-between p-2">
         <div className="flex items-center gap-2">
           {!isRoot && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10"
               onClick={onBack || (() => navigate(-1))}
-              className="bg-white p-2 rounded-lg border border-neutral-100 shadow-sm"
+              aria-label="Go back"
             >
-              {backIcon || <ArrowLeft className="w-6 h-6 text-neutral-600" />}
-            </button>
+              {backIcon || <ChevronLeft size={24} />}
+            </Button>
           )}
-          {title && <h1 className="text-md capitalize">{title}</h1>}
+          {title && <p className="text-base font-medium">{title}</p>}
         </div>
         {rightAction}
         {showHelp && (
@@ -128,7 +130,7 @@ export default function StepperHeader({
         )}
       </div>
       {showLoanApplicationStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper
             currentStep={currentStepIndex + 1}
             totalSteps={LOAN_APPLICATION_STEPS.length}
@@ -136,7 +138,7 @@ export default function StepperHeader({
         </div>
       )}
       {showCareProfileStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper
             currentStep={careProfileStepIndex + 1}
             totalSteps={CARE_PROFILE_STEPS.length}
@@ -145,7 +147,7 @@ export default function StepperHeader({
         </div>
       )}
       {showKycStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper
             currentStep={kycStepIndex + 1}
             totalSteps={KYC_STEPS.length}
@@ -154,7 +156,7 @@ export default function StepperHeader({
         </div>
       )}
       {showOnboardingStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper
             currentStep={onboardingStepIndex + 1}
             totalSteps={ONBOARDING_STEPS.length}
@@ -163,7 +165,7 @@ export default function StepperHeader({
         </div>
       )}
       {showPwaStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper
             currentStep={pwaStepIndex + 1}
             totalSteps={PWA_STEPS.length}
@@ -172,7 +174,7 @@ export default function StepperHeader({
         </div>
       )}
       {showFastTrackStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper
             currentStep={fastTrackStepIndex + 1}
             totalSteps={FAST_TRACK_STEPS.length}
@@ -180,7 +182,7 @@ export default function StepperHeader({
         </div>
       )}
       {showCircleInviteStepper && (
-        <div className="w-full py-1">
+        <div className="w-full px-4 pb-2">
           <Stepper currentStep={circleInviteStepIndex + 1} totalSteps={4} />
         </div>
       )}

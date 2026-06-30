@@ -13,6 +13,10 @@ import {
   buildCareFundAccountSummary,
   earnCashback,
 } from "../domain/careFund"
+import {
+  adjustRemainingCreditLimit,
+  getRemainingCreditLimit,
+} from "../domain/membership"
 import loansSeed from "../fixtures/loans.json"
 import paymentHistorySeed from "../fixtures/payment-history.json"
 import manualRequestsSeed from "../fixtures/manual-requests.json"
@@ -153,6 +157,33 @@ export interface RecordPaymentSplit {
   repaymentPeriodDays?: number
 }
 
+/** Total LOAN-type principal in a set of splits (what draws the limit down). */
+export function loanSplitTotal(splits: RecordPaymentSplit[]): number {
+  return splits
+    .filter((split) => split.type === "LOAN")
+    .reduce((sum, split) => sum + (Number(split.amount) || 0), 0)
+}
+
+/**
+ * Authoritative server-side guard against over-limit borrowing. Returns a 400
+ * response when the requested loan principal exceeds the participant's
+ * "Available to Borrow", otherwise `null` so the caller proceeds. The
+ * request-loan UI already caps the input (PatientLoanTerms + WalletDrawer); this
+ * keeps the loan ledger / credit limit consistent even if a client bypasses it.
+ */
+export function rejectIfOverCreditLimit(loanAmount: number) {
+  const available = getRemainingCreditLimit()
+  if (loanAmount > available) {
+    return HttpResponse.json(
+      {
+        message: `Loan amount (KES ${loanAmount}) exceeds your available credit limit of KES ${available}.`,
+      },
+      { status: 400 }
+    )
+  }
+  return null
+}
+
 /**
  * Persist a bill payment and apply every side effect a "pay a bill" produces:
  * create a loan for any LOAN split, spend cashback for any CASHBACK split, earn
@@ -191,6 +222,8 @@ export function recordPayment(params: {
         patientName,
       })
       writeCollection(LOANS_KEY, [loan, ...getLoans()])
+      // Borrowing draws down "Available to Borrow" by the disbursed principal.
+      adjustRemainingCreditLimit(-amount)
       loanRef = {
         id: loan.id,
         amount: loan.amount,
@@ -392,6 +425,9 @@ export const loansHandlers = [
       fileId?: string
     }
 
+    const overLimit = rejectIfOverCreditLimit(Number(body.loanAmount) || 0)
+    if (overLimit) return overLimit
+
     const loans = getLoans()
     const newLoan = buildLoan({
       amount: Number(body.loanAmount) || 0,
@@ -407,6 +443,8 @@ export const loansHandlers = [
     })
 
     writeCollection(LOANS_KEY, [newLoan, ...loans])
+    // Applying for a loan draws down "Available to Borrow" by the principal.
+    adjustRemainingCreditLimit(-(Number(body.loanAmount) || 0))
 
     // The consumer (PatientLoanTerms) reads `data.loanId` and only redirects
     // when `data.authorizationUrl` is truthy. Omitting authorizationUrl keeps
@@ -439,15 +477,17 @@ export const loansHandlers = [
       repaidLoan?.patientMedicalInfoRequest?.facility?.name ||
       "Healthcare Provider"
 
+    // Principal cleared by this repayment — restores "Available to Borrow".
+    let principalRepaid = 0
+
     const updated = loans.map((loan) => {
       if (String(loan.id) !== String(body.loanId)) {
         return loan
       }
 
-      const newOutstanding = Math.max(
-        0,
-        Number(loan.outstandingAmount || 0) - amount
-      )
+      const oldOutstanding = Number(loan.outstandingAmount || 0)
+      const newOutstanding = Math.max(0, oldOutstanding - amount)
+      principalRepaid = oldOutstanding - newOutstanding
 
       return {
         ...loan,
@@ -477,6 +517,11 @@ export const loansHandlers = [
     const isLoanRepayment = amount > 0 && !body.isTransactionFeePayment
     if (isLoanRepayment) {
       earnCashback(Math.round(amount * 0.05), "Loan repayment reward")
+      // Repaying principal frees the limit back up (transaction-fee payments
+      // are not principal, so they leave "Available to Borrow" untouched).
+      if (principalRepaid > 0) {
+        adjustRemainingCreditLimit(principalRepaid)
+      }
     }
 
     // Persist a real result so the transaction-result screen reflects the
@@ -535,16 +580,21 @@ export const loansHandlers = [
     const patientName =
       body.patientName || `${profile.firstName} ${profile.lastName}`
 
+    const normalizedSplits = splits.map((split) => ({
+      type: split.type || "WALLET",
+      amount: Number(split.paymentAmount) || 0,
+      repaymentPeriodDays: body.repaymentPeriodDays,
+    }))
+
+    const overLimit = rejectIfOverCreditLimit(loanSplitTotal(normalizedSplits))
+    if (overLimit) return overLimit
+
     const { payment, splitResults } = recordPayment({
       totalBillAmount,
       facilityId: body.kmpdcFacilityId,
       facilityName: name,
       patientName,
-      splits: splits.map((split) => ({
-        type: split.type || "WALLET",
-        amount: Number(split.paymentAmount) || 0,
-        repaymentPeriodDays: body.repaymentPeriodDays,
-      })),
+      splits: normalizedSplits,
     })
 
     return HttpResponse.json({

@@ -106,6 +106,11 @@ export default function ViewLoanDetails() {
       0
     ) || 0
 
+  // Repaying the remaining balance early earns 5% cashback (mirrors the
+  // initiate-repayment reward). Shrinks as the loan is paid down, so it reflects
+  // the post-repayment outstanding after each (even partial) repayment.
+  const potentialCashback = Math.round(Number(outstandingAmount || 0) * 0.05)
+
   // Progress calculation
   const totalDue =
     totalToRepay > 0 ? totalToRepay : outstandingAmount + totalRepaid
@@ -280,7 +285,7 @@ export default function ViewLoanDetails() {
                     <span className="text-neutral-500 text-xs leading-relaxed">
                       {careFundDiscountAmount > 0
                         ? `You saved ${formatMoney(careFundDiscountAmount, currencyCode)} on this bill.`
-                        : "Earn cashback when you repay early!"}
+                        : `Earn ${formatMoney(potentialCashback, currencyCode)} cashback when you repay early!`}
                     </span>
                   </div>
                 </div>

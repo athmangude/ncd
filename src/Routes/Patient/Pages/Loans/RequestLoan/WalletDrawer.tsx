@@ -412,7 +412,9 @@ export function WalletDrawer({
                     placeholder="07XX XXX XXX"
                     className={cn(
                       "w-full px-4 py-4 text-lg font-medium border rounded-xl outline-none focus:ring-2 focus:ring-[#A826FF] transition-all",
-                      errors.phoneNumber ? "border-red-500" : "border-neutral-200"
+                      errors.phoneNumber
+                        ? "border-red-500"
+                        : "border-neutral-200"
                     )}
                     {...register("phoneNumber", {
                       required: "Phone number is required for M-Pesa",
@@ -451,50 +453,13 @@ export function WalletDrawer({
                   {balanceLabel}: {formatMoney(balanceAmount, "KES")}
                 </p>
 
-                {/* Upload M-Pesa Statement CTA for users without statement */}
-                {!hasUploadedMpesaStatement && (
-                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-col gap-3">
-                    <div className="flex items-start gap-3">
-                      <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-amber-900 mb-1">
-                          Increase your loan limit to{" "}
-                          {formatMoney(DEFAULT_MAX_CREDIT_LIMIT, "KES")}
-                        </p>
-                        <p className="text-xs text-amber-700 leading-relaxed">
-                          Upload your M-Pesa statement to increase your
-                          interest-free limit from{" "}
-                          {formatMoney(remainingAmount, "KES")} to{" "}
-                          {formatMoney(DEFAULT_MAX_CREDIT_LIMIT, "KES")}.
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full border-amber-300 text-amber-700 hover:bg-amber-100 hover:border-amber-400"
-                      onClick={() => {
-                        navigate(
-                          "/patients/financial-statements-with-credit-update",
-                          {
-                            state: {
-                              returnTo:
-                                "/patients/payment/request-payment/wallet-selection",
-                              returnState: {
-                                totalBillAmount: totalBillAmount,
-                                allocations: allocations,
-                                kmpdcFacility: (user as any)?.kmpdcFacility,
-                              },
-                            },
-                          }
-                        )
-                        onClose()
-                      }}
-                    >
-                      Upload M-Pesa Statement
-                    </Button>
-                  </div>
-                )}
+                {/*
+                 * The "raise your limit" upsell intentionally lives only in the
+                 * compact (i) popover beside the "Loan amount" label — the large
+                 * amber card used to push the repayment input and Save/Cancel
+                 * CTAs off-screen on short viewports (e.g. 320×640). The popover
+                 * keeps the same Upload M-Pesa Statement path without the height.
+                 */}
 
                 <CashbackBanner
                   visible={isNetworkFacility}
@@ -532,7 +497,7 @@ export function WalletDrawer({
             )}
           </div>
 
-          <DrawerFooter className="gap-3 pb-8">
+          <DrawerFooter className="gap-3 pb-8 sticky bottom-0 bg-background border-t border-neutral-100">
             <Button
               type="submit"
               disabled={!isValid}
