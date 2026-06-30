@@ -18,7 +18,27 @@ import { trackEvent, EVENTS } from "@/analytics"
 import { setToLocalStorage } from "@/utilities/localStorage"
 import { PENDING_INVITE_KEY } from "./InviteMethodPage"
 
-const addNewConnectionStorageKey = "add-new-connection"
+// The add-connection form is reused for several intents (paying a bill for
+// someone, gifting care funds, plain circle add). Scoping the persisted draft
+// by intent stops a half-typed person in one flow from pre-filling the form in
+// another — and the draft is cleared on success so a second add starts blank.
+const ADD_CONNECTION_KEY_BASE = "add-new-connection"
+
+type AddConnectionIntent = "payment" | "gift" | "circle"
+
+const PAYMENT_SOURCES = new Set([
+  "select-patient",
+  "treatment-details",
+  "upload-invoice",
+  "fast-track-payment-details",
+])
+
+function intentForSource(from?: string): AddConnectionIntent {
+  if (from && PAYMENT_SOURCES.has(from)) return "payment"
+  if (from === "gift-recipient") return "gift"
+  return "circle"
+}
+
 type Inputs = {
   firstName: string
   lastName: string
@@ -81,13 +101,16 @@ export default function PatientAddConnection() {
 
   const { toast } = useToast()
 
+  const storageKey = `${ADD_CONNECTION_KEY_BASE}:${intentForSource(state?.from)}`
+
   const {
     control,
     register,
     handleSubmit,
     watch,
+    clearPersistentState,
     formState: { errors },
-  } = usePersistentForm<Inputs>(addNewConnectionStorageKey)
+  } = usePersistentForm<Inputs>(storageKey)
 
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -130,6 +153,11 @@ export default function PatientAddConnection() {
         title: "Success",
         description: data.message,
       })
+
+      // The person is saved server-side now; drop the local draft so reopening
+      // "Add patient" (for a second person, or later in another flow) starts
+      // blank instead of showing this person's details again.
+      clearPersistentState()
 
       // Adding anyone changes the circle — refresh every cache that mirrors it
       // (payee pickers, circle tab, and the loan-eligibility gate) so the new
@@ -180,6 +208,9 @@ export default function PatientAddConnection() {
         delete (payload as any).phoneNumber
       }
       setToLocalStorage(PENDING_INVITE_KEY, payload)
+      // The draft has been handed off to the invite-personalisation step; clear
+      // it so backing out and re-entering doesn't show stale details.
+      clearPersistentState()
       toast({
         title: "Saved",
         description: "Continue to personalize your invite.",

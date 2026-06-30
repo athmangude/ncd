@@ -57,6 +57,64 @@ describe("circle ↔ payment patient picker", () => {
       conns.patients.some((p: { name: string }) => p.name === "New Payee")
     ).toBe(true)
   })
+
+  const getSlots = async () =>
+    (await (await fetch(ORIGIN + "/patient-network/network")).json()).slots
+
+  it("send-invite then accept-invite moves a reserved slot to used, across the whole service", async () => {
+    const before = await getSlots()
+
+    const sent = await (
+      await fetch(
+        ORIGIN + "/patient-network/send-invite",
+        json({
+          firstName: "Asha",
+          lastName: "M. Said",
+          phoneNumber: "+254700111000",
+          relationship: "FRIEND",
+        })
+      )
+    ).json()
+
+    // Reserving happens the moment the invite is sent.
+    const afterSend = await getSlots()
+    expect(afterSend.accountable.reserved).toBe(before.accountable.reserved + 1)
+
+    // The participant accepting their own invite (not the facilitator, not the
+    // KYC auto-accept timer) converts the reserved slot into a used one.
+    await fetch(
+      ORIGIN + "/patient-network/accept-invite",
+      json({ inviteId: sent.inviteId, status: "ACCEPTED", type: "REFERRAL" })
+    )
+
+    const afterAccept = await getSlots()
+    expect(afterAccept.accountable.used).toBe(before.accountable.used + 1)
+    expect(afterAccept.accountable.reserved).toBe(before.accountable.reserved)
+  })
+
+  it("removing a connection frees its used slot consistently via the handler", async () => {
+    const before = await getSlots()
+
+    await fetch(
+      ORIGIN + "/patient-network/remove-connection",
+      json({ connectionId: "member-001", type: "NETWORK" })
+    )
+
+    const after = await getSlots()
+    expect(after.accountable.used).toBe(before.accountable.used - 1)
+  })
+
+  it("cancelling a sent invite frees its reserved slot consistently via the handler", async () => {
+    const before = await getSlots()
+
+    await fetch(
+      ORIGIN + "/patient-network/remove-invite",
+      json({ inviteId: "invite-001" })
+    )
+
+    const after = await getSlots()
+    expect(after.accountable.reserved).toBe(before.accountable.reserved - 1)
+  })
 })
 
 describe("dashboard loan stats", () => {

@@ -3,11 +3,15 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import FacilitatorPanel from "./FacilitatorPanel"
-import { reloadApp } from "./reloadApp"
 import { getCareFundBalance } from "@/mocks/domain/careFund"
 import { isMembershipActive } from "@/mocks/domain/membership"
 
-vi.mock("./reloadApp", () => ({ reloadApp: vi.fn() }))
+const mockNavigate = vi.fn()
+vi.mock("react-router-dom", async () => {
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
+  return { ...actual, useNavigate: () => mockNavigate }
+})
 
 function renderPanel() {
   return render(
@@ -23,59 +27,72 @@ beforeEach(() => {
 })
 
 describe("FacilitatorPanel", () => {
-  it("empties the account to a blank onboarded profile and reloads", () => {
-    localStorage.setItem("mock:loans", JSON.stringify([{ id: "loan-1" }]))
+  // The "Onboarded" scenario seeds a fresh, fully-onboarded account: any prior
+  // loans the participant applied for are wiped, and the facilitator is
+  // navigated to the patient app to view the seeded state.
+  it("seeds a blank onboarded profile and navigates to view it", () => {
+    localStorage.setItem("mock:loans", JSON.stringify([{ id: "leftover" }]))
     renderPanel()
 
-    fireEvent.click(screen.getByText("Empty onboarded (skip phone)"))
+    // The stage button, not the status pill or the "Onboarded + Plus" chip.
+    fireEvent.click(screen.getByRole("button", { name: "Onboarded" }))
 
-    // Seeding a fresh account writes empty collections (loans become []).
-    expect(JSON.parse(localStorage.getItem("mock:loans") || "null")).toEqual([])
-    // A full reset still hard-reloads so the app re-bootstraps cleanly.
-    expect(reloadApp).toHaveBeenCalled()
+    // The participant's leftover loan is gone after seeding a fresh account.
+    const loans = JSON.parse(localStorage.getItem("mock:loans") || "[]") as {
+      id: string
+    }[]
+    expect(loans.some((loan) => loan.id === "leftover")).toBe(false)
+    // Scenario jumps land the facilitator on the patient app.
+    expect(mockNavigate).toHaveBeenCalledWith("/patients")
   })
 
-  it("starts a fresh participant after confirmation and reloads", () => {
-    localStorage.setItem("mock:loans", JSON.stringify([{ id: "loan-1" }]))
+  it("starts a fresh participant after confirmation and returns to phone entry", () => {
+    localStorage.setItem("mock:custom-key", "kept-by-participant")
     renderPanel()
 
     // The destructive full wipe is gated behind an inline confirmation.
-    fireEvent.click(
-      screen.getByText("Start fresh — new participant (phone input)")
-    )
+    fireEvent.click(screen.getByText("Start fresh — new participant"))
     fireEvent.click(screen.getByText("Yes, start fresh"))
 
-    // Start fresh removes every mock:* collection key outright.
-    expect(localStorage.getItem("mock:loans")).toBeNull()
-    expect(reloadApp).toHaveBeenCalled()
+    // Start fresh removes every mock:* key the participant left behind, then
+    // sends the facilitator back to phone-number entry.
+    expect(localStorage.getItem("mock:custom-key")).toBeNull()
+    expect(mockNavigate).toHaveBeenCalledWith("/patients")
   })
 
-  // Individual tweaks soft-refresh (invalidate queries) instead of a full page
-  // reload, so the participant's session isn't restarted ("started afresh").
-  it("sets the cashback balance through the domain helper", () => {
+  // Draft edits (Money, Membership) commit only when "Save changes" is clicked,
+  // and persist via query invalidation — no navigation / reload.
+  it("sets the cashback balance through the domain helper on save", () => {
     renderPanel()
 
-    const [balanceInput] = screen.getAllByRole("spinbutton")
+    fireEvent.click(screen.getByText("Money"))
+    const balanceInput = screen.getByLabelText("Cashback balance")
     fireEvent.change(balanceInput, { target: { value: "4321" } })
-    fireEvent.click(screen.getByText("Set balance"))
+    fireEvent.click(screen.getByText("Save changes"))
 
     expect(getCareFundBalance()).toBe(4321)
-    expect(reloadApp).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
-  it("toggles membership off", () => {
+  it("toggles membership off on save", () => {
     renderPanel()
 
-    fireEvent.click(screen.getByText("Deactivate"))
+    fireEvent.click(screen.getByText("Membership & credit"))
+    // The Jireh Plus switch reflects current membership; toggling + saving
+    // routes through deactivateMembership().
+    const plusSwitch = screen.getByRole("switch", { name: /Jireh Plus/i })
+    fireEvent.click(plusSwitch)
+    fireEvent.click(screen.getByText("Save changes"))
 
     expect(isMembershipActive()).toBe(false)
-    expect(reloadApp).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it("marks a pending circle invite as accepted", () => {
     renderPanel()
 
-    fireEvent.click(screen.getAllByText("Mark accepted")[0])
+    fireEvent.click(screen.getByText("Circle & network"))
+    fireEvent.click(screen.getAllByText("Accept")[0])
 
     const network = JSON.parse(
       localStorage.getItem("mock:patient-network") || "{}"
@@ -83,12 +100,13 @@ describe("FacilitatorPanel", () => {
     expect(network.network.some((member) => member.firstName === "Kevin")).toBe(
       true
     )
-    expect(reloadApp).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 
   it("approves a pending payment request", () => {
     renderPanel()
 
+    fireEvent.click(screen.getByText("History & activity"))
     const approveButtons = screen.queryAllByText("Approve")
     if (approveButtons.length > 0) {
       fireEvent.click(approveButtons[0])
@@ -98,7 +116,7 @@ describe("FacilitatorPanel", () => {
       expect(requests.some((request) => request.status === "APPROVED")).toBe(
         true
       )
-      expect(reloadApp).not.toHaveBeenCalled()
+      expect(mockNavigate).not.toHaveBeenCalled()
     }
   })
 })

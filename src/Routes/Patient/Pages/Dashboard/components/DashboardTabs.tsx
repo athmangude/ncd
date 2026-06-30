@@ -1,34 +1,28 @@
+import { Tabs, TabsList, TabsTrigger } from "@/components/Tabs"
+
+type DashboardTab = "payments" | "loans" | "cashback"
+
 interface DashboardTabsProps {
-  activeTab: "payments" | "loans" | "cashback"
-  onTabChange: (tab: "payments" | "loans" | "cashback") => void
+  activeTab: DashboardTab
+  onTabChange: (tab: DashboardTab) => void
 }
 
-export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
-  const tabs = ["payments", "loans", "cashback"] as const
-  const activeIndex = tabs.indexOf(activeTab)
+const TABS: DashboardTab[] = ["payments", "loans", "cashback"]
 
+export function DashboardTabs({ activeTab, onTabChange }: DashboardTabsProps) {
   return (
-    <div className="relative flex p-1 bg-[#F3E8FF] rounded-xl w-full isolate">
-      <div 
-          className="absolute top-1 bottom-1 bg-[#8B5CF6] rounded-lg shadow-md transition-all duration-300 ease-out -z-10"
-          style={{
-              width: `calc((100% - 8px) / 3)`,
-              left: `calc(4px + ${activeIndex} * ((100% - 8px) / 3))`
-          }}
-      />
-      {tabs.map((tab) => (
-        <button
-          key={tab}
-          onClick={() => onTabChange(tab)}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors duration-200 capitalize z-10 ${
-            activeTab === tab 
-              ? "text-white" 
-              : "text-[#9333EA] hover:bg-white/10"
-          }`}
-        >
-          {tab}
-        </button>
-      ))}
-    </div>
+    <Tabs
+      value={activeTab}
+      onValueChange={(value) => onTabChange(value as DashboardTab)}
+      className="w-full"
+    >
+      <TabsList className="w-full">
+        {TABS.map((tab) => (
+          <TabsTrigger key={tab} value={tab} className="flex-1 capitalize">
+            {tab}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </Tabs>
   )
 }

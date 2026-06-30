@@ -1,10 +1,10 @@
 import { http, HttpResponse } from "msw"
 import { readObject, writeObject } from "../db"
 import {
-  NetworkData,
   getNetwork,
-  setNetwork,
   acceptInvite,
+  removeInvite,
+  removeMember,
   getConnectionList,
 } from "../domain/network"
 import circleActivitySeed from "../fixtures/circle-activity.json"
@@ -80,12 +80,8 @@ export const networkHandlers = [
 
   http.post("/patient-network/remove-invite", async ({ request }) => {
     const { inviteId } = (await request.json()) as { inviteId: string }
-    const data = getNetwork()
-    const next: NetworkData = {
-      ...data,
-      invites: data.invites.filter((invite) => invite.id !== inviteId),
-    }
-    setNetwork(next)
+    // Route through the domain helper so the freed reserved slot re-derives.
+    removeInvite(inviteId)
     return HttpResponse.json({ message: "Invite removed" })
   }),
 
@@ -94,12 +90,8 @@ export const networkHandlers = [
       connectionId: string
       type: "NETWORK" | "CHILD"
     }
-    const data = getNetwork()
-    const next: NetworkData = {
-      ...data,
-      network: data.network.filter((member) => member.id !== connectionId),
-    }
-    setNetwork(next)
+    // Route through the domain helper so the freed used slot re-derives.
+    removeMember(connectionId)
     return HttpResponse.json({ message: "Connection removed" })
   }),
 

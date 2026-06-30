@@ -4,10 +4,7 @@ import {
 } from "@/components/CircleSlotAvatar"
 import { variantFromStatus } from "@/components/CircleMemberCard"
 import { cn } from "@/lib/utils"
-import type {
-  NetworkMember,
-  SentInvite,
-} from "@/hooks/usePatientNetwork"
+import type { NetworkMember, SentInvite } from "@/hooks/usePatientNetwork"
 import type { BannerState } from "../hooks/useCircleStatus"
 import type { ReactNode } from "react"
 
@@ -61,8 +58,15 @@ function StackedCell({
   )
 }
 
-function isChildRelationship(relationship?: string | null): boolean {
-  return typeof relationship === "string" && relationship.toUpperCase() === "CHILD"
+/**
+ * Whether a member/invite belongs in the auxiliary (junior) bucket rather than
+ * the accountable (adult) one. Mirrors the slot domain's `slotCategory`: both
+ * `CHILD` and `AUXILIARY` are juniors, keyed off `relationship` first then the
+ * member `type`, so the avatar buckets match the derived slot counts exactly.
+ */
+function isJunior(relationship?: string | null, type?: string | null): boolean {
+  const value = (relationship || type || "").toUpperCase()
+  return value === "CHILD" || value === "AUXILIARY"
 }
 
 export function CircleAvatarRow({
@@ -81,7 +85,10 @@ export function CircleAvatarRow({
   const auxiliaryMax = slots?.auxiliary.max ?? 2
 
   const memberVariant = (m: NetworkMember): CircleSlotVariant => {
-    if (activeBanner?.variant === "MEMBER_LEFT" && m.id === recentLeftMemberId) {
+    if (
+      activeBanner?.variant === "MEMBER_LEFT" &&
+      m.id === recentLeftMemberId
+    ) {
       return "left"
     }
     if (
@@ -118,14 +125,10 @@ export function CircleAvatarRow({
     />
   )
 
-  const adultMembers = members.filter((m) => !isChildRelationship(m.relationship))
-  const childMembers = members.filter((m) => isChildRelationship(m.relationship))
-  const adultInvites = pendingInvites.filter(
-    (i) => !isChildRelationship(i.relationship),
-  )
-  const childInvites = pendingInvites.filter((i) =>
-    isChildRelationship(i.relationship),
-  )
+  const adultMembers = members.filter((m) => !isJunior(m.relationship, m.type))
+  const childMembers = members.filter((m) => isJunior(m.relationship, m.type))
+  const adultInvites = pendingInvites.filter((i) => !isJunior(i.relationship))
+  const childInvites = pendingInvites.filter((i) => isJunior(i.relationship))
 
   const stackedCells: ReactNode[] = [
     ...adultMembers.map(renderMember),
@@ -138,7 +141,7 @@ export function CircleAvatarRow({
   const emptyAccountableCount = Math.max(0, accountableMax - adultFilled)
   for (let i = 0; i < emptyAccountableCount; i++) {
     stackedCells.push(
-      <CircleSlotAvatar key={`e-${i}`} variant="empty" onClick={onAddMember} />,
+      <CircleSlotAvatar key={`e-${i}`} variant="empty" onClick={onAddMember} />
     )
   }
 

@@ -56,3 +56,33 @@ export function deactivateMembership() {
 export function isMembershipActive(): boolean {
   return getLoginDetails().hasActiveMembership === true
 }
+
+/** Current "Available to Borrow" headroom as a number (profile holds a string). */
+export function getRemainingCreditLimit(): number {
+  return Number(getLoginDetails().creditLimit?.remainingAmount ?? 0)
+}
+
+/**
+ * Adjust the spendable credit headroom ("Available to Borrow") by a signed
+ * delta, clamped to [0, totalCreditLimitAmount]. Borrowing passes a negative
+ * delta (drawing the limit down when a loan is disbursed); repaying passes a
+ * positive delta (restoring it as principal is paid off). Keeps the profile
+ * `creditLimit.remainingAmount` — the single source of truth the dashboard loan
+ * + payments cards read via `/loans/patient/me/stats` — in step with the loan
+ * ledger. Returns the new remaining amount.
+ */
+export function adjustRemainingCreditLimit(delta: number): number {
+  const profile = getLoginDetails()
+  const credit = profile.creditLimit
+  const total = Number(credit?.totalCreditLimitAmount ?? 0)
+  const remaining = Number(credit?.remainingAmount ?? 0)
+  const next = Math.max(0, Math.min(total, remaining + delta))
+
+  patchLoginDetails({
+    creditLimit: {
+      ...credit,
+      remainingAmount: String(next),
+    },
+  })
+  return next
+}

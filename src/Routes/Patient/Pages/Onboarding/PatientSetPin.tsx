@@ -148,10 +148,8 @@ export default function PatientSetPin() {
       }
       className="flex flex-col items-center"
     >
-      <div className="text-center space-y-3 mb-12 mt-10">
-        <h1 className="text-2xl font-bold text-neutral-900">
-          {step === 1 ? "Create your PIN" : "Confirm your PIN"}
-        </h1>
+      <div className="text-center">
+        <h1>{step === 1 ? "Create your PIN" : "Confirm your PIN"}</h1>
         <p className="text-neutral-500 text-sm leading-relaxed px-4">
           {step === 1
             ? "You will use this PIN to confirm all payments."
@@ -159,7 +157,7 @@ export default function PatientSetPin() {
         </p>
       </div>
 
-      <div className="w-full flex flex-col items-center gap-8">
+      <div className="w-full flex flex-col items-center gap-8 m-8">
         <div className="flex flex-col gap-2 items-center w-full">
           <InputOTP
             maxLength={4}
@@ -169,9 +167,18 @@ export default function PatientSetPin() {
             type="password"
           >
             <InputOTPGroup className="gap-0 bg-white shadow-sm">
-              <InputOTPSlot index={0} className="h-14 w-14 border-y border-l text-xl" />
-              <InputOTPSlot index={1} className="h-14 w-14 border-y border-l text-xl" />
-              <InputOTPSlot index={2} className="h-14 w-14 border-y border-l text-xl" />
+              <InputOTPSlot
+                index={0}
+                className="h-14 w-14 border-y border-l text-xl"
+              />
+              <InputOTPSlot
+                index={1}
+                className="h-14 w-14 border-y border-l text-xl"
+              />
+              <InputOTPSlot
+                index={2}
+                className="h-14 w-14 border-y border-l text-xl"
+              />
               <InputOTPSlot index={3} className="h-14 w-14 border text-xl" />
             </InputOTPGroup>
           </InputOTP>

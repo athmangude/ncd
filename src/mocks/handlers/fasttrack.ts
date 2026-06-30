@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw"
 import { readObject, writeObject, makeId } from "../db"
-import { recordPayment } from "./loans"
+import { loanSplitTotal, recordPayment, rejectIfOverCreditLimit } from "./loans"
 import { getLoginDetails } from "./profile"
 import type {
   FastTrackPaymentPoint,
@@ -41,6 +41,15 @@ export const fastTrackHandlers = [
   // an EMPTY redirect URL so the app stays in-app (no external Paystack jump).
   http.post("/fast-track/initiate", async ({ request }) => {
     const dto = (await request.json()) as InitiateFastTrackPaymentDto
+
+    // Reject over-limit borrowing before persisting anything (parity with the
+    // multi-wallet flow, and the authoritative guard if a client bypasses the UI cap).
+    const overLimit = rejectIfOverCreditLimit(
+      loanSplitTotal(
+        dto.splits.map((s) => ({ type: s.mode, amount: s.amount }))
+      )
+    )
+    if (overLimit) return overLimit
 
     const now = new Date().toISOString()
     const grossAmount = dto.amount

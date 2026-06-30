@@ -87,10 +87,8 @@ export function PatientPersonalDetails() {
         />
       }
     >
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-neutral-900 mb-2">
-          What is your full name?
-        </h1>
+      <div className="text-center">
+        <h1>What is your full name?</h1>
         <p className="text-neutral-500">This should match your National ID.</p>
       </div>
 

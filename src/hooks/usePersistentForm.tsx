@@ -38,16 +38,14 @@ export function usePersistentForm<T extends FieldValues>(
     localStorage.removeItem(storageKey)
   }
 
-  // Wrap handleSubmit to clear persisted state on success
+  // Pass-through wrapper around handleSubmit. NOTE: this does NOT clear the
+  // persisted draft on success — callers that want the draft cleared after a
+  // successful submit must call `clearPersistentState()` (or `reset()`)
+  // themselves, typically in their mutation's onSuccess.
   const handlePersistentSubmit: UseFormHandleSubmit<T> = (onValid, onInvalid) =>
-    methods.handleSubmit(
-      // wrap the user’s onValid…
-      async (data, event) => {
-        await onValid(data, event)
-      },
-      // …but pass through their onInvalid untouched
-      onInvalid
-    )
+    methods.handleSubmit(async (data, event) => {
+      await onValid(data, event)
+    }, onInvalid)
 
   // Clear the form and persistent state
   const clearForm = () => {
