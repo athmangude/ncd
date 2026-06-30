@@ -2,10 +2,13 @@
 import { beforeEach, describe, expect, it } from "vitest"
 import {
   acceptInvite,
+  acceptReceivedInvite,
   addSentInvite,
   getConnectionList,
   getNetwork,
   getPatientCircleSummary,
+  removeInvite,
+  removeMember,
   type SentInvite,
 } from "./network"
 
@@ -84,6 +87,49 @@ describe("network domain — connections + slots", () => {
     expect(slot.used).toBe(usedBefore + 1)
     expect(slot.reserved).toBe(reservedBefore - 1)
     expect(getNetwork().network.some((m) => m.id === "invite-test")).toBe(true)
+  })
+
+  it("derives slot counts from the live arrays, ignoring stale stored counters", () => {
+    // The seed's hand-authored counters disagree with its members; the derived
+    // counts reflect the actual circle (2 active accountable, 1 active auxiliary,
+    // 1 pending accountable invite — Kevin).
+    const slots = getNetwork().slots!
+    expect(slots.accountable.used).toBe(2)
+    expect(slots.auxiliary.used).toBe(1)
+    expect(slots.accountable.reserved).toBe(1)
+  })
+
+  it("removing an active member frees their used slot", () => {
+    const before = getNetwork().slots!.accountable.used
+    removeMember("member-001") // Brian, an accountable member
+    expect(getNetwork().slots!.accountable.used).toBe(before - 1)
+  })
+
+  it("dropping a pending invite frees its reserved slot", () => {
+    const before = getNetwork().slots!.accountable.reserved
+    removeInvite("invite-001") // Kevin, a pending accountable invite
+    expect(getNetwork().slots!.accountable.reserved).toBe(before - 1)
+  })
+
+  it("accepting a received invite counts toward an accountable used slot", () => {
+    // Seed a received invite, then accept it.
+    const data = getNetwork()
+    data.receivedInvites = [
+      {
+        id: "received-1",
+        inviterFirstName: "Grace",
+        inviterLastName: "Njeri",
+        phoneNumber: "+254700111222",
+        status: "PENDING",
+      },
+    ]
+    localStorage.setItem("mock:patient-network", JSON.stringify(data))
+
+    const before = getNetwork().slots!.accountable.used
+    acceptReceivedInvite("received-1")
+
+    expect(getNetwork().slots!.accountable.used).toBe(before + 1)
+    expect(getNetwork().network.some((m) => m.id === "received-1")).toBe(true)
   })
 })
 

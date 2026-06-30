@@ -2,7 +2,15 @@ import { http, HttpResponse } from "msw"
 import { makeId, readCollection, writeCollection } from "../db"
 import { getLoginDetails, patchLoginDetails } from "./profile"
 import { activateMembership } from "../domain/membership"
-import { addSentInvite, type SentInvite } from "../domain/network"
+import {
+  addSentInvite,
+  acceptInvite,
+  acceptReceivedInvite,
+  declineReceivedInvite,
+  getNetwork,
+  removeInvite,
+  type SentInvite,
+} from "../domain/network"
 import { getTransactionResult } from "./loans"
 import discountCodesSeed from "../fixtures/discount-codes.json"
 
@@ -224,12 +232,32 @@ export const miscHandlers = [
     })
   }),
 
-  // Consumer reads message + meta.inviteStatus (checked for "REJECTED").
+  // Consumer reads message + meta.inviteStatus (checked for "REJECTED"). Apply
+  // the accept/decline to the live circle so the participant's own acceptance
+  // moves the invite immediately — not only via the KYC auto-accept timer or the
+  // facilitator. The id may be a received invite (someone invited them) or a
+  // sent one, so we try the received list first then fall back to the sent list.
   http.post("/patient-network/accept-invite", async ({ request }) => {
     const body = (await request.json().catch(() => ({}))) as {
+      inviteId?: string
       status?: string
     }
     const inviteStatus = body.status === "REJECTED" ? "REJECTED" : "ACCEPTED"
+    const inviteId = body.inviteId
+
+    if (inviteId) {
+      const isReceived = getNetwork().receivedInvites.some(
+        (invite) => invite.id === inviteId
+      )
+      if (inviteStatus === "REJECTED") {
+        if (isReceived) declineReceivedInvite(inviteId)
+        else removeInvite(inviteId)
+      } else {
+        if (isReceived) acceptReceivedInvite(inviteId)
+        else acceptInvite(inviteId)
+      }
+    }
+
     return HttpResponse.json({
       message:
         inviteStatus === "REJECTED" ? "Invite declined" : "Invite accepted",

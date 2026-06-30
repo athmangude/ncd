@@ -75,8 +75,24 @@ export interface PatientCircleSummary {
   isFrozen: boolean
 }
 
+/** Default slot capacities, used when the stored network has no `slots` block. */
+const DEFAULT_SLOT_MAX = { accountable: 2, auxiliary: 3 } as const
+
+/**
+ * Read the network and recompute the slot counters from the live arrays so they
+ * can never drift from the members/invites the rest of the app renders:
+ *
+ * - `used`     = active members in that category
+ * - `reserved` = pending sent invites in that category
+ *
+ * Only `max` is preserved from storage (it's a capacity, not derived state).
+ * Every mutation just edits the arrays; the next read re-derives the counts, so
+ * adds, accepts, removals and facilitator seeding all stay consistent with the
+ * actual circle regardless of which flow made the change.
+ */
 export function getNetwork(): NetworkData {
-  return readObject<NetworkData>(NETWORK_KEY, networkSeed as NetworkData)
+  const data = readObject<NetworkData>(NETWORK_KEY, networkSeed as NetworkData)
+  return { ...data, slots: deriveSlots(data) }
 }
 
 export function setNetwork(data: NetworkData): void {
@@ -92,6 +108,38 @@ function slotCategory(
   return value === "CHILD" || value === "AUXILIARY"
     ? "auxiliary"
     : "accountable"
+}
+
+/** Recompute `slots.{category}.{used,reserved}` from the live arrays. */
+function deriveSlots(data: NetworkData): NetworkData["slots"] {
+  const max = {
+    accountable: data.slots?.accountable.max ?? DEFAULT_SLOT_MAX.accountable,
+    auxiliary: data.slots?.auxiliary.max ?? DEFAULT_SLOT_MAX.auxiliary,
+  }
+  const used = { accountable: 0, auxiliary: 0 }
+  const reserved = { accountable: 0, auxiliary: 0 }
+
+  for (const member of data.network) {
+    if (member.status !== "ACTIVE") continue
+    used[slotCategory(member.relationship, member.type)] += 1
+  }
+  for (const invite of data.invites) {
+    if (invite.status !== "PENDING") continue
+    reserved[slotCategory(invite.relationship)] += 1
+  }
+
+  return {
+    accountable: {
+      used: used.accountable,
+      reserved: reserved.accountable,
+      max: max.accountable,
+    },
+    auxiliary: {
+      used: used.auxiliary,
+      reserved: reserved.auxiliary,
+      max: max.auxiliary,
+    },
+  }
 }
 
 /**
@@ -139,28 +187,18 @@ export function getConnectionList(): Connection[] {
 }
 
 /**
- * Append a sent invite and reserve a circle slot for it so the slot counts move
- * the moment someone is added (in the upgrade flow or mid-payment). Accepting
- * the invite later converts the reserved slot into a used one.
+ * Append a sent invite. The reserved-slot count moves automatically because
+ * `getNetwork` re-derives slots from the pending invites on the next read, so
+ * an invite added in the upgrade flow or mid-payment shows up immediately.
  */
 export function addSentInvite(invite: SentInvite): NetworkData {
   const data = getNetwork()
-  const category = slotCategory(invite.relationship)
   const next: NetworkData = {
     ...data,
     invites: [...data.invites, invite],
-    slots: data.slots
-      ? {
-          ...data.slots,
-          [category]: {
-            ...data.slots[category],
-            reserved: data.slots[category].reserved + 1,
-          },
-        }
-      : data.slots,
   }
   setNetwork(next)
-  return next
+  return getNetwork()
 }
 
 /**
@@ -188,30 +226,22 @@ export function acceptInvite(inviteId: string): NetworkData {
     hasDefaultedLoan: false,
   }
 
+  // Move the invitee from pending to active; slots re-derive on the next read
+  // (the reserved invite becomes a used member automatically).
   const next: NetworkData = {
     ...data,
     network: [...data.network, member],
     invites: data.invites.filter((item) => item.id !== inviteId),
   }
-
-  // Convert the slot reserved at invite time into a used one.
-  if (next.slots) {
-    const slot = next.slots[category]
-    next.slots = {
-      ...next.slots,
-      [category]: {
-        ...slot,
-        used: slot.used + 1,
-        reserved: Math.max(0, slot.reserved - 1),
-      },
-    }
-  }
-
   setNetwork(next)
-  return next
+  return getNetwork()
 }
 
-/** Remove an active circle member by id. Returns the updated network. */
+/**
+ * Remove an active circle member by id. Their used slot frees automatically
+ * (slots re-derive from the remaining members on the next read), so removing
+ * someone reopens capacity in the add-member flow.
+ */
 export function removeMember(memberId: string): NetworkData {
   const data = getNetwork()
   const next: NetworkData = {
@@ -219,42 +249,31 @@ export function removeMember(memberId: string): NetworkData {
     network: data.network.filter((member) => member.id !== memberId),
   }
   setNetwork(next)
-  return next
+  return getNetwork()
 }
 
-/** Drop a pending sent invite by id (freeing its reserved slot). */
+/** Drop a pending sent invite by id (its reserved slot frees on re-derive). */
 export function removeInvite(inviteId: string): NetworkData {
   const data = getNetwork()
-  const invite = data.invites.find((item) => item.id === inviteId)
-  const category = slotCategory(invite?.relationship)
   const next: NetworkData = {
     ...data,
     invites: data.invites.filter((item) => item.id !== inviteId),
-    slots:
-      data.slots && invite
-        ? {
-            ...data.slots,
-            [category]: {
-              ...data.slots[category],
-              reserved: Math.max(0, data.slots[category].reserved - 1),
-            },
-          }
-        : data.slots,
   }
   setNetwork(next)
-  return next
+  return getNetwork()
 }
 
 /** Freeze or unfreeze the circle (surfaced through `getPatientCircleSummary`). */
 export function setCircleFrozen(frozen: boolean): NetworkData {
   const next: NetworkData = { ...getNetwork(), frozen }
   setNetwork(next)
-  return next
+  return getNetwork()
 }
 
 /**
  * Accept an invite the participant received: move the inviter into the active
- * circle and drop it from the received list. No-op for an unknown id.
+ * circle as an accountable member (so it counts toward a used slot, the same as
+ * accepting a sent invite). No-op for an unknown id.
  */
 export function acceptReceivedInvite(inviteId: string): NetworkData {
   const data = getNetwork()
@@ -282,7 +301,7 @@ export function acceptReceivedInvite(inviteId: string): NetworkData {
     ),
   }
   setNetwork(next)
-  return next
+  return getNetwork()
 }
 
 /** Decline a received invite by id (drops it from the received list). */
@@ -295,5 +314,5 @@ export function declineReceivedInvite(inviteId: string): NetworkData {
     ),
   }
   setNetwork(next)
-  return next
+  return getNetwork()
 }
