@@ -37,7 +37,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     expect(screen.queryAllByTestId("lock-icon")).toHaveLength(0)
     expect(screen.getAllByTestId("empty-slot")).toHaveLength(3)
@@ -53,7 +53,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     // 1 confirmed member + 2 locked auxiliary halos = 3 halo elements
     expect(screen.getAllByTestId("avatar-halo")).toHaveLength(3)
@@ -82,7 +82,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     const dots = screen.getAllByTestId("avatar-dot")
     expect(dots.some((d) => d.classList.contains("bg-orange-500"))).toBe(true)
@@ -109,7 +109,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={brian.id}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     const greenDots = screen
       .getAllByTestId("avatar-dot")
@@ -125,14 +125,19 @@ describe("CircleAvatarRow", () => {
         slots={baseSlots}
         activeBanner={{
           variant: "MEMBER_LEFT",
-          member: { id: jane.id, firstName: "Jane", lastName: "Doe", avatarUrl: null },
+          member: {
+            id: jane.id,
+            firstName: "Jane",
+            lastName: "Doe",
+            avatarUrl: null,
+          },
           stillQualifies: true,
           eventId: "evt-1",
         }}
         recentJoinedMemberId={null}
         recentLeftMemberId={jane.id}
         onAddMember={() => {}}
-      />,
+      />
     )
     const fadedHalos = screen
       .getAllByTestId("avatar-halo")
@@ -151,7 +156,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     // current user + 1 confirmed + 2 locked auxiliary = 4 halos
     expect(screen.getAllByTestId("avatar-halo")).toHaveLength(4)
@@ -204,7 +209,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
 
     const cells = screen.getAllByTestId("stacked-cell")
@@ -219,6 +224,44 @@ describe("CircleAvatarRow", () => {
     expect(secondCellText).toContain("PX") // PendingAdult X (adult invite)
     expect(thirdCellText).toContain("JD") // Junior Doe (child member)
     expect(fourthCellText).toContain("PY") // PendingChild Y (child invite)
+  })
+
+  it("buckets an AUXILIARY-relationship member as junior, matching the slot domain", () => {
+    const adultMember: NetworkMember = {
+      ...jane,
+      id: "adult-m",
+      firstName: "Adult",
+      relationship: "PARENT",
+    } as unknown as NetworkMember
+    // The slot domain treats both CHILD and AUXILIARY as juniors; the avatar
+    // row previously only recognised CHILD, so an AUXILIARY member showed in the
+    // adult row while the slot counts placed it in auxiliary.
+    const auxMember: NetworkMember = {
+      ...jane,
+      id: "aux-m",
+      firstName: "Junior",
+      relationship: "AUXILIARY",
+    } as unknown as NetworkMember
+
+    render(
+      <CircleAvatarRow
+        members={[auxMember, adultMember]}
+        pendingInvites={[]}
+        slots={{
+          accountable: { used: 1, reserved: 0, max: 3 },
+          auxiliary: { used: 1, reserved: 0, max: 2 },
+        }}
+        activeBanner={null}
+        recentJoinedMemberId={null}
+        recentLeftMemberId={null}
+        onAddMember={() => {}}
+      />
+    )
+
+    const cells = screen.getAllByTestId("stacked-cell")
+    // Adult first, the AUXILIARY member after it (not interleaved as an adult).
+    expect(cells[0].textContent ?? "").toContain("AD") // Adult Doe
+    expect(cells[1].textContent ?? "").toContain("JD") // Junior Doe (auxiliary)
   })
 
   it("shows orange ring for a member with PENDING status", () => {
@@ -237,7 +280,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     const dots = screen.getAllByTestId("avatar-dot")
     expect(dots.some((d) => d.classList.contains("bg-orange-500"))).toBe(true)
@@ -245,7 +288,12 @@ describe("CircleAvatarRow", () => {
 
   it("shows no locked avatars when 2 adults + 4 juniors fill all auxiliary slots", () => {
     const junior = (id: string, n: string): NetworkMember =>
-      ({ ...jane, id, firstName: n, relationship: "CHILD" }) as unknown as NetworkMember
+      ({
+        ...jane,
+        id,
+        firstName: n,
+        relationship: "CHILD",
+      }) as unknown as NetworkMember
 
     render(
       <CircleAvatarRow
@@ -266,7 +314,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={() => {}}
-      />,
+      />
     )
     expect(screen.queryAllByTestId("lock-icon")).toHaveLength(0)
     // 1 accountable slot remains (adults=2, max=3)
@@ -284,7 +332,7 @@ describe("CircleAvatarRow", () => {
         recentJoinedMemberId={null}
         recentLeftMemberId={null}
         onAddMember={onAddMember}
-      />,
+      />
     )
     fireEvent.click(screen.getAllByTestId("empty-slot")[0])
     expect(onAddMember).toHaveBeenCalledTimes(1)
