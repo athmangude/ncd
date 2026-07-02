@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
 import { useLocation, useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { Button } from "@/components/Button"
 import Tag from "@/components/Tag"
 import { useToast } from "@/hooks/useToast"
@@ -67,9 +68,16 @@ export default function FastTrackWalletSelection() {
   const setAllocations = useFastTrackStore((s) => s.setAllocations)
   const setSplits = useFastTrackStore((s) => s.setSplits)
 
-  const [appliedDiscount, setAppliedDiscount] = useState<DiscountCodeResponse | null>(() => {
-    return discountAmountStr && discountCode ? { isValid: true, discountAmount: discountAmountStr, message: "Discount code applied" } : null
-  })
+  const [appliedDiscount, setAppliedDiscount] =
+    useState<DiscountCodeResponse | null>(() => {
+      return discountAmountStr && discountCode
+        ? {
+            isValid: true,
+            discountAmount: discountAmountStr,
+            message: "Discount code applied",
+          }
+        : null
+    })
 
   const { data: paymentHistory } = usePaymentHistory()
   const { careFundAccount } = paymentHistory || {}
@@ -123,7 +131,8 @@ export default function FastTrackWalletSelection() {
       setDiscountAmount("0")
       toast({
         title: "Error",
-        description: error.response?.data?.message || "Failed to validate discount code",
+        description:
+          error.response?.data?.message || "Failed to validate discount code",
         variant: "destructive",
       })
     },
@@ -142,9 +151,7 @@ export default function FastTrackWalletSelection() {
   const wallets = useMemo(() => {
     return (user?.wallets || []).filter(
       (w) =>
-        w.type !== "CARD" &&
-        w.type !== "DISCOUNT" &&
-        w.type !== "DISCOUNTS"
+        w.type !== "CARD" && w.type !== "DISCOUNT" && w.type !== "DISCOUNTS"
     )
   }, [user])
 
@@ -317,26 +324,13 @@ export default function FastTrackWalletSelection() {
   })
 
   return (
-    <PatientPageWrapper title="Choose how to pay">
+    <PatientPageWrapper
+      variant="content"
+      headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
+      pageTitle="Select how you want to pay"
+      description="Add as many sources of funds as you want."
+    >
       <div className="flex flex-col gap-6 pb-32">
-        <div className="flex flex-col items-center gap-4 text-center px-4 mt-2">
-          <div className="relative">
-            <img
-              src={landline}
-              alt="Invoice"
-              className="w-16 h-16 object-contain"
-            />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-neutral-900">
-              Select How You Want To Pay
-            </h1>
-            <p className="text-neutral-500 mt-1">
-              Add as many sources of funds as you want.
-            </p>
-          </div>
-        </div>
-
         <div className="bg-white border border-neutral-200 rounded-xl p-4 mx-1 space-y-3">
           <label className="text-sm font-medium text-neutral-900">
             Discount Code (Optional)
@@ -505,7 +499,9 @@ export default function FastTrackWalletSelection() {
         )}
 
         <div className="flex flex-col gap-2">
-          <p className="text-neutral-500 font-medium px-1">Add source of funds</p>
+          <p className="text-neutral-500 font-medium px-1">
+            Add source of funds
+          </p>
           <div className="flex flex-col gap-3">
             {unallocatedWallets.map((wallet) => {
               const isLoanWallet = wallet.type === "LOAN"

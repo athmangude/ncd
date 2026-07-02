@@ -77,7 +77,9 @@ export function PatientPersonalDetails() {
 
   return (
     <PatientPageWrapper
-      title=" "
+      variant="content"
+      pageTitle="What is your full name?"
+      description="This should match your National ID."
       footer={
         <PrimaryCTAFooter
           label="Submit personal details"
@@ -87,11 +89,6 @@ export function PatientPersonalDetails() {
         />
       }
     >
-      <div className="text-center">
-        <h1>What is your full name?</h1>
-        <p className="text-neutral-500">This should match your National ID.</p>
-      </div>
-
       <form
         id="personal-details-form"
         className="flex flex-col flex-1"

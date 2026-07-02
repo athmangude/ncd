@@ -17,20 +17,22 @@ export default function PatientOrgHowItWorks() {
 
   return (
     <PatientPageWrapper
-      title="Your advance health plan"
-      className="items-start mt-5"
+      variant="content"
+      pageTitle="How it works"
+      footer={
+        <div className="border-t bg-white p-4">
+          <Button
+            role="link"
+            onClick={() => navigate(next)}
+            className="w-full"
+            size="lg"
+          >
+            Complete My Profile
+          </Button>
+        </div>
+      }
     >
-      <h1 className="text-3xl font-medium mb-4 text-center">How it works</h1>
-
       {orgPlan === "ADVANCE" ? <EmployerExplainer /> : <SaccoExplainer />}
-      <Button
-        role="link"
-        onClick={() => navigate(next)}
-        className="w-full mt-5"
-        size="lg"
-      >
-        Complete My Profile
-      </Button>
     </PatientPageWrapper>
   )
 }

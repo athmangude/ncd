@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { useState, useRef, useEffect } from "react"
 import axios from "axios"
 import { useToast } from "@/hooks/useToast"
@@ -14,8 +15,6 @@ import {
   Trash2,
   Plus,
   ArrowRight,
-  X,
-  Check,
   FileText,
   HelpCircle,
   Phone,
@@ -29,10 +28,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/Accordion"
-import invoiceIcon from "@/assets/icons/invoice.png"
 import invoiceInvalid from "@/assets/icons/invoice-invalid.png"
-import invoiceGoodExample from "@/assets/icons/invoice-good-example.png"
-import invoiceBadExample from "@/assets/icons/invoice-bad-example.png"
 import pdfPlaceholder from "@/assets/icons/pdf-placeholder.png"
 import clock from "@/assets/icons/clock.png"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
@@ -392,29 +388,20 @@ export default function PatientUploadInvoice() {
     )
 
     return (
-      <PatientPageWrapper title="Uploading invoice" showHelp>
-        <div className="flex flex-col items-center gap-6 pt-8">
-          {/* Error Icon */}
-          <div className="relative">
-            <img
-              src={invoiceInvalid}
-              alt="Invoice error"
-              className="w-24 h-24 object-contain"
-            />
-          </div>
-
-          {/* Error Message */}
-          <div className="text-center space-y-2 px-4">
-            <h2 className="text-xl font-semibold text-neutral-900">
-              There was a problem...
-            </h2>
-            <p className="text-neutral-500 text-sm">
-              {missingPatientError
-                ? missingPatientError.error
-                : "The file(s) you have provided do not seem to be a valid medical invoice."}
-            </p>
-          </div>
-
+      <PatientPageWrapper
+        variant="content"
+        showHelp
+        headerIcon={
+          <img src={invoiceInvalid} alt="" className={HERO_ILLUSTRATION} />
+        }
+        pageTitle="There was a problem..."
+        description={
+          missingPatientError
+            ? missingPatientError.error
+            : "The file(s) you have provided do not seem to be a valid medical invoice."
+        }
+      >
+        <div className="flex flex-col items-center gap-6">
           {/* Try Again / Add Connection Button */}
           <div className="w-full max-w-md px-4">
             {missingPatientError ? (
@@ -444,9 +431,7 @@ export default function PatientUploadInvoice() {
           <div className="w-full max-w-md px-4 mt-4">
             <div className="border rounded-lg bg-white overflow-hidden">
               <div className="p-4 border-b bg-neutral-50">
-                <h3 className="font-medium text-neutral-900">
-                  Have a problem with your invoice?
-                </h3>
+                <h3>Have a problem with your invoice?</h3>
               </div>
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="border-b px-4">
@@ -495,7 +480,7 @@ export default function PatientUploadInvoice() {
 
           {/* Contact Support */}
           <div className="w-full max-w-md px-4 mb-8">
-            <h3 className="font-medium text-neutral-900 mb-3">Need more help?</h3>
+            <h3 className="mb-3">Need more help?</h3>
             <p className="text-sm text-neutral-500 mb-3">
               Contact our support team
             </p>
@@ -545,7 +530,9 @@ export default function PatientUploadInvoice() {
             </div>
           </div>
           <div className="bg-neutral-50 rounded-lg p-4 w-full max-w-sm mt-8 text-center">
-            <p className="text-sm font-medium text-neutral-500 mb-1">Next step:</p>
+            <p className="text-sm font-medium text-neutral-500 mb-1">
+              Next step:
+            </p>
             <p className="text-sm font-semibold text-neutral-900">
               Confirm invoice details
             </p>
@@ -556,69 +543,26 @@ export default function PatientUploadInvoice() {
   }
 
   return (
-    <PatientPageWrapper title="Upload invoice" showHelp>
+    <PatientPageWrapper
+      variant="content"
+      showHelp
+      pageTitle="Upload a photo of your invoice."
+      description="Add single or multiple files (PDF, PNG, JPG, HEIC) up to 10MB each."
+    >
       <div className="flex flex-col gap-6">
-        {/* Invoice Icon */}
-        <div className="flex justify-center">
-          <img
-            src={invoiceIcon}
-            alt="Invoice"
-            className="w-24 h-24 object-contain"
-            aria-hidden="true"
-          />
-        </div>
-
-        {/* Main Heading */}
-        <h1 className="text-2xl font-bold text-center text-black">
-          Upload a photo of your invoice.
-        </h1>
-
-        {/* Instructions */}
-        <p className="text-neutral-500 text-center">
-          Add single or multiple files (PDF, PNG, JPG, HEIC) up to 10MB each.
-        </p>
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Bad Example */}
-            <div className="relative">
-              <div className="aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden border-2 border-neutral-300">
-                <img
-                  src={invoiceBadExample}
-                  alt="Blurry or angled invoice example"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <X className="w-4 h-4 text-red-500" />
-              </div>
-            </div>
-
-            {/* Good Example */}
-            <div className="relative">
-              <div className="aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden ">
-                <img
-                  src={invoiceGoodExample}
-                  alt="Clear and straight invoice example"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <Check className="w-4 h-4 text-green-500" />
-              </div>
-            </div>
-          </div>
-        </div>
         {/* Guide Banner */}
         <Button
           type="button"
-          onClick={() => navigate("/patients/payment/request-payment/invoice-guide")}
-          className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+          onClick={() =>
+            navigate("/patients/payment/request-payment/invoice-guide")
+          }
+          className="flex p-2 bg-accent hover:bg-accent rounded-lg border border-neutral-200"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-              <Info className="w-3 h-3 text-white" />
+          <div className="flex gap-2">
+            <div className="w-5 h-5 rounded-full flex items-center justify-center">
+              <Info className="text-accent-foreground" />
             </div>
-            <span className="text-sm font-medium text-neutral-800">
+            <span className="text-sm font-medium text-accent-foreground">
               Taking a good invoice photo
             </span>
           </div>
@@ -628,7 +572,9 @@ export default function PatientUploadInvoice() {
         {/* Uploaded Files Section */}
         {uploadedFiles.length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-sm font-medium text-neutral-500">Your invoice</h2>
+            <h2 className="text-sm font-medium text-neutral-500">
+              Your invoice
+            </h2>
             <div className="space-y-3">
               {uploadedFiles.map((uploadedFile) => (
                 <FileUploadCard
@@ -657,7 +603,7 @@ export default function PatientUploadInvoice() {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadFileMutation.isPending}
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus />
           Add a photo
         </Button>
 
@@ -672,10 +618,7 @@ export default function PatientUploadInvoice() {
                   setAcceptedMedicalConsent(!acceptedMedicalConsent)
                 }
               />
-              <label
-                htmlFor="consent"
-                className="text-sm text-neutral-700 leading-relaxed cursor-pointer"
-              >
+              <label htmlFor="consent" className="text-sm cursor-pointer">
                 I give my consent for Jireh to use my medical data for the
                 purpose of providing healthcare financing services.
               </label>

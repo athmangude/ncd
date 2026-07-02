@@ -16,6 +16,7 @@ import {
 
 import { Button } from "@/components/Button"
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { useToast } from "@/hooks/useToast"
 import {
   getFromLocalStorage,
@@ -79,21 +80,12 @@ const ReviewItem = ({
   </div>
 )
 
-const Header = () => (
-  <div className="flex flex-col items-center text-center gap-4 mt-4">
-    <div className="relative">
-      <img
-        src={invoiceIcon}
-        alt="Invoice"
-        className="w-16 h-16 object-contain"
-      />
-      <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white">
-        <Sparkles className="w-3 h-3 text-white" />
-      </div>
+const HeaderIcon = () => (
+  <div className="relative">
+    <img src={invoiceIcon} alt="" className={HEADER_ICON} />
+    <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1 border-2 border-white">
+      <Sparkles className="w-3 h-3 text-white" />
     </div>
-    <h1 className="text-xl font-bold text-neutral-900 max-w-[250px]">
-      Review and confirm your information
-    </h1>
   </div>
 )
 
@@ -330,8 +322,10 @@ export default function PatientReviewInvoice() {
 
   return (
     <PatientPageWrapper
-      title="Review invoice details"
+      variant="content"
       showHelp
+      headerIcon={<HeaderIcon />}
+      pageTitle="Review and confirm your information"
       footer={
         <div className="p-4 bg-white border-t border-neutral-200">
           <Button
@@ -356,8 +350,6 @@ export default function PatientReviewInvoice() {
       }
     >
       <div className="flex flex-col gap-6">
-        <Header />
-
         <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
           <ReviewItem
             icon={User}

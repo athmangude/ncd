@@ -3,12 +3,6 @@ import { render, screen, fireEvent } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import StepperHeader from "./StepperHeader"
 import { LOAN_APPLICATION_STEPS } from "@/Routes/Patient/hooks/useNextLoanApplicationStep"
-import { CARE_PROFILE_STEPS } from "@/Routes/Patient/hooks/useNextCareProfileStep"
-import { KYC_STEPS } from "@/Routes/Patient/hooks/useNextKYCStep"
-import { ONBOARDING_STEPS } from "@/Routes/Patient/hooks/useNextOnboardingStep"
-import { PWA_STEPS } from "@/Routes/Patient/hooks/useNextPWAOnboardingStep"
-import { FAST_TRACK_STEPS } from "@/Routes/Patient/hooks/useNextFastTrackStep"
-import { CIRCLE_INVITE_SMS_STEPS } from "@/Routes/Patient/hooks/useNextCircleInviteStep"
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
@@ -141,41 +135,26 @@ describe("StepperHeader", () => {
     expect(screen.queryByTestId("stepper")).not.toBeInTheDocument()
   })
 
-  const journeys: { name: string; path: string; total: number }[] = [
-    {
-      name: "loan application",
-      path: LOAN_APPLICATION_STEPS[0],
-      total: LOAN_APPLICATION_STEPS.length,
-    },
-    {
-      name: "care profile",
-      path: CARE_PROFILE_STEPS[0],
-      total: CARE_PROFILE_STEPS.length,
-    },
-    { name: "kyc", path: KYC_STEPS[0], total: KYC_STEPS.length },
-    {
-      name: "onboarding",
-      path: ONBOARDING_STEPS[0],
-      total: ONBOARDING_STEPS.length,
-    },
-    { name: "pwa", path: PWA_STEPS[0], total: PWA_STEPS.length },
-    {
-      name: "fast track",
-      path: FAST_TRACK_STEPS[0],
-      total: FAST_TRACK_STEPS.length,
-    },
-    // Circle invite always renders a 4-step stepper.
-    { name: "circle invite", path: CIRCLE_INVITE_SMS_STEPS[0], total: 4 },
-  ]
+  // The full 7-journey detection table lives in useJourneyStepper.test.ts. Here
+  // we only smoke-test that the bar still wires the hook through to a stepper on
+  // a journey route (legacy layout).
+  it("renders the journey stepper in the bar on a journey route", () => {
+    mockPathname = LOAN_APPLICATION_STEPS[0]
+    renderHeader()
+    const stepper = screen.getByTestId("stepper")
+    expect(stepper).toHaveAttribute("data-current", "1")
+    expect(stepper).toHaveAttribute(
+      "data-total",
+      String(LOAN_APPLICATION_STEPS.length)
+    )
+  })
 
-  journeys.forEach(({ name, path, total }) => {
-    it(`renders the ${name} stepper at step 1 of ${total} on its first route`, () => {
-      mockPathname = path
-      renderHeader()
-      const stepper = screen.getByTestId("stepper")
-      expect(stepper).toHaveAttribute("data-current", "1")
-      expect(stepper).toHaveAttribute("data-total", String(total))
-    })
+  it("drops the border and suppresses the in-bar stepper for the slim variant", () => {
+    mockPathname = LOAN_APPLICATION_STEPS[0]
+    renderHeader({ border: false, showStepper: false })
+    const header = screen.getByRole("banner")
+    expect(header.className).not.toContain("border-b")
+    expect(screen.queryByTestId("stepper")).not.toBeInTheDocument()
   })
 
   it("renders the help button and navigates on click when showHelp", async () => {

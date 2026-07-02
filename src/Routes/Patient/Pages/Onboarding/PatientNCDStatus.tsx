@@ -17,7 +17,9 @@ export default function PatientNCDStatus() {
 
   return (
     <PatientPageWrapper
-      title=" "
+      variant="content"
+      headerAlign="start"
+      pageTitle="Get tailored care & offers"
       footer={
         <DualActionFooter
           secondary={{
@@ -36,8 +38,7 @@ export default function PatientNCDStatus() {
     >
       <div className="flex flex-col gap-6 w-full">
         <div className="flex flex-col gap-3">
-          <h1 className="text-2xl  ">Get tailored care & offers</h1>
-          <h2 className="text-neutral-900">
+          <h2>
             Are you interested in benefits for non-communicable or chronic
             illnesses?
           </h2>

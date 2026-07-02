@@ -354,7 +354,20 @@ export default function PatientKYCAddCircleMembers() {
 
   return (
     <PatientPageWrapper
-      title="Upgrade to Jireh Plus"
+      variant="content"
+      pageTitle={title || undefined}
+      description={subtitle || undefined}
+      headerAction={
+        <button
+          type="button"
+          onClick={handleCircleInfo}
+          className="flex items-center gap-2 bg-teal-50 text-neutral-900 text-sm px-3 py-1.5 rounded-md"
+        >
+          <Info className="w-4 h-4 text-teal-600 shrink-0" />
+          <span>What is a Jireh Circle?</span>
+          <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
+        </button>
+      }
       footer={
         <div className="bg-white border-t border-neutral-100 p-4">
           <div className="flex flex-col gap-3">
@@ -389,27 +402,6 @@ export default function PatientKYCAddCircleMembers() {
     >
       {/* Body */}
       <div className="pt-2">
-        {/* Header */}
-        <div className="flex flex-col items-center gap-2 mb-6">
-          <h1 className="text-xl font-medium text-neutral-900 text-center leading-tight whitespace-pre-line">
-            {title}
-          </h1>
-          <p className="text-sm text-neutral-600 text-center whitespace-pre-line px-4">
-            {subtitle}
-          </p>
-
-          {/* Info chip */}
-          <button
-            type="button"
-            onClick={handleCircleInfo}
-            className="flex items-center gap-2 bg-teal-50 text-neutral-900 text-sm px-3 py-1.5 rounded-md mt-1"
-          >
-            <Info className="w-4 h-4 text-teal-600 shrink-0" />
-            <span>What is a Jireh Circle?</span>
-            <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
-          </button>
-        </div>
-
         {/* Circle viz */}
         <div className="flex flex-col items-center gap-2 mb-6">
           <div className="flex items-center justify-center gap-4">

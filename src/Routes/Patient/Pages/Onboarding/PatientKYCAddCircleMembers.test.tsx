@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeAll, afterEach } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router-dom"
@@ -192,10 +192,13 @@ describe("PatientKYCAddCircleMembers", () => {
     stubNetwork([adultAccepted, adultAccepted2], [])
     render(wrap(<PatientKYCAddCircleMembers />))
 
-    await screen.findByText(/Upgrade to Jireh Plus/i)
-    expect(mockNavigate).toHaveBeenCalledWith(
-      "/patients/pay-membership",
-      expect.objectContaining({ replace: true })
+    // With 2 adults accepted the screen redirects straight to membership
+    // payment; assert the redirect directly rather than keying off header copy.
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/patients/pay-membership",
+        expect.objectContaining({ replace: true })
+      )
     )
   })
 

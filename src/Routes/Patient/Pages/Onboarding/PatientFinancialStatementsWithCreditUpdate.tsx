@@ -20,7 +20,27 @@ export default function PatientFinancialStatementsWithCreditUpdate() {
   const [showSuccessScreen, setShowSuccessScreen] = useState(false)
 
   return (
-    <PatientPageWrapper title="Financial Statements">
+    <PatientPageWrapper
+      variant="content"
+      headerAlign="start"
+      pageTitle={
+        showSuccessScreen ? undefined : (
+          <>
+            Upload your MPESA statement for the{" "}
+            <span className="text-primary">last 6 months</span>
+          </>
+        )
+      }
+      description={
+        showSuccessScreen ? undefined : (
+          <>
+            Increase your limit up to{" "}
+            <span className="font-medium">{formatMoney(6_000, "KES")}</span> by
+            uploading your MPESA statements
+          </>
+        )
+      }
+    >
       {showSuccessScreen ? (
         <SuccessScreen />
       ) : (
@@ -65,15 +85,6 @@ function UploadStatements({
 
   return (
     <>
-      <h1 className="text-2xl font-medium capitalize ">
-        Upload your MPESA statement for the{" "}
-        <span className="font-medium text-primary">last 6 months</span>
-      </h1>
-      <p>
-        Increase your limit up to{" "}
-        <span className="font-medium">{formatMoney(6_000, "KES")}</span> by
-        uploading your MPESA statements
-      </p>
       <div>
         <p className=" font-medium">What you'll need</p>
         <ul className="list-disc pl-6 text-neutral-500 text-sm mt-0">

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import useNextMembershipSetupStep from "../../hooks/useNextMembershipSetupStep"
 import { useCircleSync } from "../../hooks/useCircleSync"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import successImage from "@/assets/icons/id-verification-success.png"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
@@ -46,18 +47,15 @@ export function PatientMembershipSuccess() {
   const { totalCreditLimitAmount, currency } = data?.creditLimit || {}
 
   return (
-    <PatientPageWrapper title="Profile Completed">
-      <div className="flex flex-col items-center gap-5 mt-10">
-        <img
-          src={successImage}
-          alt="membership success"
-          className="aspect-square p-2 object-contain w-full max-w-[150px] mx-auto"
-          aria-hidden="true"
-        />
-
-        <h1 className="text-2xl font-medium">Profile Completed!</h1>
-
-        <p className="text-neutral-500">Your updated loan limit is: </p>
+    <PatientPageWrapper
+      variant="content"
+      headerIcon={
+        <img src={successImage} alt="" className={HERO_ILLUSTRATION} />
+      }
+      pageTitle="Profile Completed!"
+      description="Your updated loan limit is:"
+    >
+      <div className="flex flex-col items-center gap-5">
         <p className="text-2xl font-medium">
           {formatMoney(totalCreditLimitAmount, currency)}
         </p>
