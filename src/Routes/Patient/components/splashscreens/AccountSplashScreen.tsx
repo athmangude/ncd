@@ -1,89 +1,52 @@
+import AppShell from "@/Routes/AppShell"
+import { LogoHeader } from "@/Routes/shell/headers"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import SplashScreenProgressBar from "@/Routes/SplashScreenProgressBar"
+import { Check } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+
+const STEPS = [
+  "Sign up for Jireh Health Membership",
+  "Get approved",
+  "Request treatment funding",
+  "Jireh pays for your medical bill",
+  "Get the quality care you deserve",
+]
 
 export default function AccountSplashScreen() {
   const navigate = useNavigate()
+
   return (
-    <div
-      className="h-screen w-full flex flex-col"
-      style={{
-        backgroundImage: `url("background-gradient.png")`,
-        backgroundRepeat: "no-repeat",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+    <AppShell
+      header={
+        <LogoHeader
+          showIcons={false}
+          rightSlot={<SplashScreenProgressBar currentStep={4} />}
+        />
+      }
+      footer={
+        <PrimaryCTAFooter
+          label="Login"
+          onClick={() => navigate("/patients/auth/login")}
+        />
+      }
     >
-      <div
-        className="h-screen overflow-hidden"
-        style={{
-          backgroundImage: `url("background-contours.png")`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        <div className="h-[60%]  ">
-          <div className="flex items-center justify-between w-full max-w-screen-lg  p-4">
-            <img src="/jireh-white.svg" alt="Jireh Logo" className="h-8" />
-            <SplashScreenProgressBar currentStep={4} />
-          </div>
-          <div className="relative flex flex-col items-start space-y-10 p-6">
-            <div className="absolute top-20 bottom-10 left-[32px] w-[0.8px] bg-[#06C270]"></div>
-            <div className="flex items-center space-x-4">
-              <div className="rounded-full place-content-center flex items-center w-4 h-4 bg-[#C4FFE6]">
-                <div className="rounded-full place-content-center flex items-center w-2 h-2 bg-[#06C270]"></div>
-              </div>
-              <span className="text-white font-medium">
-                Sign up for Jireh Health Membership
+      <div className="flex flex-col gap-6">
+        <h1 className="text-2xl font-semibold text-neutral-900">
+          Create your account in a few easy steps
+        </h1>
+
+        <ol className="flex flex-col gap-4">
+          {STEPS.map((step) => (
+            <li key={step} className="flex items-center gap-3">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600">
+                <Check className="h-3 w-3" />
               </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="rounded-full place-content-center flex items-center w-4 h-4 bg-[#C4FFE6]">
-                <div className="rounded-full place-content-center flex items-center w-2 h-2 bg-[#06C270]"></div>
-              </div>
-              <span className="text-white font-medium">Get approved</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="rounded-full place-content-center flex items-center w-4 h-4 bg-[#C4FFE6]">
-                <div className="rounded-full place-content-center flex items-center w-2 h-2 bg-[#06C270]"></div>
-              </div>
-              <span className="text-white font-medium">
-                Request treatment funding
-              </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="rounded-full place-content-center flex items-center w-4 h-4 bg-[#C4FFE6]">
-                <div className="rounded-full place-content-center flex items-center w-2 h-2 bg-[#06C270]"></div>
-              </div>
-              <span className="text-white font-medium">
-                Jireh pays for your medical bill
-              </span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="rounded-full place-content-center flex items-center w-4 h-4 bg-[#C4FFE6]">
-                <div className="rounded-full place-content-center flex items-center w-2 h-2 bg-[#06C270]"></div>
-              </div>
-              <span className="text-white font-medium">
-                Get the quality care you deserve
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="curved-edge px-6 pt-10 flex flex-col items-center justify-evenly text-center text-white h-[40%]">
-          <p className="text-xl text-white text-center font-semibold">
-            How it works?
-          </p>
-          <div className=" flex flex-row justify-center gap-4">
-            <button
-              role="link"
-              onClick={() => navigate("/patients/auth/login")}
-              className="w-[170px] text-white border border-white py-2 px-4 rounded-lg font-semibold text-base"
-            >
-              Login
-            </button>
-          </div>
-        </div>
+              <span className="font-medium text-neutral-900">{step}</span>
+            </li>
+          ))}
+        </ol>
       </div>
-    </div>
+    </AppShell>
   )
 }

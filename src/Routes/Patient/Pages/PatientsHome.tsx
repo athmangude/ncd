@@ -73,7 +73,6 @@ import InstallAppPage from "./PWAOnboarding/InstallAppPage"
 import EnableNotificationsPage from "./PWAOnboarding/EnableNotificationsPage"
 import LocationAccessPage from "./PWAOnboarding/LocationAccessPage"
 import PWASuccessPage from "./PWAOnboarding/PWASuccessPage"
-import PatientPageWrapper from "./PatientPageWrapper"
 import MemberLoanRouteGuard from "../components/MemberLoanRouteGuard"
 
 import PatientScanQRIntro from "./PatientScanQRIntro"
@@ -241,9 +240,7 @@ export default function PatientsHome() {
           path="/pwa-install"
           element={
             <RouteMetadata title="Install App">
-              <PatientPageWrapper>
-                <InstallAppPage />
-              </PatientPageWrapper>
+              <InstallAppPage />
             </RouteMetadata>
           }
         />
@@ -251,9 +248,7 @@ export default function PatientsHome() {
           path="/pwa-notifications"
           element={
             <RouteMetadata title="Enable Notifications">
-              <PatientPageWrapper>
-                <EnableNotificationsPage />
-              </PatientPageWrapper>
+              <EnableNotificationsPage />
             </RouteMetadata>
           }
         />
@@ -261,9 +256,7 @@ export default function PatientsHome() {
           path="/pwa-location"
           element={
             <RouteMetadata title="Location Access">
-              <PatientPageWrapper>
-                <LocationAccessPage />
-              </PatientPageWrapper>
+              <LocationAccessPage />
             </RouteMetadata>
           }
         />
