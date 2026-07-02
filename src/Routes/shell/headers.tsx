@@ -19,6 +19,12 @@ interface LogoHeaderProps {
   onBellClick?: () => void
   /** When > 0, shows a notification badge on the bell icon */
   unreadCount?: number
+  /**
+   * Optional element rendered on the right of the bar in place of the default
+   * icons (e.g. a splash-screen progress indicator). Ignored when `showIcons`
+   * renders the WhatsApp/bell cluster.
+   */
+  rightSlot?: React.ReactNode
   className?: string
 }
 
@@ -29,6 +35,7 @@ export function LogoHeader({
   onMessageClick,
   onBellClick,
   unreadCount,
+  rightSlot,
   className,
 }: LogoHeaderProps) {
   return (
@@ -93,6 +100,8 @@ export function LogoHeader({
           </Button>
         </div>
       )}
+
+      {!showIcons && rightSlot != null && <div>{rightSlot}</div>}
     </header>
   )
 }
