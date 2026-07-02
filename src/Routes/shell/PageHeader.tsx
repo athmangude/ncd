@@ -56,13 +56,9 @@ export function PageHeader({
     >
       {icon && <div>{icon}</div>}
       {stepper && <div className="w-full">{stepper}</div>}
-      {title && (
-        <h1 className="whitespace-pre-line text-xl font-medium leading-tight text-neutral-900">
-          {title}
-        </h1>
-      )}
+      {title && <h1 className="whitespace-pre-line">{title}</h1>}
       {description && (
-        <p className="whitespace-pre-line text-sm text-neutral-600">
+        <p className="whitespace-pre-line text-sm text-muted-foreground">
           {description}
         </p>
       )}

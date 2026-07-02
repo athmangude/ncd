@@ -89,7 +89,7 @@
   }
 
   h1 {
-    @apply text-foreground font-medium text-2xl tracking-tight;
+    @apply text-foreground font-medium text-xl tracking-tight;
   }
 
   h2 {

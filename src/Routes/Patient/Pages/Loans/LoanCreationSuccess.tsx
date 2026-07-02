@@ -63,9 +63,7 @@ function LoanSubmittedForApproval({ data }: { data: any }) {
   return (
     <>
       <CircleCheck className={`mx-auto text-green-500 ${HERO_ILLUSTRATION}`} />
-      <h1 className="font-medium text-xl">
-        Your Payment Has Been Submitted For Approval
-      </h1>
+      <h1>Your Payment Has Been Submitted For Approval</h1>
 
       <p>
         We will send you a link to complete the disbursement of{" "}
@@ -91,7 +89,7 @@ function LoanDisbursed({ data }: { data: any }) {
   return (
     <>
       <CircleCheck className={`mx-auto text-green-500 ${HERO_ILLUSTRATION}`} />
-      <h1 className="font-medium text-xl">Payment Successful!</h1>
+      <h1>Payment Successful!</h1>
 
       <p>
         <span className="font-medium">

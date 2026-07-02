@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { Button } from "@/components/Button"
 import useNextLoanApplicationStep from "@/Routes/Patient/hooks/useNextLoanApplicationStep"
 import careproviderIcon from "@/assets/icons/care-provider.png"
@@ -9,23 +10,25 @@ export default function PatientHowToPay() {
   const next = useNextLoanApplicationStep()
 
   return (
-    <PatientPageWrapper title="How to pay">
-      <div className="flex flex-col gap-6">
-        <div className="flex items-start gap-4">
-          <div className="relative flex-shrink-0">
-            <img
-            src={careproviderIcon}
-            alt="patient avatar"
-            className="w-full max-w-[60px]"
-            aria-hidden="true"
-          />
-          </div>
-
-          <h1 className="text-2xl font-bold mb-4 text-black">
-            Pay to over 14,000 licensed health facilities in Kenya.
-          </h1>
+    <PatientPageWrapper
+      variant="content"
+      headerAlign="start"
+      headerIcon={<img src={careproviderIcon} alt="" className={HEADER_ICON} />}
+      pageTitle="Pay to over 14,000 licensed health facilities in Kenya."
+      footer={
+        <div className="border-t bg-white p-4">
+          <Button
+            role="link"
+            className="w-full"
+            size="lg"
+            onClick={() => navigate(next)}
+          >
+            Proceed to pay
+          </Button>
         </div>
-
+      }
+    >
+      <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
           <h2 className="text-sm font-normal text-neutral-500">How to pay :</h2>
 
@@ -63,17 +66,7 @@ export default function PatientHowToPay() {
             </div>
           </div>
         </div>
-
-        <Button
-          role="link"
-          className="w-full mt-auto"
-          size="lg"
-          onClick={() => navigate(next)}
-        >
-          Proceed to pay
-        </Button>
       </div>
     </PatientPageWrapper>
   )
 }
-

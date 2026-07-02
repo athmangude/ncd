@@ -304,7 +304,7 @@ function OutOfNetworkFacilityForm({ careProvider }: { careProvider: any }) {
       })}
     >
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-medium">{name}</h2>
+        <h2>{name}</h2>
         <p className="text-sm text-neutral-500">
           {county} • {plotNumber}
         </p>
@@ -531,7 +531,7 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
       }}
     >
       <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-medium">{name}</h2>
+        <h2>{name}</h2>
         <p className="text-sm text-neutral-500">
           {county} • {plotNumber}
         </p>
@@ -567,9 +567,7 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
       />
 
       <div className="w-full mt-6 pt-6 border-t">
-        <h3 className="font-medium text-neutral-900 mb-1">
-          Can’t find your care provider?
-        </h3>
+        <h3 className="mb-1">Can’t find your care provider?</h3>
         <p className="text-sm text-neutral-500 mb-3">
           Contact our support team
         </p>

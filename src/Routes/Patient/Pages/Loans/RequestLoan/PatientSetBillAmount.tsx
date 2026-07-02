@@ -85,7 +85,8 @@ export default function PatientSetBillAmount() {
       }
 
       // Get integer facility ID from the nested facility object
-      const savedData = getFromLocalStorage(patientReviewInvoiceStorageKey) || {}
+      const savedData =
+        getFromLocalStorage(patientReviewInvoiceStorageKey) || {}
       const healthcareFacilityId =
         state?.kmpdcFacility?.facility?.id ??
         savedData?.kmpdcFacility?.facility?.id ??
@@ -205,7 +206,7 @@ export default function PatientSetBillAmount() {
     state?.kmpdcFacility?.facility?.facilityVerificationStatus === "APPROVED"
 
   return (
-    <PatientPageWrapper title="Set Bill Amount">
+    <PatientPageWrapper variant="content" pageTitle="Set bill amount">
       <form
         onSubmit={handleSubmit((data) => {
           const { totalBillAmount, careFundDiscountAmount } = data
@@ -230,7 +231,9 @@ export default function PatientSetBillAmount() {
               appliedDiscount?.isValid && discountCode?.trim()
                 ? discountCode.trim()
                 : undefined,
-            appliedDiscount: appliedDiscount?.isValid ? appliedDiscount : undefined,
+            appliedDiscount: appliedDiscount?.isValid
+              ? appliedDiscount
+              : undefined,
           })
 
           const navigationState = {

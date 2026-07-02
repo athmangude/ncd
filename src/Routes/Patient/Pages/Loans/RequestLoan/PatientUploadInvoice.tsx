@@ -15,8 +15,6 @@ import {
   Trash2,
   Plus,
   ArrowRight,
-  X,
-  Check,
   FileText,
   HelpCircle,
   Phone,
@@ -30,10 +28,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/Accordion"
-import invoiceIcon from "@/assets/icons/invoice.png"
 import invoiceInvalid from "@/assets/icons/invoice-invalid.png"
-import invoiceGoodExample from "@/assets/icons/invoice-good-example.png"
-import invoiceBadExample from "@/assets/icons/invoice-bad-example.png"
 import pdfPlaceholder from "@/assets/icons/pdf-placeholder.png"
 import clock from "@/assets/icons/clock.png"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
@@ -436,9 +431,7 @@ export default function PatientUploadInvoice() {
           <div className="w-full max-w-md px-4 mt-4">
             <div className="border rounded-lg bg-white overflow-hidden">
               <div className="p-4 border-b bg-neutral-50">
-                <h3 className="font-medium text-neutral-900">
-                  Have a problem with your invoice?
-                </h3>
+                <h3>Have a problem with your invoice?</h3>
               </div>
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="border-b px-4">
@@ -487,9 +480,7 @@ export default function PatientUploadInvoice() {
 
           {/* Contact Support */}
           <div className="w-full max-w-md px-4 mb-8">
-            <h3 className="font-medium text-neutral-900 mb-3">
-              Need more help?
-            </h3>
+            <h3 className="mb-3">Need more help?</h3>
             <p className="text-sm text-neutral-500 mb-3">
               Contact our support team
             </p>
@@ -555,57 +546,23 @@ export default function PatientUploadInvoice() {
     <PatientPageWrapper
       variant="content"
       showHelp
-      headerIcon={
-        <img src={invoiceIcon} alt="" className={HERO_ILLUSTRATION} />
-      }
       pageTitle="Upload a photo of your invoice."
       description="Add single or multiple files (PDF, PNG, JPG, HEIC) up to 10MB each."
     >
       <div className="flex flex-col gap-6">
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Bad Example */}
-            <div className="relative">
-              <div className="aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden border-2 border-neutral-300">
-                <img
-                  src={invoiceBadExample}
-                  alt="Blurry or angled invoice example"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <X className="w-4 h-4 text-red-500" />
-              </div>
-            </div>
-
-            {/* Good Example */}
-            <div className="relative">
-              <div className="aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden ">
-                <img
-                  src={invoiceGoodExample}
-                  alt="Clear and straight invoice example"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="absolute bottom-2 right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <Check className="w-4 h-4 text-green-500" />
-              </div>
-            </div>
-          </div>
-        </div>
         {/* Guide Banner */}
         <Button
           type="button"
           onClick={() =>
             navigate("/patients/payment/request-payment/invoice-guide")
           }
-          className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
+          className="flex p-2 bg-accent hover:bg-accent rounded-lg border border-neutral-200"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
-              <Info className="w-3 h-3 text-white" />
+          <div className="flex gap-2">
+            <div className="w-5 h-5 rounded-full flex items-center justify-center">
+              <Info className="text-accent-foreground" />
             </div>
-            <span className="text-sm font-medium text-neutral-800">
+            <span className="text-sm font-medium text-accent-foreground">
               Taking a good invoice photo
             </span>
           </div>
@@ -646,7 +603,7 @@ export default function PatientUploadInvoice() {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadFileMutation.isPending}
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Plus />
           Add a photo
         </Button>
 
@@ -661,10 +618,7 @@ export default function PatientUploadInvoice() {
                   setAcceptedMedicalConsent(!acceptedMedicalConsent)
                 }
               />
-              <label
-                htmlFor="consent"
-                className="text-sm text-neutral-700 leading-relaxed cursor-pointer"
-              >
+              <label htmlFor="consent" className="text-sm cursor-pointer">
                 I give my consent for Jireh to use my medical data for the
                 purpose of providing healthcare financing services.
               </label>
