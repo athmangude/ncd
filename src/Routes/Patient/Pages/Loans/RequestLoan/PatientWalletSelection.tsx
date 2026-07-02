@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react"
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { useLocation, useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
@@ -701,8 +702,11 @@ export default function PatientWalletSelection() {
 
   return (
     <PatientPageWrapper
-      title="Choose how to pay"
+      variant="content"
       showHelp
+      headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
+      pageTitle="Select how you want to pay"
+      description="Add as many sources of funds as you want."
       footer={
         <div className="p-4 bg-white border-t border-neutral-200">
           <Button
@@ -717,25 +721,6 @@ export default function PatientWalletSelection() {
       }
     >
       <div className="flex flex-col gap-6">
-        {/* Header Content */}
-        <div className="flex flex-col items-center gap-4 text-center px-4 mt-2">
-          <div className="relative">
-            <img
-              src={landline}
-              alt="Invoice"
-              className="w-16 h-16 object-contain"
-            />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-neutral-900">
-              Select How You Want To Pay
-            </h1>
-            <p className="text-neutral-500 mt-1">
-              Add as many as you want to .
-            </p>
-          </div>
-        </div>
-
         {/* Discount Code Input */}
         <div className="bg-white border border-neutral-200 rounded-xl p-4 mx-1 space-y-3">
           <label className="text-sm font-medium text-neutral-900">

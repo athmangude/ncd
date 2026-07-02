@@ -1,4 +1,5 @@
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Phone, ChevronRight } from "lucide-react"
 import { DetailsNotSet } from "@/Routes/Patient/components/DetailsNotSet"
@@ -51,7 +52,11 @@ export default function PatientTreatmentDetails() {
   }
 
   return (
-    <PatientPageWrapper title="Treatment Details">
+    <PatientPageWrapper
+      variant="content"
+      headerIcon={<img src={careProviderIcon} alt="" className={HEADER_ICON} />}
+      pageTitle="Where are you receiving treatment?"
+    >
       <TreatmentDetailsForm />
     </PatientPageWrapper>
   )
@@ -89,16 +94,7 @@ function TreatmentDetailsForm() {
   }, [])
 
   return (
-    <div className="flex flex-col gap-7 items-center justify-center h-full mt-10">
-      <img
-        src={careProviderIcon}
-        alt="care provider"
-        className="w-full max-w-[60px]"
-        aria-hidden="true"
-      />
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Where are you receiving treatment?
-      </h1>
+    <div className="flex flex-col gap-7">
       <SearchField
         searchUrl="/patients/search-facilities"
         dataDetails={{
@@ -574,7 +570,9 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
         <h3 className="font-medium text-neutral-900 mb-1">
           Can’t find your care provider?
         </h3>
-        <p className="text-sm text-neutral-500 mb-3">Contact our support team</p>
+        <p className="text-sm text-neutral-500 mb-3">
+          Contact our support team
+        </p>
         <a
           href="tel:+254117118511"
           className="flex items-center justify-between p-3 bg-white border rounded-xl hover:bg-neutral-50 transition-colors shadow-sm"

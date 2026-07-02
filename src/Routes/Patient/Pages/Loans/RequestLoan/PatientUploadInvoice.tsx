@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query"
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { useState, useRef, useEffect } from "react"
 import axios from "axios"
 import { useToast } from "@/hooks/useToast"
@@ -392,29 +393,20 @@ export default function PatientUploadInvoice() {
     )
 
     return (
-      <PatientPageWrapper title="Uploading invoice" showHelp>
-        <div className="flex flex-col items-center gap-6 pt-8">
-          {/* Error Icon */}
-          <div className="relative">
-            <img
-              src={invoiceInvalid}
-              alt="Invoice error"
-              className="w-24 h-24 object-contain"
-            />
-          </div>
-
-          {/* Error Message */}
-          <div className="text-center space-y-2 px-4">
-            <h2 className="text-xl font-semibold text-neutral-900">
-              There was a problem...
-            </h2>
-            <p className="text-neutral-500 text-sm">
-              {missingPatientError
-                ? missingPatientError.error
-                : "The file(s) you have provided do not seem to be a valid medical invoice."}
-            </p>
-          </div>
-
+      <PatientPageWrapper
+        variant="content"
+        showHelp
+        headerIcon={
+          <img src={invoiceInvalid} alt="" className={HERO_ILLUSTRATION} />
+        }
+        pageTitle="There was a problem..."
+        description={
+          missingPatientError
+            ? missingPatientError.error
+            : "The file(s) you have provided do not seem to be a valid medical invoice."
+        }
+      >
+        <div className="flex flex-col items-center gap-6">
           {/* Try Again / Add Connection Button */}
           <div className="w-full max-w-md px-4">
             {missingPatientError ? (
@@ -495,7 +487,9 @@ export default function PatientUploadInvoice() {
 
           {/* Contact Support */}
           <div className="w-full max-w-md px-4 mb-8">
-            <h3 className="font-medium text-neutral-900 mb-3">Need more help?</h3>
+            <h3 className="font-medium text-neutral-900 mb-3">
+              Need more help?
+            </h3>
             <p className="text-sm text-neutral-500 mb-3">
               Contact our support team
             </p>
@@ -545,7 +539,9 @@ export default function PatientUploadInvoice() {
             </div>
           </div>
           <div className="bg-neutral-50 rounded-lg p-4 w-full max-w-sm mt-8 text-center">
-            <p className="text-sm font-medium text-neutral-500 mb-1">Next step:</p>
+            <p className="text-sm font-medium text-neutral-500 mb-1">
+              Next step:
+            </p>
             <p className="text-sm font-semibold text-neutral-900">
               Confirm invoice details
             </p>
@@ -556,27 +552,16 @@ export default function PatientUploadInvoice() {
   }
 
   return (
-    <PatientPageWrapper title="Upload invoice" showHelp>
+    <PatientPageWrapper
+      variant="content"
+      showHelp
+      headerIcon={
+        <img src={invoiceIcon} alt="" className={HERO_ILLUSTRATION} />
+      }
+      pageTitle="Upload a photo of your invoice."
+      description="Add single or multiple files (PDF, PNG, JPG, HEIC) up to 10MB each."
+    >
       <div className="flex flex-col gap-6">
-        {/* Invoice Icon */}
-        <div className="flex justify-center">
-          <img
-            src={invoiceIcon}
-            alt="Invoice"
-            className="w-24 h-24 object-contain"
-            aria-hidden="true"
-          />
-        </div>
-
-        {/* Main Heading */}
-        <h1 className="text-2xl font-bold text-center text-black">
-          Upload a photo of your invoice.
-        </h1>
-
-        {/* Instructions */}
-        <p className="text-neutral-500 text-center">
-          Add single or multiple files (PDF, PNG, JPG, HEIC) up to 10MB each.
-        </p>
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             {/* Bad Example */}
@@ -611,7 +596,9 @@ export default function PatientUploadInvoice() {
         {/* Guide Banner */}
         <Button
           type="button"
-          onClick={() => navigate("/patients/payment/request-payment/invoice-guide")}
+          onClick={() =>
+            navigate("/patients/payment/request-payment/invoice-guide")
+          }
           className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
         >
           <div className="flex items-center gap-3">
@@ -628,7 +615,9 @@ export default function PatientUploadInvoice() {
         {/* Uploaded Files Section */}
         {uploadedFiles.length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-sm font-medium text-neutral-500">Your invoice</h2>
+            <h2 className="text-sm font-medium text-neutral-500">
+              Your invoice
+            </h2>
             <div className="space-y-3">
               {uploadedFiles.map((uploadedFile) => (
                 <FileUploadCard

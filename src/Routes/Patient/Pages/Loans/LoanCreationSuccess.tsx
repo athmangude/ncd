@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom"
 import { usePatientLoanStore } from "../../stores/patientLoanStore"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { getPatientLoanDetailsQueryKey } from "./PatientViewLoanDetails"
 import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
@@ -61,7 +62,7 @@ function LoanSubmittedForApproval({ data }: { data: any }) {
 
   return (
     <>
-      <CircleCheck size={80} className=" mx-auto text-green-500" />
+      <CircleCheck className={`mx-auto text-green-500 ${HERO_ILLUSTRATION}`} />
       <h1 className="font-medium text-xl">
         Your Payment Has Been Submitted For Approval
       </h1>
@@ -89,7 +90,7 @@ function LoanDisbursed({ data }: { data: any }) {
 
   return (
     <>
-      <CircleCheck size={80} className=" mx-auto text-green-500" />
+      <CircleCheck className={`mx-auto text-green-500 ${HERO_ILLUSTRATION}`} />
       <h1 className="font-medium text-xl">Payment Successful!</h1>
 
       <p>

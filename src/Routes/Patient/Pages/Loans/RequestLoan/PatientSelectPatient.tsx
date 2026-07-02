@@ -1,5 +1,6 @@
 import { Controller } from "react-hook-form"
 import PatientPageWrapper from "../../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import patientIcon from "@/assets/icons/patient.png"
 import { usePersistentForm } from "@/hooks/usePersistentForm"
 import PatientDependentSelect from "@/Routes/Patient/components/PatientDependentSelect"
@@ -78,9 +79,13 @@ export default function PatientSelectPatient() {
   }
 
   return (
-    <PatientPageWrapper title="Select Patient">
+    <PatientPageWrapper
+      variant="content"
+      headerIcon={<img src={patientIcon} alt="" className={HEADER_ICON} />}
+      pageTitle="Who is the patient today?"
+    >
       <form
-        className="flex flex-col gap-7 items-center justify-center h-full mt-10"
+        className="flex flex-col gap-7"
         onSubmit={handleSubmit((data) => {
           const patient = patientOptions.find(
             (patient: any) => patient.value === data.patientId
@@ -107,21 +112,13 @@ export default function PatientSelectPatient() {
           navigate("/patients/payment/request-payment/review-invoice")
         })}
       >
-        <img
-          src={patientIcon}
-          alt="patient avatar"
-          className="w-full max-w-[60px]"
-          aria-hidden="true"
-        />
-        <h1 className="text-2xl font-bold mb-4 text-center">
-          Who is the patient today?
-        </h1>
-
         <Controller
           name="patientId"
           control={control as any}
           rules={{ required: "Patient is required" }}
-          defaultValue={control._defaultValues["patientId"] ?? preselectedPatientId}
+          defaultValue={
+            control._defaultValues["patientId"] ?? preselectedPatientId
+          }
           render={({ field }) => (
             <PatientDependentSelect
               id="patientId"
@@ -130,7 +127,9 @@ export default function PatientSelectPatient() {
               items={patientOptions}
               field={field}
               error={errors.patientId?.message}
-              defaultValue={control._defaultValues["patientId"] ?? preselectedPatientId}
+              defaultValue={
+                control._defaultValues["patientId"] ?? preselectedPatientId
+              }
               action={{
                 fn: () => {
                   navigate("/patients/network/add-connection", {
