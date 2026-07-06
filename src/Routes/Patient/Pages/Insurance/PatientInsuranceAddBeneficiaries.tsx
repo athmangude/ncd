@@ -20,7 +20,7 @@ export default function PatientInsuranceAddBeneficiaries() {
 
   return (
     <PatientPageWrapper title="Add Beneficiaries">
-      <h1 className="text-2xl font-medium text-center">
+      <h1 className="text-center">
         Click to add your friends and family to your cover:
       </h1>
 
@@ -56,16 +56,23 @@ export function SummaryBlock({
   members?: AddCircleMemberInput[]
 }) {
   const location = useLocation()
-  const state = location.state
+  // Direct visits/refreshes arrive without router state — render with
+  // placeholders instead of crashing on state.insurancePlan.
+  const state = location.state || {}
 
   const { plan, billingSchedule } = state.insurancePlan || {}
-  const { circleMembers } = state || {}
+  const { circleMembers } = state
+  const hasPlan = Boolean(plan && billingSchedule)
 
   const price = resolvePrice(billingSchedule, plan)
 
-  const planText = `${billingSchedule.toLowerCase()} ${plan.toLowerCase()} plan`
+  const planText = hasPlan
+    ? `${billingSchedule.toLowerCase()} ${plan.toLowerCase()} plan`
+    : "No plan selected"
 
-  const planAmount = resolvePlanText(billingSchedule, plan)
+  const planAmount = hasPlan
+    ? resolvePlanText(billingSchedule, plan)
+    : undefined
   const numberOfMembers = members?.length || circleMembers?.length || 0
 
   const totalCost = price * (numberOfMembers + 1)
@@ -89,7 +96,9 @@ export function SummaryBlock({
         <div className="capitalize text-right">
           <p>
             {formatMoney(totalCost, "KES")} per{" "}
-            {billingSchedule.slice(0, -2).toLowerCase()}
+            {billingSchedule
+              ? billingSchedule.slice(0, -2).toLowerCase()
+              : "period"}
           </p>
         </div>
       </div>
@@ -113,7 +122,7 @@ function SummaryText({
       <div className="capitalize text-right">
         <p>{text}</p>
 
-        {subtext && <p className="text-neutral-500">{subtext}</p>}
+        {subtext && <p className="text-muted-foreground">{subtext}</p>}
       </div>
     </div>
   )

@@ -62,7 +62,7 @@ export default function InvoiceDetails() {
         />
         <label
           htmlFor="terms"
-          className="text-sm text-neutral-600 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           By ticking this box, I confirm that I have reviewed and accept the
           invoice
@@ -87,7 +87,7 @@ function ItemizedInvoice() {
   const loan = usePatientLoanStore((state: any) => state.loan)
 
   const invoiceItems =
-    loan.patientMedicalInfoRequest?.healthcareMedicalInfoRequest
+    loan?.patientMedicalInfoRequest?.healthcareMedicalInfoRequest
       ?.invoiceItems ?? []
 
   const totalInvoiceAmount = invoiceItems.reduce(
@@ -98,10 +98,10 @@ function ItemizedInvoice() {
   return (
     <section className="flex flex-col gap-5 border-b border-black pb-5">
       <div className="flex justify-between gap-5">
-        <h2 className="text-2xl font-medium">Invoice Details</h2>
+        <h2>Invoice Details</h2>
 
-        <Tag className={resolveTagColor(loan.transactionFeeIsPaid)}>
-          {loan.transactionFeeIsPaid ? "paid" : "unpaid"}
+        <Tag className={resolveTagColor(loan?.transactionFeeIsPaid)}>
+          {loan?.transactionFeeIsPaid ? "paid" : "unpaid"}
         </Tag>
       </div>
 
@@ -119,7 +119,7 @@ function ItemizedInvoice() {
         <span>Total Invoice Amount</span>
         <span className="min-w-[75px]">
           {totalInvoiceAmount
-            ? formatMoney(totalInvoiceAmount, loan.currency.code)
+            ? formatMoney(totalInvoiceAmount, loan?.currency?.code)
             : undefined}
         </span>
       </p>
@@ -130,16 +130,16 @@ function ItemizedInvoice() {
 function InvoiceItem({ item }: { item: any }) {
   const { description, totalPrice, currency } = item
   return (
-    <div className="flex justify-between text-neutral-500 ">
+    <div className="flex justify-between text-muted-foreground ">
       <span>{description}</span>
       <span className="min-w-[75px]">
-        {formatMoney(totalPrice, currency.code)}
+        {formatMoney(totalPrice, currency?.code)}
       </span>
     </div>
   )
 }
 
-function resolveTagColor(transactionFeeIsPaid: boolean) {
+function resolveTagColor(transactionFeeIsPaid?: boolean) {
   return transactionFeeIsPaid ? "bg-green-500" : "bg-red-500"
 }
 
@@ -150,14 +150,14 @@ function ViewInvoiceFile() {
   return (
     <section className="flex flex-col gap-5">
       <div>
-        <h2 className="text-xl ">View Care Provider Invoice</h2>
-        <p className="text-neutral-500 text-xs mt-1">
+        <h2>View Care Provider Invoice</h2>
+        <p className="text-muted-foreground text-xs mt-1">
           Please review the invoice for additional billing details
         </p>
       </div>
 
       <div className="p-3 border rounded-lg flex justify-between items-center gap-2 ">
-        <span className=" text-neutral-500">Invoice File</span>
+        <span className=" text-muted-foreground">Invoice File</span>
 
         <a href={invoiceDownloadUrl} className="flex gap-2 items-center">
           {" "}
