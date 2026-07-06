@@ -3,6 +3,7 @@ import PatientDashboardSection from "./PatientDashboardSection"
 import { formatTime, formatDateLong } from "@/utilities/dateUtilities"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Button } from "@/components/Button"
+import { Badge } from "@/components/Badge"
 import { ChevronRight, Clock } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useMemo } from "react"
@@ -165,35 +166,31 @@ export function LoanCard({
     >
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-base  text-neutral-900 capitalize">
+          <p className="text-base  text-foreground capitalize">
             Paid at {(hospitalName ?? "Unknown facility").toLocaleLowerCase()}
           </p>
-          <p className="text-sm text-neutral-500 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {formatMoney(Number(amount), currency)} • {formatTime(createdAt)}
           </p>
         </div>
-        <ChevronRight className="w-5 h-5 text-neutral-400" />
+        <ChevronRight className="w-5 h-5 text-muted-foreground" />
       </div>
 
       {status !== "PAID" ? (
         <div className="flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-neutral-500" />
-              <p className="text-sm text-neutral-900">Loan repayment due:</p>
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <p className="text-sm text-foreground">Loan repayment due:</p>
             </div>
             {dueDate && daysRemaining > 0 && (
-              <div className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-0.5 rounded-full">
-                {daysRemaining} days
-              </div>
+              <Badge variant="warning">{daysRemaining} days</Badge>
             )}
             {dueDate && daysRemaining <= 0 && (
-              <div className="bg-red-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full">
-                Overdue
-              </div>
+              <Badge variant="destructive">Overdue</Badge>
             )}
           </div>
-          <p className="text-sm text-neutral-500 pl-6">
+          <p className="text-sm text-muted-foreground pl-6">
             {formatMoney(outStandingAmount, currency)} due by {formattedDueDate}
           </p>
         </div>
