@@ -229,40 +229,40 @@ export default function PreviewInvitePage() {
           </div>
 
           <div className="flex flex-col items-center gap-1 text-center">
-            <h2 className="text-xl font-medium text-neutral-900 tracking-tight">
+            <h2 className="text-foreground">
               Invite sent to{" "}
-              <span className="text-[#b325ff]">{inviteeName}</span>.
+              <span className="text-primary">{inviteeName}</span>.
             </h2>
-            <p className="text-sm text-neutral-600">
+            <p className="text-sm text-muted-foreground">
               You will get a notification when they accept.
             </p>
           </div>
 
           {phoneNumber && (
-            <div className="w-full border border-neutral-200 rounded-lg">
+            <div className="w-full border border-border rounded-lg">
               <div className="flex items-start gap-2 px-2.5 py-2">
-                <UserRoundPlus className="w-4 h-4 text-neutral-700 shrink-0 mt-0.5" />
+                <UserRoundPlus className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-neutral-900">
+                  <p className="text-sm text-foreground">
                     People accept faster when they hear from you directly.
                   </p>
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-sm text-muted-foreground">
                     Send {inviteeName} a quick message to say it&apos;s coming.
                   </p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0 mt-0.5" />
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
               </div>
               <div className="flex items-center px-2 py-2 pl-9 gap-1">
                 <a
                   href={`sms:${phoneNumber}`}
-                  className="px-2 h-6 flex items-center text-sm font-medium text-neutral-800 rounded hover:bg-neutral-50"
+                  className="px-2 h-6 flex items-center text-sm font-medium text-foreground rounded hover:bg-muted"
                 >
                   Send SMS
                 </a>
-                <div className="w-px h-4 bg-neutral-200" />
+                <div className="w-px h-4 bg-border" />
                 <a
                   href={`tel:${phoneNumber}`}
-                  className="flex items-center gap-1 px-2 h-6 text-sm font-medium text-[#8112b7] bg-[#f5e5ff] rounded"
+                  className="flex items-center gap-1 px-2 h-6 text-sm font-medium text-secondary-foreground bg-secondary rounded"
                 >
                   Call now
                   <Phone className="w-3.5 h-3.5" />
