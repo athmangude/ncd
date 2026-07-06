@@ -118,9 +118,7 @@ function ItemizedInvoice() {
       <p className="text-primary text-lg font-medium flex justify-between">
         <span>Total Invoice Amount</span>
         <span className="min-w-[75px]">
-          {totalInvoiceAmount
-            ? formatMoney(totalInvoiceAmount, loan?.currency?.code)
-            : undefined}
+          {formatMoney(totalInvoiceAmount, loan?.currency?.code)}
         </span>
       </p>
     </section>

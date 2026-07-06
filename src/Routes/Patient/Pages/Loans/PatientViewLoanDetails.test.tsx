@@ -4,15 +4,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router-dom"
 import { type ReactNode } from "react"
 import axios from "axios"
-import ViewLoanDetails from "./PatientViewLoanDetails"
+import ViewLoanDetails, {
+  MedicalRequestDetails,
+} from "./PatientViewLoanDetails"
 
 // ── Mocks ──────────────────────────────────────────────────────────────────
 
 vi.mock("axios")
 
+// Mutable so individual tests can hydrate the store (MedicalRequestDetails
+// reads `loan.status` off it). Defaults to null for the direct-visit path.
+let mockLoan: unknown = null
 vi.mock("../../stores/patientLoanStore", () => ({
   usePatientLoanStore: (sel: (s: { loan: unknown; setLoan: () => void }) => unknown) =>
-    sel({ loan: null, setLoan: () => {} }),
+    sel({ loan: mockLoan, setLoan: () => {} }),
 }))
 
 vi.mock("@/analytics", () => ({
@@ -38,6 +43,7 @@ beforeAll(() => {
 })
 
 afterEach(() => {
+  mockLoan = null
   vi.clearAllMocks()
 })
 
@@ -85,5 +91,43 @@ describe("ViewLoanDetails crash guards", () => {
     expect(await screen.findByText("Loan details")).toBeInTheDocument()
     // Amount renders via the "KES" fallback (formatted, may be split/repeated).
     expect((await screen.findAllByText(/5,000/)).length).toBeGreaterThan(0)
+  })
+})
+
+// MedicalRequestDetails previously always rendered a status <Tag>; with an
+// undefined status formatEnum returned "" → an empty grey pill (audit §0
+// rendered-broken). The Tag must now be omitted entirely when status is absent.
+describe("MedicalRequestDetails status pill", () => {
+  it("omits the status Tag when the loan has no status", () => {
+    mockLoan = {
+      status: undefined,
+      patientMedicalInfoRequest: {
+        patientName: "Amina",
+        facility: { name: "Aga Khan Hospital" },
+      },
+    }
+
+    render(wrap(<MedicalRequestDetails />))
+
+    // Facility name still renders…
+    const facility = screen.getByText("Aga Khan Hospital")
+    expect(facility).toBeInTheDocument()
+    // …but there is no status pill: the header row holds only the facility h1.
+    const headerRow = facility.parentElement
+    expect(headerRow?.children.length).toBe(1)
+  })
+
+  it("renders the status Tag when the loan has a status", () => {
+    mockLoan = {
+      status: "ACTIVE",
+      patientMedicalInfoRequest: {
+        patientName: "Amina",
+        facility: { name: "Aga Khan Hospital" },
+      },
+    }
+
+    render(wrap(<MedicalRequestDetails />))
+
+    expect(screen.getByText("ACTIVE")).toBeInTheDocument()
   })
 })

@@ -126,12 +126,12 @@ export default function PatientDiscountDetails() {
     >
       <div className="flex flex-col items-center gap-6 px-6 pt-10">
         <div className="flex items-end justify-center">
-          <span className="text-7xl font-extrabold tracking-tight bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent leading-none">
+          <span className="text-5xl font-bold tracking-tight bg-gradient-to-b from-primary/60 to-primary bg-clip-text text-transparent leading-none">
             {isPercentage
               ? `${valueNumber}%`
               : `${currencySymbol} ${valueNumber.toLocaleString()}`}
           </span>
-          <span className="ml-1 mb-2 text-2xl font-extrabold text-primary tracking-tight">
+          <span className="ml-1 mb-2 text-2xl font-bold text-primary tracking-tight">
             OFF
           </span>
         </div>

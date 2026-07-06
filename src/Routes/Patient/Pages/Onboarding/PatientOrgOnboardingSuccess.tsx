@@ -39,6 +39,7 @@ export function PatientOrgOnboardingSuccess() {
   }
 
   const { name, orgPlan } = query.data || {}
+  const orgName = name?.trim() || "Your organization"
 
   return (
     <PatientAuthWrapper>
@@ -50,11 +51,9 @@ export function PatientOrgOnboardingSuccess() {
           aria-hidden="true"
         />
 
-        <h1 className="text-2xl ">
-          {name} wants to make healthcare easier for you.
-        </h1>
+        <h1>{orgName} wants to make healthcare easier for you.</h1>
 
-        <p className="text-neutral-500">
+        <p className="text-muted-foreground">
           You've been added to a 0% interest plan that helps you get care now,
           and pay later.
         </p>
@@ -79,7 +78,7 @@ export function EmployerFAQ() {
     <Accordion type="multiple" className="w-full flex flex-col gap-3">
       <AccordionItem value="item-1">
         <AccordionTrigger>
-          <UsersRound className="w-5 h-5 text-neutral-500" />
+          <UsersRound className="w-5 h-5 text-muted-foreground" />
           What is a salary advance health plan?
         </AccordionTrigger>
         <AccordionContent>
@@ -91,7 +90,7 @@ export function EmployerFAQ() {
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>
-          <BadgeCheck className="w-5 h-5 text-neutral-500" />
+          <BadgeCheck className="w-5 h-5 text-muted-foreground" />
           What are the benefits?
         </AccordionTrigger>
         <AccordionContent>
@@ -112,7 +111,7 @@ export function SaccoFAQ() {
     <Accordion type="multiple" className="w-full flex flex-col gap-3">
       <AccordionItem value="item-1">
         <AccordionTrigger>
-          <UsersRound className="w-5 h-5 text-neutral-500" />
+          <UsersRound className="w-5 h-5 text-muted-foreground" />
           How does this differ from Jireh loans?
         </AccordionTrigger>
         <AccordionContent>
@@ -124,7 +123,7 @@ export function SaccoFAQ() {
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>
-          <BadgeCheck className="w-5 h-5 text-neutral-500" />
+          <BadgeCheck className="w-5 h-5 text-muted-foreground" />
           What are the benefits?
         </AccordionTrigger>
         <AccordionContent>

@@ -69,6 +69,26 @@ describe("InvoiceDetails crash guards", () => {
     expect(screen.getByText("Invoice Details")).toBeInTheDocument()
   })
 
+  it("renders a 0 total (not a blank amount) when there are no invoice items", async () => {
+    // Empty invoice items → reduce yields 0 (falsy). The old ternary rendered
+    // `undefined` here → a blank amount (audit §0 rendered-broken). It must now
+    // show a formatted "0".
+    vi.mocked(axios.get).mockResolvedValue({ data: {} })
+    mockLoan = {
+      patientMedicalInfoRequest: {
+        healthcareMedicalInfoRequest: { invoiceItems: [] },
+      },
+    }
+
+    render(wrap(<InvoiceDetails />))
+
+    const totalRow = (await screen.findByText("Total Invoice Amount")).closest(
+      "p"
+    )
+    expect(totalRow).not.toBeNull()
+    expect(totalRow).toHaveTextContent("0")
+  })
+
   it("renders a populated loan without a currency object", async () => {
     vi.mocked(axios.get).mockResolvedValue({ data: {} })
     mockLoan = {

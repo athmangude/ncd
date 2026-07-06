@@ -494,9 +494,11 @@ export function MedicalRequestDetails() {
       <div className="flex justify-between">
         <h1 className="text-ellipsis">{facility?.name || "No Facility"}</h1>
 
-        <Tag className={`${resolveStatusColor(status)}`}>
-          {formatEnum(status)}
-        </Tag>
+        {status && (
+          <Tag className={`${resolveStatusColor(status)}`}>
+            {formatEnum(status)}
+          </Tag>
+        )}
       </div>
       {patientName && (
         <p className="bg-primary/5 py-2 px-3 flex items-center justify-between mt-5 rounded-lg gap-5">
