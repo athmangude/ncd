@@ -201,36 +201,36 @@ export default function PatientKYCSetupIntro() {
                     isCompleted
                       ? "bg-white border-green-400"
                       : isLocked
-                        ? "bg-neutral-50 border-neutral-200"
-                        : "bg-white border-neutral-200"
+                        ? "bg-muted border-border"
+                        : "bg-white border-border"
                   )}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-3 min-w-0">
-                      <span className="text-sm text-neutral-400 mt-0.5 shrink-0 w-5">
+                      <span className="text-sm text-muted-foreground mt-0.5 shrink-0 w-5">
                         {step.id}
                       </span>
                       <div className="min-w-0">
                         <div
                           className={cn(
                             "text-sm font-medium",
-                            isCompleted ? "text-neutral-500" : "text-neutral-900"
+                            isCompleted ? "text-muted-foreground" : "text-foreground"
                           )}
                         >
                           {step.label}
                         </div>
                         {step.description && (!step.isPayStep || isNext) && (
-                          <div className="text-xs text-neutral-400 mt-0.5">
+                          <div className="text-xs text-muted-foreground mt-0.5">
                             {step.description}
                           </div>
                         )}
                         {isLocked && step.lockedDescription && (
                           <>
-                            <p className="text-xs text-neutral-500 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                               {step.lockedDescription}
                             </p>
                             {step.lockedPill && (
-                              <span className="inline-flex items-center gap-1.5 mt-2 bg-[#F3E8FF] text-[#7C3AED] px-3 py-1 rounded-full text-xs font-medium">
+                              <span className="inline-flex items-center gap-1.5 mt-2 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-medium">
                                 {step.lockedPill}
                               </span>
                             )}

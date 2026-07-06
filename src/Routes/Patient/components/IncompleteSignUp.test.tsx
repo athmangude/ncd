@@ -8,8 +8,9 @@ const wrap = (ui: ReactNode) => createElement(MemoryRouter, null, ui)
 
 // IncompleteSignUp self-shells via AppShell (Phase 4): the routes that render it
 // (the "/patients" incomplete state and "/complete-profile") are now passthrough
-// in PatientsHome, so the canonical shell draws the frame. These tests guard the
-// shell slots and the bespoke tint (which the footer and card must agree on).
+// in PatientsHome, so the canonical shell draws the frame. Task 8 (batch 2)
+// dropped the bespoke #FDF4FF canvas tint so the screen inherits the shell's
+// single surface instead of painting its own — these tests guard that.
 describe("IncompleteSignUp", () => {
   it("renders the sign-up steps and a Continue CTA inside the shell", () => {
     render(
@@ -23,21 +24,15 @@ describe("IncompleteSignUp", () => {
     expect(screen.getByRole("main")).toBeInTheDocument()
   })
 
-  it("tints both the footer and the card together (no boolean short-circuit)", () => {
-    // Default variant: !fromPayMedicalBill || !isCompletingProfile === true, so
-    // BOTH the footer and the card body carry #FDF4FF. The old cardClassName
-    // cn() short-circuited to a boolean, tinting only the footer (audit §0).
-    render(
+  it("paints no custom canvas tint — inherits the shell surface (both variants)", () => {
+    // Task 8: the #FDF4FF wash is gone from both the footer and the card body,
+    // in every variant, so the screen reads as one surface with the shell.
+    const { rerender } = render(
       wrap(<IncompleteSignUp onboardingRedirectLink="/patients/set-pin" />)
     )
-    const tinted = document.querySelectorAll(".bg-\\[\\#FDF4FF\\]")
-    expect(tinted.length).toBeGreaterThanOrEqual(2)
-  })
+    expect(document.querySelector(".bg-\\[\\#FDF4FF\\]")).toBeFalsy()
 
-  it("drops the tint from both slots on the completing-a-paid-bill variant", () => {
-    // Only when fromPayMedicalBill AND isCompletingProfile is the condition
-    // false → both slots fall back to bg-white, still in agreement.
-    render(
+    rerender(
       wrap(
         <IncompleteSignUp
           onboardingRedirectLink="/x"

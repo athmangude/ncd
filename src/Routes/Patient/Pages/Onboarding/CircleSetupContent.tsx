@@ -117,7 +117,7 @@ export function CircleSetupContent({
       <button
         type="button"
         onClick={onLearnMore}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-[#edf7f7] text-[#171717] text-sm"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-accent text-accent-foreground text-sm"
       >
         <Info className="w-4 h-4 text-[#525252] flex-shrink-0" />
         <span>What is a Circle?</span>

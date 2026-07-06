@@ -263,22 +263,22 @@ export default function PatientHowCirclesWork() {
         {/* The shared risk */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-neutral-900">
+            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
               The shared risk — important
             </h2>
-            <p className="text-sm leading-5 tracking-[0.014px] text-neutral-500">
+            <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               This is the part you must understand before you invite anyone.
             </p>
           </div>
-          <div className="flex gap-2 items-start rounded-md bg-[#edf7f7] px-2 py-[6px]">
+          <div className="flex gap-2 items-start rounded-md bg-accent px-2 py-[6px]">
             <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <Info className="h-4 w-4 text-neutral-900" />
+              <Info className="h-4 w-4 text-foreground" />
             </div>
             <div className="flex flex-1 flex-col gap-3 text-sm tracking-[0.014px]">
-              <p className="leading-5 text-neutral-900">
+              <p className="leading-5 text-foreground">
                 Only invite people you trust to repay.
               </p>
-              <div className="flex flex-col gap-3 text-neutral-500">
+              <div className="flex flex-col gap-3 text-muted-foreground">
                 <p className="leading-5">
                   If any member of your Circle stops repaying their loan, your
                   loan access will be paused.
