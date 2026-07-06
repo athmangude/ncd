@@ -57,7 +57,7 @@ export function PatientMembershipSuccess() {
     >
       <div className="flex flex-col items-center gap-5">
         <p className="text-2xl font-medium">
-          {formatMoney(totalCreditLimitAmount, currency)}
+          {formatMoney(totalCreditLimitAmount, currency?.code)}
         </p>
 
         <Button
