@@ -22,6 +22,13 @@ export default function PatientDashboardLoansTab() {
 
   const { canPayMedicalBill, hasActiveMembership, type } = user
 
+  // Borrowing is "frozen" (cracked-glass overlay) only when the account/circle
+  // has been frozen — e.g. a default. Not having unlocked borrowing yet is a
+  // separate, non-broken state (handled as the desaturated card).
+  const isFrozen =
+    user.patientCircle?.isFrozen === true ||
+    user.patientCircle?.frozenAt != null
+
   const [activeTab, setActiveTab] = useState<"payments" | "loans" | "cashback">(location.state?.subTab || "payments")
 
   useEffect(() => {
@@ -59,7 +66,7 @@ export default function PatientDashboardLoansTab() {
   }
 
   return (
-    <TabsContent value="home" className="flex flex-col w-full gap-5  [&::-webkit-scrollbar]:hidden pb-40">
+    <TabsContent value="home" className="flex flex-col w-full gap-5  [&::-webkit-scrollbar]:hidden pb-52">
 
       <DashboardSearch />
 
@@ -71,9 +78,10 @@ export default function PatientDashboardLoansTab() {
       />
 
       {activeTab === "payments" && (
-        <PaymentsTabContent 
+        <PaymentsTabContent
           loanStats={loanStats}
           hasActiveMembership={hasActiveMembership}
+          isFrozen={isFrozen}
           onUpgrade={handleUpgrade}
           onPayMedicalBill={handlePayMedicalBill}
           paymentRequests={paymentRequests}
@@ -84,10 +92,11 @@ export default function PatientDashboardLoansTab() {
       )}
 
       {activeTab === "loans" && (
-        <LoansTabContent 
+        <LoansTabContent
           loans={loans}
           loanStats={loanStats}
           hasActiveMembership={hasActiveMembership}
+          isFrozen={isFrozen}
           onUpgrade={handleUpgrade}
           type={type}
           isLoading={isLoading}

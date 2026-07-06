@@ -104,7 +104,25 @@ export default function PatientDiscountDetails() {
     <PatientPageWrapper
       title="Discount details"
       onBack={() => navigate(-1)}
-      className="bg-white min-h-screen pb-32"
+      footer={
+        <div className="border-t border-border bg-white p-4">
+          <div className="mx-auto flex max-w-[450px] gap-3">
+            <Button
+              onClick={share}
+              className="flex-1 bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none"
+            >
+              Share
+            </Button>
+            <Button
+              onClick={copyCode}
+              disabled={copied}
+              className="flex-[2] disabled:opacity-100"
+            >
+              {copied ? "Copied!" : "Copy discount code"}
+            </Button>
+          </div>
+        </div>
+      }
     >
       <div className="flex flex-col items-center gap-6 px-6 pt-10">
         <div className="flex items-end justify-center">
@@ -119,24 +137,24 @@ export default function PatientDiscountDetails() {
         </div>
 
         {d.description && (
-          <p className="text-center text-xl font-medium text-gray-900 leading-snug">
+          <p className="text-center text-xl font-medium text-foreground leading-snug">
             {d.description}
           </p>
         )}
 
         {d.facility?.name && (
-          <p className="text-center text-sm text-gray-500 -mt-3">
+          <p className="text-center text-sm text-muted-foreground -mt-3">
             {d.facility.name}
           </p>
         )}
 
         {showFooterBox && (
-          <div className="w-full mt-2 rounded-2xl border border-gray-200 overflow-hidden">
-            <div className="flex divide-x divide-gray-200">
+          <div className="w-full mt-2 rounded-2xl border border-border overflow-hidden">
+            <div className="flex divide-x divide-border">
               {showMax && (
                 <div className="flex-1 px-4 py-4 flex flex-col items-center gap-1">
-                  <span className="text-xs text-gray-500">Max discount</span>
-                  <span className="text-base font-semibold text-gray-900">
+                  <span className="text-xs text-muted-foreground">Max discount</span>
+                  <span className="text-base font-semibold text-foreground">
                     {currencySymbol}{" "}
                     {parseFloat(d.maximumDiscountAmount!).toLocaleString()}
                   </span>
@@ -144,8 +162,8 @@ export default function PatientDiscountDetails() {
               )}
               {showExpiry && (
                 <div className="flex-1 px-4 py-4 flex flex-col items-center gap-1">
-                  <span className="text-xs text-gray-500">Expires</span>
-                  <span className="text-base font-semibold text-gray-900">
+                  <span className="text-xs text-muted-foreground">Expires</span>
+                  <span className="text-base font-semibold text-foreground">
                     {format(new Date(d.validUntil!), "d MMM")}
                   </span>
                 </div>
@@ -153,24 +171,6 @@ export default function PatientDiscountDetails() {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 p-4 pb-8 z-50">
-        <div className="mx-auto flex max-w-[450px] gap-3">
-          <Button
-            onClick={share}
-            className="flex-1 bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none"
-          >
-            Share
-          </Button>
-          <Button
-            onClick={copyCode}
-            disabled={copied}
-            className="flex-[2] disabled:opacity-100"
-          >
-            {copied ? "Copied!" : "Copy discount code"}
-          </Button>
-        </div>
       </div>
     </PatientPageWrapper>
   )
