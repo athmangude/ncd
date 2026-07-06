@@ -279,14 +279,14 @@ function PartnerCard({
     <button
       type="button"
       onClick={onClick}
-      className="bg-[#F5F0FF] border border-purple-200 rounded-2xl p-4 flex flex-col gap-3 w-full text-left"
+      className="bg-secondary border border-purple-200 rounded-2xl p-4 flex flex-col gap-3 w-full text-left"
     >
-      <p className="text-sm text-neutral-900 truncate w-full leading-tight">
+      <p className="text-sm text-foreground truncate w-full leading-tight">
         {facility.name}
       </p>
 
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-1.5 text-sm text-neutral-700">
+        <div className="flex items-center gap-1.5 text-sm text-foreground">
           <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.75} />
           <span>{distance != null ? `${distance.toFixed(1)} km` : "—"}</span>
         </div>

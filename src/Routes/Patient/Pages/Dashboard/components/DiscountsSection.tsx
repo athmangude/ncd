@@ -108,25 +108,25 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
         {discounts.map((discount, index) => (
           <Card 
             key={discount.id} 
-            className="min-w-[300px] p-4 border-none flex items-center gap-4 rounded-2xl shadow-sm bg-[#FFF7ED] cursor-pointer hover:bg-[#ffedd5] transition-colors"
+            className="min-w-[300px] p-4 border-none flex items-center gap-4 rounded-2xl shadow-sm bg-card cursor-pointer hover:bg-muted transition-colors"
             onClick={() => handleCardClick(discount)}
           >
              <div className="w-14 h-14  flex items-center justify-center  shrink-0 overflow-hidden ">
                <img src={index % 2 === 0 ? cashIcon : cashIcon2} alt="Discount" className="w-full h-full object-contain" />
              </div>
-             <div> 
-               <p className="font-bold text-neutral-900 text-sm leading-tight mb-1">
+             <div>
+               <p className="font-bold text-foreground text-sm leading-tight mb-1">
                  {discount.code}
                </p>
-               <p className="text-sm text-neutral-500 font-medium mb-1 line-clamp-2">
+               <p className="text-sm text-muted-foreground font-medium mb-1 line-clamp-2">
                  {discount.description}
                </p>
                {discount.validUntil ? (
-                 <p className="text-xs text-neutral-400">
+                 <p className="text-xs text-muted-foreground">
                    Valid until {format(new Date(discount.validUntil), "MMM d, yyyy")}
                  </p>
                ) : (
-                 <p className="text-xs text-neutral-400">
+                 <p className="text-xs text-muted-foreground">
                    No expiry date
                  </p>
                )}

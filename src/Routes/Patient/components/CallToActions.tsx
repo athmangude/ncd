@@ -183,7 +183,7 @@ export function SetPinCTA() {
 
   return (
     <button
-      className="bg-[#cefafe] border border-blue-200 p-4 no-underline flex   gap-3 justify-between rounded-lg mb-7 text-left"
+      className="bg-brand-gradient-100 border border-purple-100 p-4 no-underline flex   gap-3 justify-between rounded-lg mb-7 text-left"
       onClick={() => {
         navigate("/patients/set-pin", {
           state: {
@@ -192,14 +192,14 @@ export function SetPinCTA() {
         })
       }}
     >
-      <ShieldCheck className="w-7 h-7 text-[#00b9db] mt-1" aria-hidden="true" />
+      <ShieldCheck className="w-7 h-7 text-primary mt-1" aria-hidden="true" />
       <div className="col-span-3">
         <p className="text-lg font-semibold">Set up Payment PIN</p>
-        <p className="font-normal text-sm text-neutral-500">
+        <p className="font-normal text-sm text-muted-foreground">
           You will use this to pay
         </p>
       </div>
-      <ChevronRight className="w-7 h-7 text-neutral-500 ml-auto mt-1" />
+      <ChevronRight className="w-7 h-7 text-muted-foreground ml-auto mt-1" />
     </button>
   )
 }

@@ -62,14 +62,14 @@ function CareFundCTA({
 
   return (
     <button
-      className="bg-[#F3E8FF] hover:bg-[#E9D5FF] rounded-2xl flex flex-col items-start justify-between p-4  transition-colors w-full"
+      className="bg-secondary hover:bg-secondary/80 rounded-2xl flex flex-col items-start justify-between p-4  transition-colors w-full"
       onClick={() => navigate(link)}
     >
       <div className="">
         {icon}
       </div>
 
-      <span className=" text-neutral-900">{title}</span>
+      <span className=" text-foreground">{title}</span>
     </button>
   )
 }
