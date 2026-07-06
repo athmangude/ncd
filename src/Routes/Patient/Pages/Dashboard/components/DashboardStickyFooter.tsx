@@ -20,7 +20,7 @@ export function DashboardStickyFooter({
 
   if (hasActiveMembership) {
     return (
-      <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-white border-t border-border z-10 max-w-md mx-auto">
+      <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-card border-t border-border z-10 max-w-md mx-auto">
         <Button 
           size="lg" 
           className="w-full"
@@ -35,7 +35,7 @@ export function DashboardStickyFooter({
 
   if (activeTab === "cashback" && !hasActiveMembership) {
     return (
-      <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-white border-t border-border z-10 max-w-md mx-auto">
+      <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-card border-t border-border z-10 max-w-md mx-auto">
         <div className="max-w-md mx-auto w-full flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <div className="bg-purple-100 p-2 rounded-full">

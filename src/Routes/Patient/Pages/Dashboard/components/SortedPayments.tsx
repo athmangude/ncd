@@ -34,7 +34,7 @@ export function SortedPayments({ sortedPayments, isLoading }: SortedPaymentsProp
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-4 flex flex-col gap-3 bg-white border border-neutral-100 rounded-xl shadow-sm"
+              className="p-4 flex flex-col gap-3 bg-card border border-border rounded-xl shadow-sm"
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1 mr-2 space-y-2">

@@ -167,11 +167,11 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
                 <div className="py-4 flex flex-col gap-6">
                   {/* Header Section */}
                   <div className="flex flex-col items-center justify-center text-center gap-2 p-6 bg-orange-50 rounded-2xl border border-orange-100">
-                    <div className="w-16 h-16 rounded-full bg-white p-3 shadow-sm mb-2">
+                    <div className="w-16 h-16 rounded-full bg-card p-3 shadow-sm mb-2">
                       <img src={cashIcon} alt="Discount" className="w-full h-full object-contain" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-2xl font-bold text-neutral-900 tracking-tight">
+                      <h3 className="text-foreground">
                         {selectedDiscount.code}
                       </h3>
                       <Button

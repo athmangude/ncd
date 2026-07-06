@@ -179,23 +179,23 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
 
   return (
     <>
-      <div 
-        className="p-4 flex flex-col gap-3 bg-white hover:bg-neutral-50 transition-colors cursor-pointer border rounded-xl h-full shadow-sm"
+      <div
+        className="p-4 flex flex-col gap-3 bg-card hover:bg-muted transition-colors cursor-pointer border rounded-xl h-full shadow-sm"
         onClick={handleClick}
       >
         <div className="flex justify-between items-start">
           <div className="flex-1 mr-2">
-            <p className="text-base text-neutral-900 line-clamp-1 capitalize font-medium">
+            <p className="text-base text-foreground line-clamp-1 capitalize font-medium">
               {careProviderName}
             </p>
-            <p className="text-sm text-neutral-500 mt-0.5">
+            <p className="text-sm text-muted-foreground mt-0.5">
               {formatMoney(Number(billAmount), "KES")} • {formatDateTime(createdAt)}
             </p>
           </div>
           <div className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
             status === 'APPROVED' ? 'bg-green-100 text-green-700' :
             status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
-            'bg-neutral-100 text-neutral-700'
+            'bg-muted text-muted-foreground'
           }`}>
             {status}
           </div>

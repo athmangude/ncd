@@ -78,43 +78,43 @@ export function LoansTabContent({
         </Button>
       )}
       {!hasActiveMembership && (
-        <div className="bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm">
-          <h3 className="font-bold text-lg text-neutral-900 mb-4">
+        <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
+          <h3 className="text-foreground mb-4">
             Unlock full financial limits
           </h3>
 
           <div className="flex flex-col gap-4">
             <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-neutral-400 mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   Unlock Higher Loan Limits
                 </p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Access to loans and financial utility.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-neutral-400 mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   Pay hospital bills instantly
                 </p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Settle medical bills directly.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-neutral-400 mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   Flexible, interest-free terms
                 </p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Repay comfortably with 0% interest.
                 </p>
               </div>
