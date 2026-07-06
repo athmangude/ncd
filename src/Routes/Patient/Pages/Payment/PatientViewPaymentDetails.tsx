@@ -284,36 +284,36 @@ export default function PatientViewPaymentDetails() {
       title="Payment details"
       onBack={handleBack}
       bodyPadding="none"
-      className="bg-neutral-50 min-h-screen"
+      className="bg-muted min-h-screen"
     >
       <div className="px-5 pb-10">
         {/* Header Section */}
         <div className="flex flex-col items-center mt-6 mb-8 text-center">
-          <p className="text-neutral-500 text-sm mb-1">{formattedDate}</p>
-          <h1 className="text-2xl font-semibold text-neutral-900 leading-tight">
+          <p className="text-muted-foreground text-sm mb-1">{formattedDate}</p>
+          <h1 className="text-foreground leading-tight">
             Bill paid at <br /> {providerName}
           </h1>
         </div>
 
         {/* Details Card */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-neutral-100 mb-6">
+        <div className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6">
           <DetailRow
-            icon={<User className="w-5 h-5 text-neutral-500" />}
+            icon={<User className="w-5 h-5 text-muted-foreground" />}
             label="Patient name"
             value={patientName}
           />
           <DetailRow
-            icon={<Building2 className="w-5 h-5 text-neutral-500" />}
+            icon={<Building2 className="w-5 h-5 text-muted-foreground" />}
             label="Healthcare provider"
             value={providerName}
           />
           <DetailRow
-            icon={<Banknote className="w-5 h-5 text-neutral-500" />}
+            icon={<Banknote className="w-5 h-5 text-muted-foreground" />}
             label="Total bill"
             value={
               discountAmount > 0 ? (
                 <div className="flex items-center gap-2 justify-end">
-                  <span className="line-through text-neutral-400 text-xs">
+                  <span className="line-through text-muted-foreground text-xs">
                     {formatMoney(totalBillAmount, currencyCode)}
                   </span>
                   <span>{formatMoney(finalAmount, currencyCode)}</span>
@@ -358,11 +358,11 @@ export default function PatientViewPaymentDetails() {
 
         {/* Loan Section */}
         {loan && isUnpaid && (
-          <div className="bg-white border-2 border-dashed border-purple-200 rounded-lg p-5 mb-8 relative">
+          <div className="bg-card border-2 border-dashed border-purple-200 rounded-lg p-5 mb-8 relative">
             {/* Loan Header */}
             <div className="flex items-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-neutral-500" />
-              <p className="text-neutral-900 ">
+              <Clock className="w-5 h-5 text-muted-foreground" />
+              <p className="text-foreground ">
                 Your loan is due on{" "}
                 <span className="font-medium">
                   {loanDueDate ? format(loanDueDate, "dd MMM") : "N/A"}
@@ -555,15 +555,15 @@ function TimelineItem({
 }) {
   return (
     <div className="relative pl-6">
-      <div className="absolute -left-[25px] bg-white border border-neutral-100 p-1.5 rounded-full shadow-sm z-10">
+      <div className="absolute -left-[25px] bg-card border border-border p-1.5 rounded-full shadow-sm z-10">
         {icon}
       </div>
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-neutral-900 font-medium text-sm capitalize">
+          <p className="text-foreground font-medium text-sm capitalize">
             {(title ?? "").toLocaleLowerCase()}
           </p>
-          <p className="text-neutral-500 text-sm mt-0.5">{amount}</p>
+          <p className="text-muted-foreground text-sm mt-0.5">{amount}</p>
 
           {/* Sub Events (Splits) */}
           {subEvents && subEvents.length > 0 && (
@@ -607,16 +607,16 @@ function ReviewPromptCard({
   onLeaveReview: () => void
 }) {
   return (
-    <div className="bg-white rounded-2xl p-4 shadow-sm border border-neutral-100 mb-6">
+    <div className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6">
       <div className="flex items-start gap-3 mb-4">
-        <div className="mt-0.5 bg-purple-50 p-2 rounded-full">
+        <div className="mt-0.5 bg-secondary p-2 rounded-full">
           <Star className="w-5 h-5 text-purple-600" />
         </div>
         <div className="flex-1">
-          <p className="text-neutral-900 font-semibold text-base leading-snug">
+          <p className="text-foreground font-semibold text-base leading-snug">
             How was your visit at {providerName}?
           </p>
-          <p className="text-neutral-500 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             Share your experience to help other patients.
           </p>
         </div>

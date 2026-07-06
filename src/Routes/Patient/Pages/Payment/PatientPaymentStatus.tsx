@@ -226,11 +226,11 @@ function PaymentStatusContent({ data, reference }: { data: PaymentStatusResponse
         <div>
             {data.paymentSplits.map((split) =>
               (split.wallet?.type === "LOAN" && !data.patientMedicalInfoRequest?.facility?.isOutOfNetwork  ? (
-                <div className="w-full bg-[#FAF5FF] border border-[#A855F7] rounded-xl p-4 flex items-center gap-3 text-left mt-2">
+                <div className="w-full bg-secondary border border-primary rounded-xl p-4 flex items-center gap-3 text-left mt-2">
                 <div className="flex-shrink-0 relative">
                     <img src={successIcon} alt="Reward" className="w-12 h-12 object-contain" />
                 </div>
-                <p className="font-medium text-sm text-neutral-900">
+                <p className="font-medium text-sm text-foreground">
                     Earn {formatMoney(Number(split.paymentSplitAmount) * 0.05,  "KES")} when you repay loan before the due date!
                 </p>
             </div>

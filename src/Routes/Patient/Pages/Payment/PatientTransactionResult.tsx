@@ -155,7 +155,7 @@ function TransactionResultScreen({ query }: { query: any }) {
           if (calculatedPotentialAmount <= 0) return null
 
           return (
-            <div className="w-full bg-[#FAF5FF] border border-[#A855F7] rounded-xl p-4 flex items-center gap-3 text-left mt-2">
+            <div className="w-full bg-secondary border border-primary rounded-xl p-4 flex items-center gap-3 text-left mt-2">
               <div className="flex-shrink-0 relative">
                 <img
                   src={successIcon}
