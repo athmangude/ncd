@@ -141,9 +141,9 @@ export default function PatientPinPrompt({
           e.preventDefault()
           setTimeout(() => pinInputRef.current?.focus(), 0)
         }}
-        className="flex w-[min(100%,calc(100vw-1rem))] max-w-md flex-col gap-0 overflow-hidden bg-gradient-to-b from-[#f6e4ff] to-white p-0 max-h-[min(90dvh,calc(100dvh-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px)-1rem))] sm:rounded-lg"
+        className="flex w-[min(100%,calc(100vw-1rem))] max-w-md flex-col gap-0 overflow-hidden bg-card p-0 max-h-[min(90dvh,calc(100dvh-var(--safe-t)-var(--safe-b)-1rem))] sm:rounded-lg"
       >
-        <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col pl-[max(1rem,env(safe-area-inset-left,0px))] pr-[max(1rem,env(safe-area-inset-right,0px))]">
+        <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col pl-[max(1rem,var(--safe-l))] pr-[max(1rem,var(--safe-r))]">
           <div className="no-scrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain py-3 sm:gap-3 sm:py-5">
             <img
               src={pinProtectIcon}
