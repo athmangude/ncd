@@ -120,10 +120,11 @@ export default function FastTrackPaymentStatus() {
         )}
 
         <Button
+          variant="secondary"
           onClick={() =>
             navigate(`/patients/payments/payment-details/${transactionId}`)
           }
-          className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200 hover:text-purple-800 mt-4"
+          className="w-full mt-4"
           size="lg"
         >
           <Receipt className="w-4 h-4 m-1" />

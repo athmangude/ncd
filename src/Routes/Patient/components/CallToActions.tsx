@@ -14,6 +14,14 @@ import kycSetup from "@/assets/icons/kyc-setup.png"
 import { ChevronRight, ShieldCheck, QrCode } from "lucide-react"
 import { UserType } from "../constants/userTypes"
 import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
+import {
   PWA_START_URL,
   usePWAOnboardingStatus,
   PWA_STEP_CONFIG,
@@ -204,25 +212,32 @@ export function SetPinCTA() {
   const navigate = useNavigate()
 
   return (
-    <button
-      className="bg-brand-gradient-100 border border-purple-100 p-4 no-underline flex   gap-3 justify-between rounded-lg mb-7 text-left"
-      onClick={() => {
-        navigate("/patients/set-pin", {
-          state: {
-            redirectUrl: "/patients/",
-          },
-        })
-      }}
+    <Item
+      asChild
+      className="bg-brand-gradient-100 border-purple-100 mb-7 text-left"
     >
-      <ShieldCheck className="w-7 h-7 text-primary mt-1" aria-hidden="true" />
-      <div className="col-span-3">
-        <p className="text-lg font-semibold">Set up Payment PIN</p>
-        <p className="font-normal text-sm text-muted-foreground">
-          You will use this to pay
-        </p>
-      </div>
-      <ChevronRight className="w-7 h-7 text-muted-foreground ml-auto mt-1" />
-    </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate("/patients/set-pin", {
+            state: {
+              redirectUrl: "/patients/",
+            },
+          })
+        }}
+      >
+        <ItemMedia>
+          <ShieldCheck className="w-7 h-7 text-primary" aria-hidden="true" />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="text-lg">Set up Payment PIN</ItemTitle>
+          <ItemDescription>You will use this to pay</ItemDescription>
+        </ItemContent>
+        <ItemActions>
+          <ChevronRight className="w-7 h-7 text-muted-foreground" />
+        </ItemActions>
+      </button>
+    </Item>
   )
 }
 
@@ -370,24 +385,29 @@ export function ScanQRCTA() {
   const navigate = useNavigate()
 
   return (
-    <button
-      className="bg-purple-50 border border-purple-100 p-4 no-underline flex gap-3 justify-between rounded-lg mb-5 text-left w-full hover:bg-purple-100 transition-colors"
-      onClick={() => {
-        navigate("/patients/scan-qr-intro")
-      }}
+    <Item
+      asChild
+      className="bg-purple-50 border-purple-100 mb-5 text-left hover:bg-purple-100"
     >
-      <div className="bg-purple-100 p-2 rounded-full h-fit shrink-0">
-        <QrCode className="w-6 h-6 text-purple-600" aria-hidden="true" />
-      </div>
-      <div className="flex-1">
-        <p className="text-base font-semibold text-foreground">
-          Scan to Join Circle
-        </p>
-        <p className="font-normal text-sm text-muted-foreground">
-          Show your QR code to invite friends
-        </p>
-      </div>
-      <ChevronRight className="w-5 h-5 text-muted-foreground ml-auto mt-2" />
-    </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate("/patients/scan-qr-intro")
+        }}
+      >
+        <ItemMedia className="bg-purple-100 p-2 rounded-full h-fit">
+          <QrCode className="w-6 h-6 text-purple-600" aria-hidden="true" />
+        </ItemMedia>
+        <ItemContent>
+          <ItemTitle className="text-base text-foreground">
+            Scan to Join Circle
+          </ItemTitle>
+          <ItemDescription>Show your QR code to invite friends</ItemDescription>
+        </ItemContent>
+        <ItemActions>
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
+        </ItemActions>
+      </button>
+    </Item>
   )
 }

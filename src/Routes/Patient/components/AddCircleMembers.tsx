@@ -14,6 +14,7 @@ import {
 } from "@/components/Drawer"
 import DeletableItem from "./DeletableItem"
 import { Button } from "@/components/Button"
+import { Chip } from "@/components/Chip"
 import { SectionTitle } from "@/components/SectionTitle"
 import { usePatientAuthStore } from "../stores/patientAuthStore"
 import { Plus } from "lucide-react"
@@ -254,12 +255,12 @@ export function AddToCircleDrawer({
               />
             )}
 
-            <Button className="flex gap-1 w-full" type="submit">
+            <Button className="w-full" type="submit">
               Save
             </Button>
 
             <Button
-              className="flex gap-1 w-full"
+              className="w-full"
               type="button"
               onClick={() => {
                 setOpen(false)
@@ -278,13 +279,9 @@ export function AddToCircleDrawer({
 }
 function AddButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button
-      className="bg-primary/10 rounded-full px-4 py-1"
-      onClick={onClick}
-      type="button"
-    >
+    <Chip onClick={onClick}>
       {label}
-      <Plus className="inline ml-1 w-4 h-4" />
-    </button>
+      <Plus className="w-4 h-4" />
+    </Chip>
   )
 }

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { Alert, AlertDescription } from "@/components/Alert"
+import { Button } from "@/components/Button"
 import { InfoIcon, XIcon } from "lucide-react"
 
 // Loan-role access is enforced once at the route level (MemberLoanRouteGuard in
@@ -72,12 +73,15 @@ function InstructionsSection() {
             <AlertDescription className="text-blue-800 pr-8">
               {alertMessage}
             </AlertDescription>
-            <button
+            <Button
+              variant="ghost"
+              size="icon-sm"
               onClick={dismissAlert}
-              className="absolute right-2 top-2 text-blue-600 hover:text-blue-800 transition-colors"
+              className="absolute right-2 top-2"
+              aria-label="Dismiss"
             >
               <XIcon className="h-4 w-4" />
-            </button>
+            </Button>
           </Alert>
         </div>
       )}
@@ -94,18 +98,12 @@ function InstructionsSection() {
           </li>
         </ul>
         <div className="flex flex-col gap-3">
-          <button
-            onClick={openSMSApp}
-            className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
+          <Button onClick={openSMSApp} className="w-full">
             Open your SMS app
-          </button>
-          <button
-            onClick={openEmailApp}
-            className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-          >
+          </Button>
+          <Button onClick={openEmailApp} className="w-full">
             Open your email app
-          </button>
+          </Button>
         </div>
       </div>
     </>

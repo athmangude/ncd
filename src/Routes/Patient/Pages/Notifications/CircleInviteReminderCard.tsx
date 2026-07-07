@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { UserRoundPlus, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { Chip } from "@/components/Chip"
 
 export type CircleInviteSubType =
   | "CIRCLE_INVITE_4H_OWNER"
@@ -81,32 +82,20 @@ export function CircleInviteReminderCard({
       >
         {is4h ? (
           <>
-            <button
-              type="button"
-              className="h-[24px] px-[8px] bg-transparent text-sm font-medium text-foreground rounded"
-              onClick={handleNavigate}
-            >
+            <Chip variant="ghost" onClick={handleNavigate}>
               View details
-            </button>
+            </Chip>
             <div className="w-px h-[16px] bg-border" />
-            <button
-              type="button"
-              className="flex items-center gap-[6px] h-[24px] px-[8px] rounded-[4px] text-sm font-medium text-secondary-foreground bg-secondary"
-              onClick={handleNavigate}
-            >
+            <Chip onClick={handleNavigate}>
               Resend invite
               <ArrowRight size={12} />
-            </button>
+            </Chip>
           </>
         ) : (
-          <button
-            type="button"
-            className="flex items-center gap-[6px] h-[24px] px-[8px] rounded-[4px] text-sm font-medium text-secondary-foreground bg-secondary"
-            onClick={handleNavigate}
-          >
+          <Chip onClick={handleNavigate}>
             Invite another person
             <ArrowRight size={12} />
-          </button>
+          </Chip>
         )}
       </div>
     </div>

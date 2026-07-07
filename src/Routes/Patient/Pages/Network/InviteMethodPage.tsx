@@ -1,6 +1,15 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
 import { ChevronRight, Plus } from "lucide-react"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
+import { Badge } from "@/components/Badge"
 import textMessageIllustration from "@/assets/icons/invite-text-message.png"
 import voiceNoteIllustration from "@/assets/icons/invite-voice-note.png"
 import qrIllustration from "@/assets/icons/invite-qr-code.png"
@@ -64,84 +73,74 @@ export default function InviteMethodPage() {
       {/* Method cards */}
       <div className="flex flex-col gap-2">
         {/* Text message */}
-        <button
-          type="button"
-          onClick={handleSMS}
-          className="w-full bg-muted rounded-lg px-4 py-[10px] flex items-center gap-4 text-left hover:bg-secondary transition-colors"
-        >
-          <img
-            src={textMessageIllustration}
-            alt=""
-            className="object-contain flex-shrink-0"
-            style={{ width: 96, height: 84 }}
-          />
-          <div className="flex flex-col justify-between flex-1 self-stretch min-w-0">
-            <div>
-              <p className="text-sm font-medium text-foreground">
-                Text message
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Works on any phone
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 bg-secondary px-2 h-6 rounded self-start">
-              <span className="text-sm font-medium text-secondary-foreground">
+        <Item asChild variant="muted">
+          <button type="button" onClick={handleSMS}>
+            <ItemMedia>
+              <img
+                src={textMessageIllustration}
+                alt=""
+                className="object-contain flex-shrink-0"
+                style={{ width: 96, height: 84 }}
+              />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Text message</ItemTitle>
+              <ItemDescription>Works on any phone</ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <Badge variant="secondary">
                 Send SMS
-              </span>
-              <ChevronRight className="w-4 h-4 text-secondary-foreground" />
-            </div>
-          </div>
-        </button>
+                <ChevronRight className="w-4 h-4" />
+              </Badge>
+            </ItemActions>
+          </button>
+        </Item>
 
         {/* Voice note */}
-        <button
-          type="button"
-          onClick={handleVoice}
-          className="w-full bg-muted rounded-lg px-4 py-[10px] flex items-center gap-[10px] text-left hover:bg-secondary transition-colors"
-        >
-          <div className="flex flex-col justify-between flex-1 self-stretch min-w-0">
-            <div>
-              <p className="text-sm font-medium text-foreground">Voice note</p>
-              <p className="text-sm text-muted-foreground">
+        <Item asChild variant="muted">
+          <button type="button" onClick={handleVoice}>
+            <ItemMedia>
+              <img
+                src={voiceNoteIllustration}
+                alt=""
+                className="flex-shrink-0 object-contain"
+                style={{ width: 84, height: 84 }}
+              />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Voice note</ItemTitle>
+              <ItemDescription>
                 Good if they&apos;re not on data bundles
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5 bg-secondary px-2 h-6 rounded self-start">
-              <span className="text-sm font-medium text-secondary-foreground">
+              </ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <Badge variant="secondary">
                 Record
-              </span>
-              <ChevronRight className="w-4 h-4 text-secondary-foreground" />
-            </div>
-          </div>
-          <img
-            src={voiceNoteIllustration}
-            alt=""
-            className="flex-shrink-0 object-contain"
-            style={{ width: 84, height: 84 }}
-          />
-        </button>
+                <ChevronRight className="w-4 h-4" />
+              </Badge>
+            </ItemActions>
+          </button>
+        </Item>
 
         {/* QR code */}
-        <button
-          type="button"
-          onClick={handleQR}
-          className="w-full bg-muted rounded-lg px-[10px] py-2 flex items-center gap-3 text-left hover:bg-secondary transition-colors"
-        >
-          <img
-            src={qrIllustration}
-            alt=""
-            className="object-contain flex-shrink-0"
-            style={{ width: 124, height: 84 }}
-          />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">
-              Show your QR code
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Let them scan your screen to join instantly
-            </p>
-          </div>
-        </button>
+        <Item asChild variant="muted">
+          <button type="button" onClick={handleQR}>
+            <ItemMedia>
+              <img
+                src={qrIllustration}
+                alt=""
+                className="object-contain flex-shrink-0"
+                style={{ width: 124, height: 84 }}
+              />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>Show your QR code</ItemTitle>
+              <ItemDescription>
+                Let them scan your screen to join instantly
+              </ItemDescription>
+            </ItemContent>
+          </button>
+        </Item>
       </div>
     </MobileWrapper>
   )

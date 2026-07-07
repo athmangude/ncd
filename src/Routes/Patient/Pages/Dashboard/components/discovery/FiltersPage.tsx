@@ -95,20 +95,17 @@ export default function FiltersPage() {
 
   const footer = (
     <div className="bg-white border-t border-border p-4 flex items-center gap-3">
-      <button
+      <Button
         type="button"
+        variant="outline"
         onClick={onCancel}
-        className="flex-1 h-11 rounded-md border border-border text-sm font-medium text-foreground"
+        className="flex-1"
       >
         Cancel
-      </button>
-      <button
-        type="button"
-        onClick={onApply}
-        className="flex-1 h-11 rounded-md bg-primary text-white text-sm font-medium"
-      >
+      </Button>
+      <Button type="button" onClick={onApply} className="flex-1">
         Apply filters
-      </button>
+      </Button>
     </div>
   )
 

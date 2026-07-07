@@ -229,7 +229,7 @@ export default function FacilityReviewFormPage() {
       <Button
         type="submit"
         form="facility-review-form"
-        className="w-full h-12 rounded-xl text-sm sm:text-base"
+        className="w-full"
         disabled={!canSubmit}
       >
         {submit.isPending ? "Submitting…" : "Add a review"}

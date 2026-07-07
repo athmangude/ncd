@@ -90,7 +90,7 @@ export function FacilityCard({ facility, onClick }: FacilityCardProps) {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800"
+          className="flex-1"
           onClick={(e) => {
             e.stopPropagation()
             if (facility.latitude && facility.longitude) {
@@ -107,7 +107,7 @@ export function FacilityCard({ facility, onClick }: FacilityCardProps) {
         <Button
           variant="outline"
           size="sm"
-          className="h-8 flex-1 border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800"
+          className="flex-1"
           onClick={(e) => {
             e.stopPropagation()
             if (facility.phoneNumber) {

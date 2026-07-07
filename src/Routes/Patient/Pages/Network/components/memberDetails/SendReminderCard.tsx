@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react"
+import { Chip } from "@/components/Chip"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
 import { useSendInviteReminder } from "../../hooks/useSendInviteReminder"
@@ -42,15 +43,14 @@ export function SendReminderCard({ inviteId }: SendReminderCardProps) {
             Create or edit your SMS
           </p>
         </div>
-        <button
-          type="button"
+        <Chip
           onClick={onSend}
           disabled={reminder.isPending || offline}
-          className="inline-flex items-center gap-1 self-start rounded-sm bg-purple-100 px-2 py-1 text-sm font-medium text-purple-800 disabled:opacity-50"
+          className="self-start"
         >
           Send SMS
           <ChevronRight className="h-4 w-4" />
-        </button>
+        </Chip>
       </div>
       <img
         src={sendReminderIllustration}

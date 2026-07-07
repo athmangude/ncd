@@ -74,8 +74,8 @@ export default function PendingStatusView({
 
         <div className="w-full max-w-sm">
           <Button
-            variant="outline"
-            className="w-full text-red-500 border-red-50 hover:bg-red-50 hover:text-red-700 bg-red-50"
+            variant="destructive"
+            className="w-full"
             onClick={onCancelClick}
             isLoading={isCancelling}
           >

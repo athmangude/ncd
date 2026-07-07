@@ -217,16 +217,14 @@ export default function FacilityDetailsPage() {
       {activeTab === "about" && (
         <>
           <Button
-            className="flex-1 min-w-0 h-12 rounded-xl border-0 bg-purple-100 text-primary hover:bg-purple-200 shadow-none text-sm sm:text-base"
+            variant="secondary"
+            className="flex-1 min-w-0"
             onClick={handleDirections}
             disabled={!destination}
           >
             Get directions
           </Button>
-          <Button
-            className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
-            onClick={handlePayHere}
-          >
+          <Button className="flex-1 min-w-0" onClick={handlePayHere}>
             Pay here
           </Button>
         </>
@@ -237,7 +235,7 @@ export default function FacilityDetailsPage() {
             <ReviewGateHelperText reason={eligibility.reason} />
           )}
           <Button
-            className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
+            className="flex-1 min-w-0"
             onClick={handleAddReview}
             disabled={eligibilityLoading || !eligibility?.canReview}
           >
@@ -246,10 +244,7 @@ export default function FacilityDetailsPage() {
         </div>
       )}
       {activeTab === "activity" && (
-        <Button
-          className="flex-1 min-w-0 h-12 rounded-xl text-sm sm:text-base"
-          onClick={handlePayHere}
-        >
+        <Button className="flex-1 min-w-0" onClick={handlePayHere}>
           Pay here
         </Button>
       )}

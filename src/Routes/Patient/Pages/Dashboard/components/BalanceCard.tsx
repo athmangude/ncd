@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Amount } from "@/components/Amount"
+import { Button } from "@/components/Button"
 import logoIcon from "@/assets/icons/logo-layered.png"
 import frozenLock from "@/assets/icons/frozen-card-lock.svg"
 import cardBackground from "@/assets/images/card-background.png"
@@ -213,9 +214,11 @@ export function BalanceCard({
                 KES ****
               </span>
             )}
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleBalance}
-              className="text-white hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
+              aria-label={showBalance ? "Hide balance" : "Show balance"}
             >
               {showBalance ? (
                 <EyeOff
@@ -232,7 +235,7 @@ export function BalanceCard({
                   }}
                 />
               )}
-            </button>
+            </Button>
           </div>
           <p className="text-white text-[length:var(--fluid-label-text)] mt-[var(--fluid-card-gap)]">
             Outstanding Loan :{" "}

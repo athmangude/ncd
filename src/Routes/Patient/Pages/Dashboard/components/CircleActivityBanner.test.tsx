@@ -13,7 +13,7 @@ const wrap = (ui: ReactNode) =>
         defaultOptions: { queries: { retry: false } },
       }),
     },
-    createElement(MemoryRouter, null, ui),
+    createElement(MemoryRouter, null, ui)
   )
 
 const member = {
@@ -26,19 +26,22 @@ const member = {
 describe("CircleActivityBanner", () => {
   afterEach(() => vi.unstubAllGlobals())
 
-  it("renders the SET_UP_CIRCLE empty-state banner centred with purple text", () => {
+  it("renders the SET_UP_CIRCLE empty-state banner as a secondary Button", () => {
     render(wrap(<CircleActivityBanner banner={{ variant: "SET_UP_CIRCLE" }} />))
     const button = screen.getByTestId("set-up-circle-banner")
     expect(button).toBeInTheDocument()
-    expect(button).toHaveClass("bg-purple-50")
-    expect(button).toHaveClass("rounded-xl")
-    expect(button).toHaveClass("justify-center")
-    expect(button).toHaveClass("text-purple-700")
+    // migrated to <Button variant="secondary"> — no per-call purple palette
+    expect(button).toHaveClass("bg-secondary")
+    expect(button.className).not.toMatch(/bg-purple-\d/)
     expect(screen.getByText("Set up your Circle")).toBeInTheDocument()
   })
 
   it("renders 'joined your Circle' copy with green tint", () => {
-    render(wrap(<CircleActivityBanner banner={{ variant: "MEMBER_JOINED", member }} />))
+    render(
+      wrap(
+        <CircleActivityBanner banner={{ variant: "MEMBER_JOINED", member }} />
+      )
+    )
     expect(screen.getByText(/Brian joined your Circle/i)).toBeInTheDocument()
     const banner = screen.getByTestId("joined-banner")
     expect(banner).toHaveClass("bg-green-50")
@@ -50,9 +53,14 @@ describe("CircleActivityBanner", () => {
     render(
       wrap(
         <CircleActivityBanner
-          banner={{ variant: "MEMBER_LEFT", member, stillQualifies: false, eventId: "evt-1" }}
-        />,
-      ),
+          banner={{
+            variant: "MEMBER_LEFT",
+            member,
+            stillQualifies: false,
+            eventId: "evt-1",
+          }}
+        />
+      )
     )
     expect(screen.getByText(/Brian has left your Circle/i)).toBeInTheDocument()
     const banner = screen.getByTestId("left-banner")
@@ -64,22 +72,26 @@ describe("CircleActivityBanner", () => {
   it("renders the pending-invites pill with pluralised copy", () => {
     render(
       wrap(
-        <CircleActivityBanner banner={{ variant: "PENDING_INVITES", count: 2 }} />,
-      ),
+        <CircleActivityBanner
+          banner={{ variant: "PENDING_INVITES", count: 2 }}
+        />
+      )
     )
     expect(
-      screen.getByRole("button", { name: /Send reminders to 2 people/i }),
+      screen.getByRole("button", { name: /Send reminders to 2 people/i })
     ).toBeInTheDocument()
   })
 
   it("singularises to 1 person", () => {
     render(
       wrap(
-        <CircleActivityBanner banner={{ variant: "PENDING_INVITES", count: 1 }} />,
-      ),
+        <CircleActivityBanner
+          banner={{ variant: "PENDING_INVITES", count: 1 }}
+        />
+      )
     )
     expect(
-      screen.getByRole("button", { name: /Send reminders to 1 person/i }),
+      screen.getByRole("button", { name: /Send reminders to 1 person/i })
     ).toBeInTheDocument()
   })
 
@@ -91,13 +103,17 @@ describe("CircleActivityBanner", () => {
     vi.stubGlobal("fetch", fetchMock)
     render(
       wrap(
-        <CircleActivityBanner banner={{ variant: "PENDING_INVITES", count: 2 }} />,
-      ),
+        <CircleActivityBanner
+          banner={{ variant: "PENDING_INVITES", count: 2 }}
+        />
+      )
     )
     fireEvent.click(
-      screen.getByRole("button", { name: /Send reminders to 2 people/i }),
+      screen.getByRole("button", { name: /Send reminders to 2 people/i })
     )
     await waitFor(() => expect(fetchMock).toHaveBeenCalled())
-    expect(fetchMock.mock.calls[0][0]).toContain("/patient-network/invites/send-reminders")
+    expect(fetchMock.mock.calls[0][0]).toContain(
+      "/patient-network/invites/send-reminders"
+    )
   })
 })

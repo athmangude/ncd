@@ -323,14 +323,15 @@ export default function PatientViewPaymentDetails() {
               )
             }
             action={
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={() =>
                   navigate(`/patients/payments/how-you-paid/${id}`)
                 }
-                className="flex items-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-700 text-xs font-medium px-3 py-1.5 rounded-full transition-colors"
               >
                 How you paid <ChevronRight className="w-3 h-3" />
-              </button>
+              </Button>
             }
             isLast
           />
@@ -480,7 +481,8 @@ export default function PatientViewPaymentDetails() {
         </div>
         {/* Generate PDF Receipt */}
         <Button
-          className="w-full py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors mt-1"
+          variant="secondary"
+          className="w-full mt-1"
           disabled={receiptStatus === "loading"}
           isLoading={receiptStatus === "loading"}
           onClick={downloadReceipt}
@@ -616,10 +618,7 @@ function ReviewPromptCard({
           </p>
         </div>
       </div>
-      <Button
-        className="w-full py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors"
-        onClick={onLeaveReview}
-      >
+      <Button variant="secondary" className="w-full" onClick={onLeaveReview}>
         Leave a review
       </Button>
     </div>

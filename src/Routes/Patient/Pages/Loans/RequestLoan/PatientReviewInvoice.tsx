@@ -70,13 +70,14 @@ const ReviewItem = ({
         {isValid && subValue && <span className="ml-1">({subValue})</span>}
       </p>
     </div>
-    <button
+    <Button
+      variant="ghost"
+      size="icon-sm"
       onClick={onEdit}
-      className="p-2 text-muted-foreground hover:text-foreground transition-colors"
       aria-label={`Edit ${label}`}
     >
       <Pencil className="w-4 h-4" />
-    </button>
+    </Button>
   </div>
 )
 

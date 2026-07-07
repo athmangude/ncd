@@ -248,28 +248,30 @@ export default function InviteVoicePage() {
         {/* Controls */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
           {recordingState === "idle" && (
-            <button
+            <Button
               type="button"
-              className="w-16 h-16 rounded-full bg-purple-500 hover:bg-purple-600 flex items-center justify-center shadow-lg transition-colors"
+              size="icon-lg"
               onClick={startRecording}
               disabled={micRequesting}
               aria-label="Start recording"
             >
-              <Mic className="w-7 h-7 text-white" />
-            </button>
+              <Mic className="w-7 h-7" />
+            </Button>
           )}
 
           {recordingState === "recording" && (
             <div className="w-full max-w-md flex flex-col items-center gap-3">
               <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
-                <button
+                <Button
                   type="button"
-                  className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0"
+                  variant="destructive"
+                  size="icon"
+                  className="flex-shrink-0"
                   onClick={stopRecording}
                   aria-label="Stop recording"
                 >
-                  <Square className="w-5 h-5 text-red-500 fill-current" />
-                </button>
+                  <Square className="w-5 h-5 fill-current" />
+                </Button>
                 <div className="flex-1 flex items-center h-8 overflow-hidden">
                   {renderVisualizer()}
                 </div>
@@ -286,18 +288,19 @@ export default function InviteVoicePage() {
           {recordingState === "review" && (
             <div className="w-full max-w-md flex flex-col items-center gap-4">
               <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
-                <button
+                <Button
                   type="button"
-                  className="w-10 h-10 rounded-full bg-purple-500 hover:bg-purple-600 flex items-center justify-center flex-shrink-0 transition-colors"
+                  size="icon"
+                  className="flex-shrink-0"
                   onClick={togglePlayback}
                   aria-label={isPlaying ? "Pause" : "Play"}
                 >
                   {isPlaying ? (
-                    <Pause className="w-4 h-4 text-white fill-current" />
+                    <Pause className="w-4 h-4 fill-current" />
                   ) : (
-                    <Play className="w-4 h-4 text-white fill-current ml-0.5" />
+                    <Play className="w-4 h-4 fill-current ml-0.5" />
                   )}
-                </button>
+                </Button>
                 <div className="flex-1 flex items-center h-8 overflow-hidden">
                   {renderVisualizer(true)}
                 </div>
@@ -312,13 +315,14 @@ export default function InviteVoicePage() {
                 onTimeUpdate={handleTimeUpdate}
                 className="hidden"
               />
-              <button
+              <Button
                 type="button"
-                className="text-sm text-muted-foreground underline"
+                variant="link"
+                size="sm"
                 onClick={resetState}
               >
                 Re-record
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -326,7 +330,7 @@ export default function InviteVoicePage() {
         {/* Fixed bottom button */}
         <div className="p-4">
           <Button
-            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-muted disabled:text-muted-foreground"
+            className="w-full"
             disabled={recordingState !== "review"}
             onClick={handlePreview}
           >

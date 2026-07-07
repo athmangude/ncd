@@ -193,8 +193,7 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
                       </h3>
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-full hover:bg-orange-200/50 text-orange-600"
+                        size="icon-sm"
                         onClick={() => copyToClipboard(selectedDiscount.code)}
                       >
                         <Copy className="h-4 w-4" />

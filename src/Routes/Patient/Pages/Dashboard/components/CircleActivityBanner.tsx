@@ -1,5 +1,6 @@
 import { ChevronRight, Send, UserRoundPlus } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/Button"
 import { ProfileAvatar } from "@/components/ProfileAvatar"
 import { useToast } from "@/hooks/useToast"
 import { cn } from "@/lib/utils"
@@ -20,15 +21,15 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
 
   if (banner.variant === "SET_UP_CIRCLE") {
     return (
-      <button
-        type="button"
+      <Button
+        variant="secondary"
         data-testid="set-up-circle-banner"
         onClick={() => navigate("/patients/circle?add=1")}
-        className="mt-3 w-full flex items-center justify-center gap-2 rounded-xl bg-purple-50 px-4 py-3 text-sm font-medium text-purple-700"
+        className="mt-3 w-full"
       >
         <span>Set up your Circle</span>
-        <UserRoundPlus className="h-4 w-4 text-purple-700" />
-      </button>
+        <UserRoundPlus className="h-4 w-4" />
+      </Button>
     )
   }
 
@@ -70,15 +71,15 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
     }
 
     return (
-      <button
-        type="button"
+      <Button
+        variant="secondary"
         onClick={onClick}
         disabled={sendReminders.isPending}
-        className="mt-3 w-full flex items-center justify-center gap-2 rounded-full bg-purple-100 px-4 py-3 text-sm font-medium text-purple-700 disabled:opacity-50"
+        className="mt-3 w-full"
       >
         <span>{label}</span>
         <Send className="h-4 w-4" />
-      </button>
+      </Button>
     )
   }
 

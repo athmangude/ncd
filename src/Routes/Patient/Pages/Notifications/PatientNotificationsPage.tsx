@@ -292,7 +292,8 @@ export default function PatientNotificationsPage() {
         <div className="border-t bg-white dark:bg-neutral-950 flex items-center p-4">
           <Button
             variant="outline"
-            className="w-full py-6 text-lg border-border"
+            size="lg"
+            className="w-full"
             onClick={handleMarkAllAsRead}
           >
             Mark all as read

@@ -403,8 +403,9 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
                 Accept & Join Circle
               </Button>
               <Button
-                variant="ghost"
-                className="shrink-0 rounded-lg bg-red-200 px-3 py-1.5 text-xs font-medium text-red-500 transition-colors hover:bg-red/5 hover:text-red-700"
+                variant="destructive"
+                size="sm"
+                className="shrink-0"
                 disabled={rejectMutation.isPending}
                 isLoading={rejectMutation.isPending}
                 onClick={() => {
@@ -576,8 +577,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
           <div className="w-full max-w-md bg-white rounded-full p-2 px-4 flex items-center gap-3 border shadow-sm mt-4 mb-6">
             <Button
               size="icon"
-              variant="ghost"
-              className="rounded-full bg-purple-600 hover:bg-purple-700 text-white h-10 w-10 flex-shrink-0"
+              className="flex-shrink-0"
               onClick={togglePlayback}
             >
               {isPlaying ? (

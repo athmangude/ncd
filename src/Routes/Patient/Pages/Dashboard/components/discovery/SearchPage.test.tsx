@@ -44,4 +44,12 @@ describe("SearchPage (AppShell migration)", () => {
       screen.getByRole("heading", { level: 2, name: "Find care near you" })
     ).toBeInTheDocument()
   })
+
+  it("renders the Filter control as a secondary Chip when no filters are active", () => {
+    render(wrap(<SearchPage />))
+    expect(screen.getByRole("button", { name: /filter/i })).toHaveAttribute(
+      "data-variant",
+      "secondary"
+    )
+  })
 })

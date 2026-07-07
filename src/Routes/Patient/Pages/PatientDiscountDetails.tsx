@@ -107,10 +107,7 @@ export default function PatientDiscountDetails() {
       footer={
         <div className="border-t border-border bg-white p-4">
           <div className="mx-auto flex max-w-[450px] gap-3">
-            <Button
-              onClick={share}
-              className="flex-1 bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none"
-            >
+            <Button variant="secondary" onClick={share} className="flex-1">
               Share
             </Button>
             <Button

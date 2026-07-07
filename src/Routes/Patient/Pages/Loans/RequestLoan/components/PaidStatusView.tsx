@@ -1,5 +1,6 @@
 import { CheckCircle } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { Button } from "@/components/Button"
 import ExitDialog from "./ExitDialog"
 
 interface PaidStatusViewProps {
@@ -31,12 +32,9 @@ export default function PaidStatusView({
         <p className="text-muted-foreground">
           This payment request has already been paid.
         </p>
-        <button
-          onClick={() => navigate("/patients")}
-          className="mt-8 px-6 py-3 bg-foreground text-white rounded-xl font-semibold"
-        >
+        <Button onClick={() => navigate("/patients")} className="mt-8">
           Go Home
-        </button>
+        </Button>
       </div>
     </>
   )

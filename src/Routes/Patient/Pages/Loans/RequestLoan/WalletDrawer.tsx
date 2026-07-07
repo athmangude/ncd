@@ -497,18 +497,11 @@ export function WalletDrawer({
           </div>
 
           <DrawerFooter className="gap-3 pb-8 sticky bottom-0 bg-background border-t border-border">
-            <Button
-              type="submit"
-              disabled={!isValid}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-xl"
-            >
+            <Button type="submit" disabled={!isValid} className="w-full">
               Save
             </Button>
             <DrawerClose asChild>
-              <Button
-                variant="outline"
-                className="w-full h-12 rounded-xl border-border text-foreground hover:bg-muted"
-              >
+              <Button variant="outline" className="w-full">
                 Cancel
               </Button>
             </DrawerClose>

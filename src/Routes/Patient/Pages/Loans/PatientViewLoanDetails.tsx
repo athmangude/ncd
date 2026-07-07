@@ -313,7 +313,8 @@ export default function ViewLoanDetails() {
                 >
                   <DialogTrigger asChild>
                     <Button
-                      className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-6 text-base font-semibold shadow-purple-200 shadow-lg"
+                      size="lg"
+                      className="w-full"
                       onClick={() => {
                         try {
                           trackEvent(EVENTS.LOAN_REPAYMENT.REPAY_BUTTON_TAP, {

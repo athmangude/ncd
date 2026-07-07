@@ -478,7 +478,7 @@ export default function AddCircleMemberPage() {
         />
 
         <Button
-          className="w-full bg-[#A822F4] hover:bg-[#901DD0]"
+          className="w-full"
           disabled={mutation.isPending || validateInviteMutation.isPending}
         >
           {mutation.isPending || validateInviteMutation.isPending

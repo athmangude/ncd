@@ -10,6 +10,14 @@ import MobileWrapper, {
   BackTitleHeader,
   PrimaryCTAFooter,
 } from "@/Routes/MobileWrapper"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
 import { useToast } from "@/hooks/useToast"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
@@ -127,20 +135,20 @@ export default function PatientHelpAndSupport() {
         </p>
 
         {supportOptions.map((option, index) => (
-          <button
-            key={index}
-            onClick={option.onClick}
-            className="flex items-center gap-4 p-4 bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-muted-foreground/30 transition-all text-left group"
-          >
-            <div className="text-muted-foreground">{option.icon}</div>
-            <div className="flex-1">
-              <h3 className="text-foreground">{option.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                {option.description}
-              </p>
-            </div>
-            <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
-          </button>
+          <Item key={index} asChild variant="outline">
+            <button type="button" onClick={option.onClick}>
+              <ItemMedia className="text-muted-foreground">
+                {option.icon}
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>{option.title}</ItemTitle>
+                <ItemDescription>{option.description}</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </ItemActions>
+            </button>
+          </Item>
         ))}
       </div>
     </MobileWrapper>

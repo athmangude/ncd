@@ -39,7 +39,7 @@ export default function PWAOnboardingIntro() {
       footer={
         <div className="flex flex-col gap-2 border-t border-border bg-white p-4">
           <Button
-            className="w-full bg-primary hover:bg-primary/90 text-white"
+            className="w-full"
             disabled={loading}
             onClick={() => {
               navigate(nextStepRoute)

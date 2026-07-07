@@ -195,7 +195,7 @@ export default function VerifyOTPForm() {
         <Button
           variant="link"
           type="button"
-          className="text-primary h-auto p-0"
+          className="h-auto"
           onClick={async (e) => {
             e.preventDefault()
             await clearLoginAttemptInfo()

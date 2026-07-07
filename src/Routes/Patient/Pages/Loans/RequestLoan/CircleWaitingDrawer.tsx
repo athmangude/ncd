@@ -118,14 +118,15 @@ export function CircleWaitingDrawer({
       <div className="flex flex-col flex-1 w-full max-w-lg mx-auto">
         {/* back button */}
         <div className="px-4 pt-4 shrink-0">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={onClose}
-            className="bg-white p-2 rounded-lg border border-border shadow-sm"
             aria-label="Go back"
           >
             <ArrowLeft className="w-6 h-6 text-muted-foreground" />
-          </button>
+          </Button>
         </div>
 
         {/* header */}
@@ -165,7 +166,7 @@ export function CircleWaitingDrawer({
         <div className="mt-auto px-4 pb-10 pt-2 shrink-0">
           <div className="flex flex-col gap-3 items-center">
             <Button
-              className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold rounded-md"
+              className="w-full"
               onClick={() => {
                 onClose()
                 navigate("/patients/network/invitations-sent")

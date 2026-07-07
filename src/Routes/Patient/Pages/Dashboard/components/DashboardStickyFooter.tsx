@@ -45,10 +45,7 @@ export function DashboardStickyFooter({
               Upgrade Now to unlock up to Ksh 6,000 loan limit
             </p>
           </div>
-          <Button
-            className="w-full bg-primary hover:bg-primary/90 text-white"
-            onClick={() => navigate(KYC_START_URL)}
-          >
+          <Button className="w-full" onClick={() => navigate(KYC_START_URL)}>
             Upgrade Now to Unlock
           </Button>
         </div>

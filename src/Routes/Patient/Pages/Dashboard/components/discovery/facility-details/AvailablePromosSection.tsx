@@ -1,4 +1,5 @@
 import { ChevronRight, Gift } from "lucide-react"
+import { Button } from "@/components/Button"
 import { useNavigate } from "react-router-dom"
 import { format } from "date-fns"
 import percentTile from "@/assets/icons/percent-tile.png"
@@ -49,14 +50,16 @@ export function AvailablePromosSection({
         <Gift className="h-4 w-4 text-muted-foreground" />
         <SectionTitle className="flex-1">Available promos</SectionTitle>
         {promos.length > 1 && (
-          <button
+          <Button
             type="button"
+            variant="link"
+            size="sm"
             onClick={handleSeeAll}
-            className="flex items-center gap-0.5 text-sm text-foreground "
+            className="text-foreground"
           >
             See all
             <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+          </Button>
         )}
       </div>
 

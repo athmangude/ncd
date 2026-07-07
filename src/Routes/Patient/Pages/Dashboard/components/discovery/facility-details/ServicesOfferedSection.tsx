@@ -5,6 +5,7 @@ import {
   ChevronsUpDown,
   ChevronsDownUp,
 } from "lucide-react"
+import { Button } from "@/components/Button"
 import { FacilityServiceListItem } from "../types"
 import {
   serviceCategoryLabel,
@@ -58,14 +59,16 @@ export function ServicesOfferedSection({
       <div className="flex items-center gap-2 py-1.5 w-full">
         <List className="h-4 w-4 text-muted-foreground" />
         <SectionTitle className="flex-1">Services offered</SectionTitle>
-        <button
+        <Button
           type="button"
+          variant="link"
+          size="sm"
           onClick={expandAll}
-          className="flex items-center gap-0.5 text-sm text-foreground font-medium"
+          className="text-foreground"
         >
           See all
           <ChevronRight className="h-3.5 w-3.5" />
-        </button>
+        </Button>
       </div>
 
       <div className="flex flex-col rounded-xl border border-border bg-white overflow-hidden">

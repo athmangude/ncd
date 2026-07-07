@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/Skeleton"
+import { Chip } from "@/components/Chip"
+import { Button } from "@/components/Button"
 import { ServiceCategory } from "../api/useServiceCategories"
 
 const INITIAL_VISIBLE = 12
@@ -40,13 +41,14 @@ export function ServiceCategoryChips({
         <p className="text-sm text-muted-foreground">
           Couldn&apos;t load services.
         </p>
-        <button
-          type="button"
+        <Button
+          variant="link"
+          size="sm"
           onClick={onRetry}
-          className="text-sm font-medium text-primary self-start"
+          className="self-start"
         >
           Try again
-        </button>
+        </Button>
       </div>
     )
   }
@@ -59,29 +61,20 @@ export function ServiceCategoryChips({
       {visible.map((c) => {
         const isSelected = selected.includes(c.category)
         return (
-          <button
+          <Chip
             key={c.category}
-            type="button"
+            variant={isSelected ? "secondary" : "outline"}
+            aria-pressed={isSelected}
             onClick={() => onToggle(c.category)}
-            className={cn(
-              "h-8 px-3 rounded-md text-sm transition-colors",
-              isSelected
-                ? "bg-teal-50 text-teal-800 border border-teal-300"
-                : "bg-muted text-foreground border border-border"
-            )}
           >
             {c.displayName}
-          </button>
+          </Chip>
         )
       })}
       {hasMore && !showAll && (
-        <button
-          type="button"
-          onClick={() => setShowAll(true)}
-          className="h-8 px-1 text-sm font-medium text-primary"
-        >
+        <Button variant="link" size="sm" onClick={() => setShowAll(true)}>
           Show all
-        </button>
+        </Button>
       )}
     </div>
   )

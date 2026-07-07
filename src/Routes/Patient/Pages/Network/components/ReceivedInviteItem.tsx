@@ -41,8 +41,8 @@ export function ReceivedInviteItem({
       </div>
 
       <Button
+        variant="secondary"
         size="sm"
-        className="bg-purple-100  text-purple-700 hover:bg-purple-200  "
         onClick={() =>
           navigate(`/patients/network/accept-invite?inviteId=${id}`)
         }

@@ -2,6 +2,13 @@ import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Info, Phone, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/Button"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemActions,
+} from "@/components/Item"
 import { SectionTitle } from "@/components/SectionTitle"
 import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -174,10 +181,7 @@ export default function PatientHowCirclesWork() {
       }
       footer={
         <div className="flex w-full flex-col gap-2 border-t border-border bg-white px-4 pb-4 pt-3">
-          <Button
-            className="h-11 w-full rounded-md bg-primary text-base font-semibold hover:bg-primary/90"
-            onClick={handleContinue}
-          >
+          <Button className="w-full" onClick={handleContinue}>
             I understand — set up my Circle
           </Button>
           <p className="text-center text-sm leading-5 tracking-[0.014px] text-muted-foreground">
@@ -390,21 +394,21 @@ export default function PatientHowCirclesWork() {
               Contact our support team
             </p>
           </div>
-          <button
-            type="button"
-            onClick={handleCallSupport}
-            className="flex min-h-8 items-center gap-2 rounded-md bg-white px-2 py-[6px]"
-          >
-            <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <Phone className="h-4 w-4 text-foreground" />
-            </div>
-            <p className="flex-1 text-left text-sm leading-5 tracking-[0.014px] text-foreground">
-              Call Jireh Support
-            </p>
-            <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <ChevronRight className="h-4 w-4 text-foreground" />
-            </div>
-          </button>
+          <Item asChild size="sm" className="bg-white">
+            <button type="button" onClick={handleCallSupport}>
+              <ItemMedia>
+                <Phone className="h-4 w-4 text-foreground" />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle className="text-foreground">
+                  Call Jireh Support
+                </ItemTitle>
+              </ItemContent>
+              <ItemActions>
+                <ChevronRight className="h-4 w-4 text-foreground" />
+              </ItemActions>
+            </button>
+          </Item>
         </section>
       </div>
     </MobileWrapper>

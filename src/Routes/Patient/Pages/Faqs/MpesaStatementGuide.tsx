@@ -123,7 +123,7 @@ function InstructionsSection() {
                 <Button
                   onClick={handlePrevious}
                   disabled={currentSubStep === 0}
-                  className="bg-primary text-white flex-1 sm:flex-none"
+                  className="flex-1 sm:flex-none"
                 >
                   <ChevronLeft className="h-4 w-4 mr-2" />
                 </Button>
@@ -131,7 +131,7 @@ function InstructionsSection() {
                 <Button
                   onClick={handleNext}
                   disabled={currentSubStep === step.subSteps.length - 1}
-                  className="bg-primary text-white flex-1 sm:flex-none"
+                  className="flex-1 sm:flex-none"
                 >
                   <ChevronRight className="h-4 w-4 ml-2" />
                 </Button>
