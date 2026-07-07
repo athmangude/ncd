@@ -36,10 +36,14 @@ function CheckboxItem({
   onChange: () => void
   checked?: boolean
 }) {
+  // Unique per instance so the label associates with THIS checkbox (previously
+  // a hardcoded htmlFor="terms" that matched no id — label taps did nothing and
+  // every CheckboxItem on a page collided). Radix forwards `id` to the control.
+  const id = React.useId()
   return (
     <div className="flex items-center space-x-2">
-      <Checkbox onCheckedChange={onChange} checked={checked} />
-      <label htmlFor="terms" className="text-foreground text-sm">
+      <Checkbox id={id} onCheckedChange={onChange} checked={checked} />
+      <label htmlFor={id} className="text-foreground text-sm">
         {label}
       </label>
     </div>

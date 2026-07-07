@@ -108,6 +108,7 @@ export function PatientIdVerificationOnboarding() {
               },
             })}
             error={errors.idNumber?.message}
+            sensitive
           />
         </form>
       </div>

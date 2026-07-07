@@ -83,11 +83,9 @@ describe("PatientHealthcareFocus footer migration", () => {
   it("enables Next once a focus area is selected and submits the areas", async () => {
     render(wrap(<PatientHealthcareFocus />))
 
-    // The CheckboxItem label is not associated with its checkbox, so reach the
-    // Radix checkbox via the row that contains the option label.
-    const row = screen.getByText(/Maternity & Newborn Care/i).parentElement
-    const checkbox = row?.querySelector('[role="checkbox"]') as HTMLElement
-    await userEvent.click(checkbox)
+    // The CheckboxItem label is now associated with its checkbox (htmlFor→id),
+    // so clicking the label text toggles the option.
+    await userEvent.click(screen.getByText(/Maternity & Newborn Care/i))
 
     const next = screen.getByRole("button", { name: "Next" })
     expect(next).toBeEnabled()
