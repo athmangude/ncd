@@ -64,7 +64,6 @@ export default function StepperHeader({
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10"
               onClick={onBack || (() => navigate(-1))}
               aria-label="Go back"
             >
@@ -77,7 +76,6 @@ export default function StepperHeader({
         {showHelp && (
           <Button
             variant="outline"
-            className="rounded-full border-border font-normal text-muted-foreground hover:bg-muted"
             size="sm"
             onClick={() => navigate("/patients/payment/request-payment/help")}
           >

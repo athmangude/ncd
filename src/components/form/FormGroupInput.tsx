@@ -7,6 +7,7 @@ import FormGroupWrapper from "./FormGroupWrapper"
 import ReactCountryFlag from "react-country-flag"
 import { cn } from "@/lib/utils"
 import { HelpCircle } from "lucide-react"
+import { Button } from "../Button"
 import { Popover, PopoverContent, PopoverTrigger } from "../Popover"
 import { CountryCode } from "libphonenumber-js"
 
@@ -85,13 +86,14 @@ export default function FormGroupInput({
         {helperText && (
           <Popover>
             <PopoverTrigger asChild>
-              <button
+              <Button
                 type="button"
-                className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none"
+                variant="ghost"
+                size="icon-xs"
                 aria-label="Field information"
               >
                 <HelpCircle className="h-4 w-4" />
-              </button>
+              </Button>
             </PopoverTrigger>
             <PopoverContent
               className="max-w-sm p-4 text-sm text-foreground bg-white border border-border shadow-lg leading-relaxed"

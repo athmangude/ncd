@@ -1,5 +1,6 @@
 // Service Worker Registration Utility
 import { useState, useEffect } from "react"
+import { Button } from "@/components/Button"
 
 // Check if service workers are supported
 export const isServiceWorkerSupported = "serviceWorker" in navigator
@@ -128,12 +129,9 @@ export function ServiceWorkerUpdateNotification() {
   return (
     <div className="fixed bottom-0 right-0 m-4 p-4 bg-black text-white rounded-lg shadow-lg z-50">
       <p>New version available!</p>
-      <button
-        onClick={updateServiceWorker}
-        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-      >
+      <Button size="sm" onClick={updateServiceWorker} className="mt-2">
         Update Now
-      </button>
+      </Button>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { usePaymentHistory } from "@/Routes/Patient/hooks/usePaymentHistory"
 import PatientDashboardSection from "@/Routes/Patient/components/PatientDashboardSection"
 import { formatMoney } from "@/utilities/currencyUtilities"
+import { Button } from "@/components/Button"
 import { ChevronRight, Clock, Link } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { formatTime, formatDateLong } from "@/utilities/dateUtilities"
@@ -208,8 +209,9 @@ export function PaymentCard({
                 </p>
               </div>
 
-              <button
-                className="w-full py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors mt-1"
+              <Button
+                variant="secondary"
+                className="w-full mt-1"
                 onClick={(e) => {
                   e.stopPropagation()
                   // Add specific payment logic here if needed, otherwise it bubbles to card click
@@ -219,7 +221,7 @@ export function PaymentCard({
                 }}
               >
                 Pay now
-              </button>
+              </Button>
             </>
           ) : (
             <>

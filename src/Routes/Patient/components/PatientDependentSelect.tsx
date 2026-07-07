@@ -119,8 +119,8 @@ export default function PatientDependentSelect({
 
           {action && (
             <Button
-              className="mt-1 w-full bg-primary/10 hover:bg-primary/5 absolute bottom-0 left-0 font-medium hover:text-primary/70 flex justify-start gap-2 text-lg "
-              variant="ghost"
+              className="mt-1 w-full absolute bottom-0 left-0 justify-start"
+              variant="secondary"
               onClick={(e) => {
                 e.preventDefault()
                 action.fn()

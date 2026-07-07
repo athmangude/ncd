@@ -27,14 +27,12 @@ export function InviteCard({ onInviteClick }: InviteCardProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <Button
-          className="bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center gap-2 h-12"
-          onClick={onInviteClick}
-        >
+        <Button variant="secondary" size="lg" onClick={onInviteClick}>
           <Mic className="w-4 h-4 shrink-0" /> Text/Voice
         </Button>
         <Button
-          className="bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center gap-2 h-12"
+          variant="secondary"
+          size="lg"
           onClick={() => navigate("/patients/scan-qr-intro")}
         >
           <QrCode className="w-4 h-4" /> Qr code

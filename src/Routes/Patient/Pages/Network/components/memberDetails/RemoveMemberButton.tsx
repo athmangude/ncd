@@ -11,7 +11,10 @@ import {
 } from "@/components/Drawer"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
-import { useRemoveConnection, type RemoveConnectionType } from "../../hooks/useRemoveConnection"
+import {
+  useRemoveConnection,
+  type RemoveConnectionType,
+} from "../../hooks/useRemoveConnection"
 import { useCancelInvite } from "../../hooks/useCancelInvite"
 
 type RemoveKind = "member" | "invite"
@@ -41,7 +44,10 @@ export function RemoveMemberButton({
   const onConfirm = async () => {
     try {
       if (kind === "member") {
-        await removeConnection.mutateAsync({ connectionId: targetId, type: memberType })
+        await removeConnection.mutateAsync({
+          connectionId: targetId,
+          type: memberType,
+        })
       } else {
         await cancelInvite.mutateAsync(targetId)
       }
@@ -56,11 +62,16 @@ export function RemoveMemberButton({
       setOpen(false)
       navigate(-1)
     } catch (err) {
-      const error = err as { response?: { data?: { message?: string } }; message?: string }
+      const error = err as {
+        response?: { data?: { message?: string } }
+        message?: string
+      }
       toast({
         title: "Error",
         description:
-          error?.response?.data?.message || error?.message || "Failed to remove",
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to remove",
         variant: "destructive",
       })
     }
@@ -70,7 +81,7 @@ export function RemoveMemberButton({
     <>
       <Button
         variant="destructive"
-        className="w-full bg-red-50 text-red-600 hover:bg-red-100"
+        className="w-full"
         onClick={() => setOpen(true)}
         disabled={offline}
       >

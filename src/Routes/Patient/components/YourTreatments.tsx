@@ -215,7 +215,8 @@ export function LoanCard({
 
       {status !== "PAID" && (
         <Button
-          className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 font-medium rounded-lg"
+          variant="secondary"
+          className="w-full"
           onClick={(e) => {
             e.stopPropagation()
             try {

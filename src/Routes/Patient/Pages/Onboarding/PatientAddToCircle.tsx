@@ -103,7 +103,7 @@ export default function PatientAddToCircle() {
 
           <Button
             variant="secondary"
-            className="w-full bg-purple-100 hover:bg-purple-200 text-primary font-medium"
+            className="w-full"
             onClick={handleAddPeople}
           >
             <Plus className="w-4 h-4 mr-2" /> Add people

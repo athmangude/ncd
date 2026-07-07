@@ -117,7 +117,7 @@ export default function PushSettings() {
 
           {/* Send Test Button */}
           <Button
-            className="w-full text-sm"
+            className="w-full"
             onClick={handleSendTestNotification}
             disabled={
               !canSend || isSending || notificationPermission === "denied"

@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { Button } from "@/components/Button"
+import { Chip } from "@/components/Chip"
 import Tag from "@/components/Tag"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
@@ -332,7 +333,8 @@ export default function FastTrackWalletSelection() {
       footer={
         <div className="border-t border-border bg-white p-4">
           <Button
-            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-lg shadow-purple-200"
+            size="lg"
+            className="w-full"
             onClick={handleProceed}
             disabled={totalAllocated !== netAmount}
           >
@@ -575,7 +577,9 @@ export default function FastTrackWalletSelection() {
                               <p className="text-xs text-muted-foreground">
                                 Upgrade to Jireh Plus to unlock
                               </p>
-                              <button
+                              <Chip
+                                variant="default"
+                                className="shrink-0"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   navigate("/patients/kyc-setup-intro", {
@@ -585,15 +589,14 @@ export default function FastTrackWalletSelection() {
                                     },
                                   })
                                 }}
-                                className="bg-primary hover:bg-primary/90 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shrink-0"
                               >
                                 Upgrade
                                 <ChevronRight className="w-3 h-3" />
-                              </button>
+                              </Chip>
                             </>
                           ) : (
-                            <button
-                              className="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-[3px] rounded-md"
+                            <Chip
+                              variant="warning"
                               onClick={(e) => {
                                 e.stopPropagation()
                                 setIsCircleWaitingDrawerOpen(true)
@@ -601,7 +604,7 @@ export default function FastTrackWalletSelection() {
                             >
                               Waiting on 2 Circle members
                               <ChevronRight className="w-3 h-3" />
-                            </button>
+                            </Chip>
                           )}
                         </div>
                       )}

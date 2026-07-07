@@ -9,6 +9,13 @@ import {
 import PatientPageWrapper from "../PatientPageWrapper"
 import { Card } from "@/components/Card"
 import { SectionTitle } from "@/components/SectionTitle"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemActions,
+} from "@/components/Item"
 import { useNavigate } from "react-router-dom"
 
 type HelpItem = {
@@ -38,18 +45,19 @@ const HelpItemCard: FC<HelpItem> = ({ label, icon, onClick, href }) => {
   }
 
   return (
-    <div
-      className="flex justify-between bg-white p-4 items-center cursor-pointer hover:bg-muted rounded-lg transition border border-border"
-      onClick={handleClick}
-    >
-      <div className="flex gap-3 items-center">
-        {icon && <span className="text-muted-foreground">{icon}</span>}
-        <p className="text-sm sm:text-base font-medium text-foreground">
-          {label}
-        </p>
-      </div>
-      <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0 self-center" />
-    </div>
+    <Item asChild variant="outline">
+      <button type="button" onClick={handleClick}>
+        {icon && (
+          <ItemMedia className="text-muted-foreground">{icon}</ItemMedia>
+        )}
+        <ItemContent>
+          <ItemTitle>{label}</ItemTitle>
+        </ItemContent>
+        <ItemActions>
+          <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+        </ItemActions>
+      </button>
+    </Item>
   )
 }
 

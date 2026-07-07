@@ -61,7 +61,8 @@ export function InviteRequestCard({
       layout="card"
     >
       <Button
-        className="flex-1 bg-purple-100 text-purple-700 hover:bg-purple-200 border-none shadow-none"
+        variant="secondary"
+        className="flex-1"
         onClick={() =>
           navigate(`/patients/network/accept-invite?inviteId=${id}`)
         }
@@ -69,8 +70,9 @@ export function InviteRequestCard({
         Accept
       </Button>
       <Button
-        variant="ghost"
-        className="bg-red-50 text-red-500 w-12 shrink-0 hover:bg-red-100 p-0"
+        variant="destructive"
+        size="icon"
+        className="shrink-0"
         onClick={() => rejectMutation.mutate(id)}
         isLoading={rejectMutation.isPending}
       >

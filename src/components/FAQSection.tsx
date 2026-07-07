@@ -2,6 +2,7 @@ import { FC } from "react"
 import { ChevronRight } from "lucide-react"
 import { Card } from "./Card"
 import { SectionTitle } from "./SectionTitle"
+import { Item, ItemMedia, ItemContent, ItemTitle, ItemActions } from "./Item"
 
 type FAQItem = {
   label: string
@@ -18,16 +19,17 @@ interface FAQSectionProps {
 }
 
 const FAQCard: FC<FAQItem> = ({ label, icon, onClick }) => (
-  <div
-    className="flex justify-between bg-white p-4 items-center cursor-pointer hover:bg-accent rounded-lg transition"
-    onClick={onClick}
-  >
-    <div className="flex gap-2 items-center">
-      <span className="text-sm text-muted-foreground">{icon}</span>
-      <p>{label}</p>
-    </div>
-    <ChevronRight className="h-6 w-6 flex-shrink-0 self-center" />
-  </div>
+  <Item asChild>
+    <button type="button" onClick={onClick}>
+      {icon && <ItemMedia className="text-muted-foreground">{icon}</ItemMedia>}
+      <ItemContent>
+        <ItemTitle>{label}</ItemTitle>
+      </ItemContent>
+      <ItemActions>
+        <ChevronRight className="h-6 w-6 flex-shrink-0" />
+      </ItemActions>
+    </button>
+  </Item>
 )
 
 const FAQSection: FC<FAQSectionProps> = ({

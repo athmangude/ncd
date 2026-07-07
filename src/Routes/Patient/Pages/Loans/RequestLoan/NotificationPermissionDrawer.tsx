@@ -173,11 +173,7 @@ export function NotificationPermissionDrawer({
             </div>
 
             <DrawerFooter className="gap-3 pb-8">
-              <Button
-                variant="outline"
-                className="w-full border-border h-12 rounded-xl"
-                onClick={onSkip}
-              >
+              <Button variant="outline" className="w-full" onClick={onSkip}>
                 Continue without notifications
               </Button>
             </DrawerFooter>

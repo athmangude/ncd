@@ -6,6 +6,7 @@ import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Button } from "@/components/Button"
+import { Chip } from "@/components/Chip"
 import {
   getFromLocalStorage,
   setToLocalStorage,
@@ -710,7 +711,8 @@ export default function PatientWalletSelection() {
       footer={
         <div className="p-4 bg-white border-t border-border">
           <Button
-            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-lg shadow-purple-200"
+            size="lg"
+            className="w-full"
             onClick={() => handleProceed()}
             disabled={Math.round(totalAllocated) !== originalBillAmount}
           >
@@ -991,7 +993,9 @@ export default function PatientWalletSelection() {
                                 <p className="text-xs text-muted-foreground">
                                   Upgrade to Jireh Plus to unlock
                                 </p>
-                                <button
+                                <Chip
+                                  variant="default"
+                                  className="shrink-0"
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     navigate("/patients/kyc-setup-intro", {
@@ -1001,15 +1005,14 @@ export default function PatientWalletSelection() {
                                       },
                                     })
                                   }}
-                                  className="bg-primary hover:bg-primary/90 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shrink-0"
                                 >
                                   Upgrade
                                   <ChevronRight className="w-3 h-3" />
-                                </button>
+                                </Chip>
                               </>
                             ) : (
-                              <button
-                                className="inline-flex items-center gap-1 bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-[3px] rounded-md"
+                              <Chip
+                                variant="warning"
                                 onClick={(e) => {
                                   e.stopPropagation()
                                   setIsCircleWaitingDrawerOpen(true)
@@ -1017,7 +1020,7 @@ export default function PatientWalletSelection() {
                               >
                                 Waiting on 2 Circle members
                                 <ChevronRight className="w-3 h-3" />
-                              </button>
+                              </Chip>
                             )}
                           </div>
                         )}

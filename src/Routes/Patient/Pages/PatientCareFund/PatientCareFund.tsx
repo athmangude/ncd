@@ -1,5 +1,6 @@
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import { Banknote, ArrowUpRight } from "lucide-react"
+import { Button } from "@/components/Button"
 import useNextLoanApplicationStep from "../../hooks/useNextLoanApplicationStep"
 import { useNavigate } from "react-router-dom"
 import { CareFundCard } from "./components/CareFundCard"
@@ -61,13 +62,13 @@ function CareFundCTA({
   const navigate = useNavigate()
 
   return (
-    <button
-      className="bg-secondary hover:bg-secondary/80 rounded-2xl flex flex-col items-start justify-between p-4  transition-colors w-full"
+    <Button
+      variant="secondary"
+      className="w-full"
       onClick={() => navigate(link)}
     >
-      <div className="">{icon}</div>
-
-      <span className=" text-foreground">{title}</span>
-    </button>
+      {icon}
+      {title}
+    </Button>
   )
 }

@@ -254,12 +254,12 @@ export function AddToCircleDrawer({
               />
             )}
 
-            <Button className="flex gap-1 w-full" type="submit">
+            <Button className="w-full" type="submit">
               Save
             </Button>
 
             <Button
-              className="flex gap-1 w-full"
+              className="w-full"
               type="button"
               onClick={() => {
                 setOpen(false)

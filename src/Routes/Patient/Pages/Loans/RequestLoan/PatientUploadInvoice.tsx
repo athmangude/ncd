@@ -407,7 +407,7 @@ export default function PatientUploadInvoice() {
           <div className="w-full max-w-md px-4">
             {missingPatientError ? (
               <Button
-                className="w-full bg-primary hover:bg-primary/90"
+                className="w-full"
                 onClick={() =>
                   navigate("/patients/network/add-connection", {
                     state: {
@@ -419,10 +419,7 @@ export default function PatientUploadInvoice() {
                 Add Connection
               </Button>
             ) : (
-              <Button
-                className="w-full bg-primary hover:bg-primary/90"
-                onClick={() => setUploadError(false)}
-              >
+              <Button className="w-full" onClick={() => setUploadError(false)}>
                 Try again
               </Button>
             )}
@@ -705,8 +702,10 @@ function FileUploadCard({
             <p className="text-xs text-red-600">{file.error}</p>
             <Button
               type="button"
+              variant="link"
+              size="sm"
               onClick={onRetry}
-              className="text-xs text-white hover:underline mt-1"
+              className="mt-1"
             >
               Try again
             </Button>
@@ -715,14 +714,16 @@ function FileUploadCard({
       </div>
 
       {/* Delete Button */}
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={onDelete}
-        className="flex-shrink-0 text-red-500 hover:text-red-700 p-1"
+        className="flex-shrink-0 text-red-500"
         aria-label="Delete file"
       >
         <Trash2 className="w-5 h-5" />
-      </button>
+      </Button>
     </div>
   )
 }

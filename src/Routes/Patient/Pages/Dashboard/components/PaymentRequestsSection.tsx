@@ -211,19 +211,21 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
         </div>
 
         <div className="flex gap-2 mt-1">
-          <button
-            className="flex-1 py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors"
+          <Button
+            variant="secondary"
+            className="flex-1"
             onClick={handleSendPaymentClick}
           >
             Send Payment
-          </button>
-          <button
-            className="px-3 py-2 bg-red-100 text-red-700 text-sm font-semibold rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center"
+          </Button>
+          <Button
+            variant="destructive"
+            size="icon"
             onClick={handleDeleteClick}
             aria-label="Delete payment request"
           >
             <Trash2 className="w-4 h-4" />
-          </button>
+          </Button>
         </div>
       </div>
 

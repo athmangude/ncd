@@ -165,7 +165,7 @@ function Dashboard({ data }: { data: any }) {
           variant="ghost"
           size="icon"
           aria-label="WhatsApp"
-          className="relative hover:bg-green-50 rounded-full"
+          className="relative"
         >
           <a
             href="https://wa.me/254117118511"
@@ -184,7 +184,7 @@ function Dashboard({ data }: { data: any }) {
           variant="ghost"
           size="icon"
           aria-label="Notifications"
-          className="relative hover:bg-muted rounded-full"
+          className="relative"
           onClick={() => navigate("/patients/notifications")}
         >
           <Bell className="w-6 h-6 text-muted-foreground" />

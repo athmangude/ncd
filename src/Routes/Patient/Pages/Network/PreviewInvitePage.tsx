@@ -199,7 +199,7 @@ export default function PreviewInvitePage() {
           <div className="p-4 bg-white border-t border-border">
             <Button
               variant="outline"
-              className="w-full border-border text-foreground"
+              className="w-full"
               onClick={handleBackToDashboard}
             >
               Back to dashboard
@@ -284,7 +284,7 @@ export default function PreviewInvitePage() {
           <div className="flex flex-col gap-2">
             <Button
               variant="outline"
-              className="w-full border-border text-foreground"
+              className="w-full"
               onClick={() =>
                 navigate("/patients/network/check-profile-photo", {
                   state: { ...location.state, fromPreview: true },

@@ -72,10 +72,7 @@ export function LoansTabContent({
       </div>
 
       {!hasActiveMembership && (
-        <Button
-          className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 "
-          onClick={onUpgrade}
-        >
+        <Button variant="secondary" className="w-full" onClick={onUpgrade}>
           <Lock className="w-4 h-4 mr-2" />
           Upgrade Now to Unlock
         </Button>

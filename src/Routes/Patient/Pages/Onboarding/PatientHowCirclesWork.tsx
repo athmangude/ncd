@@ -174,10 +174,7 @@ export default function PatientHowCirclesWork() {
       }
       footer={
         <div className="flex w-full flex-col gap-2 border-t border-border bg-white px-4 pb-4 pt-3">
-          <Button
-            className="h-11 w-full rounded-md bg-primary text-base font-semibold hover:bg-primary/90"
-            onClick={handleContinue}
-          >
+          <Button className="w-full" onClick={handleContinue}>
             I understand — set up my Circle
           </Button>
           <p className="text-center text-sm leading-5 tracking-[0.014px] text-muted-foreground">

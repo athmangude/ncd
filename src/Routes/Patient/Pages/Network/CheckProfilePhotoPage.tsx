@@ -147,11 +147,7 @@ export default function CheckProfilePhotoPage() {
       footer={
         <div className="p-4 bg-white border-t border-border">
           <div className="flex flex-col gap-2">
-            <Button
-              variant="outline"
-              className="w-full border-border text-foreground"
-              onClick={handleSkip}
-            >
+            <Button variant="outline" className="w-full" onClick={handleSkip}>
               Skip for now
             </Button>
             {selectedFile ? (
@@ -215,12 +211,14 @@ export default function CheckProfilePhotoPage() {
                 Ready to upload
               </div>
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleRemoveFile}
-              className="p-2 hover:bg-red-50 rounded-full transition-colors group"
+              aria-label="Remove file"
             >
-              <Trash2 className="w-5 h-5 text-red-500 group-hover:text-red-600" />
-            </button>
+              <Trash2 className="w-5 h-5 text-red-500" />
+            </Button>
           </div>
         )}
       </div>

@@ -100,8 +100,8 @@ export default function FormGroupCombo({
 
           {action && (
             <Button
-              className="mt-1 w-full bg-primary/10 hover:bg-primary/5 absolute bottom-0 left-0 text-primary font-bold hover:text-primary/70"
-              variant="ghost"
+              className="mt-1 w-full absolute bottom-0 left-0"
+              variant="secondary"
               onClick={(e) => {
                 e.preventDefault()
                 action.fn()

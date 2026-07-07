@@ -76,7 +76,7 @@ export default function InviteTextPage() {
       footer={
         <div className="p-4 bg-white border-t border-border">
           <Button
-            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-muted disabled:text-muted-foreground"
+            className="w-full"
             onClick={handleContinue}
             disabled={message.length === 0 || message.length > MAX_CHARS}
           >

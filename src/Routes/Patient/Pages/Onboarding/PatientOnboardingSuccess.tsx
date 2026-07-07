@@ -49,10 +49,7 @@ export default function PatientOnboardingSuccess() {
               Contact our support team for help.
             </p>
             <a href="tel:+254117118511" className="block w-full">
-              <Button
-                variant="secondary"
-                className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 border-none font-medium h-12"
-              >
+              <Button variant="secondary" className="w-full">
                 <Phone className="mr-2 h-4 w-4" /> Call Jireh Support
               </Button>
             </a>

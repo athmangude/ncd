@@ -6,6 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Dialog"
+import { Button } from "@/components/Button"
 
 export default function InviteModal() {
   return (
@@ -59,12 +60,9 @@ export default function InviteModal() {
               className="w-full p-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
-          <button
-            type="button"
-            className="w-full py-3 bg-purple-600 text-white rounded-lg text-lg hover:bg-purple-700 transition"
-          >
+          <Button type="button" className="w-full">
             Invite
-          </button>
+          </Button>
         </form>
       </DialogContent>
     </Dialog>

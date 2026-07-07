@@ -37,7 +37,7 @@ export function OpenSlotCard({
             </p>
             <Button
               variant="link"
-              className="mt-1 px-0 text-purple-700"
+              className="mt-1 px-0"
               onClick={() => {
                 if (onInviteNewClick) {
                   onInviteNewClick()
@@ -60,7 +60,7 @@ export function OpenSlotCard({
             </p>
             <Button
               variant="link"
-              className="mt-1 px-0 text-purple-700"
+              className="mt-1 px-0"
               onClick={() => {
                 if (onReinviteClick) {
                   onReinviteClick()

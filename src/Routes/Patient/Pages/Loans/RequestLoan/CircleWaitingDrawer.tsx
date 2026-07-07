@@ -165,7 +165,7 @@ export function CircleWaitingDrawer({
         <div className="mt-auto px-4 pb-10 pt-2 shrink-0">
           <div className="flex flex-col gap-3 items-center">
             <Button
-              className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold rounded-md"
+              className="w-full"
               onClick={() => {
                 onClose()
                 navigate("/patients/network/invitations-sent")

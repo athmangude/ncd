@@ -5,11 +5,7 @@ import React from "react"
 const ArrowButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ children, ...props }, ref) => {
     return (
-      <Button
-        ref={ref}
-        className="rounded-none mx-auto disabled:bg-muted-foreground shadow-sm shadow-muted-foreground"
-        {...props}
-      >
+      <Button ref={ref} className="mx-auto" {...props}>
         <div className="flex items-center gap-2">
           {children} <MoveRight className="w-5 h-5" />
         </div>

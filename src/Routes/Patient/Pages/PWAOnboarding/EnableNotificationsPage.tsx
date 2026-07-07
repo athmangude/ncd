@@ -108,10 +108,7 @@ export default function EnableNotificationsPage() {
       )}
 
       {isGranted && (
-        <Button
-          className="w-full bg-primary hover:bg-primary/90 h-12 rounded-xl"
-          onClick={handleNext}
-        >
+        <Button className="w-full" onClick={handleNext}>
           Continue
         </Button>
       )}

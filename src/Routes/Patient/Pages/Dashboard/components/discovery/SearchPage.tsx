@@ -5,6 +5,14 @@ import { Button } from "@/components/Button"
 import { Switch } from "@/components/Switch"
 import { Skeleton } from "@/components/Skeleton"
 import { SectionTitle } from "@/components/SectionTitle"
+import { Chip } from "@/components/Chip"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemActions,
+} from "@/components/Item"
 import {
   ArrowLeft,
   BadgeCheck,
@@ -15,7 +23,6 @@ import {
   Search,
   SlidersHorizontal,
   ChevronRight,
-  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -319,15 +326,15 @@ function FilterChipsRow({
       </span>
       <div className="flex flex-wrap gap-2">
         {chips.map((c) => (
-          <button
+          <Chip
             key={c.id}
-            type="button"
+            variant="outline"
             onClick={c.onRemove}
-            className="flex items-center gap-1 h-6 px-2 bg-teal-50 text-teal-800 border border-teal-300 text-xs rounded-full"
+            onRemove={c.onRemove}
+            removeLabel={`Remove ${c.label}`}
           >
             {c.label}
-            <X className="h-3 w-3" />
-          </button>
+          </Chip>
         ))}
       </div>
     </div>
@@ -432,17 +439,19 @@ function SimpleRow({
   onClick: () => void
 }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex items-center gap-2 px-2 py-2 rounded-md bg-white text-left"
-    >
-      {icon}
-      <span className="flex-1 text-sm text-foreground truncate">{label}</span>
-      {chevron && (
-        <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-      )}
-    </button>
+    <Item asChild size="sm">
+      <button type="button" onClick={onClick}>
+        <ItemMedia>{icon}</ItemMedia>
+        <ItemContent>
+          <ItemTitle className="truncate">{label}</ItemTitle>
+        </ItemContent>
+        {chevron && (
+          <ItemActions>
+            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+          </ItemActions>
+        )}
+      </button>
+    </Item>
   )
 }
 

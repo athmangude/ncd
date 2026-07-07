@@ -1,6 +1,9 @@
 import { useState, useEffect, KeyboardEvent } from "react"
 import { Search } from "lucide-react"
 import { Input } from "@/components/Input"
+import { Button } from "@/components/Button"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ToggleGroup"
+import { Badge } from "@/components/Badge"
 import {
   Select,
   SelectContent,
@@ -42,13 +45,16 @@ export function DiscoverySearchBar({
   }
   return (
     <div className={`relative ${className}`}>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="icon-sm"
         onClick={handleSearch}
-        className="absolute left-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors z-10"
+        aria-label="Search"
+        className="absolute left-1.5 top-1/2 -translate-y-1/2 z-10"
       >
         <Search className="h-4 w-4 text-muted-foreground" />
-      </button>
+      </Button>
       <Input
         placeholder={placeholder}
         className="pl-9 bg-transparent border-0 rounded-full h-11 shadow-none focus-visible:ring-0"
@@ -139,34 +145,22 @@ export function DiscoveryFilters({
       </div>
 
       {/* Toggle Tabs */}
-      <div className="flex bg-purple-50 rounded-xl">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            activeTab === "all"
-              ? "bg-purple-600 text-white shadow-sm"
-              : "text-purple-600 hover:bg-purple-100"
-          }`}
-        >
-          All{" "}
-          <span className="ml-1 opacity-80 text-xs bg-white/20 rounded-full">
-            {facilitiesCount}
-          </span>
-        </button>
-        <button
-          onClick={() => setActiveTab("jireh")}
-          className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            activeTab === "jireh"
-              ? "bg-purple-600 text-white shadow-sm"
-              : "text-purple-600 hover:bg-purple-100"
-          }`}
-        >
-          Jireh Accepted{" "}
-          <span className="ml-1 opacity-80 text-xs bg-purple-200 text-purple-700 rounded-full">
-            {jirehAcceptedCount}
-          </span>
-        </button>
-      </div>
+      <ToggleGroup
+        type="single"
+        value={activeTab}
+        onValueChange={(val) => {
+          if (val) setActiveTab(val as "all" | "jireh")
+        }}
+      >
+        <ToggleGroupItem value="all">
+          All
+          <Badge variant="neutral">{facilitiesCount}</Badge>
+        </ToggleGroupItem>
+        <ToggleGroupItem value="jireh">
+          Jireh Accepted
+          <Badge variant="neutral">{jirehAcceptedCount}</Badge>
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   )
 }

@@ -62,12 +62,7 @@ export function LogoHeader({
       {showIcons && (
         <div className="flex items-center">
           {messageHref ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 hover:bg-green-50"
-              aria-label="WhatsApp"
-            >
+            <Button variant="ghost" size="icon" aria-label="WhatsApp">
               <a href={messageHref} target="_blank" rel="noopener noreferrer">
                 <img src={whatsApp} alt="" className="w-6 h-6" />
               </a>
@@ -76,7 +71,6 @@ export function LogoHeader({
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10"
               onClick={onMessageClick}
               aria-label="Message"
             >
@@ -87,7 +81,7 @@ export function LogoHeader({
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-10 w-10"
+            className="relative"
             onClick={onBellClick}
             aria-label="Notifications"
           >
@@ -130,7 +124,6 @@ export function BackTitleHeader({
         <Button
           variant="ghost"
           size="icon"
-          className="h-10 w-10"
           onClick={onBack}
           aria-label="Go back"
         >

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Share2, Copy, Check } from "lucide-react"
+import { Button } from "@/components/Button"
 import MobileWrapper, {
   BackTitleHeader,
   PrimaryCTAFooter,
@@ -87,9 +88,11 @@ export default function PatientReferralAndEarn() {
           <div className="text-3xl font-bold text-foreground tracking-widest">
             {referralCode}
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleCopy}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-purple-600 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2"
             aria-label="Copy code"
           >
             {copied ? (
@@ -97,7 +100,7 @@ export default function PatientReferralAndEarn() {
             ) : (
               <Copy className="h-5 w-5" />
             )}
-          </button>
+          </Button>
         </div>
 
         <p className="text-xs text-muted-foreground max-w-xs">
