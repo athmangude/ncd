@@ -298,7 +298,7 @@ export function WalletDrawer({
                         </button>
                       </PopoverTrigger>
                       <PopoverContent
-                        className="max-w-sm p-4 text-sm text-foreground bg-white border border-amber-200 shadow-lg leading-relaxed z-50"
+                        className="max-w-sm p-4 text-sm text-foreground bg-card border border-amber-200 shadow-lg leading-relaxed z-50"
                         side="top"
                         align="start"
                         sideOffset={5}

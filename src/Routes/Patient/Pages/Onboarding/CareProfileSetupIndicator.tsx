@@ -73,7 +73,7 @@ export default function CareProfileSetupIndicator() {
                     "flex items-center justify-between p-4 rounded-lg border transition-colors",
                     isCompleted
                       ? "bg-success border-success-solid"
-                      : "bg-white border-border"
+                      : "bg-card border-border"
                   )}
                 >
                   <div className="flex items-center gap-4">

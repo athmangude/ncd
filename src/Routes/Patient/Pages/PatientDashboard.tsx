@@ -200,7 +200,7 @@ function Dashboard({ data }: { data: any }) {
 
   return (
     <AppShell header={header} footer={null}>
-      <div className="flex flex-col gap-5 relative min-h-full bg-white">
+      <div className="flex flex-col gap-5 relative min-h-full">
         {isOffline && (
           <div className="mb-1 rounded-md bg-amber-100 text-amber-800 border border-amber-300 px-3 py-2 text-sm font-medium flex items-center gap-2 sticky top-0 z-40">
             <CloudOff className="h-4 w-4" />
@@ -252,7 +252,7 @@ function AccountLockedDrawer() {
           </DrawerHeader>
 
           <div className="space-y-5 p-5">
-            <div className="flex gap-5  items-center bg-white px-3 py-2 rounded-lg">
+            <div className="flex gap-5  items-center bg-card px-3 py-2 rounded-lg">
               <Percent className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="">Your Jireh Care Fund</p>
@@ -265,7 +265,7 @@ function AccountLockedDrawer() {
               <Lock className="h-5 w-5 text-red-500 ml-auto " />
             </div>
 
-            <div className="flex gap-5  items-center bg-white px-3 py-2 rounded-2xl">
+            <div className="flex gap-5  items-center bg-card px-3 py-2 rounded-2xl">
               <Percent className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="">Jireh Medical Loan</p>

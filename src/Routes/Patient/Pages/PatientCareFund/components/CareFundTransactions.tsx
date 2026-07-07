@@ -103,7 +103,7 @@ export function CareFundTransactions() {
                   .map((rowIndex) => (
                     <div
                       key={rowIndex}
-                      className="bg-white p-4 rounded-xl border border-border shadow-sm flex items-center gap-3"
+                      className="bg-card p-4 rounded-xl border border-border shadow-sm flex items-center gap-3"
                     >
                       <Skeleton className="h-10 w-10 rounded-full shrink-0" />
                       <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -194,7 +194,7 @@ export function CareFundTransactions() {
                 return (
                   <div
                     key={transaction.id}
-                    className="bg-white p-4 rounded-xl border border-border shadow-sm flex justify-between items-center"
+                    className="bg-card p-4 rounded-xl border border-border shadow-sm flex justify-between items-center"
                   >
                     <div className="flex items-center text-foreground gap-2">
                       {getTransactionIcon()}

@@ -37,7 +37,7 @@ export default function PWAOnboardingIntro() {
         </div>
       }
       footer={
-        <div className="flex flex-col gap-2 border-t border-border bg-white p-4">
+        <div className="flex flex-col gap-2 border-t border-border bg-card p-4">
           <Button
             className="w-full"
             disabled={loading}
@@ -76,7 +76,7 @@ export default function PWAOnboardingIntro() {
                     "flex items-center justify-between p-4 rounded-lg border transition-colors",
                     isCompleted
                       ? "bg-success border-success-solid"
-                      : "bg-white border-border"
+                      : "bg-card border-border"
                   )}
                 >
                   <div className="flex items-center gap-4">

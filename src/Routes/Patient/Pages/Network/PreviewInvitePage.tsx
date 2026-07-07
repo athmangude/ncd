@@ -196,7 +196,7 @@ export default function PreviewInvitePage() {
         showHelp={false}
         className="min-h-full items-center justify-center"
         footer={
-          <div className="p-4 bg-white border-t border-border">
+          <div className="p-4 bg-card border-t border-border">
             <Button
               variant="outline"
               className="w-full"
@@ -221,7 +221,7 @@ export default function PreviewInvitePage() {
               aria-hidden
               className="w-[47px] h-[26px] object-contain shrink-0"
             />
-            <div className="w-[90px] h-[90px] rounded-full border-[3px] border-primary/30 bg-white flex items-center justify-center shrink-0">
+            <div className="w-[90px] h-[90px] rounded-full border-[3px] border-primary/30 bg-card flex items-center justify-center shrink-0">
               <span className="text-[31.5px] font-normal text-foreground">
                 {inviteeInitials}
               </span>
@@ -280,7 +280,7 @@ export default function PreviewInvitePage() {
       title="Preview invite"
       showHelp={false}
       footer={
-        <div className="p-4 bg-white border-t border-border">
+        <div className="p-4 bg-card border-t border-border">
           <div className="flex flex-col gap-2">
             <Button
               variant="outline"

@@ -152,7 +152,7 @@ export function LoanCard({
 
   return (
     <div
-      className="border rounded-xl p-4 grid gap-4 bg-white"
+      className="border rounded-xl p-4 grid gap-4 bg-card"
       onClick={() => {
         try {
           trackEvent(EVENTS.LOAN_REPAYMENT.HISTORY_LOAN_CARD_TAP, {

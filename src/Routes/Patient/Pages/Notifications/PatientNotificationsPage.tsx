@@ -211,7 +211,7 @@ export default function PatientNotificationsPage() {
           approvals, and important care reminders.
         </p>
 
-        <div className="w-full space-y-4 text-left bg-white rounded-xl">
+        <div className="w-full space-y-4 text-left bg-card rounded-xl">
           <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
             <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
             <span className="text-sm font-medium text-foreground">
@@ -289,7 +289,7 @@ export default function PatientNotificationsPage() {
         />
       }
       footer={
-        <div className="border-t bg-white dark:bg-neutral-950 flex items-center p-4">
+        <div className="border-t bg-card dark:bg-neutral-950 flex items-center p-4">
           <Button
             variant="outline"
             size="lg"

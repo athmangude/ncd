@@ -55,7 +55,7 @@ export function DiscoveryHomeView({
       className="flex flex-col w-full max-h-full overflow-y-auto no-scrollbar"
     >
       {/* Header */}
-      <div className="bg-white flex flex-col gap-2 items-center p-4 mt-4 w-full shrink-0">
+      <div className="bg-card flex flex-col gap-2 items-center p-4 mt-4 w-full shrink-0">
         <div className="flex flex-col gap-1 items-center w-full text-center">
           <h2 className="text-foreground">Find care near you</h2>
           <p className="text-sm text-muted-foreground">
@@ -64,7 +64,7 @@ export function DiscoveryHomeView({
         </div>
 
         {/* Search bar acts as a navigation trigger to the dedicated Search page */}
-        <div className="flex items-center gap-2 h-11 w-full border border-border rounded-full pl-3 pr-2 bg-white shadow-sm">
+        <div className="flex items-center gap-2 h-11 w-full border border-border rounded-full pl-3 pr-2 bg-card shadow-sm">
           <button
             type="button"
             onClick={() => navigate("/patients/search")}
@@ -175,7 +175,7 @@ export function DiscoveryHomeView({
         {verifiedFacilities.length === 0 && facilities.length > 0 && (
           <div className="flex flex-col w-full gap-1">
             {facilities.slice(0, 10).map((f) => (
-              <Item key={f.id} asChild size="sm" className="bg-white text-left">
+              <Item key={f.id} asChild size="sm" className="bg-card text-left">
                 <button type="button" onClick={() => onFacilitySelect(f)}>
                   <ItemContent className="min-w-0">
                     <ItemTitle className="truncate">{f.name}</ItemTitle>

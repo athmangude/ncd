@@ -17,7 +17,7 @@ import {
 const quickActionVariants = cva("flex flex-col gap-4", {
   variants: {
     variant: {
-      default: "bg-white text-foreground",
+      default: "bg-card text-foreground",
       disabled: "filter grayscale text-muted-foreground",
     },
     defaultVariants: {

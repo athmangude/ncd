@@ -10,7 +10,7 @@ export function JirehPartnersToggle({
   onChange,
 }: JirehPartnersToggleProps) {
   return (
-    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-border bg-white">
+    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-border bg-card">
       <div className="flex flex-col">
         <span className="text-sm font-medium text-foreground">
           Jireh Health partners

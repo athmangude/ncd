@@ -331,7 +331,7 @@ export default function FastTrackWalletSelection() {
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."
       footer={
-        <div className="border-t border-border bg-white p-4">
+        <div className="border-t border-border bg-card p-4">
           <Button
             size="lg"
             className="w-full"
@@ -345,7 +345,7 @@ export default function FastTrackWalletSelection() {
       }
     >
       <div className="flex flex-col gap-6">
-        <div className="bg-white border border-border rounded-xl p-4 mx-1 space-y-3">
+        <div className="bg-card border border-border rounded-xl p-4 mx-1 space-y-3">
           <label className="text-sm font-medium text-foreground">
             Discount Code (Optional)
           </label>
@@ -476,7 +476,7 @@ export default function FastTrackWalletSelection() {
                     className={`border border-border rounded-xl p-4 flex items-center justify-between transition-colors ${
                       isAllocatedLoanDisabled
                         ? "bg-muted cursor-not-allowed opacity-75"
-                        : "bg-white cursor-pointer hover:border-primary"
+                        : "bg-card cursor-pointer hover:border-primary"
                     }`}
                     onClick={() =>
                       !isAllocatedLoanDisabled && handleWalletClick(wallet.id)
@@ -534,7 +534,7 @@ export default function FastTrackWalletSelection() {
                   className={`border rounded-xl p-4 flex items-center justify-between gap-4 transition-colors ${
                     isLoanDisabled
                       ? "border-border bg-muted cursor-not-allowed"
-                      : "border-border bg-white cursor-pointer hover:border-primary"
+                      : "border-border bg-card cursor-pointer hover:border-primary"
                   }`}
                   onClick={() => {
                     if (!isLoanDisabled) handleWalletClick(wallet.id)

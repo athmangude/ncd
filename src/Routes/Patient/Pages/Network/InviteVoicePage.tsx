@@ -261,7 +261,7 @@ export default function InviteVoicePage() {
 
           {recordingState === "recording" && (
             <div className="w-full max-w-md flex flex-col items-center gap-3">
-              <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
+              <div className="w-full bg-card rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
                 <Button
                   type="button"
                   variant="destructive"
@@ -287,7 +287,7 @@ export default function InviteVoicePage() {
 
           {recordingState === "review" && (
             <div className="w-full max-w-md flex flex-col items-center gap-4">
-              <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
+              <div className="w-full bg-card rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
                 <Button
                   type="button"
                   size="icon"

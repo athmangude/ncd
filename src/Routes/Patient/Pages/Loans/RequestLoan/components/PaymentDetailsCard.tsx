@@ -21,7 +21,7 @@ export default function PaymentDetailsCard({
 }: PaymentDetailsCardProps) {
   const containerClassName = compact
     ? "bg-muted rounded-lg p-4 space-y-2"
-    : "w-full max-w-sm bg-white border rounded-lg p-4 space-y-3"
+    : "w-full max-w-sm bg-card border rounded-lg p-4 space-y-3"
 
   const titleClassName = compact
     ? "text-sm font-semibold text-foreground mb-2"

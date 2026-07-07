@@ -171,7 +171,7 @@ export default function IncompleteSignUp({
                     "flex items-center justify-between p-4 rounded-lg border transition-colors",
                     isCompleted
                       ? "bg-green-50 border-green-500"
-                      : "bg-white border-border"
+                      : "bg-card border-border"
                   )}
                 >
                   <div className="flex items-center gap-3">

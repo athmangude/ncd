@@ -573,7 +573,7 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
         </p>
         <a
           href="tel:+254117118511"
-          className="flex items-center justify-between p-3 bg-white border rounded-xl hover:bg-muted transition-colors shadow-sm"
+          className="flex items-center justify-between p-3 bg-card border rounded-xl hover:bg-muted transition-colors shadow-sm"
         >
           <div className="flex items-center gap-3">
             <Phone className="w-5 h-5 text-muted-foreground" />

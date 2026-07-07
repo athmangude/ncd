@@ -215,7 +215,7 @@ export default function ResolveProvider() {
               onClick={() =>
                 navigate("/patients/payment/request-payment/how-to-pay")
               }
-              className="w-full flex items-center justify-center gap-4 p-4 bg-white border border-border rounded-xl shadow-sm hover:border-border hover:shadow-md transition-all group"
+              className="w-full flex items-center justify-center gap-4 p-4 bg-card border border-border rounded-xl shadow-sm hover:border-border hover:shadow-md transition-all group"
             >
               <p className="text-sm text-muted-foreground mt-0.5 text-center">
                 Search by hospital name and location

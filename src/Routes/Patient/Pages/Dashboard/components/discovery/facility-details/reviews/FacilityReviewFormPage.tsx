@@ -211,7 +211,7 @@ export default function FacilityReviewFormPage() {
   }
 
   const header = (
-    <header className="flex w-full items-center gap-2 bg-white p-2">
+    <header className="flex w-full items-center gap-2 bg-card p-2">
       <Button
         variant="outline"
         size="icon"
@@ -225,7 +225,7 @@ export default function FacilityReviewFormPage() {
   )
 
   const footer = (
-    <div className="bg-white border-t border-border px-4 py-3 w-full">
+    <div className="bg-card border-t border-border px-4 py-3 w-full">
       <Button
         type="submit"
         form="facility-review-form"
@@ -242,7 +242,7 @@ export default function FacilityReviewFormPage() {
       <form
         id="facility-review-form"
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col bg-white"
+        className="flex flex-col bg-card"
       >
         <section className="px-6 py-6 flex flex-col items-center text-center">
           <p className="text-base font-semibold text-foreground max-w-[34ch]">

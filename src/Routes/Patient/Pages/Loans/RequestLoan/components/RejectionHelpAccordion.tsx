@@ -9,7 +9,7 @@ import { HelpCircle, Phone } from "lucide-react"
 export default function RejectionHelpAccordion() {
   return (
     <div className="w-full max-w-md px-4 mt-4">
-      <div className="border rounded-lg bg-white overflow-hidden">
+      <div className="border rounded-lg bg-card overflow-hidden">
         <div className="p-4 border-b bg-muted">
           <h3>Have a problem with your invoice?</h3>
         </div>

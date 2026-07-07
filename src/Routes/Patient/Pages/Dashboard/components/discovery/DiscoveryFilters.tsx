@@ -111,7 +111,7 @@ export function DiscoveryFilters({
             Filters
           </span>
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="h-9 rounded-lg border-border bg-white">
+            <SelectTrigger className="h-9 rounded-lg border-border bg-card">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent className="max-h-[min(70vh,400px)]">
@@ -129,7 +129,7 @@ export function DiscoveryFilters({
             .
           </span>
           <Select value={filterLevel} onValueChange={setFilterLevel}>
-            <SelectTrigger className="h-9 rounded-lg border-border bg-white">
+            <SelectTrigger className="h-9 rounded-lg border-border bg-card">
               <SelectValue placeholder="Level" />
             </SelectTrigger>
             <SelectContent>

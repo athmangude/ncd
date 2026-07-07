@@ -376,7 +376,7 @@ export default function PatientPaymentConfirmation() {
 
         <div className="flex flex-col gap-5">
           {/* Card 1: Treatment Details */}
-          <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+          <div className="border border-border rounded-xl p-4 bg-card shadow-sm">
             <SectionTitle level={3} className="mb-4">
               Treatment details
             </SectionTitle>
@@ -412,7 +412,7 @@ export default function PatientPaymentConfirmation() {
           </div>
 
           {/* Card 2: Source of Funds */}
-          <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+          <div className="border border-border rounded-xl p-4 bg-card shadow-sm">
             <SectionTitle level={3} className="mb-3">
               Source of funds
             </SectionTitle>

@@ -54,7 +54,7 @@ export default function PatientDiscountsList() {
                 key={d.id}
                 type="button"
                 onClick={() => navigate(`/patients/discounts/${d.id}`)}
-                className="flex items-center gap-3 w-full text-left bg-white border border-border rounded-xl p-4"
+                className="flex items-center gap-3 w-full text-left bg-card border border-border rounded-xl p-4"
               >
                 <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary shrink-0">
                   <Percent className="h-5 w-5" />

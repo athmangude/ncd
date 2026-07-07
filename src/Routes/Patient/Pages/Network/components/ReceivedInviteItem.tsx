@@ -19,7 +19,7 @@ export function ReceivedInviteItem({
   const navigate = useNavigate()
 
   return (
-    <div className="bg-white p-3 rounded-xl shadow-sm flex items-center gap-3 border border-border">
+    <div className="bg-card p-3 rounded-xl shadow-sm flex items-center gap-3 border border-border">
       <ProfileAvatar
         src={profilePhoto}
         name={`${inviterFirstName} ${inviterLastName}`}

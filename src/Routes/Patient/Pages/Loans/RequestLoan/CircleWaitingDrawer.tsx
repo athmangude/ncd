@@ -114,7 +114,7 @@ export function CircleWaitingDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-white flex flex-col overflow-y-auto">
+    <div className="fixed inset-0 z-50 bg-card flex flex-col overflow-y-auto">
       <div className="flex flex-col flex-1 w-full max-w-lg mx-auto">
         {/* back button */}
         <div className="px-4 pt-4 shrink-0">

@@ -41,7 +41,7 @@ export function PendingInviteBody({ invite }: PendingInviteBodyProps) {
       </p>
 
       {/* Member info row */}
-      <div className="flex items-center gap-2 rounded-md bg-white px-3 py-2">
+      <div className="flex items-center gap-2 rounded-md bg-card px-3 py-2">
         <ProfileAvatar
           src={invite.profilePhoto ?? null}
           name={name}

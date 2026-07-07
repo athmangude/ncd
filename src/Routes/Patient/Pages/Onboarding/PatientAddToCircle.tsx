@@ -86,7 +86,7 @@ export default function PatientAddToCircle() {
     >
       <div className="flex-1 w-full flex flex-col gap-6">
         <div className="bg-purple-50 rounded-xl p-6 flex flex-col items-center text-center border border-purple-100 shadow-sm">
-          <div className="bg-white rounded-full p-3 mb-4 shadow-sm relative">
+          <div className="bg-card rounded-full p-3 mb-4 shadow-sm relative">
             <img
               src={networkCircleIcon}
               alt="Network Circle"

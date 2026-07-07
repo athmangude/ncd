@@ -143,7 +143,7 @@ export function PaymentCard({
 
   return (
     <div
-      className="p-4 flex flex-col gap-3 bg-white hover:bg-muted transition-colors cursor-pointer border rounded-xl"
+      className="p-4 flex flex-col gap-3 bg-card hover:bg-muted transition-colors cursor-pointer border rounded-xl"
       onClick={() =>
         navigate(`/patients/payments/payment-details/${paymentId}`, {
           state: navigationState,

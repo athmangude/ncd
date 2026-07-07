@@ -145,7 +145,7 @@ export default function CheckProfilePhotoPage() {
       title="Preview invite"
       onBack={handleBack}
       footer={
-        <div className="p-4 bg-white border-t border-border">
+        <div className="p-4 bg-card border-t border-border">
           <div className="flex flex-col gap-2">
             <Button variant="outline" className="w-full" onClick={handleSkip}>
               Skip for now
@@ -197,7 +197,7 @@ export default function CheckProfilePhotoPage() {
         </div>
 
         {selectedFile && previewUrl && (
-          <div className="bg-white rounded-xl border border-border p-2 pr-4 flex items-center gap-3">
+          <div className="bg-card rounded-xl border border-border p-2 pr-4 flex items-center gap-3">
             <ProfileAvatar
               src={previewUrl}
               name={selectedFile.name}

@@ -5,7 +5,7 @@ import { DialogTrigger } from "@/components/Dialog"
 import { Button } from "@/components/Button"
 
 const bannerItemVariants = cva(
-  "rounded-lg flex flex-col justify-between gap-3 p-4 border w-52 aspect-[1/1] bg-white",
+  "rounded-lg flex flex-col justify-between gap-3 p-4 border w-52 aspect-[1/1] bg-card",
   {
     variants: {
       variant: {
@@ -26,7 +26,7 @@ const stepCounterVariants = cva(
     variants: {
       variant: {
         active: "bg-primary border-primary text-white",
-        default: "bg-white",
+        default: "bg-card",
         final: "hidden",
         completed: "",
         finalCompleted: "hidden",

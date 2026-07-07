@@ -40,7 +40,7 @@ export function Stepper({
                   ? "bg-purple-100 text-primary border-2 border-primary" // Completed style
                   : isCurrent
                     ? "bg-primary text-white " // Active style
-                    : "bg-white border-2 border-border text-foreground"
+                    : "bg-card border-2 border-border text-foreground"
               )}
             >
               {isCompleted ? <Check className="w-5 h-5 " /> : stepNumber}

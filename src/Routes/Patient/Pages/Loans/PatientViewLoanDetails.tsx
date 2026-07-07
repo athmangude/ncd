@@ -205,7 +205,7 @@ export default function ViewLoanDetails() {
         </div>
 
         {/* Details Card */}
-        <div className="bg-white rounded-2xl border border-border p-5 shadow-sm flex flex-col gap-5">
+        <div className="bg-card rounded-2xl border border-border p-5 shadow-sm flex flex-col gap-5">
           <DetailRow
             icon={<User className="w-5 h-5 text-muted-foreground" />}
             label="Patient name"
@@ -224,7 +224,7 @@ export default function ViewLoanDetails() {
         </div>
 
         {status !== "PAID" && (
-          <div className="bg-white rounded-2xl border border-purple-200 p-5 shadow-sm relative overflow-hidden">
+          <div className="bg-card rounded-2xl border border-purple-200 p-5 shadow-sm relative overflow-hidden">
             <div className="absolute inset-0 border-2 border-purple-200 border-dashed rounded-2xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col gap-5">

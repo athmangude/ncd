@@ -71,7 +71,7 @@ export function ServicesOfferedSection({
         </Button>
       </div>
 
-      <div className="flex flex-col rounded-xl border border-border bg-white overflow-hidden">
+      <div className="flex flex-col rounded-xl border border-border bg-card overflow-hidden">
         {groups.map((g, idx) => {
           const isOpen = !!expanded[g.slug]
           return (

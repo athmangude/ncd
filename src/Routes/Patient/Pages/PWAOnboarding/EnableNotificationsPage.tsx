@@ -75,7 +75,7 @@ export default function EnableNotificationsPage() {
   const isGranted = notificationPermission === "granted"
 
   const footer = (
-    <div className="border-t bg-white p-4">
+    <div className="border-t bg-card p-4">
       {!isDenied && !isGranted && (
         <div className="flex gap-4">
           <Button
@@ -150,19 +150,19 @@ export default function EnableNotificationsPage() {
         <p className="text-muted-foreground text-sm mb-4">Why?</p>
 
         <div className="space-y-3">
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-xl">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-xl">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground font-medium text-sm">
               Keep SMS for urgent alerts
             </span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-xl">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-xl">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground font-medium text-sm">
               Keep track of every transaction
             </span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-xl">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-xl">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground font-medium text-sm">
               Get progress reminders and reports

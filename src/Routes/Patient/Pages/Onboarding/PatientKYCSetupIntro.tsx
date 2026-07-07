@@ -138,7 +138,7 @@ export default function PatientKYCSetupIntro() {
       }
       bodyPadding="none"
       footer={
-        <div className="flex flex-col gap-3 border-t border-border bg-white p-4">
+        <div className="flex flex-col gap-3 border-t border-border bg-card p-4">
           <p className=" text-muted-foreground text-center">
             By proceeding, you confirm that you have read and agreed to our{" "}
             <a
@@ -189,10 +189,10 @@ export default function PatientKYCSetupIntro() {
                   className={cn(
                     "rounded-xl border p-4 transition-colors",
                     isCompleted
-                      ? "bg-white border-green-400"
+                      ? "bg-card border-green-400"
                       : isLocked
                         ? "bg-muted border-border"
-                        : "bg-white border-border"
+                        : "bg-card border-border"
                   )}
                 >
                   <div className="flex items-start justify-between gap-2">

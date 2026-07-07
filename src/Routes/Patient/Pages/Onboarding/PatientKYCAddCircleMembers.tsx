@@ -131,7 +131,7 @@ function MemberRow({
     : ""
 
   return (
-    <Item asChild size="sm" className="bg-white w-full text-left">
+    <Item asChild size="sm" className="bg-card w-full text-left">
       <button
         type="button"
         onClick={onClick}
@@ -382,7 +382,7 @@ export default function PatientKYCAddCircleMembers() {
         </Chip>
       }
       footer={
-        <div className="bg-white border-t border-border p-4">
+        <div className="bg-card border-t border-border p-4">
           <div className="flex flex-col gap-3">
             {viewState === "waiting" && (
               <div className="flex gap-2 items-start bg-orange-50 px-3 py-2 rounded-md">

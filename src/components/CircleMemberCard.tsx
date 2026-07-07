@@ -39,7 +39,7 @@ export function CircleMemberCard({
     return (
       <div
         className={cn(
-          "bg-white p-4 rounded-xl shadow-sm border border-border",
+          "bg-card p-4 rounded-xl shadow-sm border border-border",
           "min-w-[240px] w-[240px] shrink-0 snap-center flex flex-col items-center gap-2",
           className
         )}
@@ -73,7 +73,7 @@ export function CircleMemberCard({
   return (
     <div
       className={cn(
-        "bg-white p-3 rounded-xl shadow-sm flex items-center gap-3",
+        "bg-card p-3 rounded-xl shadow-sm flex items-center gap-3",
         "border border-border",
         className
       )}

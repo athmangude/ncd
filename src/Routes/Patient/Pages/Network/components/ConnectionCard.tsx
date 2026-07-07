@@ -1,6 +1,6 @@
 export function ConnectionCard({ name, phoneNumber, status, children }: any) {
   return (
-    <div className="text-lg capitalize flex items-center gap-3 bg-white p-3 rounded-lg border mt-2">
+    <div className="text-lg capitalize flex items-center gap-3 bg-card p-3 rounded-lg border mt-2">
       <span className="rounded-full p-3 bg-muted aspect-square h-10 grid place-content-center text-foreground font-bold">
         {name[0]}
       </span>

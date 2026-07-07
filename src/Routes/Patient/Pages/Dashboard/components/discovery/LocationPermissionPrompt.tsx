@@ -114,7 +114,7 @@ export function LocationPermissionPrompt({
           ].map((item) => (
             <div
               key={item}
-              className="flex items-start gap-2 bg-white rounded-md p-1.5 min-h-8"
+              className="flex items-start gap-2 bg-card rounded-md p-1.5 min-h-8"
             >
               <div className="shrink-0 w-5 h-5 flex items-center justify-center">
                 <Check className="h-4 w-4 text-foreground" />

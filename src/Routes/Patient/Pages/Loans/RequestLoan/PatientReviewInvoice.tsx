@@ -328,7 +328,7 @@ export default function PatientReviewInvoice() {
       headerIcon={<HeaderIcon />}
       pageTitle="Review and confirm your information"
       footer={
-        <div className="p-4 bg-white border-t border-border">
+        <div className="p-4 bg-card border-t border-border">
           <Button
             className={`w-full font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg ${
               isFormValid
@@ -351,7 +351,7 @@ export default function PatientReviewInvoice() {
       }
     >
       <div className="flex flex-col gap-6">
-        <div className="bg-white rounded-xl border border-border overflow-hidden">
+        <div className="bg-card rounded-xl border border-border overflow-hidden">
           <ReviewItem
             icon={User}
             label="I am paying for"

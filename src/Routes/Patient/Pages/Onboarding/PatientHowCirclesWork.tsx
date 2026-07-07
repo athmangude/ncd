@@ -180,7 +180,7 @@ export default function PatientHowCirclesWork() {
         <BackTitleHeader title="How Circles work" onBack={() => navigate(-1)} />
       }
       footer={
-        <div className="flex w-full flex-col gap-2 border-t border-border bg-white px-4 pb-4 pt-3">
+        <div className="flex w-full flex-col gap-2 border-t border-border bg-card px-4 pb-4 pt-3">
           <Button className="w-full" onClick={handleContinue}>
             I understand — set up my Circle
           </Button>
@@ -346,7 +346,7 @@ export default function PatientHowCirclesWork() {
               {/* Waiting member */}
               <div className="flex flex-col items-center gap-2">
                 <div className="relative">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-warning-solid bg-white text-base font-medium text-foreground">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-warning-solid bg-card text-base font-medium text-foreground">
                     FL
                   </div>
                   <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-warning-solid" />
@@ -361,7 +361,7 @@ export default function PatientHowCirclesWork() {
               {/* Accepted member */}
               <div className="flex flex-col items-center gap-2">
                 <div className="relative">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-success-solid bg-white text-base font-medium text-foreground">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-success-solid bg-card text-base font-medium text-foreground">
                     FL
                   </div>
                   <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-success-solid" />
@@ -373,7 +373,7 @@ export default function PatientHowCirclesWork() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 items-start rounded-md bg-white px-2 py-[6px]">
+            <div className="flex gap-2 items-start rounded-md bg-card px-2 py-[6px]">
               <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
                 <Info className="h-4 w-4 text-foreground" />
               </div>
@@ -394,7 +394,7 @@ export default function PatientHowCirclesWork() {
               Contact our support team
             </p>
           </div>
-          <Item asChild size="sm" className="bg-white">
+          <Item asChild size="sm" className="bg-card">
             <button type="button" onClick={handleCallSupport}>
               <ItemMedia>
                 <Phone className="h-4 w-4 text-foreground" />

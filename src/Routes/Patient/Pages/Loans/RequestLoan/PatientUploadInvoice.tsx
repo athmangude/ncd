@@ -427,7 +427,7 @@ export default function PatientUploadInvoice() {
 
           {/* Help Accordion */}
           <div className="w-full max-w-md px-4 mt-4">
-            <div className="border rounded-lg bg-white overflow-hidden">
+            <div className="border rounded-lg bg-card overflow-hidden">
               <div className="p-4 border-b bg-muted">
                 <h3>Have a problem with your invoice?</h3>
               </div>
@@ -484,7 +484,7 @@ export default function PatientUploadInvoice() {
             </p>
             <a
               href="tel:+254117118511"
-              className="flex items-center justify-between p-4 bg-white border rounded-lg hover:bg-muted transition-colors"
+              className="flex items-center justify-between p-4 bg-card border rounded-lg hover:bg-muted transition-colors"
             >
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-muted-foreground" />
@@ -509,7 +509,7 @@ export default function PatientUploadInvoice() {
               className="w-20 h-20 text-muted-foreground/40"
               strokeWidth={1}
             />
-            <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1">
+            <div className="absolute -bottom-2 -right-2 bg-card rounded-full p-1">
               <img
                 src={clock}
                 alt="Invoice"
@@ -606,7 +606,7 @@ export default function PatientUploadInvoice() {
 
         {/* Consent Checkbox */}
         {!user.hasAcceptedMedicalConsentForm && (
-          <div className="bg-white rounded-lg border border-border p-4 space-y-2">
+          <div className="bg-card rounded-lg border border-border p-4 space-y-2">
             <div className="flex items-start gap-3">
               <Checkbox
                 id="terms"
@@ -652,7 +652,7 @@ function FileUploadCard({
   onRetry: () => void
 }) {
   return (
-    <div className="bg-white rounded-lg border border-border p-4 flex items-center gap-4">
+    <div className="bg-card rounded-lg border border-border p-4 flex items-center gap-4">
       {/* Thumbnail */}
       <div className="flex-shrink-0 w-16 h-16 rounded overflow-hidden bg-muted">
         {file.preview ? (
