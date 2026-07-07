@@ -15,8 +15,9 @@ vi.mock("axios")
 // dereferencing it (audit §0 — unguarded loan / loan.currency.code).
 let mockLoan: unknown = null
 vi.mock("../../stores/patientLoanStore", () => ({
-  usePatientLoanStore: (sel: (s: { loan: unknown; setLoan: () => void }) => unknown) =>
-    sel({ loan: mockLoan, setLoan: () => {} }),
+  usePatientLoanStore: (
+    sel: (s: { loan: unknown; setLoan: () => void }) => unknown
+  ) => sel({ loan: mockLoan, setLoan: () => {} }),
 }))
 
 beforeAll(() => {
@@ -65,8 +66,11 @@ describe("InvoiceDetails crash guards", () => {
     expect(
       await screen.findByText("Confirm Treatment Details")
     ).toBeInTheDocument()
-    // The unpaid Tag (transactionFeeIsPaid undefined) still renders, no throw.
+    // The unpaid Badge (transactionFeeIsPaid undefined) still renders, no throw,
+    // and carries the destructive status variant.
     expect(screen.getByText("Invoice Details")).toBeInTheDocument()
+    const unpaidBadge = screen.getByText("unpaid")
+    expect(unpaidBadge.getAttribute("data-variant")).toBe("destructive")
   })
 
   it("renders a 0 total (not a blank amount) when there are no invoice items", async () => {
@@ -108,5 +112,9 @@ describe("InvoiceDetails crash guards", () => {
     // Amount renders via the plain-number fallback (appears as both the line
     // item and the total), proving no crash on the missing currency object.
     expect((await screen.findAllByText("1,500")).length).toBeGreaterThan(0)
+    // Paid fee → success status variant on the Badge.
+    expect(screen.getByText("paid").getAttribute("data-variant")).toBe(
+      "success"
+    )
   })
 })

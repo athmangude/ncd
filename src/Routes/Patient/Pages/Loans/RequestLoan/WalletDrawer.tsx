@@ -11,6 +11,7 @@ import {
   DrawerTitle,
 } from "@/components/Drawer"
 import { Button } from "@/components/Button"
+import { Alert, AlertDescription } from "@/components/Alert"
 import { AlertCircle, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatMoney } from "@/utilities/currencyUtilities"
@@ -259,7 +260,7 @@ export function WalletDrawer({
               <DrawerDescription className="sr-only">
                 Adjust the amount you want to pay using this wallet
               </DrawerDescription>
-              <div className="bg-neutral-100 px-4 py-2 rounded-full text-sm font-medium text-neutral-600">
+              <div className="bg-muted px-4 py-2 rounded-full text-sm font-medium text-muted-foreground">
                 Remaining to allocate {formatMoney(remainingToAllocate, "KES")}
               </div>
             </div>
@@ -270,7 +271,7 @@ export function WalletDrawer({
             <div className="flex flex-col gap-2">
               {wallet.type === "LOAN" && (
                 <div className="flex items-center gap-2">
-                  <p className="font-medium text-neutral-900">Loan amount</p>
+                  <p className="font-medium text-foreground">Loan amount</p>
                   {!hasUploadedMpesaStatement && (
                     <Popover
                       open={showCreditLimitTooltip && hasExceededLimit}
@@ -289,7 +290,7 @@ export function WalletDrawer({
                             "inline-flex items-center justify-center focus:outline-none transition-colors",
                             hasExceededLimit
                               ? "text-amber-500 hover:text-amber-600"
-                              : "text-neutral-400 hover:text-neutral-500"
+                              : "text-muted-foreground hover:text-foreground"
                           )}
                           aria-label="Credit limit information"
                         >
@@ -297,18 +298,18 @@ export function WalletDrawer({
                         </button>
                       </PopoverTrigger>
                       <PopoverContent
-                        className="max-w-sm p-4 text-sm text-neutral-700 bg-white border border-amber-200 shadow-lg leading-relaxed z-50"
+                        className="max-w-sm p-4 text-sm text-foreground bg-white border border-amber-200 shadow-lg leading-relaxed z-50"
                         side="top"
                         align="start"
                         sideOffset={5}
                         style={{ width: "auto", maxWidth: "24rem" }}
                       >
                         <div className="flex flex-col gap-2">
-                          <p className="font-medium text-neutral-900">
+                          <p className="font-medium text-foreground">
                             Your interest-free limit is currently{" "}
                             {formatMoney(remainingAmount, "KES")}.
                           </p>
-                          <p className="text-neutral-600">
+                          <p className="text-muted-foreground">
                             To borrow up to{" "}
                             {formatMoney(
                               totalCreditLimitAmount ||
@@ -350,18 +351,18 @@ export function WalletDrawer({
                 </div>
               )}
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 font-medium">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
                   KES
                 </span>
                 <input
                   id="amount"
                   type="number"
                   className={cn(
-                    "w-full pl-14 pr-4 py-4 text-lg font-semibold border rounded-xl outline-none focus:ring-2 focus:ring-[#A826FF] transition-all",
+                    "w-full pl-14 pr-4 py-4 text-lg font-semibold border rounded-xl outline-none focus:ring-2 focus:ring-primary transition-all",
                     errors.amount ||
                       (showCreditLimitTooltip && wallet.type === "LOAN")
                       ? "border-amber-500"
-                      : "border-neutral-200"
+                      : "border-border"
                   )}
                   placeholder="000,000"
                   {...register("amount", {
@@ -404,17 +405,15 @@ export function WalletDrawer({
             {wallet.type === "MPESA" && (
               <div className="flex flex-col gap-4">
                 <div>
-                  <p className="text-sm font-medium text-neutral-900 mb-2">
+                  <p className="text-sm font-medium text-foreground mb-2">
                     M-Pesa Phone Number
                   </p>
                   <input
                     type="text"
                     placeholder="07XX XXX XXX"
                     className={cn(
-                      "w-full px-4 py-4 text-lg font-medium border rounded-xl outline-none focus:ring-2 focus:ring-[#A826FF] transition-all",
-                      errors.phoneNumber
-                        ? "border-red-500"
-                        : "border-neutral-200"
+                      "w-full px-4 py-4 text-lg font-medium border rounded-xl outline-none focus:ring-2 focus:ring-primary transition-all",
+                      errors.phoneNumber ? "border-red-500" : "border-border"
                     )}
                     {...register("phoneNumber", {
                       required: "Phone number is required for M-Pesa",
@@ -441,7 +440,7 @@ export function WalletDrawer({
             )}
 
             {wallet.type === "CASHBACK" && (
-              <p className="text-neutral-500 text-sm">
+              <p className="text-muted-foreground text-sm">
                 {balanceLabel}:{" "}
                 {formatMoney(balanceAmount, careFundCurrency, true)}
               </p>
@@ -449,7 +448,7 @@ export function WalletDrawer({
 
             {wallet.type === "LOAN" && (
               <>
-                <p className="text-neutral-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {balanceLabel}: {formatMoney(balanceAmount, "KES")}
                 </p>
 
@@ -465,7 +464,7 @@ export function WalletDrawer({
                   visible={isNetworkFacility}
                   title=""
                   description={
-                    <span className="text-neutral-900">
+                    <span className="text-foreground">
                       You will earn{" "}
                       <span className="font-bold">
                         {" "}
@@ -486,29 +485,29 @@ export function WalletDrawer({
                   />
                 </div>
 
-                <div className="bg-red-50 p-4 rounded-xl flex items-start gap-3">
-                  <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-                  <p className="text-xs text-red-600 leading-relaxed">
+                <Alert variant="warning" className="rounded-xl">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription className="text-xs leading-relaxed">
                     If your loan payment is delayed, there will be a penalty fee
                     of KES {formatMoney(Number(watchAmount || 0) * 0.1, "KES")}
-                  </p>
-                </div>
+                  </AlertDescription>
+                </Alert>
               </>
             )}
           </div>
 
-          <DrawerFooter className="gap-3 pb-8 sticky bottom-0 bg-background border-t border-neutral-100">
+          <DrawerFooter className="gap-3 pb-8 sticky bottom-0 bg-background border-t border-border">
             <Button
               type="submit"
               disabled={!isValid}
-              className="w-full bg-[#A826FF] hover:bg-[#9220DE] text-white font-semibold h-12 rounded-xl"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold h-12 rounded-xl"
             >
               Save
             </Button>
             <DrawerClose asChild>
               <Button
                 variant="outline"
-                className="w-full h-12 rounded-xl border-neutral-200 text-neutral-700 hover:bg-neutral-50"
+                className="w-full h-12 rounded-xl border-border text-foreground hover:bg-muted"
               >
                 Cancel
               </Button>

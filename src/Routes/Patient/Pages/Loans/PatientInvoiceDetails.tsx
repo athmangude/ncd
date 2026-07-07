@@ -9,7 +9,7 @@ import {
   MedicalRequestDetails,
 } from "./PatientViewLoanDetails"
 import PatientPageWrapper from "../PatientPageWrapper"
-import Tag from "@/components/Tag"
+import { Badge } from "@/components/Badge"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Download } from "lucide-react"
 import { useState } from "react"
@@ -100,9 +100,9 @@ function ItemizedInvoice() {
       <div className="flex justify-between gap-5">
         <h2>Invoice Details</h2>
 
-        <Tag className={resolveTagColor(loan?.transactionFeeIsPaid)}>
+        <Badge variant={loan?.transactionFeeIsPaid ? "success" : "destructive"}>
           {loan?.transactionFeeIsPaid ? "paid" : "unpaid"}
-        </Tag>
+        </Badge>
       </div>
 
       <div className="p-3 border rounded-lg flex flex-col gap-2">
@@ -135,10 +135,6 @@ function InvoiceItem({ item }: { item: any }) {
       </span>
     </div>
   )
-}
-
-function resolveTagColor(transactionFeeIsPaid?: boolean) {
-  return transactionFeeIsPaid ? "bg-green-500" : "bg-red-500"
 }
 
 function ViewInvoiceFile() {
