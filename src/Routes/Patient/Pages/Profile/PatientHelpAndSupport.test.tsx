@@ -56,4 +56,15 @@ describe("PatientHelpAndSupport", () => {
     fireEvent.click(screen.getByText("FAQs"))
     expect(mockNavigate).toHaveBeenCalledWith("/patients/faqs")
   })
+
+  it("renders each support option as an outline Item row", () => {
+    render(
+      <MemoryRouter>
+        <PatientHelpAndSupport />
+      </MemoryRouter>
+    )
+    const faqRow = screen.getByText("FAQs").closest("[data-slot='item']")
+    expect(faqRow).not.toBeNull()
+    expect(faqRow).toHaveAttribute("data-variant", "outline")
+  })
 })

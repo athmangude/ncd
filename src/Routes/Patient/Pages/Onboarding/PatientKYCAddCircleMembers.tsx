@@ -8,6 +8,16 @@ import {
   CircleAlert,
 } from "lucide-react"
 import { Button } from "@/components/Button"
+import { Badge } from "@/components/Badge"
+import { Chip } from "@/components/Chip"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
 import { ProfileAvatar } from "@/components/ProfileAvatar"
 import { useOfflinePatientData } from "@/hooks/useOfflinePatientData"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -121,32 +131,39 @@ function MemberRow({
     : ""
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex items-center gap-3 px-3 py-2 bg-white rounded-lg w-full text-left"
-      aria-label={`${member.firstName} ${member.lastName}`}
-    >
-      <ProfileAvatar
-        firstName={member.firstName}
-        lastName={member.lastName}
-        src={member.profilePhoto}
-        className="w-10 h-10 shrink-0"
-      />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground">
-          {member.firstName} {member.lastName}
-        </p>
-        {phone && <p className="text-xs text-muted-foreground">{phone}</p>}
-      </div>
-      {badge === "confirmed" ? (
-        <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-      ) : (
-        <span className="bg-orange-100 text-orange-700 text-xs font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
-          Waiting...
-        </span>
-      )}
-    </button>
+    <Item asChild size="sm" className="bg-white w-full text-left">
+      <button
+        type="button"
+        onClick={onClick}
+        aria-label={`${member.firstName} ${member.lastName}`}
+      >
+        <ItemMedia>
+          <ProfileAvatar
+            firstName={member.firstName}
+            lastName={member.lastName}
+            src={member.profilePhoto}
+            className="w-10 h-10 shrink-0"
+          />
+        </ItemMedia>
+        <ItemContent className="min-w-0">
+          <ItemTitle>
+            {member.firstName} {member.lastName}
+          </ItemTitle>
+          {phone && (
+            <ItemDescription className="text-xs">{phone}</ItemDescription>
+          )}
+        </ItemContent>
+        <ItemActions>
+          {badge === "confirmed" ? (
+            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+          ) : (
+            <Badge variant="warning" className="whitespace-nowrap">
+              Waiting...
+            </Badge>
+          )}
+        </ItemActions>
+      </button>
+    </Item>
   )
 }
 
@@ -358,15 +375,11 @@ export default function PatientKYCAddCircleMembers() {
       pageTitle={title || undefined}
       description={subtitle || undefined}
       headerAction={
-        <button
-          type="button"
-          onClick={handleCircleInfo}
-          className="flex items-center gap-2 bg-teal-50 text-foreground text-sm px-3 py-1.5 rounded-md"
-        >
-          <Info className="w-4 h-4 text-teal-600 shrink-0" />
+        <Chip onClick={handleCircleInfo}>
+          <Info className="w-4 h-4 shrink-0" />
           <span>What is a Jireh Circle?</span>
-          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-        </button>
+          <ChevronRight className="w-4 h-4 shrink-0" />
+        </Chip>
       }
       footer={
         <div className="bg-white border-t border-border p-4">

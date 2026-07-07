@@ -1,4 +1,5 @@
 import { Check, ChevronRight, Info, Pause, Play } from "lucide-react"
+import { Button } from "@/components/Button"
 import { ProfileAvatar } from "@/components/ProfileAvatar"
 import { cn } from "@/lib/utils"
 
@@ -72,18 +73,19 @@ export function InvitePreviewCard({
         </div>
       ) : (
         <div className="w-full flex items-center gap-1.5 border border-border rounded-full pl-1.5 pr-2.5 py-1.5">
-          <button
+          <Button
             type="button"
+            size="icon-sm"
             onClick={onTogglePlay}
-            className="w-[30px] h-[30px] rounded-full bg-primary flex items-center justify-center shrink-0"
+            className="rounded-full shrink-0"
             aria-label={isPlaying ? "Pause" : "Play"}
           >
             {isPlaying ? (
-              <Pause className="w-[11px] h-[11px] text-white fill-current" />
+              <Pause className="w-[11px] h-[11px] fill-current" />
             ) : (
-              <Play className="w-[11px] h-[11px] text-white fill-current ml-0.5" />
+              <Play className="w-[11px] h-[11px] fill-current ml-0.5" />
             )}
-          </button>
+          </Button>
           <div className="flex-1 flex items-center justify-between">
             {WAVEFORM_BAR_HEIGHTS.map((height, i) => (
               <div

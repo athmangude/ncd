@@ -88,15 +88,12 @@ function InstructionsSection() {
           </li>
         </ol>
 
-        <Button onClick={openFileManager} disabled={isLoading === "files"}>
-          {isLoading === "files" ? (
-            <>
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Opening...
-            </>
-          ) : (
-            <>Open your file manager</>
-          )}
+        <Button
+          onClick={openFileManager}
+          disabled={isLoading === "files"}
+          isLoading={isLoading === "files"}
+        >
+          {isLoading === "files" ? "Opening..." : "Open your file manager"}
         </Button>
       </div>
     </>

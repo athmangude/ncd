@@ -4,6 +4,7 @@ import { useNetworkData } from "@/Routes/Patient/Pages/Network/hooks/useNetworkD
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { trackEvent, EVENTS } from "@/analytics"
 import { Button } from "@/components/Button"
+import { Chip } from "@/components/Chip"
 import ErrorBlock from "@/components/ErrorBlock"
 import circleEmptyState from "@/assets/images/circle-empty-state.png"
 import { CircleNetworkViz } from "./CircleNetworkViz"
@@ -114,15 +115,11 @@ export function CircleSetupContent({
         {subtitle}
       </div>
 
-      <button
-        type="button"
-        onClick={onLearnMore}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-accent text-accent-foreground text-sm"
-      >
-        <Info className="w-4 h-4 text-[#525252] flex-shrink-0" />
+      <Chip onClick={onLearnMore}>
+        <Info className="w-4 h-4 flex-shrink-0" />
         <span>What is a Circle?</span>
-        <ChevronRight className="w-4 h-4 text-[#525252]" />
-      </button>
+        <ChevronRight className="w-4 h-4" />
+      </Chip>
 
       {isEmpty ? (
         <img

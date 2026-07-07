@@ -24,7 +24,6 @@ import {
   SlidersHorizontal,
   ChevronRight,
 } from "lucide-react"
-import { cn } from "@/lib/utils"
 import { trackEvent, EVENTS } from "@/analytics"
 import { useDiscovery } from "./useDiscovery"
 import { useRecentSearches } from "./api/useRecentSearches"
@@ -275,19 +274,14 @@ function SearchHeader({
           onChange={(e) => setSearchQuery(e.target.value)}
           autoFocus
         />
-        <button
-          type="button"
+        <Chip
+          variant={hasActiveFilters ? "default" : "secondary"}
           onClick={onFilterTap}
-          className={cn(
-            "flex items-center gap-1.5 h-6 px-3 text-sm font-medium rounded-full shrink-0 transition-colors",
-            hasActiveFilters
-              ? "bg-primary text-white"
-              : "bg-purple-100 text-purple-800"
-          )}
+          className="shrink-0"
         >
           <SlidersHorizontal className="h-3 w-3" />
           Filter
-        </button>
+        </Chip>
       </div>
 
       <div className="flex items-center justify-between w-full">
@@ -482,41 +476,43 @@ function FacilityResultRow({
   const showDriveTimeSkeleton = minutes == null && locationLoading
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex flex-col gap-1 px-2 py-2 rounded-md bg-white text-left"
+    <Item
+      asChild
+      size="sm"
+      className="flex-col items-start gap-1 bg-white text-left"
     >
-      <span className="text-base font-medium text-foreground truncate">
-        {facility.name}
-      </span>
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        {minutes != null ? (
-          <span className="inline-flex items-center gap-1">
-            <Clock className="h-3 w-3" />~{minutes} min
-          </span>
-        ) : showDriveTimeSkeleton ? (
-          <span
-            className="inline-flex items-center gap-1"
-            aria-label="Calculating drive time"
-          >
-            <Clock className="h-3 w-3" />
-            <Skeleton className="h-3 w-12 bg-muted rounded" />
-          </span>
-        ) : null}
-        {area && (
-          <span className="inline-flex items-center gap-1">
-            <MapPin className="h-3 w-3" />
-            {area}
+      <button type="button" onClick={onClick}>
+        <span className="text-base font-medium text-foreground truncate">
+          {facility.name}
+        </span>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          {minutes != null ? (
+            <span className="inline-flex items-center gap-1">
+              <Clock className="h-3 w-3" />~{minutes} min
+            </span>
+          ) : showDriveTimeSkeleton ? (
+            <span
+              className="inline-flex items-center gap-1"
+              aria-label="Calculating drive time"
+            >
+              <Clock className="h-3 w-3" />
+              <Skeleton className="h-3 w-12 bg-muted rounded" />
+            </span>
+          ) : null}
+          {area && (
+            <span className="inline-flex items-center gap-1">
+              <MapPin className="h-3 w-3" />
+              {area}
+            </span>
+          )}
+        </div>
+        {isApproved && (
+          <span className="inline-flex items-center gap-1 self-start mt-1 h-6 px-2 bg-teal-50 text-teal-800 text-xs rounded-full">
+            <BadgeCheck className="h-3 w-3" />
+            Earn 5% cashback here
           </span>
         )}
-      </div>
-      {isApproved && (
-        <span className="inline-flex items-center gap-1 self-start mt-1 h-6 px-2 bg-teal-50 text-teal-800 text-xs rounded-full">
-          <BadgeCheck className="h-3 w-3" />
-          Earn 5% cashback here
-        </span>
-      )}
-    </button>
+      </button>
+    </Item>
   )
 }

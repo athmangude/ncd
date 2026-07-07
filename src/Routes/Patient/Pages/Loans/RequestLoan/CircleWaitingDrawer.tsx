@@ -118,14 +118,15 @@ export function CircleWaitingDrawer({
       <div className="flex flex-col flex-1 w-full max-w-lg mx-auto">
         {/* back button */}
         <div className="px-4 pt-4 shrink-0">
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="icon"
             onClick={onClose}
-            className="bg-white p-2 rounded-lg border border-border shadow-sm"
             aria-label="Go back"
           >
             <ArrowLeft className="w-6 h-6 text-muted-foreground" />
-          </button>
+          </Button>
         </div>
 
         {/* header */}

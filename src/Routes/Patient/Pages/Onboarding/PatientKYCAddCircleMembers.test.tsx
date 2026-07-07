@@ -149,6 +149,10 @@ describe("PatientKYCAddCircleMembers", () => {
     expect(screen.getByText("Mary Wanjiku")).toBeInTheDocument()
     expect(screen.getByText(/Confirmed:/i)).toBeInTheDocument()
     expect(screen.queryByText(/Invites sent to:/i)).not.toBeInTheDocument()
+    // Member rows are now <Item> primitives, not hand-rolled buttons.
+    expect(
+      screen.getByText("Mary Wanjiku").closest("[data-slot='item']")
+    ).not.toBeNull()
   })
 
   it("partial + pending state: shows confirmed and pending sections", async () => {

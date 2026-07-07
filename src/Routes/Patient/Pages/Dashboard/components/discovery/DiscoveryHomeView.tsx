@@ -11,6 +11,15 @@ import { useNavigate } from "react-router-dom"
 import { format } from "date-fns"
 import { TabsContent } from "@/components/Tabs"
 import { Switch } from "@/components/Switch"
+import { Button } from "@/components/Button"
+import { Chip } from "@/components/Chip"
+import {
+  Item,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
 import { SectionTitle } from "@/components/SectionTitle"
 import { Facility } from "./types"
 import { DiscountCode } from "../DiscountsSection"
@@ -67,15 +76,14 @@ export function DiscoveryHomeView({
               Search facilities
             </span>
           </button>
-          <button
-            type="button"
+          <Chip
             onClick={() => navigate("/patients/search/filters")}
             aria-label="Open filters"
-            className="flex items-center gap-1.5 h-6 px-3 bg-purple-100 text-purple-800 text-sm font-medium rounded-full shrink-0"
+            className="shrink-0"
           >
             <SlidersHorizontal className="h-3 w-3" />
             Filter
-          </button>
+          </Chip>
         </div>
 
         {/* Location + Verified row */}
@@ -167,28 +175,23 @@ export function DiscoveryHomeView({
         {verifiedFacilities.length === 0 && facilities.length > 0 && (
           <div className="flex flex-col w-full gap-1">
             {facilities.slice(0, 10).map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => onFacilitySelect(f)}
-                className="flex gap-2 items-start min-h-8 px-2 py-1.5 rounded-md bg-white w-full text-left"
-              >
-                <div className="flex flex-col flex-1 min-w-0">
-                  <span className="text-sm text-foreground truncate">
-                    {f.name}
-                  </span>
-                  {f.county && (
-                    <span className="text-xs text-muted-foreground">
-                      {f.county}
-                    </span>
+              <Item key={f.id} asChild size="sm" className="bg-white text-left">
+                <button type="button" onClick={() => onFacilitySelect(f)}>
+                  <ItemContent className="min-w-0">
+                    <ItemTitle className="truncate">{f.name}</ItemTitle>
+                    {f.county && (
+                      <ItemDescription className="text-xs">
+                        {f.county}
+                      </ItemDescription>
+                    )}
+                  </ItemContent>
+                  {distanceByFacilityId.get(f.id) != null && (
+                    <ItemActions className="text-xs text-muted-foreground shrink-0">
+                      {distanceByFacilityId.get(f.id)!.toFixed(1)} km
+                    </ItemActions>
                   )}
-                </div>
-                {distanceByFacilityId.get(f.id) != null && (
-                  <span className="text-xs text-muted-foreground shrink-0">
-                    {distanceByFacilityId.get(f.id)!.toFixed(1)} km
-                  </span>
-                )}
-              </button>
+                </button>
+              </Item>
             ))}
           </div>
         )}
@@ -218,14 +221,16 @@ function SectionHeader({
         </span>
       )}
       {onSeeAll && (
-        <button
+        <Button
           type="button"
+          variant="link"
+          size="sm"
           onClick={onSeeAll}
-          className="flex items-center gap-0.5 text-sm text-foreground font-medium"
+          className="text-foreground"
         >
           See all
           <ChevronRight className="h-3.5 w-3.5" />
-        </button>
+        </Button>
       )}
     </div>
   )
@@ -272,43 +277,44 @@ function PartnerCard({
   const overflowCount = Math.max(0, categories.length - VISIBLE_CATEGORY_PILLS)
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="bg-secondary border border-purple-200 rounded-2xl p-4 flex flex-col gap-3 w-full text-left"
+    <Item
+      asChild
+      className="bg-secondary border-purple-200 rounded-2xl flex-col items-start gap-3 w-full text-left"
     >
-      <p className="text-sm text-foreground truncate w-full leading-tight">
-        {facility.name}
-      </p>
+      <button type="button" onClick={onClick}>
+        <p className="text-sm text-foreground truncate w-full leading-tight">
+          {facility.name}
+        </p>
 
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-1.5 text-sm text-foreground">
-          <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-          <span>{distance != null ? `${distance.toFixed(1)} km` : "—"}</span>
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-1.5 text-sm text-foreground">
+            <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+            <span>{distance != null ? `${distance.toFixed(1)} km` : "—"}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-sm font-medium text-green-600">
+            <TrendingUp className="h-4 w-4 shrink-0" strokeWidth={2} />
+            <span>5% cashback</span>
+          </div>
         </div>
-        <div className="flex items-center gap-1.5 text-sm font-medium text-green-600">
-          <TrendingUp className="h-4 w-4 shrink-0" strokeWidth={2} />
-          <span>5% cashback</span>
-        </div>
-      </div>
 
-      {categories.length > 0 && (
-        <div className="flex items-center gap-2 w-full">
-          {visibleCategories.map((cat) => (
-            <span
-              key={cat}
-              className="bg-purple-200/70 text-purple-700 text-sm font-medium px-3 py-1 rounded-md truncate max-w-[96px]"
-            >
-              {formatServiceCategory(cat)}
-            </span>
-          ))}
-          {overflowCount > 0 && (
-            <span className="text-sm text-muted-foreground shrink-0">
-              +{overflowCount} more
-            </span>
-          )}
-        </div>
-      )}
-    </button>
+        {categories.length > 0 && (
+          <div className="flex items-center gap-2 w-full">
+            {visibleCategories.map((cat) => (
+              <span
+                key={cat}
+                className="bg-purple-200/70 text-purple-700 text-sm font-medium px-3 py-1 rounded-md truncate max-w-[96px]"
+              >
+                {formatServiceCategory(cat)}
+              </span>
+            ))}
+            {overflowCount > 0 && (
+              <span className="text-sm text-muted-foreground shrink-0">
+                +{overflowCount} more
+              </span>
+            )}
+          </div>
+        )}
+      </button>
+    </Item>
   )
 }

@@ -15,6 +15,7 @@ import {
   ItemActions,
 } from "@/components/Item"
 import LoadingPage from "@/Routes/LoadingPage"
+import Loader from "@/components/Loader"
 import ErrorBlock from "@/components/ErrorBlock"
 import {
   ShieldCheck,
@@ -234,7 +235,9 @@ export default function PatientProfile() {
           onClick={() => setIsDrawerOpen(true)}
         >
           {uploadPhotoMutation.isPending && (
-            <div className="absolute inset-0 z-50 rounded-full border-4 border-purple-500 border-t-transparent animate-spin" />
+            <div className="absolute inset-0 z-50 flex items-center justify-center">
+              <Loader className="w-8 h-8" />
+            </div>
           )}
 
           <ProfileAvatar
@@ -280,7 +283,9 @@ export default function PatientProfile() {
             <div className="flex justify-center py-4">
               <div className="relative">
                 {uploadPhotoMutation.isPending && (
-                  <div className="absolute inset-0 z-50 rounded-full border-4 border-purple-500 border-t-transparent animate-spin" />
+                  <div className="absolute inset-0 z-50 flex items-center justify-center">
+                    <Loader className="w-10 h-10" />
+                  </div>
                 )}
                 <ProfileAvatar
                   src={uploadedPhoto || user.profilePhoto}
