@@ -28,7 +28,9 @@ describe("resolveStatusColor — status tokens, not raw palette", () => {
   it("maps loan/treatment statuses to status tokens", () => {
     expect(resolveStatusColor("APPROVED")).toBe("bg-success-solid")
     expect(resolveStatusColor("PAID")).toBe("bg-success-solid")
-    expect(resolveStatusColor("SUBMITTED_FOR_APPROVAL")).toBe("bg-warning-solid")
+    expect(resolveStatusColor("SUBMITTED_FOR_APPROVAL")).toBe(
+      "bg-warning-solid"
+    )
     expect(resolveStatusColor("REPAYMENT")).toBe("bg-info-solid")
     expect(resolveStatusColor("REJECTED")).toBe("bg-destructive")
     expect(resolveStatusColor("DEFAULTED")).toBe("bg-destructive")
