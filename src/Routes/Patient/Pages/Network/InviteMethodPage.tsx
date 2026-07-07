@@ -53,7 +53,7 @@ export default function InviteMethodPage() {
       {/* Drawer-style header */}
       <div className="flex flex-col items-center gap-3 pt-2 pb-6">
         <div
-          className="rounded-full border-[3.5px] border-dashed border-[#efd0ff] bg-secondary flex items-center justify-center flex-shrink-0"
+          className="rounded-full border-[3.5px] border-dashed border-primary/30 bg-secondary flex items-center justify-center flex-shrink-0"
           style={{ width: 84, height: 84 }}
         >
           <Plus

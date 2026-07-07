@@ -212,7 +212,7 @@ export default function PreviewInvitePage() {
             <ProfileAvatar
               src={displayPhoto}
               name={senderName}
-              className="w-[90px] h-[90px] border-[3px] border-[#dfacff]"
+              className="w-[90px] h-[90px] border-[3px] border-primary/30"
               fallbackClassName="text-2xl"
             />
             <img
@@ -221,8 +221,8 @@ export default function PreviewInvitePage() {
               aria-hidden
               className="w-[47px] h-[26px] object-contain shrink-0"
             />
-            <div className="w-[90px] h-[90px] rounded-full border-[3px] border-[#dfacff] bg-white flex items-center justify-center shrink-0">
-              <span className="text-[31.5px] font-normal text-[#404040]">
+            <div className="w-[90px] h-[90px] rounded-full border-[3px] border-primary/30 bg-white flex items-center justify-center shrink-0">
+              <span className="text-[31.5px] font-normal text-foreground">
                 {inviteeInitials}
               </span>
             </div>

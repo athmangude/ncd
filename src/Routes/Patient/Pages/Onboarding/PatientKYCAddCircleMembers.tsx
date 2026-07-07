@@ -439,7 +439,7 @@ export default function PatientKYCAddCircleMembers() {
               firstName={user?.firstName}
               lastName={user?.lastName}
               src={user?.profilePhoto}
-              className="w-[84px] h-[84px] border-2 border-[#dfacff]"
+              className="w-[84px] h-[84px] border-2 border-primary/30"
             />
 
             <div className="h-px w-6 bg-border" />

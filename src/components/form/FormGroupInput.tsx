@@ -148,7 +148,7 @@ export default function FormGroupInput({
           "[&#phoneNumber]:pl-9",
           error
             ? "border-destructive focus-visible:ring-destructive"
-            : "focus-visible:ring-[#A020F0]",
+            : "focus-visible:ring-ring",
           sensitive && "sensitive-data"
         )}
       />

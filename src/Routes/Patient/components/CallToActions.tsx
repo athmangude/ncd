@@ -64,7 +64,7 @@ export function AlertCard({ alert }: { alert: DashboardAlert }) {
   const getIcon = (alertId: string) => {
     switch (alertId) {
       case "PIN_REQUIRED":
-        return <ShieldCheck className="w-12 h-12 text-[#00b9db]" />
+        return <ShieldCheck className="w-12 h-12 text-primary" />
       case "ID_VERIFICATION_REQUIRED":
         return (
           <AlertTriangle className="w-8 h-8 text-muted-foreground font-normal" />

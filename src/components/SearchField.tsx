@@ -303,7 +303,10 @@ export default function SearchField({
 export function SearchFieldEmphasis({ text }: { text: string }) {
   return (
     <div className="mt-2 text-xs bg-muted rounded-md px-2 py-1 flex items-center gap-2">
-      <Sparkles className="inline size-3 text-[#1EDD05]" fill="#1EDD05" />
+      <Sparkles
+        className="inline size-3 text-success-solid"
+        fill="currentColor"
+      />
       <span>{text}</span>
     </div>
   )

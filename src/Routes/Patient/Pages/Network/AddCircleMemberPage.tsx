@@ -426,7 +426,7 @@ export default function AddCircleMemberPage() {
                     id="dateOfBirth"
                     onClick={() => setCalendarOpen((o) => !o)}
                     className={cn(
-                      "flex items-center h-10 w-full rounded-md border bg-background px-3 py-2 text-sm text-left ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A020F0] focus-visible:ring-offset-2",
+                      "flex items-center h-10 w-full rounded-md border bg-background px-3 py-2 text-sm text-left ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                       !field.value && "text-muted-foreground",
                       errors.dateOfBirth ? "border-destructive" : "border-input"
                     )}
