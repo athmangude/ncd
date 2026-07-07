@@ -24,9 +24,8 @@ beforeAll(() => {
 
 const navigateMock = vi.fn()
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom"
-  )
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
   return {
     ...actual,
     useNavigate: () => navigateMock,
@@ -49,14 +48,20 @@ vi.mock("@/analytics", () => ({
 }))
 
 const postMock = vi.fn().mockResolvedValue({ data: { success: true } })
-vi.mock("axios", () => ({ default: { post: (...a: unknown[]) => postMock(...a) } }))
+vi.mock("axios", () => ({
+  default: { post: (...a: unknown[]) => postMock(...a) },
+}))
 
 import PatientSetPin from "./PatientSetPin"
 
 const wrap = (ui: ReactNode) =>
   createElement(
     QueryClientProvider,
-    { client: new QueryClient({ defaultOptions: { queries: { retry: false } } }) },
+    {
+      client: new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      }),
+    },
     createElement(MemoryRouter, { initialEntries: ["/patients/set-pin"] }, ui)
   )
 

@@ -22,13 +22,7 @@ export default function PatientAddToCircle() {
   const user = usePatientAuthStore((state) => state.user)
   const { type } = user || {}
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isOffline,
-  } = useOfflinePatientData<{
+  const { data, isLoading, isError, error, isOffline } = useOfflinePatientData<{
     network: any[]
     invites: any[]
     receivedInvites: any[]
@@ -39,7 +33,7 @@ export default function PatientAddToCircle() {
         `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/network`,
         {
           credentials: "include",
-        },
+        }
       )
       if (!resp.ok) {
         const text = await resp.text().catch(() => "")
@@ -101,9 +95,7 @@ export default function PatientAddToCircle() {
               <Plus className="w-3 h-3 text-white" />
             </div>
           </div>
-          <h2 className="mb-2">
-            Add people to your circle
-          </h2>
+          <h2 className="mb-2">Add people to your circle</h2>
           <p className="text-muted-foreground mb-6 text-sm max-w-[260px]">
             To unlock loans, invite 2+ trusted adults to your circle
           </p>
@@ -119,9 +111,7 @@ export default function PatientAddToCircle() {
 
         {allMembers.length > 0 && (
           <div className="flex flex-col gap-3">
-            <h3 className="text-muted-foreground ml-1">
-              Added Members
-            </h3>
+            <h3 className="text-muted-foreground ml-1">Added Members</h3>
             {allMembers.map((member) => (
               <NetworkItem
                 key={member.id}

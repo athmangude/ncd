@@ -65,7 +65,8 @@ export default function FormGroupInput({
       // Cycle between KE, GB, and NG in dev mode
       const cycle: CountryCode[] = ["KE", "GB", "NG"]
       const currentIndex = cycle.indexOf(countryCode as CountryCode)
-      const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % cycle.length
+      const nextIndex =
+        currentIndex === -1 ? 0 : (currentIndex + 1) % cycle.length
       onCountryCodeChange(cycle[nextIndex])
     }
   }

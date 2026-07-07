@@ -189,9 +189,7 @@ describe("cross-flow effects", () => {
       body: JSON.stringify({ plan: "JIREH_PLUS" }),
     })
 
-    const after = await (
-      await fetch(ORIGIN + "/patients/login-details")
-    ).json()
+    const after = await (await fetch(ORIGIN + "/patients/login-details")).json()
     expect(after.hasActiveMembership).toBe(true)
   })
 })

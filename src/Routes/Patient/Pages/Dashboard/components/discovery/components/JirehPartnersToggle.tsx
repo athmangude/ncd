@@ -19,11 +19,7 @@ export function JirehPartnersToggle({
           Earn up to 5% cashback
         </span>
       </div>
-      <Switch
-        size="xs"
-        checked={checked}
-        onCheckedChange={onChange}
-      />
+      <Switch size="xs" checked={checked} onCheckedChange={onChange} />
     </div>
   )
 }

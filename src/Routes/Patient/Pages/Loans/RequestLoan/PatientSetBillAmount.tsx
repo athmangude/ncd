@@ -413,7 +413,9 @@ export default function PatientSetBillAmount() {
             </div>
           )}
           <div className="flex justify-between items-center pt-2 ">
-            <p className="text-muted-foreground font-medium">Total Bill Amount</p>
+            <p className="text-muted-foreground font-medium">
+              Total Bill Amount
+            </p>
             <p className="font-medium flex gap-2">
               {formatMoney(newBillAmount, currency)}
               {(careFundDiscountAmount > 0 || discountAmount > 0) && (

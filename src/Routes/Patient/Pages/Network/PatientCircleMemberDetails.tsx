@@ -24,9 +24,9 @@ export default function PatientCircleMemberDetails() {
   const { targetId } = useParams<{ targetId: string }>()
   const { subject, kind, isLoading, notFound } = useMemberById(targetId)
 
-  const user = usePatientAuthStore(
-    (s: PatientAuthState) => s.user,
-  ) as AuthUser | undefined
+  const user = usePatientAuthStore((s: PatientAuthState) => s.user) as
+    | AuthUser
+    | undefined
   const you = {
     firstName: user?.firstName ?? "",
     lastName: user?.lastName ?? "",

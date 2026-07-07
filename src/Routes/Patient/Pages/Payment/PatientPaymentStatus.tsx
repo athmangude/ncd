@@ -90,16 +90,18 @@ export const patientPaymentStatusQueryKey = "patientPaymentStatus"
 export default function PatientPaymentStatus() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  
+
   // 2. Retrieve the paymentId from localStorage or URL params.
   const reference = searchParams.get("trxref") || searchParams.get("reference")
-  const paymentId = searchParams.get("paymentId") || getFromLocalStorage("paymentId")
+  const paymentId =
+    searchParams.get("paymentId") || getFromLocalStorage("paymentId")
 
   const query = useQuery({
     queryKey: [patientPaymentStatusQueryKey, paymentId, reference],
     queryFn: async () => {
-      if (!paymentId && !reference) throw new Error("No payment ID or reference found")
-      
+      if (!paymentId && !reference)
+        throw new Error("No payment ID or reference found")
+
       let url = ""
       if (reference) {
         url = `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/payments/transaction-result/${reference}`
@@ -117,8 +119,8 @@ export default function PatientPaymentStatus() {
   // Redirect if no payment ID or reference
   useEffect(() => {
     if (!paymentId && !reference) {
-       // Optional: Redirect to dashboard if no payment ID found in local storage
-       // navigate("/patients")
+      // Optional: Redirect to dashboard if no payment ID found in local storage
+      // navigate("/patients")
     }
   }, [paymentId, reference, navigate])
 
@@ -126,24 +128,36 @@ export default function PatientPaymentStatus() {
     <PatientPageWrapper title="Transaction Result">
       <QueryWrapper isLoading={query.isLoading} error={query.error}>
         {query.data ? (
-            <PaymentStatusContent data={query.data} reference={reference} />
+          <PaymentStatusContent data={query.data} reference={reference} />
         ) : (
-             !query.isLoading && !paymentId && !reference && (
-                <div className="flex flex-col items-center justify-center h-full gap-4 mt-10 px-4 text-center">
-                    <AlertCircle className="w-12 h-12 text-muted-foreground" />
-                    <p className="text-muted-foreground">No payment information found.</p>
-                    <Button onClick={() => navigate("/patients")}>Go to Dashboard</Button>
-                </div>
-            )
+          !query.isLoading &&
+          !paymentId &&
+          !reference && (
+            <div className="flex flex-col items-center justify-center h-full gap-4 mt-10 px-4 text-center">
+              <AlertCircle className="w-12 h-12 text-muted-foreground" />
+              <p className="text-muted-foreground">
+                No payment information found.
+              </p>
+              <Button onClick={() => navigate("/patients")}>
+                Go to Dashboard
+              </Button>
+            </div>
+          )
         )}
       </QueryWrapper>
     </PatientPageWrapper>
   )
 }
 
-function PaymentStatusContent({ data, reference }: { data: PaymentStatusResponse; reference: string | null }) {
+function PaymentStatusContent({
+  data,
+  reference,
+}: {
+  data: PaymentStatusResponse
+  reference: string | null
+}) {
   const navigate = useNavigate()
-  
+
   const statusConfig = useMemo(() => {
     switch (data.status) {
       case "COMPLETED":
@@ -170,78 +184,108 @@ function PaymentStatusContent({ data, reference }: { data: PaymentStatusResponse
   }, [data.status])
 
   const amount = Number(data.totalBillAmount || data.transactionAmount || 0)
-  const date = data.createdAt || data.updatedAt || data.transactionDateTime || new Date().toISOString()
-  const facilityName = data.patientMedicalInfoRequest?.facility?.name || data.facility?.name|| "Care Provider"
+  const date =
+    data.createdAt ||
+    data.updatedAt ||
+    data.transactionDateTime ||
+    new Date().toISOString()
+  const facilityName =
+    data.patientMedicalInfoRequest?.facility?.name ||
+    data.facility?.name ||
+    "Care Provider"
   const isSuccess = data.status === "success" || data.status === "COMPLETED"
 
   return (
     <>
       <div className="flex flex-col gap-6 text-center items-center mt-10 px-4">
+        {isSuccess ? (
+          <div className="relative">
+            <img
+              src={successIcon}
+              alt="Invoice"
+              className="w-16 h-16 object-contain"
+            />
+          </div>
+        ) : (
+          <img
+            src={landline}
+            alt="Landline"
+            className="w-16 h-16 object-contain"
+          />
+        )}
+        <Title>{statusConfig.title}</Title>
 
-      {isSuccess ? (
-            <div className="relative">
-              <img
-                  src={successIcon}
-                  alt="Invoice"
-                  className="w-16 h-16 object-contain"
-                />
-         </div>
-      ) : (
-        <img
-        src={landline}
-        alt="Landline"
-        className="w-16 h-16 object-contain"
-      />
-      )}
-      <Title >{statusConfig.title}</Title>
+        {isSuccess ? (
+          <p className="text-muted-foreground ">
+            <span className="font-medium text-muted-foreground">
+              {formatMoney(amount, "KES")}{" "}
+            </span>{" "}
+            has been paid to <span className="capitalize">{facilityName}</span>{" "}
+            on
+            <span className="font-medium text-muted-foreground">
+              {" "}
+              {formatDateLong(date)} at {formatTime(date)}
+            </span>
+          </p>
+        ) : (
+          <p className="text-muted-foreground ">{statusConfig.description}</p>
+        )}
 
-      {isSuccess ? (
-        <p className="text-muted-foreground ">
-          <span className="font-medium text-muted-foreground">{formatMoney(amount, "KES")}  </span> has been paid to <span className="capitalize">{facilityName}</span> on
-          <span className="font-medium text-muted-foreground">  {formatDateLong(date)} at {formatTime(date)}</span>
-        </p>
-      ) : (
-        <p className="text-muted-foreground ">{statusConfig.description}</p>
-      )}
-
-      {isSuccess && data.paymentSplits && data.paymentSplits.length > 0 && (
-        <div>
+        {isSuccess && data.paymentSplits && data.paymentSplits.length > 0 && (
+          <div>
             {data.paymentSplits.map((split) => {
-              const earnedAmount = Number(split.paymentSplitAmount) * 0.05;
-              if (split.wallet?.type !== "MPESA" || earnedAmount <= 0) return null;
+              const earnedAmount = Number(split.paymentSplitAmount) * 0.05
+              if (split.wallet?.type !== "MPESA" || earnedAmount <= 0)
+                return null
               return (
                 <div key={split.id} className="flex justify-center ">
                   <Coins className="text-muted-foreground" />
                   <p className="text-muted-foreground capitalize">
-                    You have earned {formatMoney(earnedAmount, "KES")} for paying with Jireh Health at {facilityName.toLowerCase()}
+                    You have earned {formatMoney(earnedAmount, "KES")} for
+                    paying with Jireh Health at {facilityName.toLowerCase()}
                   </p>
                 </div>
-              );
+              )
             })}
           </div>
-      )}
+        )}
 
-
-     {isSuccess && data.paymentSplits && data.paymentSplits.length > 0 && !data.patientMedicalInfoRequest?.facility?.isOutOfNetwork && (
-        <div>
-            {data.paymentSplits.map((split) =>
-              (split.wallet?.type === "LOAN" && !data.patientMedicalInfoRequest?.facility?.isOutOfNetwork  ? (
-                <div className="w-full bg-secondary border border-primary rounded-xl p-4 flex items-center gap-3 text-left mt-2">
-                <div className="flex-shrink-0 relative">
-                    <img src={successIcon} alt="Reward" className="w-12 h-12 object-contain" />
-                </div>
-                <p className="font-medium text-sm text-foreground">
-                    Earn {formatMoney(Number(split.paymentSplitAmount) * 0.05,  "KES")} when you repay loan before the due date!
-                </p>
+        {isSuccess &&
+          data.paymentSplits &&
+          data.paymentSplits.length > 0 &&
+          !data.patientMedicalInfoRequest?.facility?.isOutOfNetwork && (
+            <div>
+              {data.paymentSplits.map((split) =>
+                split.wallet?.type === "LOAN" &&
+                !data.patientMedicalInfoRequest?.facility?.isOutOfNetwork ? (
+                  <div className="w-full bg-secondary border border-primary rounded-xl p-4 flex items-center gap-3 text-left mt-2">
+                    <div className="flex-shrink-0 relative">
+                      <img
+                        src={successIcon}
+                        alt="Reward"
+                        className="w-12 h-12 object-contain"
+                      />
+                    </div>
+                    <p className="font-medium text-sm text-foreground">
+                      Earn{" "}
+                      {formatMoney(
+                        Number(split.paymentSplitAmount) * 0.05,
+                        "KES"
+                      )}{" "}
+                      when you repay loan before the due date!
+                    </p>
+                  </div>
+                ) : null
+              )}
             </div>
-              ) : null
-            ))}
-          </div>
-      )}
-      
-      
+          )}
+
         <Button
-          onClick={() => navigate(`/patients/payments/payment-details/${reference ?? data.id}`)}
+          onClick={() =>
+            navigate(
+              `/patients/payments/payment-details/${reference ?? data.id}`
+            )
+          }
           className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200 hover:text-purple-800"
           size="lg"
         >
@@ -249,13 +293,13 @@ function PaymentStatusContent({ data, reference }: { data: PaymentStatusResponse
           View receipt
         </Button>
 
-      <Button
-        className="w-full"
-        size="lg"
-        onClick={() => navigate("/patients")}
-      >
-        Back to Dashboard
-      </Button>
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={() => navigate("/patients")}
+        >
+          Back to Dashboard
+        </Button>
       </div>
     </>
   )

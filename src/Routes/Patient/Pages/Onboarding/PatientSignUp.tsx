@@ -21,7 +21,10 @@ import {
   getFromLocalStorage,
   setToLocalStorage,
 } from "@/utilities/localStorage"
-import MobileWrapper, { LogoHeader, PrimaryCTAFooter } from "@/Routes/MobileWrapper"
+import MobileWrapper, {
+  LogoHeader,
+  PrimaryCTAFooter,
+} from "@/Routes/MobileWrapper"
 
 export type Inputs = {
   phoneNumber: string
@@ -50,7 +53,7 @@ function SignUpForm() {
   })
 
   const { toast } = useToast()
-  
+
   const savedData = getFromLocalStorage(PHONE_NUMBER_STORAGE_KEY)
 
   const {
@@ -140,10 +143,7 @@ function SignUpForm() {
 
   return (
     <MobileWrapper
-      header={<
-        LogoHeader showIcons={false} 
-        className="flex justify-center"
-          />}
+      header={<LogoHeader showIcons={false} className="flex justify-center" />}
       footer={
         <PrimaryCTAFooter
           label="Send OTP"
@@ -234,7 +234,9 @@ function SignUpForm() {
                 I agree to Jireh's Privacy Policy
               </span>
               <br />
-              <span>By ticking this box, you confirm that you have read and agreed to our{" "}
+              <span>
+                By ticking this box, you confirm that you have read and agreed
+                to our{" "}
                 <a
                   href="https://jireh-health.com/privacy"
                   target="_blank"

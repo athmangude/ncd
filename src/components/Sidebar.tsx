@@ -42,9 +42,7 @@ interface SidebarSubsectionProps {
 export function SidebarSubsection({ title, children }: SidebarSubsectionProps) {
   return (
     <div className="flex flex-col gap-1">
-      {title && (
-        <h2 className="text-muted-foreground uppercase">{title}</h2>
-      )}
+      {title && <h2 className="text-muted-foreground uppercase">{title}</h2>}
       <ul className="flex flex-col gap-2 mt-1">{children}</ul>
     </div>
   )

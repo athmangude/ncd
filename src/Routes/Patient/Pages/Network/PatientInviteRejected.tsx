@@ -25,7 +25,9 @@ export default function PatientInviteRejected() {
       footer={
         <PrimaryCTAFooter
           label={isNewUser ? "Sign Up" : "Back to Dashboard"}
-          onClick={() => navigate(isNewUser ? nextOnboardingStep : "/patients/")}
+          onClick={() =>
+            navigate(isNewUser ? nextOnboardingStep : "/patients/")
+          }
         />
       }
       className="flex flex-col gap-7 text-center items-center"

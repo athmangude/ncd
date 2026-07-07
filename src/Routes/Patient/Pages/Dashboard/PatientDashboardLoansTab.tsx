@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { getFirstIncompleteStep } from "../../hooks/useNextOnboardingStep"
 import { KYC_START_URL } from "../../hooks/useNextKYCStep"
-import { AlertCard } from "../../components/CallToActions" 
+import { AlertCard } from "../../components/CallToActions"
 
 import { DashboardSearch } from "./components/DashboardSearch"
 import { DashboardTabs } from "./components/DashboardTabs"
@@ -29,7 +29,9 @@ export default function PatientDashboardLoansTab() {
     user.patientCircle?.isFrozen === true ||
     user.patientCircle?.frozenAt != null
 
-  const [activeTab, setActiveTab] = useState<"payments" | "loans" | "cashback">(location.state?.subTab || "payments")
+  const [activeTab, setActiveTab] = useState<"payments" | "loans" | "cashback">(
+    location.state?.subTab || "payments"
+  )
 
   useEffect(() => {
     if (location.state?.subTab) {
@@ -37,11 +39,26 @@ export default function PatientDashboardLoansTab() {
     }
   }, [location.state])
 
-  const { dashboardAlert, loanStats, paymentRequests, discounts, isLoading, loans, payments } = usePatientDashboardData(activeTab)
+  const {
+    dashboardAlert,
+    loanStats,
+    paymentRequests,
+    discounts,
+    isLoading,
+    loans,
+    payments,
+  } = usePatientDashboardData(activeTab)
 
-  const sortedPayments = useMemo(() => payments ? [...payments].sort((a: any, b: any) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  ) : [], [payments])
+  const sortedPayments = useMemo(
+    () =>
+      payments
+        ? [...payments].sort(
+            (a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+        : [],
+    [payments]
+  )
 
   const handlePayMedicalBill = () => {
     const nextIncompleteStep = getFirstIncompleteStep(user)
@@ -66,16 +83,15 @@ export default function PatientDashboardLoansTab() {
   }
 
   return (
-    <TabsContent value="home" className="flex flex-col w-full gap-5  [&::-webkit-scrollbar]:hidden pb-52">
-
+    <TabsContent
+      value="home"
+      className="flex flex-col w-full gap-5  [&::-webkit-scrollbar]:hidden pb-52"
+    >
       <DashboardSearch />
 
       {dashboardAlert && <AlertCard alert={dashboardAlert} />}
 
-      <DashboardTabs 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-      />
+      <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === "payments" && (
         <PaymentsTabContent
@@ -103,17 +119,14 @@ export default function PatientDashboardLoansTab() {
         />
       )}
 
-      {activeTab === "cashback" && (
-        <CashbackTabContent />
-      )}
+      {activeTab === "cashback" && <CashbackTabContent />}
 
-      <DashboardStickyFooter 
+      <DashboardStickyFooter
         hasActiveMembership={hasActiveMembership}
         activeTab={activeTab}
         canPayMedicalBill={canPayMedicalBill}
         onPayMedicalBill={handlePayMedicalBill}
       />
-
     </TabsContent>
   )
 }

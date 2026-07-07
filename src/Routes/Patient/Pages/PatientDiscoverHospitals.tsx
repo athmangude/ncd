@@ -38,9 +38,7 @@ export default function PatientDiscoverHospitals() {
 
       {careProvider && (
         <div className="text-left mt-3 flex flex-col gap-1">
-          <h2 className="text-muted-foreground">
-            {careProvider.name}
-          </h2>
+          <h2 className="text-muted-foreground">{careProvider.name}</h2>
           <p className="text-sm text-muted-foreground">
             {careProvider.plotNumber || "No plot number available"}
           </p>

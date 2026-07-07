@@ -32,7 +32,9 @@ export default function AmountContainer({
         </span>
 
         {strikethoughText && (
-          <span className="text-muted-foreground line-through">{strikethoughText}</span>
+          <span className="text-muted-foreground line-through">
+            {strikethoughText}
+          </span>
         )}
       </p>
     </div>

@@ -25,7 +25,9 @@ export function PatientInviteExpired() {
       footer={
         <PrimaryCTAFooter
           label={isNewUser ? "Sign Up" : "Back to Dashboard"}
-          onClick={() => navigate(isNewUser ? nextOnboardingStep : "/patients/")}
+          onClick={() =>
+            navigate(isNewUser ? nextOnboardingStep : "/patients/")
+          }
         />
       }
       className="flex flex-col gap-7 text-center items-center"
@@ -37,9 +39,7 @@ export function PatientInviteExpired() {
         aria-hidden="true"
       />
 
-      <h1>
-        {state?.message || "Invite expired"}
-      </h1>
+      <h1>{state?.message || "Invite expired"}</h1>
 
       <p className="text-lg text-muted-foreground">
         Please ask the person who invited you to send you a new invite.

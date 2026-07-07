@@ -10,7 +10,10 @@ import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import PatientPinPrompt from "@/Routes/Patient/components/PatientPinPrompt"
 import AmountContainer from "@/Routes/Patient/components/AmountContainer"
 import { Building2, ChevronRight, User } from "lucide-react"
-import { getFromLocalStorage, setToLocalStorage } from "@/utilities/localStorage"
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+} from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import axios from "axios"
@@ -230,7 +233,8 @@ export default function PatientPaymentConfirmation() {
 
     // Mark discount as redeemed if discount was used in payment splits
     const discountAllocation = data.walletAllocations.find(
-      (alloc: WalletAllocation) => alloc.type === "DISCOUNT" && alloc.discountCode
+      (alloc: WalletAllocation) =>
+        alloc.type === "DISCOUNT" && alloc.discountCode
     )
 
     if (discountAllocation && discountAllocation.discountCode) {
@@ -337,7 +341,9 @@ export default function PatientPaymentConfirmation() {
               paymentAmount: allocation.amount,
               type: allocation.type,
               // discountCode is optional for non-discount types
-              ...(allocation.discountCode && { discountCode: allocation.discountCode }),
+              ...(allocation.discountCode && {
+                discountCode: allocation.discountCode,
+              }),
             }
           }
         ),
@@ -437,10 +443,7 @@ export default function PatientPaymentConfirmation() {
               )}
 
               {/* Divider */}
-              <div
-                className="h-px w-full bg-muted my-1"
-                aria-hidden="true"
-              />
+              <div className="h-px w-full bg-muted my-1" aria-hidden="true" />
 
               {/* Total Bill */}
               <div className="flex justify-between items-center">

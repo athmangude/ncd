@@ -87,9 +87,7 @@ export default function InviteTextPage() {
     >
       <div className="flex flex-col">
         <div className="flex flex-col mb-8">
-          <h2 className="text-foreground mb-1">
-            Write up to 140 characters
-          </h2>
+          <h2 className="text-foreground mb-1">Write up to 140 characters</h2>
           <p className="text-muted-foreground text-sm">
             e.g. &ldquo;This is for managing Mom&apos;s care&rdquo;.
           </p>

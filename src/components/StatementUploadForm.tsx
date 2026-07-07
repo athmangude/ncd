@@ -42,7 +42,13 @@ export default function StatementUploadForm({
   const { reset } = useForm<Inputs>()
 
   const mutation = useMutation({
-    mutationFn: async ({ file, passcode }: { file: File, passcode?: string }) => {
+    mutationFn: async ({
+      file,
+      passcode,
+    }: {
+      file: File
+      passcode?: string
+    }) => {
       const formData = new FormData()
       formData.append("financialStatementFile", file)
       if (passcode) {
@@ -54,7 +60,7 @@ export default function StatementUploadForm({
 
       await axios.post(
         import.meta.env.VITE_API_BASE_URL +
-        "/underwriting/upload-mpesa-statement",
+          "/underwriting/upload-mpesa-statement",
         formData,
         {
           headers: {
@@ -84,7 +90,7 @@ export default function StatementUploadForm({
     },
     onError: (error: any) => {
       reset()
-      setUploadProgress(0) 
+      setUploadProgress(0)
       toast({
         title: "Error",
         description: error.response?.data?.message || error.message,
@@ -124,13 +130,10 @@ export default function StatementUploadForm({
               </div>
             </div>
           )}
-          <form
-            className="mt-5 text-muted-foreground flex flex-col gap-4"
-          >
+          <form className="mt-5 text-muted-foreground flex flex-col gap-4">
             <div className={`${mutation.isPending && "hidden"}`}>
               <p className="text-xs text-center pb-1">
-                Browse to select a document, then click to upload to save
-                it.
+                Browse to select a document, then click to upload to save it.
               </p>
               <Input
                 type="file"
@@ -172,7 +175,9 @@ export default function StatementUploadForm({
                   <div className="flex items-center gap-2 font-medium text-primary">
                     <Loader /> Uploading...
                   </div>
-                  <span className="text-muted-foreground">{uploadProgress}%</span>
+                  <span className="text-muted-foreground">
+                    {uploadProgress}%
+                  </span>
                 </div>
               </div>
             )}

@@ -15,7 +15,10 @@ import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import useNextOnboardingStep from "../hooks/useNextOnboardingStep"
 import { useWebOTP } from "../hooks/useWebOTP"
 import { trackEvent, EVENTS } from "@/analytics"
-import MobileWrapper, { LogoHeader, PrimaryCTAFooter } from "@/Routes/MobileWrapper"
+import MobileWrapper, {
+  LogoHeader,
+  PrimaryCTAFooter,
+} from "@/Routes/MobileWrapper"
 
 export default function VerifyOTPForm() {
   const navigate = useNavigate()
@@ -263,9 +266,7 @@ export default function VerifyOTPForm() {
       {resendMutation.isError && (
         <ErrorMessage message={resendMutation.error.message} />
       )}
-      {resendMutation.data && (
-        <SuccessMessage message={resendMutation.data} />
-      )}
+      {resendMutation.data && <SuccessMessage message={resendMutation.data} />}
     </MobileWrapper>
   )
 }

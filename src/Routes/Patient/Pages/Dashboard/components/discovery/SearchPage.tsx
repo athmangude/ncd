@@ -252,9 +252,7 @@ function SearchHeader({
       </div>
 
       <div className="flex flex-col gap-1 items-center w-full text-center mt-4">
-        <h2 className="text-foreground">
-          Find care near you
-        </h2>
+        <h2 className="text-foreground">Find care near you</h2>
         <p className="text-sm text-muted-foreground">
           Search by name, area, or service.
         </p>

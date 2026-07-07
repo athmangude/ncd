@@ -41,7 +41,11 @@ function FacilityCardSkeleton() {
   )
 }
 
-export function FacilityList({ filteredFacilities, onFacilityClick, loading }: FacilityListProps) {
+export function FacilityList({
+  filteredFacilities,
+  onFacilityClick,
+  loading,
+}: FacilityListProps) {
   return (
     <div className="flex-1 overflow-hidden bg-muted">
       <ScrollArea className="h-full">
@@ -53,13 +57,13 @@ export function FacilityList({ filteredFacilities, onFacilityClick, loading }: F
           ) : (
             <>
               {filteredFacilities.map((facility) => (
-                <FacilityCard 
-                  key={facility.id} 
-                  facility={facility} 
-                  onClick={onFacilityClick} 
+                <FacilityCard
+                  key={facility.id}
+                  facility={facility}
+                  onClick={onFacilityClick}
                 />
               ))}
-              
+
               {filteredFacilities.length === 0 && (
                 <div className="text-center py-10 text-muted-foreground">
                   <p>No facilities found matching your criteria.</p>

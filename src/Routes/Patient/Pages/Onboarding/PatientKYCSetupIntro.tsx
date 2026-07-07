@@ -37,14 +37,16 @@ const DISPLAY_STEPS: DisplayStep[] = [
     id: "02",
     label: "National ID front photo",
     checkCompletion: (u) =>
-      u?.documentVerificationStatus === PatientDocumentVerificationStatus.PASSED,
+      u?.documentVerificationStatus ===
+      PatientDocumentVerificationStatus.PASSED,
     isPayStep: false,
   },
   {
     id: "03",
     label: "Selfie",
     checkCompletion: (u) =>
-      u?.documentVerificationStatus === PatientDocumentVerificationStatus.PASSED,
+      u?.documentVerificationStatus ===
+      PatientDocumentVerificationStatus.PASSED,
     isPayStep: false,
   },
   {
@@ -73,7 +75,6 @@ const DISPLAY_STEPS: DisplayStep[] = [
     isPayStep: true,
   },
 ]
-
 
 export default function PatientKYCSetupIntro() {
   const navigate = useNavigate()
@@ -203,7 +204,9 @@ export default function PatientKYCSetupIntro() {
                         <div
                           className={cn(
                             "text-sm font-medium",
-                            isCompleted ? "text-muted-foreground" : "text-foreground"
+                            isCompleted
+                              ? "text-muted-foreground"
+                              : "text-foreground"
                           )}
                         >
                           {step.label}

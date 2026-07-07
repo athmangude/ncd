@@ -6,9 +6,13 @@ interface DashboardHeaderProps {
   profilePhoto?: string
 }
 
-export function DashboardHeader({ firstName, lastName, profilePhoto }: DashboardHeaderProps) {
-  const formattedFirstName = firstName 
-    ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase() 
+export function DashboardHeader({
+  firstName,
+  lastName,
+  profilePhoto,
+}: DashboardHeaderProps) {
+  const formattedFirstName = firstName
+    ? firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase()
     : ""
 
   return (
@@ -23,7 +27,9 @@ export function DashboardHeader({ firstName, lastName, profilePhoto }: Dashboard
         />
         <div className="flex flex-col">
           <h1 className="text-foreground">Hello, {formattedFirstName} 👋</h1>
-          <p className="text-muted-foreground text-sm">How are you feeling today?</p>
+          <p className="text-muted-foreground text-sm">
+            How are you feeling today?
+          </p>
         </div>
       </div>
     </div>

@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/InputOtp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/InputOtp"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { Button } from "@/components/Button"
 import { useToast } from "@/hooks/useToast"
@@ -80,24 +85,28 @@ export default function ResolveProvider() {
     <PatientPageWrapper title="Payment Details">
       <div className="flex flex-col gap-6 px-4 sm:px-6">
         <div className="flex flex-col items-center text-center gap-2 mt-2">
-        {/* Hero illustration placeholder */}
-        <div className="w-full h-48 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-400 font-medium overflow-hidden">
-          {/* We use a placeholder since actual image paths depend on the bundler */}
-          <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
-            {/* Illustration Placeholder */}
-            <img src={resolveProviderIllustration} alt="Resolve Provider" />
+          {/* Hero illustration placeholder */}
+          <div className="w-full h-48 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-400 font-medium overflow-hidden">
+            {/* We use a placeholder since actual image paths depend on the bundler */}
+            <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
+              {/* Illustration Placeholder */}
+              <img src={resolveProviderIllustration} alt="Resolve Provider" />
+            </div>
           </div>
-        </div>
           <h2 className="text-foreground">
-          Enter the hospital's payment details
+            Enter the hospital's payment details
           </h2>
         </div>
 
         <div className="flex flex-col items-center gap-4">
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="flex items-center">
-              <div className="relative flex h-11 w-7 sm:h-12 sm:w-10 items-center justify-center border-y border-l border-r border-input text-sm sm:text-base font-semibold shadow-sm rounded-l-md bg-muted text-muted-foreground cursor-not-allowed select-none">J</div>
-              <div className="relative flex h-11 w-7 sm:h-12 sm:w-10 items-center justify-center border-y border-r border-input text-sm sm:text-base font-semibold shadow-sm rounded-r-md bg-muted text-muted-foreground cursor-not-allowed select-none">H</div>
+              <div className="relative flex h-11 w-7 sm:h-12 sm:w-10 items-center justify-center border-y border-l border-r border-input text-sm sm:text-base font-semibold shadow-sm rounded-l-md bg-muted text-muted-foreground cursor-not-allowed select-none">
+                J
+              </div>
+              <div className="relative flex h-11 w-7 sm:h-12 sm:w-10 items-center justify-center border-y border-r border-input text-sm sm:text-base font-semibold shadow-sm rounded-r-md bg-muted text-muted-foreground cursor-not-allowed select-none">
+                H
+              </div>
             </div>
             <InputOTPSeparator />
             <InputOTP
@@ -109,15 +118,33 @@ export default function ResolveProvider() {
               containerClassName="gap-1 sm:gap-2"
             >
               <InputOTPGroup>
-                <InputOTPSlot index={0} className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold" />
-                <InputOTPSlot index={1} className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold" />
-                <InputOTPSlot index={2} className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold" />
+                <InputOTPSlot
+                  index={0}
+                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                />
+                <InputOTPSlot
+                  index={1}
+                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                />
+                <InputOTPSlot
+                  index={2}
+                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                />
               </InputOTPGroup>
               <InputOTPSeparator />
               <InputOTPGroup>
-                <InputOTPSlot index={3} className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold" />
-                <InputOTPSlot index={4} className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold" />
-                <InputOTPSlot index={5} className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold" />
+                <InputOTPSlot
+                  index={3}
+                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                />
+                <InputOTPSlot
+                  index={4}
+                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                />
+                <InputOTPSlot
+                  index={5}
+                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                />
               </InputOTPGroup>
             </InputOTP>
           </div>
@@ -138,8 +165,6 @@ export default function ResolveProvider() {
               </span>
             </div>
           )}
-
-
         </div>
 
         {providerData && (
@@ -147,27 +172,21 @@ export default function ResolveProvider() {
             <div className="border  rounded-xl p-4 shadow-sm">
               <div className="flex flex-col gap-3">
                 <div className="flex justify-between items-center">
-                  <span>
-                    Facility :
-                  </span>
+                  <span>Facility :</span>
                   <p className="text-base text-foreground text-right">
                     {providerData?.facility?.name}
                   </p>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span>
-                    Payment Station :
-                  </span>
+                  <span>Payment Station :</span>
                   <p className="text-base text-foreground text-right">
                     {providerData.name}
                   </p>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span>
-                    Payment Number :
-                  </span>
+                  <span>Payment Number :</span>
                   <p className="text-base text-foreground text-right">
                     {formatPaymentNumber(providerData.paymentNumber)}
                   </p>
@@ -186,28 +205,24 @@ export default function ResolveProvider() {
             </Button>
           </div>
         )}
-          {!providerData && (
-
-        <div className="mt-6 pt-6">
-        <div className="flex flex-col items-center text-muted-foreground">
-            <span>Don't have code ?</span>
-          </div>
-          <button
-            type="button"
-            onClick={() =>
-              navigate("/patients/payment/request-payment/how-to-pay")
-            }
-            className="w-full flex items-center justify-center gap-4 p-4 bg-white border border-border rounded-xl shadow-sm hover:border-border hover:shadow-md transition-all group"
-          >
-
+        {!providerData && (
+          <div className="mt-6 pt-6">
+            <div className="flex flex-col items-center text-muted-foreground">
+              <span>Don't have code ?</span>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/patients/payment/request-payment/how-to-pay")
+              }
+              className="w-full flex items-center justify-center gap-4 p-4 bg-white border border-border rounded-xl shadow-sm hover:border-border hover:shadow-md transition-all group"
+            >
               <p className="text-sm text-muted-foreground mt-0.5 text-center">
-              Search by hospital name and location
+                Search by hospital name and location
               </p>
-          </button>
-        </div>
-      )}
-
-
+            </button>
+          </div>
+        )}
       </div>
     </PatientPageWrapper>
   )

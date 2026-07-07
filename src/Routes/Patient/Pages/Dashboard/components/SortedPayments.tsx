@@ -24,7 +24,10 @@ const groupItemsByDate = (items: any[]) => {
   return groups
 }
 
-export function SortedPayments({ sortedPayments, isLoading }: SortedPaymentsProps) {
+export function SortedPayments({
+  sortedPayments,
+  isLoading,
+}: SortedPaymentsProps) {
   if (isLoading) {
     return (
       <>
@@ -66,7 +69,9 @@ export function SortedPayments({ sortedPayments, isLoading }: SortedPaymentsProp
       <div className="flex flex-col gap-6 pb-24">
         {groupedPayments.map((group) => (
           <div key={group.date} className="flex flex-col gap-3">
-            <p className="text-sm text-muted-foreground font-medium ml-1">{group.date}</p>
+            <p className="text-sm text-muted-foreground font-medium ml-1">
+              {group.date}
+            </p>
             <div className="flex flex-col gap-3">
               {group.items.map((payment: any) => (
                 <PaymentCard key={payment.id} payment={payment} />

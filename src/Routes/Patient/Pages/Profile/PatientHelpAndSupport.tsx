@@ -4,9 +4,12 @@ import {
   Mail,
   Instagram,
   Facebook,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react"
-import MobileWrapper, { BackTitleHeader, PrimaryCTAFooter } from "@/Routes/MobileWrapper"
+import MobileWrapper, {
+  BackTitleHeader,
+  PrimaryCTAFooter,
+} from "@/Routes/MobileWrapper"
 import { useToast } from "@/hooks/useToast"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
@@ -44,13 +47,16 @@ export default function PatientHelpAndSupport() {
     onSuccess: () => {
       toast({
         title: "Request Sent",
-        description: "We have received your request and will call you back shortly.",
+        description:
+          "We have received your request and will call you back shortly.",
       })
     },
     onError: (error: any) => {
       toast({
         title: "Request Failed",
-        description: error.response?.data?.message || "Something went wrong. Please try again.",
+        description:
+          error.response?.data?.message ||
+          "Something went wrong. Please try again.",
         variant: "destructive",
       })
     },
@@ -126,12 +132,12 @@ export default function PatientHelpAndSupport() {
             onClick={option.onClick}
             className="flex items-center gap-4 p-4 bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-muted-foreground/30 transition-all text-left group"
           >
-            <div className="text-muted-foreground">
-              {option.icon}
-            </div>
+            <div className="text-muted-foreground">{option.icon}</div>
             <div className="flex-1">
               <h3 className="text-foreground">{option.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {option.description}
+              </p>
             </div>
             <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
           </button>

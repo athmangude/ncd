@@ -48,7 +48,7 @@ export default function PatientInviteRejectedView() {
     queryFn: async () => {
       const resp = await fetch(
         `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/invite/${inviteId}`,
-        { credentials: "include" },
+        { credentials: "include" }
       )
       if (!resp.ok) {
         const text = await resp.text().catch(() => "")

@@ -7,25 +7,22 @@ import { useNavigate } from "react-router-dom"
 
 export default function PatientInvitationsSent() {
   const navigate = useNavigate()
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isOffline,
-  } = usePatientNetwork()
+  const { data, isLoading, isError, error, isOffline } = usePatientNetwork()
 
   if (isLoading) {
     return <LoadingPage />
   }
 
   if (isError) {
-    return <ErrorBlock message={
-      isOffline
-        ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard."
-        : (error as any)?.response?.data?.message || (error as any)?.message
-    }
-  />
+    return (
+      <ErrorBlock
+        message={
+          isOffline
+            ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard."
+            : (error as any)?.response?.data?.message || (error as any)?.message
+        }
+      />
+    )
   }
 
   const { invites = [] } = data || {}
@@ -41,9 +38,13 @@ export default function PatientInvitationsSent() {
       footer={null}
     >
       <div className="flex flex-col gap-3 mt-4">
-        <div className="text-muted-foreground mb-2">Sent ({invites.length})</div>
+        <div className="text-muted-foreground mb-2">
+          Sent ({invites.length})
+        </div>
         {invites.length === 0 ? (
-          <div className="text-muted-foreground text-sm pl-8">No sent invitations</div>
+          <div className="text-muted-foreground text-sm pl-8">
+            No sent invitations
+          </div>
         ) : (
           invites.map((n) => (
             <NetworkItem
@@ -58,4 +59,3 @@ export default function PatientInvitationsSent() {
     </MobileWrapper>
   )
 }
-

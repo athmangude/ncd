@@ -54,7 +54,9 @@ export function CircleMemberCard({
         <div className="text-center overflow-hidden w-full">
           <p className="font-medium text-foreground truncate text-sm">{name}</p>
           {phoneNumber && (
-            <p className="text-muted-foreground text-xs truncate">{phoneNumber}</p>
+            <p className="text-muted-foreground text-xs truncate">
+              {phoneNumber}
+            </p>
           )}
           {relationship && (
             <p className="text-muted-foreground text-xs capitalize truncate">
@@ -73,7 +75,7 @@ export function CircleMemberCard({
       className={cn(
         "bg-white p-3 rounded-xl shadow-sm flex items-center gap-3",
         "border border-border",
-        className,
+        className
       )}
     >
       <CircleSlotAvatar
@@ -89,7 +91,9 @@ export function CircleMemberCard({
           {name}
         </span>
         {phoneNumber && (
-          <span className="text-muted-foreground text-sm truncate">{phoneNumber}</span>
+          <span className="text-muted-foreground text-sm truncate">
+            {phoneNumber}
+          </span>
         )}
         {relationship && (
           <span className="text-muted-foreground text-xs capitalize">
@@ -99,9 +103,7 @@ export function CircleMemberCard({
       </div>
 
       {children && (
-        <div className="flex items-center gap-1 shrink-0 ml-2">
-          {children}
-        </div>
+        <div className="flex items-center gap-1 shrink-0 ml-2">{children}</div>
       )}
     </div>
   )

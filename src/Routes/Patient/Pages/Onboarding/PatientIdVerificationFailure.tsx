@@ -12,9 +12,7 @@ export default function PatientIdVerificationFailure() {
           aria-hidden
           className="w-20 h-20"
         />
-        <h1>
-          We could not verify your National ID details.
-        </h1>
+        <h1>We could not verify your National ID details.</h1>
 
         <p className="text-lg text-muted-foreground">
           Unfortunately, you have been blocked from our services because your

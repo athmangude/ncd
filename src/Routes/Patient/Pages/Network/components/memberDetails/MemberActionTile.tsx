@@ -6,7 +6,11 @@ interface MemberActionTileProps {
   onClick: () => void
 }
 
-export function MemberActionTile({ icon: Icon, label, onClick }: MemberActionTileProps) {
+export function MemberActionTile({
+  icon: Icon,
+  label,
+  onClick,
+}: MemberActionTileProps) {
   return (
     <button
       type="button"

@@ -230,8 +230,8 @@ export default function PreviewInvitePage() {
 
           <div className="flex flex-col items-center gap-1 text-center">
             <h2 className="text-foreground">
-              Invite sent to{" "}
-              <span className="text-primary">{inviteeName}</span>.
+              Invite sent to <span className="text-primary">{inviteeName}</span>
+              .
             </h2>
             <p className="text-sm text-muted-foreground">
               You will get a notification when they accept.

@@ -96,7 +96,9 @@ export function WaitlistDialog({
 
           <h1>{title}</h1>
 
-          <p className="text-lg text-muted-foreground text-center">{description}</p>
+          <p className="text-lg text-muted-foreground text-center">
+            {description}
+          </p>
 
           <div className="flex flex-col gap-3 w-full mt-5">
             <Button

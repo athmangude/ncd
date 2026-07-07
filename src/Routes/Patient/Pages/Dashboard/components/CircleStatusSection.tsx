@@ -8,7 +8,9 @@ import { CircleActivityBanner } from "./CircleActivityBanner"
 export function CircleStatusSection() {
   const navigate = useNavigate()
   const status = useCircleStatus()
-  const user = usePatientAuthStore((state: { user?: unknown }) => state.user) as
+  const user = usePatientAuthStore(
+    (state: { user?: unknown }) => state.user
+  ) as
     | { firstName?: string; lastName?: string; profilePhoto?: string | null }
     | undefined
 

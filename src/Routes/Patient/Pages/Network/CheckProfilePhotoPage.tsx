@@ -211,7 +211,9 @@ export default function CheckProfilePhotoPage() {
               <div className="font-medium text-foreground truncate text-sm">
                 {selectedFile.name}
               </div>
-              <div className="text-sm text-muted-foreground">Ready to upload</div>
+              <div className="text-sm text-muted-foreground">
+                Ready to upload
+              </div>
             </div>
             <button
               onClick={handleRemoveFile}

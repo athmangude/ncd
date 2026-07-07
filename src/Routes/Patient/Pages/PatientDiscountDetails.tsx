@@ -153,7 +153,9 @@ export default function PatientDiscountDetails() {
             <div className="flex divide-x divide-border">
               {showMax && (
                 <div className="flex-1 px-4 py-4 flex flex-col items-center gap-1">
-                  <span className="text-xs text-muted-foreground">Max discount</span>
+                  <span className="text-xs text-muted-foreground">
+                    Max discount
+                  </span>
                   <span className="text-base font-semibold text-foreground">
                     {currencySymbol}{" "}
                     {parseFloat(d.maximumDiscountAmount!).toLocaleString()}

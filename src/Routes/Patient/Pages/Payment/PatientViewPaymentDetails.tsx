@@ -524,12 +524,7 @@ function DetailRow({
   isLast?: boolean
 }) {
   return (
-    <div
-      className={cn(
-        "flex gap-3 py-3",
-        !isLast && "border-b border-border"
-      )}
-    >
+    <div className={cn("flex gap-3 py-3", !isLast && "border-b border-border")}>
       <div className="mt-1">{icon}</div>
       <div className="flex-1">
         <p className="text-foreground font-medium text-sm">{label}</p>

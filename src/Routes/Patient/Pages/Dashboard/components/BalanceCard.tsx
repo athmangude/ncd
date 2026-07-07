@@ -183,12 +183,7 @@ export function BalanceCard({
           <div className="bg-white/20 backdrop-blur-md py-[var(--fluid-badge-py)] px-[var(--fluid-badge-px)] rounded-full text-[length:var(--fluid-badge-text)] font-medium tracking-wide border border-white/10 uppercase">
             Payments
           </div>
-          <img
-            src={logoIcon}
-            alt="Jireh Logo"
-            width="40"
-            className="h-auto"
-          />
+          <img src={logoIcon} alt="Jireh Logo" width="40" className="h-auto" />
         </div>
 
         <div className="flex flex-col mt-auto gap-[var(--fluid-card-gap)]">

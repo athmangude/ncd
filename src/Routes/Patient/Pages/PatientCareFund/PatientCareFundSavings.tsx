@@ -66,7 +66,7 @@ export default function PatientCareFundSavings() {
         }}
         waitlistType="SAVINGS"
         submitButtonLabel="I'm Interested!"
-       />
+      />
 
       <PatientCareFundExplainer />
     </PatientPageWrapper>

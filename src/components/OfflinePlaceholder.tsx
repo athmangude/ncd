@@ -6,9 +6,9 @@ export function OfflinePlaceholder({ message }: OfflinePlaceholderProps) {
   return (
     <div className="flex flex-col items-center justify-center gap-5 p-8 min-h-[60vh] text-center">
       <div className="relative flex items-center justify-center">
-        <img 
-          src="/offline-placeholder.svg" 
-          alt="Offline" 
+        <img
+          src="/offline-placeholder.svg"
+          alt="Offline"
           className="w-24 h-24 object-contain"
         />
       </div>

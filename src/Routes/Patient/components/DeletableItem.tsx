@@ -15,7 +15,9 @@ export default function DeletableItem({
     <div className="p-3 flex gap-5 items-center justify-between font-medium rounded-xl border text-muted-foreground">
       <div className="grid gap-1">
         <p className="text-muted-foreground">{title}</p>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        {description && (
+          <p className="text-xs text-muted-foreground">{description}</p>
+        )}
       </div>
 
       {tag && (

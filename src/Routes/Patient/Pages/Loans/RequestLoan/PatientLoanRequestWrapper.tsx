@@ -88,7 +88,7 @@ export default function PatientLoanRequestWrapper() {
           </RouteMetadata>
         }
       />
-      
+
       <Route
         path="/treatment-details"
         element={
@@ -97,7 +97,6 @@ export default function PatientLoanRequestWrapper() {
           </RouteMetadata>
         }
       />
-
 
       <Route
         path="/set-bill-amount"

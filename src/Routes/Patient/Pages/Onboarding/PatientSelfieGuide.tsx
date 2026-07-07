@@ -25,11 +25,11 @@ export default function PatientSelfieGuide() {
 
           <div className="space-y-8">
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">01</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                01
+              </span>
               <div>
-                <h3 className="mb-1">
-                  Ensure good lighting
-                </h3>
+                <h3 className="mb-1">Ensure good lighting</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Make sure you are well-lit and in focus. Natural light works
                   best.
@@ -38,11 +38,11 @@ export default function PatientSelfieGuide() {
             </div>
 
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">02</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                02
+              </span>
               <div>
-                <h3 className="mb-1">
-                  Include your whole face
-                </h3>
+                <h3 className="mb-1">Include your whole face</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Capture your entire face to ensure you are clearly visible.
                 </p>
@@ -50,11 +50,11 @@ export default function PatientSelfieGuide() {
             </div>
 
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">03</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                03
+              </span>
               <div>
-                <h3 className="mb-1">
-                  Avoid crowds and busy backgrounds
-                </h3>
+                <h3 className="mb-1">Avoid crowds and busy backgrounds</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Find a plain background and ensure no other people are in the
                   frame.
@@ -63,11 +63,11 @@ export default function PatientSelfieGuide() {
             </div>
 
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">04</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                04
+              </span>
               <div>
-                <h3 className="mb-1">
-                  Hold camera steady
-                </h3>
+                <h3 className="mb-1">Hold camera steady</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Keep your device steady for a clear, non-blurry image.
                 </p>

@@ -39,9 +39,7 @@ export function RepaymentTimeline({
 
   return (
     <div className={cn("overflow-x-auto no-scrollbar pb-1", className)}>
-      <h3 className="mb-2 text-muted-foreground">
-        Salary Advance Plan
-      </h3>
+      <h3 className="mb-2 text-muted-foreground">Salary Advance Plan</h3>
       <div className="flex gap-10">
         {installments.map((installment, index) => (
           <Installment

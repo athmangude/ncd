@@ -33,16 +33,15 @@ export default function PatientReviewMembershipDetails() {
     mutationFn: async (data: any) => {
       const payload: any = {
         plan: data.plan,
-        skipCreditLimitUpdate: data.skipCreditLimitUpdate
+        skipCreditLimitUpdate: data.skipCreditLimitUpdate,
       }
-      
+
       if (data.plan === "FREE") {
-         delete payload.plan
+        delete payload.plan
       }
 
       const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL +
-          "/patients/submit-plan-details",
+        import.meta.env.VITE_API_BASE_URL + "/patients/submit-plan-details",
         payload
       )
 
@@ -218,7 +217,9 @@ function ReviewItem({
     <div className="flex justify-between items-center gap-1 bg-muted px-3  py-2 rounded-xl">
       <div className="grid gap-1">
         <p className="text-muted-foreground">{title}</p>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        {description && (
+          <p className="text-xs text-muted-foreground">{description}</p>
+        )}
       </div>
 
       {tag && (

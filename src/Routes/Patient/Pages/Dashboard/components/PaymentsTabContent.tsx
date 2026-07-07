@@ -27,7 +27,7 @@ export function PaymentsTabContent({
   paymentRequests,
   sortedPayments,
   discounts = [],
-  isLoading
+  isLoading,
 }: PaymentsTabContentProps) {
   return (
     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
@@ -40,7 +40,7 @@ export function PaymentsTabContent({
       />
 
       {!hasActiveMembership && (
-        <Button 
+        <Button
           className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 "
           onClick={onUpgrade}
         >
@@ -49,18 +49,17 @@ export function PaymentsTabContent({
         </Button>
       )}
       {!hasActiveMembership && (
-        <Button 
-          className="w-full  "
-          onClick={onPayMedicalBill}
-        >
-         Pay Medical Bill
+        <Button className="w-full  " onClick={onPayMedicalBill}>
+          Pay Medical Bill
         </Button>
       )}
 
-
       <DiscountsSection discounts={discounts} />
 
-      <PaymentRequestsSection requests={paymentRequests} isLoading={isLoading} />
+      <PaymentRequestsSection
+        requests={paymentRequests}
+        isLoading={isLoading}
+      />
 
       <CircleStatusSection />
 

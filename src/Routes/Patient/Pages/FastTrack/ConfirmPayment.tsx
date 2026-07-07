@@ -158,9 +158,7 @@ export default function ConfirmPayment() {
       <div className="flex flex-col gap-5 px-1 pb-8">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-2">
-          <h2 className="text-foreground">
-            Confirm Payment
-          </h2>
+          <h2 className="text-foreground">Confirm Payment</h2>
           <p className="text-sm text-muted-foreground">
             Review the details below before submitting
           </p>

@@ -33,7 +33,11 @@ const norm = (s: string | null) => (s ?? "").replace(new RegExp(NBSP, "g"), " ")
 const wrap = (ui: ReactNode) =>
   createElement(
     QueryClientProvider,
-    { client: new QueryClient({ defaultOptions: { queries: { retry: false } } }) },
+    {
+      client: new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      }),
+    },
     createElement(
       MemoryRouter,
       { initialEntries: ["/patients/payment/breakdown/p1"] },

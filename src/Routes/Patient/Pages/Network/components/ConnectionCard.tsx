@@ -15,4 +15,3 @@ export function ConnectionCard({ name, phoneNumber, status, children }: any) {
     </div>
   )
 }
-

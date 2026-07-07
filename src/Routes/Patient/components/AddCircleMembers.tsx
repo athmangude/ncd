@@ -108,10 +108,7 @@ export function AddToCircleDrawer({
   const user = usePatientAuthStore((state) => state.user)
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <div className="w-full max-w-lg mx-auto">
           <DrawerHeader>

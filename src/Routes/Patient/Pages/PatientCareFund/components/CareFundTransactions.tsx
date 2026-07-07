@@ -1,7 +1,14 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
 import { format } from "date-fns"
-import { TrendingUp, CreditCard, ArrowUpRight, ArrowDownLeft, ArrowRightLeft, Activity } from "lucide-react"
+import {
+  TrendingUp,
+  CreditCard,
+  ArrowUpRight,
+  ArrowDownLeft,
+  ArrowRightLeft,
+  Activity,
+} from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { formatTime } from "@/utilities/dateUtilities"
 import { usePatientAuthStore } from "../../../stores/patientAuthStore"
@@ -14,8 +21,12 @@ interface CareFundTransaction {
   currency: { code: string; symbol?: string; name?: string }
   type: "TRANSFER" | "EARNED" | "SPENT"
   status: "PENDING" | "COMPLETED" | "FAILED" | "REVERSED"
-  sender: { accountOwner: { id: string; firstName: string; lastName: string } } | null
-  receiver: { accountOwner: { id: string; firstName: string; lastName: string } } | null
+  sender: {
+    accountOwner: { id: string; firstName: string; lastName: string }
+  } | null
+  receiver: {
+    accountOwner: { id: string; firstName: string; lastName: string }
+  } | null
   receiverPhoneNumber: string | null
   description: string | null
   loan: any | null
@@ -38,10 +49,10 @@ interface CareFundTransactionsResponse {
 export function CareFundTransactions() {
   const user = usePatientAuthStore((state: any) => state.user)
 
-  const { 
-    data: transactionsData, 
+  const {
+    data: transactionsData,
     isLoading: isLoadingTransactions,
-    isError
+    isError,
   } = useQuery({
     queryKey: ["careFundTransactions"],
     queryFn: async () => {
@@ -59,16 +70,23 @@ export function CareFundTransactions() {
   })
 
   // Group transactions by date
-  const groupedTransactions = transactionsData?.data?.reduce((acc: { date: string, transactions: CareFundTransaction[] }[], transaction) => {
-    const date = format(new Date(transaction.createdAt), "dd MMM yyyy")
-    const existingGroup = acc.find(group => group.date === date)
-    if (existingGroup) {
-      existingGroup.transactions.push(transaction)
-    } else {
-      acc.push({ date, transactions: [transaction] })
-    }
-    return acc
-  }, []) || []
+  const groupedTransactions =
+    transactionsData?.data?.reduce(
+      (
+        acc: { date: string; transactions: CareFundTransaction[] }[],
+        transaction
+      ) => {
+        const date = format(new Date(transaction.createdAt), "dd MMM yyyy")
+        const existingGroup = acc.find((group) => group.date === date)
+        if (existingGroup) {
+          existingGroup.transactions.push(transaction)
+        } else {
+          acc.push({ date, transactions: [transaction] })
+        }
+        return acc
+      },
+      []
+    ) || []
 
   if (isLoadingTransactions) {
     return (
@@ -79,18 +97,20 @@ export function CareFundTransactions() {
             <div key={groupIndex}>
               <Skeleton className="h-4 w-20 ml-1 mb-2" />
               <div className="flex flex-col gap-3">
-                {[1, 2, 3].slice(0, groupIndex === 0 ? 3 : 2).map((rowIndex) => (
-                  <div
-                    key={rowIndex}
-                    className="bg-white p-4 rounded-xl border border-border shadow-sm flex items-center gap-3"
-                  >
-                    <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-                    <div className="flex flex-col gap-2 flex-1 min-w-0">
-                      <Skeleton className="h-4 w-3/4 max-w-[12rem]" />
-                      <Skeleton className="h-3 w-1/2 max-w-[8rem]" />
+                {[1, 2, 3]
+                  .slice(0, groupIndex === 0 ? 3 : 2)
+                  .map((rowIndex) => (
+                    <div
+                      key={rowIndex}
+                      className="bg-white p-4 rounded-xl border border-border shadow-sm flex items-center gap-3"
+                    >
+                      <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                      <div className="flex flex-col gap-2 flex-1 min-w-0">
+                        <Skeleton className="h-4 w-3/4 max-w-[12rem]" />
+                        <Skeleton className="h-3 w-1/2 max-w-[8rem]" />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
           ))}
@@ -122,7 +142,8 @@ export function CareFundTransactions() {
               {group.transactions.map((transaction) => {
                 const isReceiver =
                   transaction.receiver?.accountOwner?.id === user?.id
-                const isSender = transaction.sender?.accountOwner?.id === user?.id
+                const isSender =
+                  transaction.sender?.accountOwner?.id === user?.id
 
                 const getTransactionIcon = () => {
                   switch (transaction.type) {
@@ -186,9 +207,7 @@ export function CareFundTransactions() {
                             )}
                           </span>
                           <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
-                          <span>
-                            {formatTime(transaction.createdAt)}
-                          </span>
+                          <span>{formatTime(transaction.createdAt)}</span>
                         </p>
                       </div>
                     </div>

@@ -52,7 +52,9 @@ export default function YourTreatments({
     <div className="flex flex-col max-h-[400px] overflow-y-auto gap-6">
       {groupedLoans.map((group) => (
         <div key={group.date} className="flex flex-col gap-3">
-          <p className="text-sm text-muted-foreground font-medium ml-1">{group.date}</p>
+          <p className="text-sm text-muted-foreground font-medium ml-1">
+            {group.date}
+          </p>
           <div className="flex flex-col gap-3">
             {group.items.map((loan: any) => (
               <LoanCard

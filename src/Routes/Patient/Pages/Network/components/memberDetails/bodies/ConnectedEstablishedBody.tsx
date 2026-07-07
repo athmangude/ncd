@@ -47,8 +47,7 @@ export function ConnectedEstablishedBody({
         variant={variant}
       />
       <p className="text-center text-xl font-medium">
-        You &amp;{" "}
-        <span className="text-primary">{member.firstName}</span>
+        You &amp; <span className="text-primary">{member.firstName}</span>
         <br /> are connected.
       </p>
       <div className="grid grid-cols-2 gap-3">

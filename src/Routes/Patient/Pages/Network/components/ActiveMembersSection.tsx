@@ -38,7 +38,8 @@ export function ActiveMembersSection({
             <h4 className="font-medium">Circle ({adults.length})</h4>
             {slots?.accountable && (
               <span>
-                {accountableSlotsAvailable}/{accountableSlotsMax} slots available
+                {accountableSlotsAvailable}/{accountableSlotsMax} slots
+                available
               </span>
             )}
           </div>
@@ -59,7 +60,9 @@ export function ActiveMembersSection({
       {/* Children Section */}
       {children.length > 0 && (
         <div>
-          <h4 className="text-muted-foreground mb-2 font-medium text-sm">Juniors ({children.length})</h4>
+          <h4 className="text-muted-foreground mb-2 font-medium text-sm">
+            Juniors ({children.length})
+          </h4>
           <div className="flex flex-col gap-3">
             {children.map((n: NetworkMember) => (
               <NetworkItem

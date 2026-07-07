@@ -137,7 +137,9 @@ export default function PatientHealthcareFocus() {
       </section>
 
       {focusAreas.length === 0 && otherText.trim().length === 0 && (
-        <p className="text-muted-foreground">Select at least one area to continue</p>
+        <p className="text-muted-foreground">
+          Select at least one area to continue
+        </p>
       )}
     </PatientPageWrapper>
   )

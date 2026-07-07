@@ -5,9 +5,5 @@ export default function HealthcareAuthTitle({
 }: {
   children: ReactNode
 }) {
-  return (
-    <h1 className="max-w-[30ch] mx-auto">
-      {children}
-    </h1>
-  )
+  return <h1 className="max-w-[30ch] mx-auto">{children}</h1>
 }

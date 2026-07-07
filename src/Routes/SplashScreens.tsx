@@ -17,7 +17,8 @@ const screens: {
   {
     title: (
       <>
-        Earn <TitleEmphasis>5% cashback</TitleEmphasis><br></br> at partner hospitals.
+        Earn <TitleEmphasis>5% cashback</TitleEmphasis>
+        <br></br> at partner hospitals.
       </>
     ),
     img: {
@@ -28,7 +29,8 @@ const screens: {
   {
     title: (
       <>
-        <TitleEmphasis>Share your benefits</TitleEmphasis><br></br> with family and friends.
+        <TitleEmphasis>Share your benefits</TitleEmphasis>
+        <br></br> with family and friends.
       </>
     ),
     img: {
@@ -69,7 +71,7 @@ export default function SplashScreens() {
     const distance = touchStart - touchEnd
     const isLeftSwipe = distance > minSwipeDistance
     const isRightSwipe = distance < -minSwipeDistance
-    
+
     if (isLeftSwipe && currentScreen < screens.length - 1) {
       handleNext()
     }
@@ -90,13 +92,9 @@ export default function SplashScreens() {
     }
   }
 
-
   return (
     <MobileWrapper
-      header={<
-        LogoHeader showIcons={false} 
-        className="flex justify-center"
-          />}
+      header={<LogoHeader showIcons={false} className="flex justify-center" />}
       footer={
         <div className="border-t bg-white dark:bg-neutral-950 flex flex-col gap-4 p-4 pb-6">
           <SplashScreenProgressBar
@@ -110,9 +108,7 @@ export default function SplashScreens() {
               onClick={handlePrev}
               variant="secondary"
               size="icon"
-              className={`shrink-0 ${
-                currentScreen === 0 ? "invisible" : ""
-              }`}
+              className={`shrink-0 ${currentScreen === 0 ? "invisible" : ""}`}
             >
               <ArrowLeftIcon className="w-6 h-6" />
             </Button>
@@ -152,22 +148,18 @@ export default function SplashScreens() {
           {activeScreen.title}
         </h1>
 
-
-          <img
-            key={currentScreen}
-            src={activeScreen.img.src}
-            alt={activeScreen.img.alt}
-            loading="eager"
-            draggable={false}
-            className="h-full mx-auto transition-all duration-500 ease-in-out opacity-100 animate-in fade-in zoom-in-95 slide-in-from-bottom-8 px-2 select-none object-contain"
-          />
-
+        <img
+          key={currentScreen}
+          src={activeScreen.img.src}
+          alt={activeScreen.img.alt}
+          loading="eager"
+          draggable={false}
+          className="h-full mx-auto transition-all duration-500 ease-in-out opacity-100 animate-in fade-in zoom-in-95 slide-in-from-bottom-8 px-2 select-none object-contain"
+        />
       </div>
     </MobileWrapper>
   )
 }
-
-
 
 function TitleEmphasis({ children }: { children: React.ReactNode }) {
   return <span className="text-primary">{children}</span>

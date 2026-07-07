@@ -74,9 +74,7 @@ export default function PatientSubscriptionsTransactionResult() {
               />
             </div>
 
-            <h1 className="text-foreground mb-3">
-              Payment complete!
-            </h1>
+            <h1 className="text-foreground mb-3">Payment complete!</h1>
             <p className="text-muted-foreground text-base leading-relaxed">
               You have successfully signed up for JIREH{" "}
               {subscription?.plan?.toUpperCase()}

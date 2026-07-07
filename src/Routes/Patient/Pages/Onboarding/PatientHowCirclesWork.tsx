@@ -51,11 +51,11 @@ function FeatureCard({
         />
       )}
       <div className="flex flex-col gap-1">
-        <h3 className="leading-5 text-foreground">
-          {title}
-        </h3>
+        <h3 className="leading-5 text-foreground">{title}</h3>
         {description && (
-          <p className="text-sm leading-5 text-muted-foreground">{description}</p>
+          <p className="text-sm leading-5 text-muted-foreground">
+            {description}
+          </p>
         )}
       </div>
       {iconPosition === "bottom" && (
@@ -127,11 +127,21 @@ function InviteCard({
   return (
     <div className="flex h-[160px] w-[160px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-muted p-4">
       {illustrationPosition === "top" && (
-        <img src={illustration} alt="" aria-hidden="true" className={imgClassName} />
+        <img
+          src={illustration}
+          alt=""
+          aria-hidden="true"
+          className={imgClassName}
+        />
       )}
       <p className="text-sm font-medium leading-5 text-foreground">{title}</p>
       {illustrationPosition === "bottom" && (
-        <img src={illustration} alt="" aria-hidden="true" className={imgClassName} />
+        <img
+          src={illustration}
+          alt=""
+          aria-hidden="true"
+          className={imgClassName}
+        />
       )}
     </div>
   )

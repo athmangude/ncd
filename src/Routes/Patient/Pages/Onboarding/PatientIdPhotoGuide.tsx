@@ -25,7 +25,9 @@ export default function PatientIdPhotoGuide() {
 
           <div className="space-y-8">
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">01</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                01
+              </span>
               <div>
                 <h3 className="font-medium text-foreground mb-1">
                   Ensure good lighting
@@ -38,7 +40,9 @@ export default function PatientIdPhotoGuide() {
             </div>
 
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">02</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                02
+              </span>
               <div>
                 <h3 className="font-medium text-foreground mb-1">
                   Include all corners
@@ -51,7 +55,9 @@ export default function PatientIdPhotoGuide() {
             </div>
 
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">03</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                03
+              </span>
               <div>
                 <h3 className="font-medium text-foreground mb-1">
                   Avoid shadows and glare
@@ -64,7 +70,9 @@ export default function PatientIdPhotoGuide() {
             </div>
 
             <div className="flex gap-4">
-              <span className="text-muted-foreground font-mono text-lg">04</span>
+              <span className="text-muted-foreground font-mono text-lg">
+                04
+              </span>
               <div>
                 <h3 className="font-medium text-foreground mb-1">
                   Hold camera steady

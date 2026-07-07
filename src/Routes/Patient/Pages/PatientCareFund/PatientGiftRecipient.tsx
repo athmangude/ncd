@@ -81,7 +81,8 @@ export default function PatientGiftRecipient() {
   const { patients = [] } = data || {}
 
   const patientOptions = patients.filter(
-    (patient: any) => patient.status !== "CHILD" && patient.status !== "REJECTED"
+    (patient: any) =>
+      patient.status !== "CHILD" && patient.status !== "REJECTED"
   )
 
   return (
@@ -109,15 +110,15 @@ export default function PatientGiftRecipient() {
           aria-hidden="true"
         />
 
-        <h1 className="text-center">
-          Who is receiving your gift?
-        </h1>
+        <h1 className="text-center">Who is receiving your gift?</h1>
 
         <Controller
           name="patientId"
           control={control as any}
           rules={{ required: "Recipient is required" }}
-          defaultValue={control._defaultValues["patientId"] ?? preselectedPatientId}
+          defaultValue={
+            control._defaultValues["patientId"] ?? preselectedPatientId
+          }
           render={({ field }) => (
             <PatientDependentSelect
               id="patientId"
@@ -126,7 +127,9 @@ export default function PatientGiftRecipient() {
               items={patientOptions}
               field={field}
               error={errors.patientId?.message}
-              defaultValue={control._defaultValues["patientId"] ?? preselectedPatientId}
+              defaultValue={
+                control._defaultValues["patientId"] ?? preselectedPatientId
+              }
               action={{
                 fn: () => {
                   navigate("/patients/network/add-connection", {
@@ -262,9 +265,7 @@ function ConfirmGiftRecipient({
             aria-hidden="true"
           />
 
-          <h3 className="mt-5">
-            Confirm Recepient
-          </h3>
+          <h3 className="mt-5">Confirm Recepient</h3>
 
           <p className="font-medium text-lg">
             {formatMoney(transferAmount, currency)}

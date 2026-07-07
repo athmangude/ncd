@@ -37,7 +37,11 @@ export default function CancelRequestDialog({
     >
       {paymentDetails && (
         <div className="mt-4">
-          <PaymentDetailsCard paymentDetails={paymentDetails} compact showTitle />
+          <PaymentDetailsCard
+            paymentDetails={paymentDetails}
+            compact
+            showTitle
+          />
         </div>
       )}
     </ConfirmDialog>

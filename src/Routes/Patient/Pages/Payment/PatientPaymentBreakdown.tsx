@@ -115,9 +115,7 @@ export default function PatientPaymentBreakdown() {
           </div>
         </div>
 
-        <h1 className="mb-2">
-          How you paid
-        </h1>
+        <h1 className="mb-2">How you paid</h1>
         <p className="text-center text-muted-foreground text-sm max-w-xs mb-8">
           The payment methods used to cover the bill & the amounts deducted from
           each.
@@ -125,7 +123,9 @@ export default function PatientPaymentBreakdown() {
 
         {/* Bill Details Section */}
         <div className="w-full mb-6">
-          <p className="text-muted-foreground text-sm mb-3 pl-1">Bill details</p>
+          <p className="text-muted-foreground text-sm mb-3 pl-1">
+            Bill details
+          </p>
           <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
             <DetailRow
               label="Invoiced bill"

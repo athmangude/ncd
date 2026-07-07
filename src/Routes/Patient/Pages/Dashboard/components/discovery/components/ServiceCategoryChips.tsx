@@ -67,7 +67,7 @@ export function ServiceCategoryChips({
               "h-8 px-3 rounded-md text-sm transition-colors",
               isSelected
                 ? "bg-teal-50 text-teal-800 border border-teal-300"
-                : "bg-muted text-foreground border border-border",
+                : "bg-muted text-foreground border border-border"
             )}
           >
             {c.displayName}

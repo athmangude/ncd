@@ -19,7 +19,7 @@ export function PatientCareFund() {
 
   const user = usePatientAuthStore((state: any) => state.user)
   const { canPayMedicalBill } = user || {}
-  
+
   const { data: paymentHistory } = usePaymentHistory()
   const careFundAccount = paymentHistory?.careFundAccount
 
@@ -65,9 +65,7 @@ function CareFundCTA({
       className="bg-secondary hover:bg-secondary/80 rounded-2xl flex flex-col items-start justify-between p-4  transition-colors w-full"
       onClick={() => navigate(link)}
     >
-      <div className="">
-        {icon}
-      </div>
+      <div className="">{icon}</div>
 
       <span className=" text-foreground">{title}</span>
     </button>

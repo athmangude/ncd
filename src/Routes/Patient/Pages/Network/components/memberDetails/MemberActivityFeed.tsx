@@ -86,9 +86,8 @@ export function MemberActivityFeed({
               <>
                 {item.direction === "sent" ? (
                   <>
-                    You have sent{" "}
-                    {formatMoney(item.amount, item.currencyCode)} to{" "}
-                    {item.counterpartFirstName} {item.counterpartLastName}.
+                    You have sent {formatMoney(item.amount, item.currencyCode)}{" "}
+                    to {item.counterpartFirstName} {item.counterpartLastName}.
                   </>
                 ) : (
                   <>
@@ -100,7 +99,10 @@ export function MemberActivityFeed({
             ) : (
               <>{item.firstName} just joined your circle!</>
             )}
-            <Gift className="ml-1 inline h-3 w-3 text-muted-foreground" aria-hidden />
+            <Gift
+              className="ml-1 inline h-3 w-3 text-muted-foreground"
+              aria-hidden
+            />
           </div>
           <span className="shrink-0 text-xs text-muted-foreground">
             <time dateTime={item.createdAt}>

@@ -177,7 +177,7 @@ export function CircleSlotAvatar({
           sizes.emptyBoxClass,
           "border-border flex items-center justify-center text-muted-foreground",
           onClick && "hover:border-purple-300 hover:text-purple-500",
-          className,
+          className
         )}
         aria-label="Add member"
       >
@@ -193,14 +193,14 @@ export function CircleSlotAvatar({
         "relative shrink-0 rounded-full p-1",
         haloClass,
         avatarOpacity,
-        className,
+        className
       )}
     >
       {showLock ? (
         <div
           className={cn(
             "flex items-center justify-center rounded-full bg-muted",
-            sizes.lockBoxClass,
+            sizes.lockBoxClass
           )}
         >
           <Lock
@@ -225,7 +225,7 @@ export function CircleSlotAvatar({
             "absolute -top-0.5 -right-0.5 rounded-full",
             sizes.dotClass,
             "border-2 border-white",
-            dotClass,
+            dotClass
           )}
         />
       )}
@@ -242,7 +242,7 @@ export function CircleSlotAvatar({
             "absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap",
             "rounded-full px-2 py-0.5 font-medium",
             sizes.badgeTextClass,
-            badge.className,
+            badge.className
           )}
         >
           {badge.label}

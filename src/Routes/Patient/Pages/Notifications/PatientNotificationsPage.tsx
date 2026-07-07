@@ -41,7 +41,9 @@ export default function PatientNotificationsPage() {
   const [error, setError] = useState<string | null>(null)
   const [showHelp, setShowHelp] = useState(false)
   const [isRequesting, setIsRequesting] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<"ALL" | "CIRCLE" | "LOANS" | "SAVINGS">("ALL")
+  const [activeFilter, setActiveFilter] = useState<
+    "ALL" | "CIRCLE" | "LOANS" | "SAVINGS"
+  >("ALL")
   const { toast } = useToast()
   const {
     notificationPermission,
@@ -59,7 +61,9 @@ export default function PatientNotificationsPage() {
     const fetchNotifications = async () => {
       try {
         setIsLoading(true)
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/notifications`)
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/notifications`
+        )
         setNotifications(response.data.notifications)
       } catch (err: any) {
         console.error("Error fetching notifications:", err)
@@ -90,11 +94,16 @@ export default function PatientNotificationsPage() {
   const handleMarkAllAsRead = async () => {
     // Optimistic update
     const previousNotifications = [...notifications]
-    const updatedNotifications = notifications.map((n) => ({ ...n, readStatus: "READ" as const }))
+    const updatedNotifications = notifications.map((n) => ({
+      ...n,
+      readStatus: "READ" as const,
+    }))
     setNotifications(updatedNotifications)
-    
+
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`)
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`
+      )
       toast({
         title: "Success",
         description: "All notifications marked as read",
@@ -127,7 +136,7 @@ export default function PatientNotificationsPage() {
     toast({
       title: "Success",
       description: "Link copied to clipboard!",
-    });
+    })
   }
 
   const renderMessageWithLink = (message: string) => {
@@ -138,10 +147,10 @@ export default function PatientNotificationsPage() {
     return (
       <>
         {parts[0]}
-        <a 
-          href={url} 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-blue-600 underline hover:text-blue-800 break-all"
           onClick={(e) => e.stopPropagation()}
         >
@@ -152,7 +161,7 @@ export default function PatientNotificationsPage() {
     )
   }
 
-  const filteredNotifications = notifications.filter(n => {
+  const filteredNotifications = notifications.filter((n) => {
     if (activeFilter === "ALL") return true
     return n.type === activeFilter
   })
@@ -296,28 +305,44 @@ export default function PatientNotificationsPage() {
         <div className="flex gap-2">
           <Button
             variant={activeFilter === "ALL" ? "default" : "ghost"}
-            className={activeFilter === "ALL" ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6" : "rounded-full bg-muted hover:bg-border text-foreground px-6"}
+            className={
+              activeFilter === "ALL"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("ALL")}
           >
             All
           </Button>
           <Button
             variant={activeFilter === "CIRCLE" ? "default" : "ghost"}
-            className={activeFilter === "CIRCLE" ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6" : "rounded-full bg-muted hover:bg-border text-foreground px-6"}
+            className={
+              activeFilter === "CIRCLE"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("CIRCLE")}
           >
             Circle
           </Button>
           <Button
             variant={activeFilter === "LOANS" ? "default" : "ghost"}
-            className={activeFilter === "LOANS" ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6" : "rounded-full bg-muted hover:bg-border text-foreground px-6"}
+            className={
+              activeFilter === "LOANS"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("LOANS")}
           >
             Loan
           </Button>
           <Button
             variant={activeFilter === "SAVINGS" ? "default" : "ghost"}
-            className={activeFilter === "SAVINGS" ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6" : "rounded-full bg-muted hover:bg-border text-foreground px-6"}
+            className={
+              activeFilter === "SAVINGS"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("SAVINGS")}
           >
             Savings
@@ -327,9 +352,9 @@ export default function PatientNotificationsPage() {
 
       <div>
         {filteredNotifications.length === 0 ? (
-           <div className="flex flex-col items-center justify-center p-10 text-center text-muted-foreground">
-             <p>No notifications found in this category.</p>
-           </div>
+          <div className="flex flex-col items-center justify-center p-10 text-center text-muted-foreground">
+            <p>No notifications found in this category.</p>
+          </div>
         ) : (
           filteredNotifications.map((notification) => {
             const isCircleReminder =
@@ -344,7 +369,9 @@ export default function PatientNotificationsPage() {
               return (
                 <div key={notification.id} className="px-4 py-2">
                   <CircleInviteReminderCard
-                    subType={notification.notificationSubType as CircleInviteSubType}
+                    subType={
+                      notification.notificationSubType as CircleInviteSubType
+                    }
                     invitationId={notification.relatedEntityId}
                     inviteeFirstName={notification.metadata.inviteeFirstName}
                     sentAt={notification.sentAt}
@@ -369,12 +396,21 @@ export default function PatientNotificationsPage() {
                 {notification.readStatus === "READ" && (
                   <div className="w-2 h-2 rounded-full bg-transparent mt-2 shrink-0" />
                 )}
-                
+
                 <div className="flex-1 pr-8">
-                  <p className={cn("text-sm", notification.readStatus === "UNREAD" ? "font-medium text-foreground" : "text-foreground")}>
+                  <p
+                    className={cn(
+                      "text-sm",
+                      notification.readStatus === "UNREAD"
+                        ? "font-medium text-foreground"
+                        : "text-foreground"
+                    )}
+                  >
                     {renderMessageWithLink(notification.message)}
                   </p>
-                  <p className="text-muted-foreground text-xs mt-1">{formatDate(notification.sentAt)}</p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    {formatDate(notification.sentAt)}
+                  </p>
                 </div>
 
                 {url && (

@@ -16,7 +16,7 @@ export function PatientIdPhotoFrontUpload() {
   const handleSmileIDSuccess = (detail: any) => {
     setIsProcessing(true)
     const { images } = detail
-    
+
     // Find ID card (type 3 - Front)
     const idImage = images.find((img: any) => img.image_type_id === 3)?.image
 
@@ -26,9 +26,9 @@ export function PatientIdPhotoFrontUpload() {
     }
 
     const formatBase64 = (b64: string) => {
-      if (b64.startsWith('data:')) return b64;
-      return `data:image/jpeg;base64,${b64}`;
-    };
+      if (b64.startsWith("data:")) return b64
+      return `data:image/jpeg;base64,${b64}`
+    }
 
     // Store ID photo in localStorage for the selfie step
     const formattedIdImage = formatBase64(idImage)
@@ -73,7 +73,10 @@ export function PatientIdPhotoFrontUpload() {
         ) : (
           <div className="w-full bg-muted rounded-xl overflow-hidden border border-border">
             <div className="m-3">
-              <SmileIDWrapper onSuccess={handleSmileIDSuccess} captureMode="id" />
+              <SmileIDWrapper
+                onSuccess={handleSmileIDSuccess}
+                captureMode="id"
+              />
             </div>
           </div>
         )}

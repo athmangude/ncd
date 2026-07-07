@@ -6,7 +6,11 @@ interface PatientTabTriggerProps {
   setRef: (el: HTMLButtonElement | null) => void
 }
 
-export function PatientTabTrigger({ value, icon, setRef }: PatientTabTriggerProps) {
+export function PatientTabTrigger({
+  value,
+  icon,
+  setRef,
+}: PatientTabTriggerProps) {
   return (
     <TabsTrigger
       ref={setRef}

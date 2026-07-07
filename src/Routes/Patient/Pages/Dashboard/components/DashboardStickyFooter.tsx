@@ -10,19 +10,19 @@ interface DashboardStickyFooterProps {
   onPayMedicalBill: () => void
 }
 
-export function DashboardStickyFooter({ 
-  hasActiveMembership, 
-  activeTab, 
-  canPayMedicalBill, 
-  onPayMedicalBill 
+export function DashboardStickyFooter({
+  hasActiveMembership,
+  activeTab,
+  canPayMedicalBill,
+  onPayMedicalBill,
 }: DashboardStickyFooterProps) {
   const navigate = useNavigate()
 
   if (hasActiveMembership) {
     return (
       <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-card border-t border-border z-10 max-w-md mx-auto">
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           className="w-full"
           onClick={onPayMedicalBill}
           disabled={!canPayMedicalBill}

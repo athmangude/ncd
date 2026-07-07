@@ -13,9 +13,7 @@ import { TabsContent } from "@/components/Tabs"
 import { Switch } from "@/components/Switch"
 import { SectionTitle } from "@/components/SectionTitle"
 import { Facility } from "./types"
-import {
-  DiscountCode,
-} from "../DiscountsSection"
+import { DiscountCode } from "../DiscountsSection"
 
 interface DiscoveryHomeViewProps {
   facilities: Facility[]
@@ -50,9 +48,7 @@ export function DiscoveryHomeView({
       {/* Header */}
       <div className="bg-white flex flex-col gap-2 items-center p-4 mt-4 w-full shrink-0">
         <div className="flex flex-col gap-1 items-center w-full text-center">
-          <h2 className="text-foreground">
-            Find care near you
-          </h2>
+          <h2 className="text-foreground">Find care near you</h2>
           <p className="text-sm text-muted-foreground">
             Search by name, area, or service.
           </p>
@@ -86,7 +82,9 @@ export function DiscoveryHomeView({
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2 px-2 py-1.5">
             <MapPin className="h-4 w-4 text-foreground shrink-0" />
-            <span className="text-sm text-foreground">{locationName ?? "My location"}</span>
+            <span className="text-sm text-foreground">
+              {locationName ?? "My location"}
+            </span>
           </div>
           <div className="flex items-center gap-2 px-2 py-1.5">
             <span className="text-sm text-foreground">Verified</span>
@@ -117,24 +115,20 @@ export function DiscoveryHomeView({
                   d.discountType === "PERCENTAGE"
                     ? `${parseFloat(d.discountValue)}% off`
                     : `${d.currency?.symbol ?? ""} ${parseFloat(
-                        d.discountValue,
+                        d.discountValue
                       ).toLocaleString()} off`
                 return (
                   <button
                     key={d.id}
                     type="button"
-                    onClick={() =>
-                      navigate(`/patients/discounts/${d.id}`)
-                    }
+                    onClick={() => navigate(`/patients/discounts/${d.id}`)}
                     className="bg-primary text-white rounded-[14px] p-4 flex flex-col justify-between shrink-0 w-[220px] h-[160px] text-left border-2 border-dashed border-white/30"
                   >
                     <div className="flex flex-col gap-1">
                       <p className="text-base font-bold leading-tight line-clamp-3">
                         {d.description ?? headline}
                       </p>
-                      <p className="text-sm opacity-80 truncate">
-                        {d.code}
-                      </p>
+                      <p className="text-sm opacity-80 truncate">{d.code}</p>
                     </div>
                     {d.validUntil && (
                       <p className="text-sm opacity-75">
@@ -237,16 +231,27 @@ function SectionHeader({
   )
 }
 
-const CATEGORY_ACRONYMS = new Set(["icu", "ent", "nicu", "hdu", "x-ray", "ct", "mri"])
+const CATEGORY_ACRONYMS = new Set([
+  "icu",
+  "ent",
+  "nicu",
+  "hdu",
+  "x-ray",
+  "ct",
+  "mri",
+])
 
 function formatServiceCategory(slug: string): string {
-  const cleaned = slug.replace(/_services$/i, "").replace(/_/g, " ").trim()
+  const cleaned = slug
+    .replace(/_services$/i, "")
+    .replace(/_/g, " ")
+    .trim()
   return cleaned
     .split(" ")
     .map((word) =>
       CATEGORY_ACRONYMS.has(word.toLowerCase())
         ? word.toUpperCase()
-        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
     )
     .join(" ")
 }

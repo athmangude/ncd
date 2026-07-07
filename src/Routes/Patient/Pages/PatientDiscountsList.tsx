@@ -10,9 +10,8 @@ import { trackEvent, EVENTS } from "@/analytics"
 export default function PatientDiscountsList() {
   const navigate = useNavigate()
   const isOffline = useOffline()
-  const { data: discounts = [], isLoading } = useEligibleDiscountCodes(
-    !isOffline,
-  )
+  const { data: discounts = [], isLoading } =
+    useEligibleDiscountCodes(!isOffline)
 
   useEffect(() => {
     if (isLoading) return
@@ -48,7 +47,7 @@ export default function PatientDiscountsList() {
               d.discountType === "PERCENTAGE"
                 ? `${parseFloat(d.discountValue)}% off`
                 : `${d.currency?.symbol ?? ""} ${parseFloat(
-                    d.discountValue,
+                    d.discountValue
                   ).toLocaleString()} off`
             return (
               <button

@@ -452,7 +452,9 @@ export default function PatientKYCAddCircleMembers() {
             )}
           </div>
 
-          <p className="text-sm text-muted-foreground text-center">{captionText}</p>
+          <p className="text-sm text-muted-foreground text-center">
+            {captionText}
+          </p>
         </div>
 
         {/* Member lists */}

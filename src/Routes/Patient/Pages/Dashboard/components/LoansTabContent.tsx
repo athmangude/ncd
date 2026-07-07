@@ -82,9 +82,7 @@ export function LoansTabContent({
       )}
       {!hasActiveMembership && (
         <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
-          <h3 className="text-foreground mb-4">
-            Unlock full financial limits
-          </h3>
+          <h3 className="text-foreground mb-4">Unlock full financial limits</h3>
 
           <div className="flex flex-col gap-4">
             <div className="flex gap-3 items-start">

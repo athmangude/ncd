@@ -1,10 +1,7 @@
 import { useNavigate } from "react-router-dom"
 import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/Button"
-import {
-  usePatientNetwork,
-  type SentInvite,
-} from "@/hooks/usePatientNetwork"
+import { usePatientNetwork, type SentInvite } from "@/hooks/usePatientNetwork"
 import { CircleAvatarRow } from "../../Dashboard/components/CircleAvatarRow"
 import type { BannerState } from "../../Dashboard/hooks/useCircleStatus"
 import type { ExtendedUser } from "./types"
@@ -92,7 +89,7 @@ export function CircleWaitingDrawer({
   const adultPendingInvites: SentInvite[] = (networkData?.invites ?? []).filter(
     (inv) =>
       inv.relationship?.toUpperCase() !== "CHILD" &&
-      ["PENDING", "OPENED"].includes(inv.status?.toUpperCase() ?? ""),
+      ["PENDING", "OPENED"].includes(inv.status?.toUpperCase() ?? "")
   )
 
   const nameParts = (user?.name ?? "").trim().split(" ")

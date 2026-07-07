@@ -50,7 +50,10 @@ export default function PatientScanQRIntro() {
   return (
     <MobileWrapper
       header={
-        <BackTitleHeader title="Invite by QR code" onBack={() => navigate(-1)} />
+        <BackTitleHeader
+          title="Invite by QR code"
+          onBack={() => navigate(-1)}
+        />
       }
       footer={null}
       className="flex flex-col items-center"
@@ -83,7 +86,9 @@ export default function PatientScanQRIntro() {
         {/* Benefits */}
         <div className="flex flex-col w-full">
           <div className="px-2 py-1.5">
-            <p className="text-xs font-medium text-muted-foreground">Benefits:</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              Benefits:
+            </p>
           </div>
           <div className="flex flex-col gap-1">
             <BenefitItem

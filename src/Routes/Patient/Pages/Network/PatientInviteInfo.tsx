@@ -25,7 +25,9 @@ export function PatientInviteInfo({
         invited you to join their network
       </h1>
 
-      <p className="text-lg text-muted-foreground">You can accept the invite below</p>
+      <p className="text-lg text-muted-foreground">
+        You can accept the invite below
+      </p>
 
       <PatientNetworkFAQ />
     </section>

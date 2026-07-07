@@ -13,9 +13,9 @@ import { trackEvent, EVENTS } from "@/analytics"
 
 // Helper to convert data URL to Blob
 function dataURLtoBlob(dataurl: string) {
-  const arr = dataurl.split(',')
+  const arr = dataurl.split(",")
   const mimeMatch = arr[0].match(/:(.*?);/)
-  const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg' 
+  const mime = mimeMatch ? mimeMatch[1] : "image/jpeg"
   const bstr = atob(arr[1])
   let n = bstr.length
   const u8arr = new Uint8Array(n)
@@ -53,18 +53,20 @@ export function PatientIdSelfie() {
   const verifyMutation = useMutation({
     mutationFn: async (images: any[]) => {
       const idPhotoString = localStorage.getItem("idPhotoFront")
-      
+
       // Find selfie (type 2) from SmileID results
-      const selfieImage = images.find((img: any) => img.image_type_id === 2)?.image
+      const selfieImage = images.find(
+        (img: any) => img.image_type_id === 2
+      )?.image
 
       if (!selfieImage || !idPhotoString) {
-          throw new Error("Missing photos. Please try again.")
+        throw new Error("Missing photos. Please try again.")
       }
 
       const formatBase64 = (b64: string) => {
-        if (b64.startsWith('data:')) return b64;
-        return `data:image/jpeg;base64,${b64}`;
-      };
+        if (b64.startsWith("data:")) return b64
+        return `data:image/jpeg;base64,${b64}`
+      }
 
       const idPhotoBlob = dataURLtoBlob(formatBase64(idPhotoString))
       const selfieBlob = dataURLtoBlob(formatBase64(selfieImage))
@@ -74,7 +76,8 @@ export function PatientIdSelfie() {
       formData.append("selfie", selfieBlob, "selfie.jpg")
 
       const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/verify-id-photo-selfie-match",
+        import.meta.env.VITE_API_BASE_URL +
+          "/patients/verify-id-photo-selfie-match",
         formData,
         {
           headers: {
@@ -90,11 +93,11 @@ export function PatientIdSelfie() {
         title: "Success",
         description: "Verification successful!",
       })
-      
+
       // Clear storage after successful upload
       localStorage.removeItem("idPhotoFront")
       localStorage.removeItem("idSelfie")
-      
+
       // Navigate to next step
       navigate(nextStep || "/patients", { state: location.state })
     },
@@ -102,11 +105,14 @@ export function PatientIdSelfie() {
       console.error("Verification failed", error)
       toast({
         title: "Verification Failed",
-        description: error.response?.data?.message || error.message || "Could not verify photos. Please try again.",
+        description:
+          error.response?.data?.message ||
+          error.message ||
+          "Could not verify photos. Please try again.",
         variant: "destructive",
       })
       setIsProcessing(false)
-    }
+    },
   })
 
   const handleSmileIDSuccess = (detail: any) => {
@@ -117,7 +123,7 @@ export function PatientIdSelfie() {
     // SELFIE_CAPTURE is implicit in a successful SmileID callback
     try {
       trackEvent(EVENTS.KYC.SELFIE_SUBMIT, {
-        captureMethod: 'smileId',
+        captureMethod: "smileId",
         imageCount: images?.length ?? 0,
       })
     } catch {
@@ -127,10 +133,7 @@ export function PatientIdSelfie() {
   }
 
   return (
-    <PatientPageWrapper
-      title="Take a Selfie"
-      className="items-center px-4"
-    >
+    <PatientPageWrapper title="Take a Selfie" className="items-center px-4">
       <div className="w-full flex flex-col gap-6">
         <div className="text-center mb-4">
           <h1>Take a clear photo of yourself</h1>

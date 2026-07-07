@@ -1,10 +1,10 @@
 import { FC } from "react"
-import { 
-  ChevronRight, 
-  Phone, 
-  MessageSquare, 
-  MessageCircle, 
-  HelpCircle 
+import {
+  ChevronRight,
+  Phone,
+  MessageSquare,
+  MessageCircle,
+  HelpCircle,
 } from "lucide-react"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { Card } from "@/components/Card"
@@ -19,12 +19,16 @@ type HelpItem = {
 
 const HelpItemCard: FC<HelpItem> = ({ label, icon, onClick, href }) => {
   const navigate = useNavigate()
-  
+
   const handleClick = () => {
     if (onClick) {
       onClick()
     } else if (href) {
-      if (href.startsWith("http") || href.startsWith("tel") || href.startsWith("sms")) {
+      if (
+        href.startsWith("http") ||
+        href.startsWith("tel") ||
+        href.startsWith("sms")
+      ) {
         window.location.href = href
       } else {
         navigate(href)
@@ -39,7 +43,9 @@ const HelpItemCard: FC<HelpItem> = ({ label, icon, onClick, href }) => {
     >
       <div className="flex gap-3 items-center">
         {icon && <span className="text-muted-foreground">{icon}</span>}
-        <p className="text-sm sm:text-base font-medium text-foreground">{label}</p>
+        <p className="text-sm sm:text-base font-medium text-foreground">
+          {label}
+        </p>
       </div>
       <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0 self-center" />
     </div>
@@ -47,7 +53,7 @@ const HelpItemCard: FC<HelpItem> = ({ label, icon, onClick, href }) => {
 }
 
 export default function HelpAndSupport() {
-//   const navigate = useNavigate()
+  //   const navigate = useNavigate()
 
   const invoiceProblems: HelpItem[] = [
     {
@@ -107,9 +113,7 @@ export default function HelpAndSupport() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h2 className="text-muted-foreground">
-            Need more help?
-          </h2>
+          <h2 className="text-muted-foreground">Need more help?</h2>
           <Card className="bg-white p-2 rounded-xl border-border">
             <div className="flex flex-col gap-1">
               {contactOptions.map((item, idx) => (
@@ -122,4 +126,3 @@ export default function HelpAndSupport() {
     </PatientPageWrapper>
   )
 }
-

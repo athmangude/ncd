@@ -4,9 +4,9 @@ import { cn } from "@/lib/utils"
 
 // Static waveform bar heights (px) from Figma design node 92:22541
 const WAVEFORM_BAR_HEIGHTS = [
-  6.875, 23.125, 8.125, 6.875, 23.125, 19.375, 19.375, 20, 8.125, 6.875,
-  15, 6.875, 19.375, 10.625, 6.875, 23.125, 8.125, 6.875, 23.125, 19.375,
-  23.125, 19.375, 8.125, 6.875, 15, 6.875, 18.75,
+  6.875, 23.125, 8.125, 6.875, 23.125, 19.375, 19.375, 20, 8.125, 6.875, 15,
+  6.875, 19.375, 10.625, 6.875, 23.125, 8.125, 6.875, 23.125, 19.375, 23.125,
+  19.375, 8.125, 6.875, 15, 6.875, 18.75,
 ]
 
 function formatTime(seconds: number) {
@@ -126,13 +126,17 @@ function StepBadge({ state, number }: { state: StepState; number: number }) {
   if (state === "active") {
     return (
       <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0">
-        <span className="text-xs font-medium text-white leading-none">{number}</span>
+        <span className="text-xs font-medium text-white leading-none">
+          {number}
+        </span>
       </div>
     )
   }
   return (
     <div className="w-6 h-6 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
-      <span className="text-xs font-medium text-foreground leading-none">{number}</span>
+      <span className="text-xs font-medium text-foreground leading-none">
+        {number}
+      </span>
     </div>
   )
 }
@@ -163,8 +167,8 @@ export function StepIndicator({
           stepNumber < currentStep
             ? "complete"
             : stepNumber === currentStep
-            ? "active"
-            : "inactive"
+              ? "active"
+              : "inactive"
         return (
           <div key={i} className="flex items-center">
             <StepBadge state={state} number={stepNumber} />

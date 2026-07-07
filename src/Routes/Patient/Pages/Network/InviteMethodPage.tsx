@@ -47,7 +47,11 @@ export default function InviteMethodPage() {
           className="rounded-full border-[3.5px] border-dashed border-[#efd0ff] bg-secondary flex items-center justify-center flex-shrink-0"
           style={{ width: 84, height: 84 }}
         >
-          <Plus className="text-primary" style={{ width: 42, height: 42 }} strokeWidth={1.5} />
+          <Plus
+            className="text-primary"
+            style={{ width: 42, height: 42 }}
+            strokeWidth={1.5}
+          />
         </div>
         <div className="text-center">
           <h1>Send a personal message</h1>
@@ -73,11 +77,17 @@ export default function InviteMethodPage() {
           />
           <div className="flex flex-col justify-between flex-1 self-stretch min-w-0">
             <div>
-              <p className="text-sm font-medium text-foreground">Text message</p>
-              <p className="text-sm text-muted-foreground">Works on any phone</p>
+              <p className="text-sm font-medium text-foreground">
+                Text message
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Works on any phone
+              </p>
             </div>
             <div className="flex items-center gap-1.5 bg-secondary px-2 h-6 rounded self-start">
-              <span className="text-sm font-medium text-secondary-foreground">Send SMS</span>
+              <span className="text-sm font-medium text-secondary-foreground">
+                Send SMS
+              </span>
               <ChevronRight className="w-4 h-4 text-secondary-foreground" />
             </div>
           </div>
@@ -97,7 +107,9 @@ export default function InviteMethodPage() {
               </p>
             </div>
             <div className="flex items-center gap-1.5 bg-secondary px-2 h-6 rounded self-start">
-              <span className="text-sm font-medium text-secondary-foreground">Record</span>
+              <span className="text-sm font-medium text-secondary-foreground">
+                Record
+              </span>
               <ChevronRight className="w-4 h-4 text-secondary-foreground" />
             </div>
           </div>
@@ -122,7 +134,9 @@ export default function InviteMethodPage() {
             style={{ width: 124, height: 84 }}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground">Show your QR code</p>
+            <p className="text-sm font-medium text-foreground">
+              Show your QR code
+            </p>
             <p className="text-sm text-muted-foreground">
               Let them scan your screen to join instantly
             </p>

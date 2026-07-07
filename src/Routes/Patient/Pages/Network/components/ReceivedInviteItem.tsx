@@ -7,7 +7,7 @@ export function ReceivedInviteItem({
   inviterFirstName,
   inviterLastName,
   phoneNumber,
-  profilePhoto
+  profilePhoto,
 }: {
   id: string
   inviterFirstName: string
@@ -17,34 +17,38 @@ export function ReceivedInviteItem({
   profilePhoto?: string | null
 }) {
   const navigate = useNavigate()
-  
+
   return (
-      <div className="bg-white p-3 rounded-xl shadow-sm flex items-center gap-3 border border-border">
-        <ProfileAvatar
-            src={profilePhoto}
-            name={`${inviterFirstName} ${inviterLastName}`}
-            firstName={inviterFirstName}
-            lastName={inviterLastName}
-            className="h-10 w-10"
-            fallbackClassName="text-sm"
-        />
-        
-        <div className="flex flex-col min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-                <span className="font-medium truncate text-foreground">{inviterFirstName} {inviterLastName}</span>
-            </div>
-            <span className="text-muted-foreground text-sm truncate">{phoneNumber}</span>
+    <div className="bg-white p-3 rounded-xl shadow-sm flex items-center gap-3 border border-border">
+      <ProfileAvatar
+        src={profilePhoto}
+        name={`${inviterFirstName} ${inviterLastName}`}
+        firstName={inviterFirstName}
+        lastName={inviterLastName}
+        className="h-10 w-10"
+        fallbackClassName="text-sm"
+      />
+
+      <div className="flex flex-col min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-medium truncate text-foreground">
+            {inviterFirstName} {inviterLastName}
+          </span>
         </div>
-
-        <Button 
-            size="sm" 
-            className="bg-purple-100  text-purple-700 hover:bg-purple-200  "
-            onClick={() => navigate(`/patients/network/accept-invite?inviteId=${id}`)}
-        >
-            Review 
-        </Button>
-
+        <span className="text-muted-foreground text-sm truncate">
+          {phoneNumber}
+        </span>
       </div>
+
+      <Button
+        size="sm"
+        className="bg-purple-100  text-purple-700 hover:bg-purple-200  "
+        onClick={() =>
+          navigate(`/patients/network/accept-invite?inviteId=${id}`)
+        }
+      >
+        Review
+      </Button>
+    </div>
   )
 }
-

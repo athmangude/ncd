@@ -131,7 +131,7 @@ export default function SearchField({
     setQuery(result[dataDetails.titleKey])
 
     // Toggle the item in addedItems
-    setAddedItems(prev => {
+    setAddedItems((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(result.id)) {
         newSet.delete(result.id)
@@ -253,8 +253,7 @@ export default function SearchField({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm break-words capitalize "
-                        >
+                        <h4 className="font-medium text-sm break-words capitalize ">
                           {highlightSearchTerm(
                             result[dataDetails.titleKey].toLowerCase(),
                             debouncedQuery
@@ -275,9 +274,11 @@ export default function SearchField({
                         )}
                       </div>
                     </div>
-                    {emphasis && result[emphasis.key] && (!emphasis.condition || emphasis.condition(result)) && (
-                      <SearchFieldEmphasis text={emphasis.text} />
-                    )}
+                    {emphasis &&
+                      result[emphasis.key] &&
+                      (!emphasis.condition || emphasis.condition(result)) && (
+                        <SearchFieldEmphasis text={emphasis.text} />
+                      )}
                   </div>
                 ))}
               </div>

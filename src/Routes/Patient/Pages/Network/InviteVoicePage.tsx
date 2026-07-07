@@ -277,7 +277,9 @@ export default function InviteVoicePage() {
                   {formatTime(recordingTime)}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground">You are recording...</p>
+              <p className="text-sm text-muted-foreground">
+                You are recording...
+              </p>
             </div>
           )}
 

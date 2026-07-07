@@ -24,7 +24,9 @@ export function MemberBalanceCard() {
         Care fund
       </span>
       <p className="mt-3 text-sm text-muted-foreground">Your Balance (KES):</p>
-      <p className="text-xl font-medium font-mono text-foreground">{formattedBalance}</p>
+      <p className="text-xl font-medium font-mono text-foreground">
+        {formattedBalance}
+      </p>
     </div>
   )
 }

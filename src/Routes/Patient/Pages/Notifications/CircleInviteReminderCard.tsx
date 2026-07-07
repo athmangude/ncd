@@ -52,21 +52,20 @@ export function CircleInviteReminderCard({
     <div
       className={cn(
         "bg-card border border-border rounded-lg overflow-hidden",
-        readStatus === "UNREAD" && "bg-blue-50/30",
+        readStatus === "UNREAD" && "bg-blue-50/30"
       )}
     >
       {/* Header row */}
       <div className="flex items-center gap-2 px-[10px] py-[8px]">
         <div className="flex items-center justify-center size-[20px] shrink-0">
-          <UserRoundPlus
-            size={16}
-            className="text-muted-foreground"
-          />
+          <UserRoundPlus size={16} className="text-muted-foreground" />
         </div>
         <span className="flex-1 text-sm font-medium text-foreground">
           {title}
         </span>
-        <span className="text-xs text-muted-foreground shrink-0">{timestamp}</span>
+        <span className="text-xs text-muted-foreground shrink-0">
+          {timestamp}
+        </span>
       </div>
 
       {/* Body text */}
@@ -77,7 +76,7 @@ export function CircleInviteReminderCard({
       {/* Action row */}
       <div
         className={cn(
-          "flex items-center gap-[8px] pb-[16px] pl-[36px] pr-[8px] pt-[4px]",
+          "flex items-center gap-[8px] pb-[16px] pl-[36px] pr-[8px] pt-[4px]"
         )}
       >
         {is4h ? (

@@ -459,7 +459,9 @@ export default function FastTrackWalletSelection() {
 
         {allocatedWallets.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-muted-foreground font-medium px-1">Source of funds</p>
+            <p className="text-muted-foreground font-medium px-1">
+              Source of funds
+            </p>
             <div className="flex flex-col gap-3">
               {allocatedWallets.map((wallet) => {
                 const allocation = allocations[wallet.id]

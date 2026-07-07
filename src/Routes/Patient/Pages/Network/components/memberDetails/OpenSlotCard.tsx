@@ -55,7 +55,8 @@ export function OpenSlotCard({
           <Reply className="mt-0.5 h-4 w-4 text-muted-foreground" />
           <div className="flex-1">
             <p className="text-sm text-muted-foreground">
-              …or send {firstName} another invite if you think they might reconsider.
+              …or send {firstName} another invite if you think they might
+              reconsider.
             </p>
             <Button
               variant="link"

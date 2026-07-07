@@ -13,7 +13,7 @@ const wrap = (ui: ReactNode) =>
         defaultOptions: { queries: { retry: false } },
       }),
     },
-    createElement(MemoryRouter, null, ui),
+    createElement(MemoryRouter, null, ui)
   )
 
 function stubFetch(handlers: {
@@ -33,7 +33,7 @@ function stubFetch(handlers: {
       }
       const body = await handlers.network()
       return { ok: true, json: async () => body }
-    }),
+    })
   )
 }
 
@@ -43,7 +43,9 @@ describe("CircleStatusSection", () => {
   it("renders header + See all link when a circle exists", async () => {
     stubFetch({
       network: async () => ({
-        network: [{ id: "a", firstName: "A", lastName: "B", profilePhoto: null }],
+        network: [
+          { id: "a", firstName: "A", lastName: "B", profilePhoto: null },
+        ],
         invites: [],
         slots: {
           accountable: { used: 1, reserved: 0, max: 3 },
@@ -53,17 +55,21 @@ describe("CircleStatusSection", () => {
       activity: async () => ({ events: [] }),
     })
     render(wrap(<CircleStatusSection />))
-    await waitFor(() => expect(screen.getByText("Your Circle")).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText("Your Circle")).toBeInTheDocument()
+    )
     expect(screen.getByRole("link", { name: /See all/i })).toHaveAttribute(
       "href",
-      "/patients/circle",
+      "/patients/circle"
     )
   })
 
   it("renders the title as an <h2> so it matches its dashboard peers", async () => {
     stubFetch({
       network: async () => ({
-        network: [{ id: "a", firstName: "A", lastName: "B", profilePhoto: null }],
+        network: [
+          { id: "a", firstName: "A", lastName: "B", profilePhoto: null },
+        ],
         invites: [],
         slots: {
           accountable: { used: 1, reserved: 0, max: 3 },
@@ -90,11 +96,13 @@ describe("CircleStatusSection", () => {
       activity: async () => ({ events: [] }),
     })
     render(wrap(<CircleStatusSection />))
-    await waitFor(() => expect(screen.getByText("Your Circle")).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText("Your Circle")).toBeInTheDocument()
+    )
     expect(screen.queryByText(/joined your Circle/i)).not.toBeInTheDocument()
     expect(screen.queryByText(/has left your Circle/i)).not.toBeInTheDocument()
     expect(
-      screen.queryByRole("button", { name: /Send reminders/i }),
+      screen.queryByRole("button", { name: /Send reminders/i })
     ).not.toBeInTheDocument()
   })
 
@@ -110,7 +118,9 @@ describe("CircleStatusSection", () => {
   it("suppresses banner silently when /circle-activity errors", async () => {
     stubFetch({
       network: async () => ({
-        network: [{ id: "a", firstName: "A", lastName: "B", profilePhoto: null }],
+        network: [
+          { id: "a", firstName: "A", lastName: "B", profilePhoto: null },
+        ],
         invites: [],
         slots: {
           accountable: { used: 1, reserved: 0, max: 3 },
@@ -122,7 +132,9 @@ describe("CircleStatusSection", () => {
       },
     })
     render(wrap(<CircleStatusSection />))
-    await waitFor(() => expect(screen.getByText("Your Circle")).toBeInTheDocument())
+    await waitFor(() =>
+      expect(screen.getByText("Your Circle")).toBeInTheDocument()
+    )
     expect(screen.queryByText(/joined your Circle/i)).not.toBeInTheDocument()
   })
 })

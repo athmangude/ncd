@@ -335,9 +335,7 @@ export default function PatientProfile() {
           >
             <div className="text-muted-foreground">{option.icon}</div>
             <div className="flex-1">
-              <h3 className="text-foreground">
-                {option.title}
-              </h3>
+              <h3 className="text-foreground">{option.title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {option.description}
               </p>

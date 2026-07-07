@@ -34,7 +34,10 @@ function makeFacility(overrides: Partial<Facility>): Facility {
 describe("FacilityCard distance row", () => {
   it("renders the distance and its bullet when distance is present", () => {
     render(
-      <FacilityCard facility={makeFacility({ distance: 2.34 })} onClick={vi.fn()} />
+      <FacilityCard
+        facility={makeFacility({ distance: 2.34 })}
+        onClick={vi.fn()}
+      />
     )
     expect(screen.getByText("2.3 km")).toBeInTheDocument()
   })
@@ -43,7 +46,10 @@ describe("FacilityCard distance row", () => {
     // The old markup rendered `{distance?.toFixed(1)} km` unconditionally →
     // a bare " km •" leader when distance was undefined (audit §0).
     render(
-      <FacilityCard facility={makeFacility({ distance: null })} onClick={vi.fn()} />
+      <FacilityCard
+        facility={makeFacility({ distance: null })}
+        onClick={vi.fn()}
+      />
     )
     expect(screen.queryByText(/km/)).not.toBeInTheDocument()
   })

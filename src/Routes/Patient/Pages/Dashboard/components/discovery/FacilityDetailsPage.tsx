@@ -265,9 +265,7 @@ export default function FacilityDetailsPage() {
           aria-hidden="true"
           className="h-12 w-12 mb-3 object-contain"
         />
-        <h2 className="text-foreground">
-          {facility.name}
-        </h2>
+        <h2 className="text-foreground">{facility.name}</h2>
         {facilitySubtitle(facility) && (
           <p className="text-sm text-muted-foreground mt-1">
             {facilitySubtitle(facility)}

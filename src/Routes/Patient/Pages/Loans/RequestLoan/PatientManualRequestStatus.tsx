@@ -28,25 +28,30 @@ export default function PatientManualRequestStatus() {
 
   useEffect(() => {
     if (data) {
-      if (data.payment && data.payment.paymentSplits && data.payment.paymentSplits.length > 0) {
+      if (
+        data.payment &&
+        data.payment.paymentSplits &&
+        data.payment.paymentSplits.length > 0
+      ) {
         return
       }
 
       setToLocalStorage(patientReviewInvoiceStorageKey, data)
 
       if (data.status === "APPROVED") {
-         navigate("/patients/payment/request-payment/wallet-selection", {
-           replace: true,
-           state: {
-             careProvider: data.kmpdcFacility,
-             patient: data.dependent || data.patient,
-             totalBillAmount: data.billAmount,
-
-           }
-         })
+        navigate("/patients/payment/request-payment/wallet-selection", {
+          replace: true,
+          state: {
+            careProvider: data.kmpdcFacility,
+            patient: data.dependent || data.patient,
+            totalBillAmount: data.billAmount,
+          },
+        })
       } else {
-         navigate("/patients/payment/request-payment/verification-pending", { replace: true })
-      } 
+        navigate("/patients/payment/request-payment/verification-pending", {
+          replace: true,
+        })
+      }
     }
   }, [data, navigate])
 
@@ -55,29 +60,31 @@ export default function PatientManualRequestStatus() {
       <PatientPageWrapper title="Checking Status">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <Loader className="w-12 h-12 text-primary" />
-          <p className="mt-4 text-muted-foreground">Retrieving request details...</p>
+          <p className="mt-4 text-muted-foreground">
+            Retrieving request details...
+          </p>
         </div>
       </PatientPageWrapper>
     )
   }
 
-  if (data && data.payment && data.payment.paymentSplits && data.payment.paymentSplits.length > 0) {
+  if (
+    data &&
+    data.payment &&
+    data.payment.paymentSplits &&
+    data.payment.paymentSplits.length > 0
+  ) {
     return (
       <PatientPageWrapper title="Payment Status">
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
           <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="w-10 h-10 text-purple-600" />
           </div>
-          <h1 className="text-foreground mb-2">
-            Payment Already Made
-          </h1>
+          <h1 className="text-foreground mb-2">Payment Already Made</h1>
           <p className="text-muted-foreground">
             This payment request has already been paid.
           </p>
-          <Button
-            onClick={() => navigate("/patients")}
-            className="w-full mt-5"
-          >
+          <Button onClick={() => navigate("/patients")} className="w-full mt-5">
             Go Home
           </Button>
         </div>
@@ -86,32 +93,30 @@ export default function PatientManualRequestStatus() {
   }
 
   if (error || (data && data.status === "REJECTED")) {
-     return (
-       <PatientPageWrapper title="Request Status">
-         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-      
-            <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
-              <span className="text-3xl">✕</span>
-            </div>
-            <h1 className="text-foreground mb-2">
-              {data?.status === "REJECTED" ? "Request Rejected" : "Error"}
-            </h1>
-            <p className="text-muted-foreground">
-              {data?.status === "REJECTED"
-                ? "Your payment request was rejected. Please contact support for more details."
-                : "Could not retrieve request details. Please try again or contact support."}
-            </p>
-             <button
-                onClick={() => navigate("/patients")}
-                className="mt-8 px-6 py-3 bg-foreground text-white rounded-xl font-semibold"
-             >
-               Go Home
-             </button>
-         </div>
-       </PatientPageWrapper>
-     )
+    return (
+      <PatientPageWrapper title="Request Status">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
+            <span className="text-3xl">✕</span>
+          </div>
+          <h1 className="text-foreground mb-2">
+            {data?.status === "REJECTED" ? "Request Rejected" : "Error"}
+          </h1>
+          <p className="text-muted-foreground">
+            {data?.status === "REJECTED"
+              ? "Your payment request was rejected. Please contact support for more details."
+              : "Could not retrieve request details. Please try again or contact support."}
+          </p>
+          <button
+            onClick={() => navigate("/patients")}
+            className="mt-8 px-6 py-3 bg-foreground text-white rounded-xl font-semibold"
+          >
+            Go Home
+          </button>
+        </div>
+      </PatientPageWrapper>
+    )
   }
 
   return null // Should redirect
 }
-

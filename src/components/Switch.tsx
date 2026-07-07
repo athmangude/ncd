@@ -27,7 +27,8 @@ const switchThumbVariants = cva(
   {
     variants: {
       size: {
-        default: "h-5 w-5 data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
+        default:
+          "h-5 w-5 data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0",
         xs: "h-[18px] w-[18px] data-[state=checked]:translate-x-[18px] data-[state=unchecked]:translate-x-0",
         sm: "h-3.5 w-3.5 data-[state=checked]:translate-x-[15px] data-[state=unchecked]:translate-x-0.5",
       },
