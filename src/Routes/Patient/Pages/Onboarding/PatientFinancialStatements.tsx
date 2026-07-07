@@ -57,7 +57,7 @@ function InstructionsSection() {
     <>
       <div>
         <p className=" font-medium">What you'll need</p>
-        <ul className="list-disc pl-6 text-neutral-500 text-sm mt-0">
+        <ul className="list-disc pl-6 text-muted-foreground text-sm mt-0">
           <li>
             Must be a <strong>PDF</strong> file from Safaricom
           </li>

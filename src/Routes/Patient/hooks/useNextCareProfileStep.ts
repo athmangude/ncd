@@ -128,12 +128,10 @@ export default function useNextCareProfileStep() {
         // If no endpoint is defined for this step, just return null (or handle as needed)
         return null
       }
-      console.log("data",data)
       const response = await axios.post(
         import.meta.env.VITE_API_BASE_URL + endpoint,
         data
       )
-      console.log("response",response)
       return response.data
     },
     onSuccess: (data) => {

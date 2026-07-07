@@ -23,7 +23,7 @@ export function InvitationsSentSection({ invites }: InvitationsSentSectionProps)
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-neutral-500">Sent Invites ({invites.length})</h3>
+        <h3 className="text-muted-foreground">Sent Invites ({invites.length})</h3>
         <span
           className="text-purple-600 font-medium text-sm cursor-pointer"
           onClick={() => navigate("/patients/network/invitations-sent")}

@@ -94,9 +94,9 @@ export function WaitlistDialog({
             aria-hidden="true"
           />
 
-          <h1 className="font-medium text-2xl">{title}</h1>
+          <h1>{title}</h1>
 
-          <p className="text-lg text-neutral-500 text-center">{description}</p>
+          <p className="text-lg text-muted-foreground text-center">{description}</p>
 
           <div className="flex flex-col gap-3 w-full mt-5">
             <Button

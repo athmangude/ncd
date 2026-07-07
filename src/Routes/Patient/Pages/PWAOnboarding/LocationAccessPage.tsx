@@ -93,22 +93,22 @@ export default function LocationAccessPage() {
       }
     >
       <div className="w-full">
-        <p className="text-neutral-500 text-sm mb-4">Why?</p>
+        <p className="text-muted-foreground text-sm mb-4">Why?</p>
 
         <div className="space-y-4 bg-white rounded-xl">
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-lg">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900">Find hospitals near you</span>
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground">Find hospitals near you</span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-lg">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900">
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground">
               Get notified of nearby offers
             </span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-lg">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900">
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground">
               Save your care provider preferences for your next visit
             </span>
           </div>

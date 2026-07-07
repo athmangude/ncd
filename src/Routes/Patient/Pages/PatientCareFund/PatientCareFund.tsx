@@ -30,13 +30,13 @@ export function PatientCareFund() {
         {canPayMedicalBill && careFundAccount && (
           <section className="grid grid-cols-2 gap-4">
             <CareFundCTA
-              icon={<Banknote className="w-8 h-8 text-[#9333EA] font-sm" />}
+              icon={<Banknote className="w-8 h-8 text-primary font-sm" />}
               title="Redeem"
               link={next}
             />
 
             <CareFundCTA
-              icon={<ArrowUpRight className="w-8 h-8 text-[#9333EA]" />}
+              icon={<ArrowUpRight className="w-8 h-8 text-primary" />}
               title="Share"
               link="/patients/care-fund/gift-recipient"
             />

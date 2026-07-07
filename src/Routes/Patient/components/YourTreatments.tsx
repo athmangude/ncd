@@ -52,7 +52,7 @@ export default function YourTreatments({
     <div className="flex flex-col max-h-[400px] overflow-y-auto gap-6">
       {groupedLoans.map((group) => (
         <div key={group.date} className="flex flex-col gap-3">
-          <p className="text-sm text-neutral-500 font-medium ml-1">{group.date}</p>
+          <p className="text-sm text-muted-foreground font-medium ml-1">{group.date}</p>
           <div className="flex flex-col gap-3">
             {group.items.map((loan: any) => (
               <LoanCard
@@ -198,13 +198,13 @@ export function LoanCard({
         <>
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-neutral-500" />
-              <p className="text-sm text-neutral-900">Loan repaid</p>
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <p className="text-sm text-foreground">Loan repaid</p>
             </div>
           </div>
 
           <div className="pl-6">
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-muted-foreground">
               {formatMoney(Number(amount), currency)}
             </p>
           </div>
@@ -213,7 +213,7 @@ export function LoanCard({
 
       {status !== "PAID" && (
         <Button
-          className="w-full bg-[#F3E8FF] text-[#9333EA] hover:bg-[#E9D5FF] h-10 font-medium rounded-lg"
+          className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 font-medium rounded-lg"
           onClick={(e) => {
             e.stopPropagation()
             try {

@@ -41,9 +41,9 @@ export default function PatientInvitationsSent() {
       footer={null}
     >
       <div className="flex flex-col gap-3 mt-4">
-        <div className="text-neutral-500 mb-2">Sent ({invites.length})</div>
+        <div className="text-muted-foreground mb-2">Sent ({invites.length})</div>
         {invites.length === 0 ? (
-          <div className="text-neutral-400 text-sm pl-8">No sent invitations</div>
+          <div className="text-muted-foreground text-sm pl-8">No sent invitations</div>
         ) : (
           invites.map((n) => (
             <NetworkItem

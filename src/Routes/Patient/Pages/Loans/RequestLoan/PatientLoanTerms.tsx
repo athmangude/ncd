@@ -414,13 +414,13 @@ function LoanTermsForm({
 
       {careFundDiscountAmount > 0 && (
         <div className="border-t mt-5 pt-2 flex justify-between items-center">
-          <p className="text-neutral-500">Total bill</p>
+          <p className="text-muted-foreground">Total bill</p>
 
           <p className="font-medium flex gap-2">
             {formatMoney(newBillAmount, "KES")}
 
             {careFundDiscountAmount > 0 && (
-              <span className="text-neutral-400 line-through">
+              <span className="text-muted-foreground line-through">
                 {formatMoney(totalBillAmount, "KES")}
               </span>
             )}

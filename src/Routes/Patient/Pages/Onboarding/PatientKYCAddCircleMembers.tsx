@@ -39,10 +39,10 @@ function EmptySlot({ onClick }: { onClick?: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="w-12 h-12 rounded-full border-2 border-dashed border-neutral-300 bg-neutral-50 flex items-center justify-center shrink-0"
+      className="w-12 h-12 rounded-full border-2 border-dashed border-border bg-muted flex items-center justify-center shrink-0"
       aria-label="Empty circle slot"
     >
-      <Plus className="w-5 h-5 text-neutral-400" />
+      <Plus className="w-5 h-5 text-muted-foreground" />
     </button>
   )
 }
@@ -134,10 +134,10 @@ function MemberRow({
         className="w-10 h-10 shrink-0"
       />
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-neutral-900">
+        <p className="text-sm font-medium text-foreground">
           {member.firstName} {member.lastName}
         </p>
-        {phone && <p className="text-xs text-neutral-500">{phone}</p>}
+        {phone && <p className="text-xs text-muted-foreground">{phone}</p>}
       </div>
       {badge === "confirmed" ? (
         <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
@@ -361,24 +361,24 @@ export default function PatientKYCAddCircleMembers() {
         <button
           type="button"
           onClick={handleCircleInfo}
-          className="flex items-center gap-2 bg-teal-50 text-neutral-900 text-sm px-3 py-1.5 rounded-md"
+          className="flex items-center gap-2 bg-teal-50 text-foreground text-sm px-3 py-1.5 rounded-md"
         >
           <Info className="w-4 h-4 text-teal-600 shrink-0" />
           <span>What is a Jireh Circle?</span>
-          <ChevronRight className="w-4 h-4 text-neutral-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
         </button>
       }
       footer={
-        <div className="bg-white border-t border-neutral-100 p-4">
+        <div className="bg-white border-t border-border p-4">
           <div className="flex flex-col gap-3">
             {viewState === "waiting" && (
               <div className="flex gap-2 items-start bg-orange-50 px-3 py-2 rounded-md">
                 <CircleAlert className="w-5 h-5 text-orange-500 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-neutral-900">
+                  <p className="text-sm font-medium text-foreground">
                     Your Circle is not yet active.
                   </p>
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-sm text-muted-foreground">
                     Slots stay open until each person accepts your invite.
                   </p>
                   {isAwaitingInviteAcceptance && (
@@ -391,7 +391,7 @@ export default function PatientKYCAddCircleMembers() {
             )}
 
             <Button
-              className="w-full bg-[#b325ff] hover:bg-[#9a1fd4] text-white"
+              className="w-full bg-primary hover:bg-primary/90 text-white"
               onClick={handleAddPerson}
             >
               {ctaLabel}
@@ -422,7 +422,7 @@ export default function PatientKYCAddCircleMembers() {
               <EmptySlot onClick={handleAddPerson} />
             )}
 
-            <div className="h-px w-6 bg-neutral-300" />
+            <div className="h-px w-6 bg-border" />
 
             {/* User avatar (centre) */}
             <ProfileAvatar
@@ -432,7 +432,7 @@ export default function PatientKYCAddCircleMembers() {
               className="w-[84px] h-[84px] border-2 border-[#dfacff]"
             />
 
-            <div className="h-px w-6 bg-neutral-300" />
+            <div className="h-px w-6 bg-border" />
 
             {/* Right slot */}
             {slot2 ? (
@@ -452,14 +452,14 @@ export default function PatientKYCAddCircleMembers() {
             )}
           </div>
 
-          <p className="text-sm text-neutral-500 text-center">{captionText}</p>
+          <p className="text-sm text-muted-foreground text-center">{captionText}</p>
         </div>
 
         {/* Member lists */}
         <div className="flex flex-col gap-4 w-full">
           {acceptedAdults.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-neutral-500 px-2">
+              <p className="text-xs font-medium text-muted-foreground px-2">
                 Confirmed:
               </p>
               <div className="flex flex-col gap-1">
@@ -477,7 +477,7 @@ export default function PatientKYCAddCircleMembers() {
 
           {pendingAdults.length > 0 && (
             <div className="flex flex-col gap-1">
-              <p className="text-xs font-medium text-neutral-500 px-2">
+              <p className="text-xs font-medium text-muted-foreground px-2">
                 Invites sent to:
               </p>
               <div className="flex flex-col gap-1">

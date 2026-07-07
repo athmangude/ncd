@@ -154,7 +154,7 @@ export default function PaymentPortal({
               className="w-full max-w-[70px] mx-auto"
               aria-hidden="true"
             />
-            <p className="flex text-neutral-500 text-sm justify-between">
+            <p className="flex text-muted-foreground text-sm justify-between">
               Amount to repay:
               <span>{formatMoney(initialPaymentAmount, "KES")}</span>
             </p>

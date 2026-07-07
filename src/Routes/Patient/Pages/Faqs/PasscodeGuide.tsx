@@ -83,7 +83,7 @@ function InstructionsSection() {
       )}
 
       <div className="flex flex-col p-4 gap-6">
-        <h1 className="text-2xl font-semibold">What is a passcode?</h1>
+        <h1>What is a passcode?</h1>
         <ul className="flex flex-col gap-4">
           <li>• Some statements are password-protected for security</li>
           <li>• Safaricom sends the passcode via SMS or email</li>

@@ -52,7 +52,7 @@ export function DiscoveryHomeSkeleton() {
             {[0, 1].map((i) => (
               <div
                 key={i}
-                className="w-full bg-purple-50 border border-neutral-200 rounded-lg p-3 flex flex-col gap-3"
+                className="w-full bg-purple-50 border border-border rounded-lg p-3 flex flex-col gap-3"
               >
                 <Skeleton className="h-5 w-3/4" />
                 <div className="flex items-center justify-between">

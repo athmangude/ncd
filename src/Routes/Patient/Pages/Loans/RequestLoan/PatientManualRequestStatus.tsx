@@ -55,7 +55,7 @@ export default function PatientManualRequestStatus() {
       <PatientPageWrapper title="Checking Status">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
           <Loader className="w-12 h-12 text-primary" />
-          <p className="mt-4 text-neutral-500">Retrieving request details...</p>
+          <p className="mt-4 text-muted-foreground">Retrieving request details...</p>
         </div>
       </PatientPageWrapper>
     )
@@ -68,10 +68,10 @@ export default function PatientManualRequestStatus() {
           <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mb-6">
             <CheckCircle className="w-10 h-10 text-purple-600" />
           </div>
-          <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+          <h1 className="text-foreground mb-2">
             Payment Already Made
           </h1>
-          <p className="text-neutral-500">
+          <p className="text-muted-foreground">
             This payment request has already been paid.
           </p>
           <Button
@@ -93,17 +93,17 @@ export default function PatientManualRequestStatus() {
             <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-6">
               <span className="text-3xl">✕</span>
             </div>
-            <h1 className="text-2xl font-bold text-neutral-900 mb-2">
+            <h1 className="text-foreground mb-2">
               {data?.status === "REJECTED" ? "Request Rejected" : "Error"}
             </h1>
-            <p className="text-neutral-500">
-              {data?.status === "REJECTED" 
+            <p className="text-muted-foreground">
+              {data?.status === "REJECTED"
                 ? "Your payment request was rejected. Please contact support for more details."
                 : "Could not retrieve request details. Please try again or contact support."}
             </p>
-             <button 
+             <button
                 onClick={() => navigate("/patients")}
-                className="mt-8 px-6 py-3 bg-neutral-900 text-white rounded-xl font-semibold"
+                className="mt-8 px-6 py-3 bg-foreground text-white rounded-xl font-semibold"
              >
                Go Home
              </button>

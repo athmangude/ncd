@@ -109,7 +109,7 @@ export default function EnableNotificationsPage() {
 
       {isGranted && (
         <Button
-          className="w-full bg-[#A855F7] hover:bg-[#9333EA] h-12 rounded-xl"
+          className="w-full bg-primary hover:bg-primary/90 h-12 rounded-xl"
           onClick={handleNext}
         >
           Continue
@@ -150,24 +150,24 @@ export default function EnableNotificationsPage() {
       footer={footer}
     >
       <div className="w-full text-left">
-        <p className="text-neutral-500 text-sm mb-4">Why?</p>
+        <p className="text-muted-foreground text-sm mb-4">Why?</p>
 
         <div className="space-y-3">
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-xl">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900 font-medium text-sm">
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-xl">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground font-medium text-sm">
               Keep SMS for urgent alerts
             </span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-xl">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900 font-medium text-sm">
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-xl">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground font-medium text-sm">
               Keep track of every transaction
             </span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-xl">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900 font-medium text-sm">
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-xl">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground font-medium text-sm">
               Get progress reminders and reports
             </span>
           </div>

@@ -88,7 +88,7 @@ export default function PatientReferralCode() {
       >
         <PatientAuthHeadline text="Did someone help you to sign up?" />
 
-        <h2 className="text-center text-xl font-medium">
+        <h2 className="text-center">
           Enter the code you received from a receptionist or staff member
         </h2>
 

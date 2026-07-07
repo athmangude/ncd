@@ -12,11 +12,11 @@ export default function PatientIdVerificationFailure() {
           aria-hidden
           className="w-20 h-20"
         />
-        <h1 className="text-2xl font-medium">
+        <h1>
           We could not verify your National ID details.
         </h1>
 
-        <p className="text-lg text-neutral-500">
+        <p className="text-lg text-muted-foreground">
           Unfortunately, you have been blocked from our services because your
           details did not match your ID.
         </p>

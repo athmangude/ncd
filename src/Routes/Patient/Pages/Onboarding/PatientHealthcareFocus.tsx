@@ -100,10 +100,10 @@ export default function PatientHealthcareFocus() {
         />
       }
     >
-      <h1 className="text-2xl">
+      <h1>
         Select the areas of health coverage that are most important to you.
       </h1>
-      <p className="text-neutral-500">Add as many as you like</p>
+      <p className="text-muted-foreground">Add as many as you like</p>
 
       <section className="flex flex-col gap-3 ">
         {healthcareFocusAreas.map((area) => (
@@ -137,7 +137,7 @@ export default function PatientHealthcareFocus() {
       </section>
 
       {focusAreas.length === 0 && otherText.trim().length === 0 && (
-        <p className="text-neutral-500">Select at least one area to continue</p>
+        <p className="text-muted-foreground">Select at least one area to continue</p>
       )}
     </PatientPageWrapper>
   )

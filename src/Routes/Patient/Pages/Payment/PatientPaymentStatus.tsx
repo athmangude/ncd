@@ -130,8 +130,8 @@ export default function PatientPaymentStatus() {
         ) : (
              !query.isLoading && !paymentId && !reference && (
                 <div className="flex flex-col items-center justify-center h-full gap-4 mt-10 px-4 text-center">
-                    <AlertCircle className="w-12 h-12 text-neutral-400" />
-                    <p className="text-neutral-600">No payment information found.</p>
+                    <AlertCircle className="w-12 h-12 text-muted-foreground" />
+                    <p className="text-muted-foreground">No payment information found.</p>
                     <Button onClick={() => navigate("/patients")}>Go to Dashboard</Button>
                 </div>
             )
@@ -196,12 +196,12 @@ function PaymentStatusContent({ data, reference }: { data: PaymentStatusResponse
       <Title >{statusConfig.title}</Title>
 
       {isSuccess ? (
-        <p className="text-neutral-600 ">
-          <span className="font-medium text-neutral-700">{formatMoney(amount, "KES")}  </span> has been paid to <span className="capitalize">{facilityName}</span> on
-          <span className="font-medium text-neutral-700">  {formatDateLong(date)} at {formatTime(date)}</span>
+        <p className="text-muted-foreground ">
+          <span className="font-medium text-muted-foreground">{formatMoney(amount, "KES")}  </span> has been paid to <span className="capitalize">{facilityName}</span> on
+          <span className="font-medium text-muted-foreground">  {formatDateLong(date)} at {formatTime(date)}</span>
         </p>
       ) : (
-        <p className="text-neutral-600 ">{statusConfig.description}</p>
+        <p className="text-muted-foreground ">{statusConfig.description}</p>
       )}
 
       {isSuccess && data.paymentSplits && data.paymentSplits.length > 0 && (
@@ -211,8 +211,8 @@ function PaymentStatusContent({ data, reference }: { data: PaymentStatusResponse
               if (split.wallet?.type !== "MPESA" || earnedAmount <= 0) return null;
               return (
                 <div key={split.id} className="flex justify-center ">
-                  <Coins className="text-neutral-500" />
-                  <p className="text-neutral-600 capitalize">
+                  <Coins className="text-muted-foreground" />
+                  <p className="text-muted-foreground capitalize">
                     You have earned {formatMoney(earnedAmount, "KES")} for paying with Jireh Health at {facilityName.toLowerCase()}
                   </p>
                 </div>

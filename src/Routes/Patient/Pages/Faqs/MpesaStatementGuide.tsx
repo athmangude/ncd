@@ -80,7 +80,7 @@ function InstructionsSection() {
             <div className="flex flex-col items-center gap-6">
               {/* Step Counter */}
               <div className="w-full text-center mb-2">
-                <span className="text-sm font-medium text-neutral-500">
+                <span className="text-sm font-medium text-muted-foreground">
                   Step {currentSubStep + 1} of {step.subSteps.length}
                 </span>
               </div>
@@ -95,7 +95,7 @@ function InstructionsSection() {
                   />
                 )}
                 <div className="text-center w-full">
-                  <p className="text-neutral-600 text-sm sm:text-base">
+                  <p className="text-muted-foreground text-sm sm:text-base">
                     {formatParenthesizedText(
                       step.subSteps[safeCurrentSubStep]?.description || ""
                     )}
@@ -112,7 +112,7 @@ function InstructionsSection() {
                     className={`h-2 sm:h-2.5 min-w-[0.5rem] sm:min-w-[0.625rem] rounded-full transition-all flex-shrink-0 ${
                       index === currentSubStep
                         ? "bg-primary w-4"
-                        : "bg-purple-200 hover:bg-neutral-300"
+                        : "bg-purple-200 hover:bg-muted"
                     }`}
                   />
                 ))}

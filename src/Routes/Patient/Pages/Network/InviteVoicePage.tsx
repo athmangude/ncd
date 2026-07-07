@@ -237,10 +237,10 @@ export default function InviteVoicePage() {
       <div className="flex flex-col h-full">
         {/* Step heading */}
         <div className="flex flex-col px-4 pt-2 mb-6">
-          <h2 className="text-2xl font-semibold text-neutral-900 mb-1">
+          <h2 className="text-foreground mb-1">
             Tap to start recording up to {MAX_DURATION} seconds.
           </h2>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             e.g. &ldquo;This is for managing Mom&apos;s care&rdquo;.
           </p>
         </div>
@@ -261,7 +261,7 @@ export default function InviteVoicePage() {
 
           {recordingState === "recording" && (
             <div className="w-full max-w-md flex flex-col items-center gap-3">
-              <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-neutral-200 shadow-sm">
+              <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
                 <button
                   type="button"
                   className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0"
@@ -273,17 +273,17 @@ export default function InviteVoicePage() {
                 <div className="flex-1 flex items-center h-8 overflow-hidden">
                   {renderVisualizer()}
                 </div>
-                <span className="text-xs font-mono text-neutral-500 w-10 text-right flex-shrink-0">
+                <span className="text-xs font-mono text-muted-foreground w-10 text-right flex-shrink-0">
                   {formatTime(recordingTime)}
                 </span>
               </div>
-              <p className="text-sm text-neutral-500">You are recording...</p>
+              <p className="text-sm text-muted-foreground">You are recording...</p>
             </div>
           )}
 
           {recordingState === "review" && (
             <div className="w-full max-w-md flex flex-col items-center gap-4">
-              <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-neutral-200 shadow-sm">
+              <div className="w-full bg-white rounded-full px-4 py-2 flex items-center gap-3 border border-border shadow-sm">
                 <button
                   type="button"
                   className="w-10 h-10 rounded-full bg-purple-500 hover:bg-purple-600 flex items-center justify-center flex-shrink-0 transition-colors"
@@ -299,7 +299,7 @@ export default function InviteVoicePage() {
                 <div className="flex-1 flex items-center h-8 overflow-hidden">
                   {renderVisualizer(true)}
                 </div>
-                <span className="text-xs font-mono text-neutral-500 w-10 text-right flex-shrink-0">
+                <span className="text-xs font-mono text-muted-foreground w-10 text-right flex-shrink-0">
                   {formatTime(recordingTime)}
                 </span>
               </div>
@@ -312,7 +312,7 @@ export default function InviteVoicePage() {
               />
               <button
                 type="button"
-                className="text-sm text-neutral-400 underline"
+                className="text-sm text-muted-foreground underline"
                 onClick={resetState}
               >
                 Re-record
@@ -324,7 +324,7 @@ export default function InviteVoicePage() {
         {/* Fixed bottom button */}
         <div className="p-4">
           <Button
-            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-neutral-300 disabled:text-neutral-500"
+            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-muted disabled:text-muted-foreground"
             disabled={recordingState !== "review"}
             onClick={handlePreview}
           >

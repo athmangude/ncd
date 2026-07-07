@@ -247,20 +247,20 @@ export default function InstallAppPage() {
       }
     >
       <div className="w-full">
-        <p className="text-neutral-500 text-sm mb-1">Why?</p>
+        <p className="text-muted-foreground text-sm mb-1">Why?</p>
 
         <div className="space-y-4 bg-white rounded-xl">
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-lg ">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900 ">Use Jireh offline</span>
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg ">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground ">Use Jireh offline</span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-lg ">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900 ">Use less data when online</span>
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg ">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground ">Use less data when online</span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-neutral-100 rounded-lg ">
-            <Check className="w-4 h-4 text-neutral-500" />
-            <span className="text-neutral-900 ">Access your account 24/7</span>
+          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg ">
+            <Check className="w-4 h-4 text-muted-foreground" />
+            <span className="text-foreground ">Access your account 24/7</span>
           </div>
         </div>
       </div>

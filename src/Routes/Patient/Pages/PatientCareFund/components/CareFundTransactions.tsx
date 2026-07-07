@@ -82,7 +82,7 @@ export function CareFundTransactions() {
                 {[1, 2, 3].slice(0, groupIndex === 0 ? 3 : 2).map((rowIndex) => (
                   <div
                     key={rowIndex}
-                    className="bg-white p-4 rounded-xl border border-neutral-100 shadow-sm flex items-center gap-3"
+                    className="bg-white p-4 rounded-xl border border-border shadow-sm flex items-center gap-3"
                   >
                     <Skeleton className="h-10 w-10 rounded-full shrink-0" />
                     <div className="flex flex-col gap-2 flex-1 min-w-0">
@@ -113,11 +113,11 @@ export function CareFundTransactions() {
 
   return (
     <div className="mt-8">
-      <h2 className="text-lg  mb-4">Transactions History</h2>
+      <h2 className="mb-4">Transactions History</h2>
       <div className="flex flex-col gap-6">
         {groupedTransactions.map((group) => (
           <div key={group.date}>
-            <h3 className="text-neutral-500 text-sm mb-2 ml-1">{group.date}</h3>
+            <h3 className="text-muted-foreground mb-2 ml-1">{group.date}</h3>
             <div className="flex flex-col gap-3">
               {group.transactions.map((transaction) => {
                 const isReceiver =
@@ -170,22 +170,22 @@ export function CareFundTransactions() {
                 return (
                   <div
                     key={transaction.id}
-                    className="bg-white p-4 rounded-xl border border-neutral-100 shadow-sm flex justify-between items-center"
+                    className="bg-white p-4 rounded-xl border border-border shadow-sm flex justify-between items-center"
                   >
-                    <div className="flex items-center text-neutral-800 gap-2">
+                    <div className="flex items-center text-foreground gap-2">
                       {getTransactionIcon()}
                       <div>
-                        <p className="text-neutral-800 capitalize mb-1 ">
+                        <p className="text-foreground capitalize mb-1 ">
                           {transaction.description?.toLowerCase()}
                         </p>
-                        <p className="text-sm text-neutral-500 flex items-center gap-2">
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
                           <span>
                             {formatMoney(
                               transaction.transactionAmount,
                               transaction.currency.code
                             )}
                           </span>
-                          <span className="w-1 h-1 rounded-full bg-neutral-400"></span>
+                          <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
                           <span>
                             {formatTime(transaction.createdAt)}
                           </span>

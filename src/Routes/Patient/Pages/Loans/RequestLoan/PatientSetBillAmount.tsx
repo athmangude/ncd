@@ -306,10 +306,10 @@ export default function PatientSetBillAmount() {
                   setAppliedDiscount(null)
                 }}
                 placeholder="Enter discount code"
-                className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-[#b325ff] focus:outline-none focus:ring-1 focus:ring-[#b325ff]"
+                className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
               {validateDiscountCodeMutation.isPending && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-neutral-400" />
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
               )}
             </div>
             <Button
@@ -398,7 +398,7 @@ export default function PatientSetBillAmount() {
         <div className="border-t mt-5 pt-2 space-y-2">
           {discountAmount > 0 && (
             <div className="flex justify-between items-center">
-              <p className="text-neutral-500">Discount</p>
+              <p className="text-muted-foreground">Discount</p>
               <p className="font-medium text-green-600">
                 -{formatMoney(discountAmount, currency)}
               </p>
@@ -406,18 +406,18 @@ export default function PatientSetBillAmount() {
           )}
           {careFundDiscountAmount > 0 && (
             <div className="flex justify-between items-center">
-              <p className="text-neutral-500">Care Fund</p>
+              <p className="text-muted-foreground">Care Fund</p>
               <p className="font-medium text-green-600">
                 -{formatMoney(careFundDiscountAmount, currency)}
               </p>
             </div>
           )}
           <div className="flex justify-between items-center pt-2 ">
-            <p className="text-neutral-500 font-medium">Total Bill Amount</p>
+            <p className="text-muted-foreground font-medium">Total Bill Amount</p>
             <p className="font-medium flex gap-2">
               {formatMoney(newBillAmount, currency)}
               {(careFundDiscountAmount > 0 || discountAmount > 0) && (
-                <span className="text-neutral-400 line-through">
+                <span className="text-muted-foreground line-through">
                   {formatMoney(totalBillAmount, currency)}
                 </span>
               )}

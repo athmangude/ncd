@@ -178,10 +178,10 @@ export default function PatientChangePin() {
               alt="Pin protect icon"
               className="w-32 h-32 mx-auto"
             />
-            <h1 className="text-2xl font-bold text-center">
+            <h1 className="text-center">
               Enter your current PIN
             </h1>
-            <p className="text-center text-neutral-500">
+            <p className="text-center text-muted-foreground">
               Please enter your current PIN to continue.
             </p>
 
@@ -219,10 +219,10 @@ export default function PatientChangePin() {
               alt="Pin protect icon"
               className="w-32 h-32 mx-auto"
             />
-            <h1 className="text-2xl font-bold text-center">
+            <h1 className="text-center">
               Create your new PIN
             </h1>
-            <p className="text-center text-neutral-500">
+            <p className="text-center text-muted-foreground">
               You will use this PIN to confirm all payments.
             </p>
 
@@ -254,10 +254,10 @@ export default function PatientChangePin() {
               className="w-32 h-32 mx-auto"
             />
 
-            <h1 className="text-2xl font-bold text-center">
+            <h1 className="text-center">
               Confirm your new PIN
             </h1>
-            <p className="text-center text-neutral-500">
+            <p className="text-center text-muted-foreground">
               Enter the new PIN you just created.
             </p>
 

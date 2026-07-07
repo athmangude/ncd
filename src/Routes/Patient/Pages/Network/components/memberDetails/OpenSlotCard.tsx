@@ -26,13 +26,13 @@ export function OpenSlotCard({
   const navigate = useNavigate()
 
   return (
-    <div className="rounded-xl border border-neutral-200 p-4">
-      <p className="font-medium text-neutral-900">Their slot is open again.</p>
+    <div className="rounded-xl border border-border p-4">
+      <p className="font-medium text-foreground">Their slot is open again.</p>
       <div className="mt-3 flex flex-col gap-3">
         <div className="flex items-start gap-2">
-          <UserPlus className="mt-0.5 h-4 w-4 text-neutral-500" />
+          <UserPlus className="mt-0.5 h-4 w-4 text-muted-foreground" />
           <div className="flex-1">
-            <p className="text-sm text-neutral-700">
+            <p className="text-sm text-muted-foreground">
               You can invite someone else to take this slot…
             </p>
             <Button
@@ -52,9 +52,9 @@ export function OpenSlotCard({
           </div>
         </div>
         <div className="flex items-start gap-2">
-          <Reply className="mt-0.5 h-4 w-4 text-neutral-500" />
+          <Reply className="mt-0.5 h-4 w-4 text-muted-foreground" />
           <div className="flex-1">
-            <p className="text-sm text-neutral-700">
+            <p className="text-sm text-muted-foreground">
               …or send {firstName} another invite if you think they might reconsider.
             </p>
             <Button

@@ -41,11 +41,11 @@ export default function PatientInvitationsReceived() {
       footer={null}
     >
       <div className="flex flex-col gap-3 mt-4">
-        <div className="text-neutral-500 mb-2">
+        <div className="text-muted-foreground mb-2">
           Received ({receivedInvites.length})
         </div>
         {receivedInvites.length === 0 ? (
-                 <div className="text-neutral-400 text-sm pl-8">No received invitations</div>
+                 <div className="text-muted-foreground text-sm pl-8">No received invitations</div>
             ) : (
                 receivedInvites.map((invite) => (
                      <ReceivedInviteItem key={invite.id} {...invite} />

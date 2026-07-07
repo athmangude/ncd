@@ -1,7 +1,8 @@
 import AmountContainer from "../../components/AmountContainer"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { formatMoney } from "@/utilities/currencyUtilities"
+import { Amount } from "@/components/Amount"
+import { SectionTitle } from "@/components/SectionTitle"
 import CopyButton from "@/components/CopyButton"
 import YourTreatments from "../../components/YourTreatments"
 import { useNavigate } from "react-router-dom"
@@ -49,17 +50,19 @@ export default function PatientAllLoans() {
       }
     >
       <section className="text-center flex flex-col gap-1">
-        <h1 className="font-normal text-neutral-600">Total To Repay</h1>
-        <p className="text-3xl font-medium">
-          {formatMoney(
-            loanStats?.outstandingAmount ?? 0,
-            loanStats?.currency || "KES"
-          )}
-        </p>
+        <SectionTitle className="text-muted-foreground">
+          Total To Repay
+        </SectionTitle>
+        <Amount
+          value={loanStats?.outstandingAmount ?? 0}
+          currency={loanStats?.currency || "KES"}
+          size="hero"
+          weight="bold"
+        />
       </section>
 
       <section className="flex flex-col gap-3 my-5 bg-primary/5 p-5 rounded-xl border-primary border">
-        <h1 className="font-me">How to Repay</h1>
+        <SectionTitle>How to Repay</SectionTitle>
 
         <div className="flex justify-between items-baseline">
           <AmountContainer leftText="Pay Bill No." rightText="4159861" />

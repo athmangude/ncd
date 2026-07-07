@@ -1,6 +1,9 @@
 import { useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import AppShell from "@/Routes/AppShell"
+import { Button } from "@/components/Button"
+import { Switch } from "@/components/Switch"
+import { Skeleton } from "@/components/Skeleton"
 import {
   ArrowLeft,
   BadgeCheck,
@@ -235,21 +238,21 @@ function SearchHeader({
   onFilterTap: () => void
 }) {
   return (
-    <div className="bg-white flex flex-col gap-2 p-4 w-full border-b border-neutral-100">
+    <div className="bg-white flex flex-col gap-2 p-4 w-full border-b border-border">
       <div className="flex items-center gap-2 self-start">
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="icon"
           onClick={onBack}
           aria-label="Back"
-          className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm"
         >
-          <ArrowLeft className="w-6 h-6 text-gray-600" />
-        </button>
-        <h1 className="text-md capitalize">Search</h1>
+          <ArrowLeft className="w-6 h-6" />
+        </Button>
+        <h1 className="capitalize">Search</h1>
       </div>
 
       <div className="flex flex-col gap-1 items-center w-full text-center mt-4">
-        <h2 className="text-xl font-semibold text-foreground tracking-tight">
+        <h2 className="text-foreground">
           Find care near you
         </h2>
         <p className="text-sm text-muted-foreground">
@@ -257,10 +260,10 @@ function SearchHeader({
         </p>
       </div>
 
-      <div className="flex items-center gap-2 h-11 w-full border border-neutral-300 rounded-full pl-3 pr-2 bg-white shadow-sm">
-        <Search className="h-4 w-4 text-neutral-500 shrink-0" />
+      <div className="flex items-center gap-2 h-11 w-full border border-border rounded-full pl-3 pr-2 bg-white shadow-sm">
+        <Search className="h-4 w-4 text-muted-foreground shrink-0" />
         <input
-          className="flex-1 min-w-0 text-base bg-transparent outline-none text-foreground placeholder:text-neutral-400"
+          className="flex-1 min-w-0 text-base bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
           placeholder="Search facilities"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -290,24 +293,12 @@ function SearchHeader({
         </div>
         <div className="flex items-center gap-2 px-2 py-1.5">
           <span className="text-sm text-foreground">Verified</span>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={verifiedOnly}
+          <Switch
+            size="sm"
+            checked={verifiedOnly}
+            onCheckedChange={toggleVerified}
             aria-label="Show verified providers only"
-            onClick={toggleVerified}
-            className={cn(
-              "h-[18px] w-[33px] rounded-full relative transition-colors shrink-0",
-              verifiedOnly ? "bg-primary" : "bg-neutral-300"
-            )}
-          >
-            <div
-              className={cn(
-                "absolute top-1/2 -translate-y-1/2 h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform",
-                verifiedOnly ? "left-[15px]" : "left-[2px]"
-              )}
-            />
-          </button>
+          />
         </div>
       </div>
 
@@ -458,10 +449,7 @@ function SkeletonRows({ count }: { count: number }) {
   return (
     <div className="flex flex-col gap-2 px-2 py-1.5">
       {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          className="h-4 w-3/4 bg-neutral-100 rounded animate-pulse"
-        />
+        <Skeleton key={i} className="h-4 w-3/4 bg-muted rounded" />
       ))}
     </div>
   )
@@ -503,7 +491,7 @@ function FacilityResultRow({
             aria-label="Calculating drive time"
           >
             <Clock className="h-3 w-3" />
-            <span className="h-3 w-12 bg-neutral-100 rounded animate-pulse" />
+            <Skeleton className="h-3 w-12 bg-muted rounded" />
           </span>
         ) : null}
         {area && (

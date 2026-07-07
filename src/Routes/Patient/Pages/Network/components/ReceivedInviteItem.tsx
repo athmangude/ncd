@@ -19,7 +19,7 @@ export function ReceivedInviteItem({
   const navigate = useNavigate()
   
   return (
-      <div className="bg-white p-3 rounded-xl shadow-sm flex items-center gap-3 border border-neutral-100">
+      <div className="bg-white p-3 rounded-xl shadow-sm flex items-center gap-3 border border-border">
         <ProfileAvatar
             src={profilePhoto}
             name={`${inviterFirstName} ${inviterLastName}`}
@@ -31,9 +31,9 @@ export function ReceivedInviteItem({
         
         <div className="flex flex-col min-w-0 flex-1">
             <div className="flex items-center gap-2">
-                <span className="font-medium truncate text-neutral-900">{inviterFirstName} {inviterLastName}</span>
+                <span className="font-medium truncate text-foreground">{inviterFirstName} {inviterLastName}</span>
             </div>
-            <span className="text-neutral-400 text-sm truncate">{phoneNumber}</span>
+            <span className="text-muted-foreground text-sm truncate">{phoneNumber}</span>
         </div>
 
         <Button 

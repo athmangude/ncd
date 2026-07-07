@@ -167,7 +167,7 @@ function SignUpForm() {
       >
         <div className="flex flex-col gap-2">
           <PatientAuthHeadline text="Enter your phone number" />
-          <p className="text-neutral-500 text-center">
+          <p className="text-muted-foreground text-center">
             We'll send you an SMS with a code.
           </p>
         </div>
@@ -228,9 +228,9 @@ function SignUpForm() {
             />
             <label
               htmlFor="terms"
-              className="text-sm text-neutral-500 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm text-muted-foreground peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
-              <span className="font-medium text-black">
+              <span className="font-medium text-foreground">
                 I agree to Jireh's Privacy Policy
               </span>
               <br />

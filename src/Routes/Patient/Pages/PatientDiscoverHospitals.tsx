@@ -14,8 +14,8 @@ export default function PatientDiscoverHospitals() {
         className="w-full max-w-[80px] mx-auto my-3"
         aria-hidden="true"
       />
-      <h1 className="text-2xl font-medium">Discover our hospitals</h1>
-      <p className="text-neutral-500">
+      <h1>Discover our hospitals</h1>
+      <p className="text-muted-foreground">
         You can get a discount from some indicated hospitals.
       </p>
 
@@ -38,10 +38,10 @@ export default function PatientDiscoverHospitals() {
 
       {careProvider && (
         <div className="text-left mt-3 flex flex-col gap-1">
-          <h2 className="text-lg font-medium text-neutral-600">
+          <h2 className="text-muted-foreground">
             {careProvider.name}
           </h2>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             {careProvider.plotNumber || "No plot number available"}
           </p>
 
@@ -49,21 +49,21 @@ export default function PatientDiscoverHospitals() {
             <SearchFieldEmphasis text="Earn cashback here with Jireh" />
           )}
 
-          <p className="flex justify-between mt-5 text-lg text-neutral-500 gap-5">
+          <p className="flex justify-between mt-5 text-lg text-muted-foreground gap-5">
             Facility Type
-            <span className="text-neutral-800 text-right">
+            <span className="text-foreground text-right">
               {careProvider.facilityType}
             </span>
           </p>
-          <p className="flex justify-between mt-5 text-lg text-neutral-500 gap-5">
+          <p className="flex justify-between mt-5 text-lg text-muted-foreground gap-5">
             Plot No.
-            <span className="text-neutral-800 text-right max-w-[15ch]">
+            <span className="text-foreground text-right max-w-[15ch]">
               {careProvider.plotNumber}
             </span>
           </p>
-          <p className="flex justify-between mt-5 text-lg text-neutral-500 gap-5">
+          <p className="flex justify-between mt-5 text-lg text-muted-foreground gap-5">
             County
-            <span className="text-neutral-800 text-right">
+            <span className="text-foreground text-right">
               {careProvider.county}
             </span>
           </p>

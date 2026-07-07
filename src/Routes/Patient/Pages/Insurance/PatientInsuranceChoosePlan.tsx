@@ -18,9 +18,7 @@ export default function PatientInsuranceChoosePlan() {
 
   return (
     <PatientPageWrapper title="Your Plan">
-      <h1 className="text-2xl font-medium text-center mb-4">
-        Choose your membership plan
-      </h1>
+      <h1 className="text-center mb-4">Choose your membership plan</h1>
 
       <section className="flex flex-wrap gap-4 justify-center">
         <PlanSelector

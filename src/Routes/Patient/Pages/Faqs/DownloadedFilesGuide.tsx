@@ -61,9 +61,7 @@ function InstructionsSection() {
       />
 
       <div className="flex flex-col p-4 gap-6">
-        <h1 className="text-2xl font-semibold">
-          How to find downloaded files on your phone
-        </h1>
+        <h1>How to find downloaded files on your phone</h1>
 
         {alertMessage && (
           <div className="p-4">

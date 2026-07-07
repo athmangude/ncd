@@ -116,7 +116,7 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
               )}
             />
           </div>
-          <span className="text-sm text-neutral-900">
+          <span className="text-sm text-foreground">
             {member.firstName} declined your invite.
           </span>
         </div>
@@ -172,7 +172,7 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
             )}
           />
         </div>
-        <span className="text-sm text-neutral-900">{copy}</span>
+        <span className="text-sm text-foreground">{copy}</span>
       </div>
       <ChevronRight className={cn("h-5 w-5 shrink-0", chevronClass)} />
     </button>

@@ -28,7 +28,12 @@ export default function PatientPageWrapper({
   headerAlign = "center",
   showStepper = true,
 }: {
-  children: React.ReactNode
+  /**
+   * Page body. Optional for content-variant screens whose entire payload is the
+   * PageHeader (icon + title + description) and a pinned footer — e.g. the
+   * success screens, which have no scrolling body content.
+   */
+  children?: React.ReactNode
   title?: string // Made optional as sometimes we might not want a title or it's empty
   isRoot?: boolean
   className?: string
@@ -145,7 +150,7 @@ function ContentVariant({
   headerAlign,
   showStepper,
 }: {
-  children: React.ReactNode
+  children?: React.ReactNode
   title?: string
   isRoot?: boolean
   className?: string

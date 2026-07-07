@@ -55,7 +55,7 @@ function CreditScoreGauge() {
         cx={cx}
         cy={cy}
         r={r}
-        stroke="#A826FF"
+        stroke="hsl(var(--primary))"
         strokeWidth="3"
         strokeLinecap="round"
         fill="none"
@@ -72,7 +72,7 @@ function CreditScoreGauge() {
         strokeWidth="1.5"
         strokeLinecap="round"
       />
-      <circle cx={cx} cy={cy} r="2" fill="#A826FF" />
+      <circle cx={cx} cy={cy} r="2" fill="hsl(var(--primary))" />
     </svg>
   )
 }
@@ -124,20 +124,20 @@ export function CircleWaitingDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="bg-white p-2 rounded-lg border border-neutral-100 shadow-sm"
+            className="bg-white p-2 rounded-lg border border-border shadow-sm"
             aria-label="Go back"
           >
-            <ArrowLeft className="w-6 h-6 text-neutral-600" />
+            <ArrowLeft className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
 
         {/* header */}
         <div className="flex flex-col items-center gap-2 px-4 pt-6 pb-4 text-center shrink-0">
           <CreditScoreGauge />
-          <h1 className="text-xl font-medium text-neutral-900 leading-[1.25] tracking-[-0.4px]">
+          <h1 className="text-foreground leading-[1.25] tracking-[-0.4px]">
             Waiting on your Circle members
           </h1>
-          <p className="text-sm text-neutral-600 leading-5">
+          <p className="text-sm text-muted-foreground leading-5">
             Your invites were sent. Once they confirm, you can pay the KES 499
             and start borrowing.
           </p>
@@ -168,7 +168,7 @@ export function CircleWaitingDrawer({
         <div className="mt-auto px-4 pb-10 pt-2 shrink-0">
           <div className="flex flex-col gap-3 items-center">
             <Button
-              className="w-full h-11 bg-[#A826FF] hover:bg-[#9220DE] text-white font-semibold rounded-md"
+              className="w-full h-11 bg-primary hover:bg-primary/90 text-white font-semibold rounded-md"
               onClick={() => {
                 onClose()
                 navigate("/patients/network/invitations-sent")
@@ -176,11 +176,11 @@ export function CircleWaitingDrawer({
             >
               Check invite status
             </Button>
-            <p className="text-xs text-neutral-600 text-center">
+            <p className="text-xs text-muted-foreground text-center">
               Members must accept before your Circle qualifies.
             </p>
-            <div className="inline-flex items-center px-3 py-1 rounded-full border border-neutral-200 bg-neutral-50">
-              <span className="text-xs font-medium text-neutral-900">
+            <div className="inline-flex items-center px-3 py-1 rounded-full border border-border bg-muted">
+              <span className="text-xs font-medium text-foreground">
                 {filledSlots} member{filledSlots !== 1 ? "s" : ""} pending
                 confirmation
               </span>

@@ -1,7 +1,8 @@
 import { Button } from "@/components/Button"
 import { useNavigate, useLocation } from "react-router-dom"
 import { ArrowLeft, Lock, CheckCircle2 } from "lucide-react"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { cn } from "@/lib/utils"
 import upgradeLogo from "@/assets/icons/upgrade-logo.png"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -123,16 +124,21 @@ export default function PatientKYCSetupIntro() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Upgrade to Jireh Plus"
-          onBack={() => navigate(-1)}
+    <PatientPageWrapper
+      variant="content"
+      pageTitle={"Upgrade to Jireh Plus\n& unlock loans"}
+      description="Access interest-free loans to pay medical bills instantly with flexible terms."
+      headerIcon={
+        <img
+          src={upgradeLogo}
+          alt="Upgrade to Jireh Plus"
+          className={HERO_ILLUSTRATION}
         />
       }
+      bodyPadding="none"
       footer={
-        <div className="flex flex-col gap-3 border-t border-neutral-100 bg-white p-4">
-          <p className=" text-neutral-500 text-center">
+        <div className="flex flex-col gap-3 border-t border-border bg-white p-4">
+          <p className=" text-muted-foreground text-center">
             By proceeding, you confirm that you have read and agreed to our{" "}
             <a
               href="https://jireh-health.com/terms"
@@ -163,26 +169,9 @@ export default function PatientKYCSetupIntro() {
       className="p-0"
     >
       <div className="px-4 pt-6 pb-4">
-        {/* Hero */}
-        <div className="flex flex-col items-center gap-3 mb-8">
-          <img
-            src={upgradeLogo}
-            alt="Upgrade to Jireh Plus"
-            className="w-20 h-20 object-contain"
-          />
-          <h2 className="text-2xl font-bold text-center text-neutral-900 leading-tight mt-1">
-            Upgrade to Jireh Plus
-            <br />& unlock loans
-          </h2>
-          <p className="text-neutral-500 text-center text-sm px-4">
-            Access interest-free loans to pay medical bills instantly with
-            flexible terms.
-          </p>
-        </div>
-
         {/* Steps */}
         <div className="flex flex-col gap-3 w-full">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             Information being collected:
           </p>
 
@@ -243,11 +232,11 @@ export default function PatientKYCSetupIntro() {
                       {isCompleted ? (
                         <CheckCircle2 className="w-5 h-5 text-green-500" />
                       ) : isNext ? (
-                        <span className="text-sm font-medium text-neutral-900">
+                        <span className="text-sm font-medium text-foreground">
                           Next
                         </span>
                       ) : step.isPayStep ? (
-                        <Lock className="w-4 h-4 text-neutral-400" />
+                        <Lock className="w-4 h-4 text-muted-foreground" />
                       ) : null}
                     </div>
                   </div>
@@ -257,6 +246,6 @@ export default function PatientKYCSetupIntro() {
           </div>
         </div>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

@@ -28,7 +28,7 @@ export default function ErrorPage() {
         message="We apologize for the inconvenience. Please try refreshing the page."
         className="min-h-full"
       >
-        <i className="text-sm text-neutral-500">{errorMessage}</i>
+        <i className="text-sm text-muted-foreground">{errorMessage}</i>
         <Button
           onClick={() => window.location.reload()}
           variant="default"

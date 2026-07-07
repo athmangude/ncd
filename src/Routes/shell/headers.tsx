@@ -132,10 +132,11 @@ export function BackTitleHeader({
           size="icon"
           className="h-10 w-10"
           onClick={onBack}
+          aria-label="Go back"
         >
           <ChevronLeft size={24} />
         </Button>
-        <p className="text-base font-normal text-neutral-900">{title}</p>
+        <p className="text-base font-normal text-foreground">{title}</p>
       </div>
       {rightSlot != null && <div>{rightSlot}</div>}
     </header>

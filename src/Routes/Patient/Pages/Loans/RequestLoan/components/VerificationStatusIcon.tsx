@@ -4,7 +4,10 @@ import clock from "@/assets/icons/clock.png"
 export default function VerificationStatusIcon() {
   return (
     <div className="relative">
-      <FileText className="w-20 h-20 text-neutral-300" strokeWidth={1} />
+      <FileText
+        className="w-20 h-20 text-muted-foreground/40"
+        strokeWidth={1}
+      />
       <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1">
         <img
           src={clock}

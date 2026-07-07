@@ -10,6 +10,7 @@ import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { getFirstIncompleteStep } from "@/Routes/Patient/hooks/useNextOnboardingStep"
 import { useOffline } from "@/hooks/useOffline"
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder"
+import { Skeleton as SkeletonBlock } from "@/components/Skeleton"
 import { useFacilityDetails } from "./facility-details/useFacilityDetails"
 import { useDriveTime } from "./facility-details/useDriveTime"
 import { facilitySubtitle } from "./facility-details/facilitySubtitle"
@@ -197,22 +198,22 @@ export default function FacilityDetailsPage() {
     <header className="flex w-full flex-col bg-white px-4 py-3">
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => navigate(-1)}
-            className="bg-white p-2 rounded-lg border border-neutral-100 shadow-sm"
             aria-label="Back"
           >
-            <ArrowLeft className="w-6 h-6 text-neutral-600" />
-          </button>
-          <h1 className="text-md capitalize">Facility details</h1>
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+          <h1 className="capitalize">Facility details</h1>
         </div>
       </div>
     </header>
   )
 
   const footer = (
-    <div className="bg-white border-t border-neutral-100 px-4 py-3 flex gap-3 w-full">
+    <div className="bg-white border-t border-border px-4 py-3 flex gap-3 w-full">
       {activeTab === "about" && (
         <>
           <Button
@@ -257,14 +258,14 @@ export default function FacilityDetailsPage() {
 
   return (
     <AppShell header={header} footer={footer} bodyPadding="none">
-      <section className="bg-white px-4 pt-6 pb-4 border-b border-neutral-100 flex flex-col items-center text-center">
+      <section className="bg-white px-4 pt-6 pb-4 border-b border-border flex flex-col items-center text-center">
         <img
           src={facilityIcon}
           alt=""
           aria-hidden="true"
           className="h-12 w-12 mb-3 object-contain"
         />
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-foreground">
           {facility.name}
         </h2>
         {facilitySubtitle(facility) && (
@@ -280,7 +281,7 @@ export default function FacilityDetailsPage() {
           </div>
           {showRating && reviewAggregate && (
             <>
-              <div className="w-px bg-neutral-200" />
+              <div className="w-px bg-border" />
               <button
                 type="button"
                 onClick={() => handleTabChange("reviews")}
@@ -340,13 +341,13 @@ export default function FacilityDetailsPage() {
 
 function Skeleton() {
   return (
-    <div className="flex flex-col gap-4 p-6 animate-pulse">
-      <div className="h-5 w-32 bg-neutral-200 rounded" />
-      <div className="h-8 w-8 rounded-full bg-neutral-200 mx-auto" />
-      <div className="h-6 w-48 bg-neutral-200 rounded mx-auto" />
-      <div className="h-4 w-36 bg-neutral-200 rounded mx-auto" />
-      <div className="h-10 w-full bg-neutral-200 rounded mt-6" />
-      <div className="h-24 w-full bg-neutral-200 rounded" />
+    <div className="flex flex-col gap-4 p-6">
+      <SkeletonBlock className="h-5 w-32 bg-muted rounded" />
+      <SkeletonBlock className="h-8 w-8 rounded-full bg-muted mx-auto" />
+      <SkeletonBlock className="h-6 w-48 bg-muted rounded mx-auto" />
+      <SkeletonBlock className="h-4 w-36 bg-muted rounded mx-auto" />
+      <SkeletonBlock className="h-10 w-full bg-muted rounded mt-6" />
+      <SkeletonBlock className="h-24 w-full bg-muted rounded" />
     </div>
   )
 }

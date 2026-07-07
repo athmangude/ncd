@@ -11,7 +11,7 @@ export default function PlanSelector({
 }) {
   return (
     <button
-      className={`px-4 py-1 flex items-center rounded-full gap-1 ${isActive ? "bg-primary text-white font-medium " : "bg-neutral-100"}`}
+      className={`px-4 py-1 flex items-center rounded-full gap-1 ${isActive ? "bg-primary text-white font-medium " : "bg-muted"}`}
       onClick={onClick}
     >
       {isActive && <Check className="w-5 h-5 " />}

@@ -196,10 +196,10 @@ export default function PreviewInvitePage() {
         showHelp={false}
         className="min-h-full items-center justify-center"
         footer={
-          <div className="p-4 bg-white border-t border-neutral-100">
+          <div className="p-4 bg-white border-t border-border">
             <Button
               variant="outline"
-              className="w-full border-neutral-200 text-neutral-800"
+              className="w-full border-border text-foreground"
               onClick={handleBackToDashboard}
             >
               Back to dashboard
@@ -280,11 +280,11 @@ export default function PreviewInvitePage() {
       title="Preview invite"
       showHelp={false}
       footer={
-        <div className="p-4 bg-white border-t border-neutral-100">
+        <div className="p-4 bg-white border-t border-border">
           <div className="flex flex-col gap-2">
             <Button
               variant="outline"
-              className="w-full border-neutral-200 text-neutral-800"
+              className="w-full border-border text-foreground"
               onClick={() =>
                 navigate("/patients/network/check-profile-photo", {
                   state: { ...location.state, fromPreview: true },
@@ -308,10 +308,10 @@ export default function PreviewInvitePage() {
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-medium text-neutral-900 tracking-tight leading-snug">
+          <h2 className="text-foreground leading-snug">
             This is what {inviteeName} will see
           </h2>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-muted-foreground">
             Check it looks right before you send.
           </p>
         </div>

@@ -69,7 +69,7 @@ export function CircleSetupContent({
 
   const subtitle = useMemo(
     () => (
-      <p className="text-sm text-neutral-500 text-center">
+      <p className="text-sm text-muted-foreground text-center">
         Add people you trust. Share cashback.
         <br />
         Help each other when it matters.

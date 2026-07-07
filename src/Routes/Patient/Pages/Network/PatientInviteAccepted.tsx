@@ -49,9 +49,9 @@ export default function PatientInviteAccepted() {
         aria-hidden="true"
       />
 
-      <h1 className="font-medium text-xl ">Invite Accepted!</h1>
+      <h1>Invite Accepted!</h1>
 
-      <p className="text-lg text-neutral-500 ">
+      <p className="text-lg text-muted-foreground ">
         You have been added to{" "}
         <span className="font-medium text-black capitalize">
           {state?.firstName?.toLowerCase()}{" "}

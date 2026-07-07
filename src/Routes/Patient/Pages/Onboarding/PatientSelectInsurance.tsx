@@ -121,7 +121,7 @@ export default function PatientSelectInsurance() {
       <div className="flex flex-col gap-6 w-full">
         {/* Question 1 */}
         <div className="flex flex-col gap-3">
-          <h2 className="font-medium text-neutral-900">
+          <h2 className="font-medium text-foreground">
             Do you have an insurance cover?
           </h2>
           <RadioGroup
@@ -141,14 +141,14 @@ export default function PatientSelectInsurance() {
                 "flex flex-col gap-2 p-4 border rounded-lg cursor-pointer transition-all",
                 hasInsurance === "no"
                   ? "border-purple-500 bg-purple-50"
-                  : "border-neutral-200 hover:border-purple-200"
+                  : "border-border hover:border-purple-200"
               )}
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="no" id="no-insurance" />
                 <span className="font-medium">No</span>
               </div>
-              <span className="text-xs text-neutral-500 pl-6">
+              <span className="text-xs text-muted-foreground pl-6">
                 I don't have any insurance cover
               </span>
             </Label>
@@ -159,14 +159,14 @@ export default function PatientSelectInsurance() {
                 "flex flex-col gap-2 p-4 border rounded-lg cursor-pointer transition-all",
                 hasInsurance === "yes"
                   ? "border-purple-500 bg-purple-50"
-                  : "border-neutral-200 hover:border-purple-200"
+                  : "border-border hover:border-purple-200"
               )}
             >
               <div className="flex items-center gap-2">
                 <RadioGroupItem value="yes" id="yes-insurance" />
                 <span className="font-medium">Yes</span>
               </div>
-              <span className="text-xs text-neutral-500 pl-6">
+              <span className="text-xs text-muted-foreground pl-6">
                 I have insurance e.g. SHA, Britam
               </span>
             </Label>
@@ -177,10 +177,10 @@ export default function PatientSelectInsurance() {
         {hasInsurance === "yes" && (
           <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex flex-col">
-              <h2 className="font-medium text-neutral-900">
+              <h2 className="font-medium text-foreground">
                 Which insurance are you covered by?
               </h2>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-muted-foreground">
                 Add as many as you have
               </p>
             </div>

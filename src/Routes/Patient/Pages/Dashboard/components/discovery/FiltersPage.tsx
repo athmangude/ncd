@@ -2,11 +2,13 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { ArrowLeft, Settings2 } from "lucide-react"
 import AppShell from "@/Routes/AppShell"
+import { Button } from "@/components/Button"
 import { trackEvent, EVENTS } from "@/analytics"
 import { DISCOVERY_STORAGE_KEY } from "./useDiscovery"
 import { useServiceCategories } from "./api/useServiceCategories"
 import { JirehPartnersToggle } from "./components/JirehPartnersToggle"
 import { ServiceCategoryChips } from "./components/ServiceCategoryChips"
+import { SectionTitle } from "@/components/SectionTitle"
 
 function readPersistedState(): {
   activeTab?: "all" | "jireh"
@@ -78,25 +80,25 @@ export default function FiltersPage() {
   const onCancel = () => navigate(-1)
 
   const header = (
-    <div className="bg-white flex items-center gap-2 px-4 py-3 border-b border-neutral-100">
-      <button
-        type="button"
+    <div className="bg-white flex items-center gap-2 px-4 py-3 border-b border-border">
+      <Button
+        variant="outline"
+        size="icon"
         onClick={onCancel}
         aria-label="Back"
-        className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm"
       >
-        <ArrowLeft className="w-5 h-5 text-gray-600" />
-      </button>
-      <h1 className="text-base font-medium">Filters</h1>
+        <ArrowLeft className="w-5 h-5" />
+      </Button>
+      <h1>Filters</h1>
     </div>
   )
 
   const footer = (
-    <div className="bg-white border-t border-neutral-100 p-4 flex items-center gap-3">
+    <div className="bg-white border-t border-border p-4 flex items-center gap-3">
       <button
         type="button"
         onClick={onCancel}
-        className="flex-1 h-11 rounded-md border border-neutral-300 text-sm font-medium text-foreground"
+        className="flex-1 h-11 rounded-md border border-border text-sm font-medium text-foreground"
       >
         Cancel
       </button>
@@ -120,7 +122,7 @@ export default function FiltersPage() {
       <div className="flex flex-col gap-3">
         <div className="flex items-center gap-2">
           <Settings2 className="h-4 w-4 text-foreground" />
-          <span className="text-sm font-medium text-foreground">Services</span>
+          <SectionTitle>Services</SectionTitle>
         </div>
         <ServiceCategoryChips
           categories={categoriesQuery.data ?? []}

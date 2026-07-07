@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
 import { useOffline } from "@/hooks/useOffline"
 import { OfflinePlaceholder } from "@/components/OfflinePlaceholder"
+import { Skeleton } from "@/components/Skeleton"
 import { cn } from "@/lib/utils"
 import { useFacilityDetails } from "./../useFacilityDetails"
 import { useReviewEligibility } from "./useReviewEligibility"
@@ -188,9 +189,9 @@ export default function FacilityReviewFormPage() {
   if (facilityLoading || eligibilityLoading) {
     return (
       <AppShell header={null} footer={null} bodyPadding="none">
-        <div className="flex flex-col gap-4 p-6 animate-pulse">
-          <div className="h-5 w-40 bg-neutral-200 rounded" />
-          <div className="h-32 w-full bg-neutral-200 rounded" />
+        <div className="flex flex-col gap-4 p-6">
+          <Skeleton className="h-5 w-40 bg-muted rounded" />
+          <Skeleton className="h-32 w-full bg-muted rounded" />
         </div>
       </AppShell>
     )
@@ -211,20 +212,20 @@ export default function FacilityReviewFormPage() {
 
   const header = (
     <header className="flex w-full items-center gap-2 bg-white p-2">
-      <button
-        type="button"
+      <Button
+        variant="outline"
+        size="icon"
         onClick={() => navigate(-1)}
-        className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm"
         aria-label="Back"
       >
-        <ArrowLeft className="w-6 h-6 text-gray-600" />
-      </button>
-      <h1 className="text-md">Add a review</h1>
+        <ArrowLeft className="w-6 h-6" />
+      </Button>
+      <h1>Add a review</h1>
     </header>
   )
 
   const footer = (
-    <div className="bg-white border-t border-neutral-100 px-4 py-3 w-full">
+    <div className="bg-white border-t border-border px-4 py-3 w-full">
       <Button
         type="submit"
         form="facility-review-form"
@@ -263,7 +264,7 @@ export default function FacilityReviewFormPage() {
                     "h-10 w-10 rounded-full text-sm font-semibold transition-colors",
                     filled
                       ? "bg-teal-500 text-white"
-                      : "bg-neutral-100 text-foreground hover:bg-neutral-200"
+                      : "bg-muted text-foreground hover:bg-muted/70"
                   )}
                   aria-pressed={selected}
                   aria-label={`Score ${score}`}

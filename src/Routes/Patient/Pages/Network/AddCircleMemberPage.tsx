@@ -248,10 +248,8 @@ export default function AddCircleMemberPage() {
   return (
     <PatientPageWrapper title={pageTitle}>
       <div className="flex flex-col gap-2">
-        <h2 className="text-2xl font-semibold text-neutral-900">
-          Add their contacts
-        </h2>
-        <p className="text-sm text-neutral-500">
+        <h2 className="text-foreground">Add their contacts</h2>
+        <p className="text-sm text-muted-foreground">
           Choose people who&apos;ll say yes
         </p>
       </div>
@@ -385,7 +383,7 @@ export default function AddCircleMemberPage() {
         )}
 
         {activeTab === "adult" && (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             They will receive an invite to join
           </p>
         )}
@@ -433,7 +431,7 @@ export default function AddCircleMemberPage() {
                       errors.dateOfBirth ? "border-destructive" : "border-input"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-neutral-500" />
+                    <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
                     {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
                   </button>
                   {calendarOpen && (

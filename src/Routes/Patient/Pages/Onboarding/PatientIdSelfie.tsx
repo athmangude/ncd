@@ -133,8 +133,8 @@ export function PatientIdSelfie() {
     >
       <div className="w-full flex flex-col gap-6">
         <div className="text-center mb-4">
-          <h1 className="text-xl font-semibold">Take a clear photo of yourself</h1>
-          <p className="text-neutral-500 text-sm">
+          <h1>Take a clear photo of yourself</h1>
+          <p className="text-muted-foreground text-sm">
             Please take a clear selfie to verify that it matches your ID photo.
           </p>
         </div>
@@ -148,11 +148,11 @@ export function PatientIdSelfie() {
             <div className="w-5 h-5 rounded-full bg-green-600 flex items-center justify-center flex-shrink-0">
               <Info className="w-3 h-3 text-white" />
             </div>
-            <span className="text-sm font-medium text-neutral-800">
+            <span className="text-sm font-medium text-foreground">
               Taking a good selfie
             </span>
           </div>
-          <ArrowRight className="w-5 h-5 text-neutral-600" />
+          <ArrowRight className="w-5 h-5 text-muted-foreground" />
         </Button>
 
         {isProcessing ? (
@@ -161,7 +161,7 @@ export function PatientIdSelfie() {
             <p>Verifying your identity...</p>
           </div>
         ) : (
-          <div className="w-full bg-neutral-50 rounded-xl overflow-hidden border border-neutral-200">
+          <div className="w-full bg-muted rounded-xl overflow-hidden border border-border">
             <div className="m-3">
               <SmileIDWrapper onSuccess={handleSmileIDSuccess} />
             </div>

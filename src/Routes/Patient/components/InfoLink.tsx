@@ -41,7 +41,7 @@ export function InfoLink({
 
       <div className="flex flex-col text-xs gap-1">
         <p className="text-base text-black font-medium">{title}</p>
-        <p className="text-xs text-neutral-500">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </div>
 
       <div
@@ -82,7 +82,7 @@ export function InfoLinkButton({
 
       <div className="flex flex-col text-xs gap-1">
         <p className="text-base text-black font-medium">{title}</p>
-        <p className="text-xs text-neutral-500">{description}</p>
+        <p className="text-xs text-muted-foreground">{description}</p>
       </div>
 
       <div

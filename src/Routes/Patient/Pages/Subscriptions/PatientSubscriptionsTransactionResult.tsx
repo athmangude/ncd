@@ -32,7 +32,7 @@ export default function PatientSubscriptionsTransactionResult() {
 
   // Self-shells via AppShell (Phase 5): the legacy padded container in
   // PatientsHome has been removed, so this screen draws its own canonical frame.
-  // The bespoke bubblegum tint and the plain "Continue" CTA are preserved
+  // The bespoke brand-gradient tint and the plain "Continue" CTA are preserved
   // verbatim (relocate, not restyle): the CTA moves from a `fixed bottom-0` bar
   // into the footer slot, the centered logo into the header slot.
   return (
@@ -44,7 +44,7 @@ export default function PatientSubscriptionsTransactionResult() {
           </div>
         }
         footer={
-          <div className="p-4 bg-bubblegum-100">
+          <div className="p-4 bg-brand-gradient-100">
             <Button
               className="w-full"
               size="lg"
@@ -62,7 +62,7 @@ export default function PatientSubscriptionsTransactionResult() {
           </div>
         }
         bodyPadding="none"
-        cardClassName="bg-bubblegum-100"
+        cardClassName="bg-brand-gradient-100"
       >
         <div className="h-full flex flex-col items-center justify-center text-center px-6 py-10">
           <div className="flex flex-col items-center max-w-xs w-full">
@@ -74,10 +74,10 @@ export default function PatientSubscriptionsTransactionResult() {
               />
             </div>
 
-            <h1 className="text-2xl font-semibold text-foreground mb-3">
+            <h1 className="text-foreground mb-3">
               Payment complete!
             </h1>
-            <p className="text-neutral-600 text-base leading-relaxed">
+            <p className="text-muted-foreground text-base leading-relaxed">
               You have successfully signed up for JIREH{" "}
               {subscription?.plan?.toUpperCase()}
             </p>

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { Switch } from "@/components/Switch"
 
 interface JirehPartnersToggleProps {
   checked: boolean
@@ -10,7 +10,7 @@ export function JirehPartnersToggle({
   onChange,
 }: JirehPartnersToggleProps) {
   return (
-    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-neutral-200 bg-white">
+    <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-border bg-white">
       <div className="flex flex-col">
         <span className="text-sm font-medium text-foreground">
           Jireh Health partners
@@ -19,23 +19,11 @@ export function JirehPartnersToggle({
           Earn up to 5% cashback
         </span>
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={cn(
-          "h-[22px] w-[40px] rounded-full relative transition-colors shrink-0",
-          checked ? "bg-primary" : "bg-neutral-300",
-        )}
-      >
-        <span
-          className={cn(
-            "absolute top-1/2 -translate-y-1/2 h-[18px] w-[18px] rounded-full bg-white shadow-sm transition-transform",
-            checked ? "left-[20px]" : "left-[2px]",
-          )}
-        />
-      </button>
+      <Switch
+        size="xs"
+        checked={checked}
+        onCheckedChange={onChange}
+      />
     </div>
   )
 }

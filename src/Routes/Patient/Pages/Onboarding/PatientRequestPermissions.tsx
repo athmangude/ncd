@@ -79,7 +79,7 @@ export default function PatientRequestPermissions() {
 
   return (
     <PatientAuthWrapper>
-      <h1 className="text-lg font-medium max-w-[20ch]">
+      <h1 className="max-w-[20ch]">
         We’re requesting for the following permissions{" "}
       </h1>
 

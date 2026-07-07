@@ -145,11 +145,11 @@ export default function CheckProfilePhotoPage() {
       title="Preview invite"
       onBack={handleBack}
       footer={
-        <div className="p-4 bg-white border-t border-neutral-100">
+        <div className="p-4 bg-white border-t border-border">
           <div className="flex flex-col gap-2">
             <Button
               variant="outline"
-              className="w-full border-neutral-200 text-neutral-800"
+              className="w-full border-border text-foreground"
               onClick={handleSkip}
             >
               Skip for now
@@ -182,10 +182,10 @@ export default function CheckProfilePhotoPage() {
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-medium text-neutral-900 tracking-tight leading-snug">
+          <h2 className="text-foreground leading-snug">
             Let {inviteeName} know it&apos;s you
           </h2>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-muted-foreground">
             Add a photo so they recognise your invite straight away.
           </p>
         </div>
@@ -201,17 +201,17 @@ export default function CheckProfilePhotoPage() {
         </div>
 
         {selectedFile && previewUrl && (
-          <div className="bg-white rounded-xl border border-neutral-200 p-2 pr-4 flex items-center gap-3">
+          <div className="bg-white rounded-xl border border-border p-2 pr-4 flex items-center gap-3">
             <ProfileAvatar
               src={previewUrl}
               name={selectedFile.name}
-              className="w-12 h-12 rounded-lg bg-neutral-100"
+              className="w-12 h-12 rounded-lg bg-muted"
             />
             <div className="flex-1 min-w-0">
-              <div className="font-medium text-neutral-900 truncate text-sm">
+              <div className="font-medium text-foreground truncate text-sm">
                 {selectedFile.name}
               </div>
-              <div className="text-sm text-neutral-500">Ready to upload</div>
+              <div className="text-sm text-muted-foreground">Ready to upload</div>
             </div>
             <button
               onClick={handleRemoveFile}

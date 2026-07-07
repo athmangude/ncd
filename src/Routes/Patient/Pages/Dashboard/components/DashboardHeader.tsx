@@ -18,12 +18,12 @@ export function DashboardHeader({ firstName, lastName, profilePhoto }: Dashboard
           src={profilePhoto}
           firstName={firstName}
           lastName={lastName}
-          className="w-12 h-12 border border-neutral-200"
+          className="w-12 h-12 border border-border"
           priority={true}
         />
         <div className="flex flex-col">
-          <h1 className="text-base font-bold text-neutral-900">Hello, {formattedFirstName} 👋</h1>
-          <p className="text-neutral-500 text-sm">How are you feeling today?</p>
+          <h1 className="text-foreground">Hello, {formattedFirstName} 👋</h1>
+          <p className="text-muted-foreground text-sm">How are you feeling today?</p>
         </div>
       </div>
     </div>

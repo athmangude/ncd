@@ -207,7 +207,7 @@ function PatientGuarantorInfoForm({
         active={active}
         buttonDisabled={false}
       >
-        <p className="text-neutral-500 text-xs my-2 font-medium">
+        <p className="text-muted-foreground text-xs my-2 font-medium">
           Guarantors added ({guarantors?.length})
         </p>
         <GuarantorList guarantors={guarantors} />
@@ -398,7 +398,7 @@ function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
           {guarantors.map((g) => (
             <li
               key={g.id}
-              className="text-sm flex gap-3 items-center bg-neutral-50 py-1 px-3 border rounded-lg w-full"
+              className="text-sm flex gap-3 items-center bg-muted py-1 px-3 border rounded-lg w-full"
             >
               <ReactCountryFlag
                 countryCode={g.countryCode}
@@ -425,7 +425,7 @@ function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
                   setDialogOpen(true)
                 }}
               >
-                <X className="w-5 h-5 text-neutral-500" />
+                <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </li>
           ))}

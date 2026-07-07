@@ -72,7 +72,7 @@ export function ConnectedEstablishedBody({
         joinedAt={member.joinedAt}
       />
       {member.joinedAt && (
-        <p className="text-center text-sm text-neutral-500">
+        <p className="text-center text-sm text-muted-foreground">
           Connected since {format(new Date(member.joinedAt), "EEE yyyy")}
         </p>
       )}

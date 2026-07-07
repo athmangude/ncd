@@ -180,7 +180,7 @@ export default function PatientPinPrompt({
             <div className="shrink-0 px-1 py-2 sm:p-5">{children}</div>
           </div>
 
-          <DialogFooter className="flex shrink-0 flex-col-reverse gap-2 border-t border-border/40 pt-3 pb-[max(1rem,env(safe-area-inset-bottom,0px))] sm:flex-row sm:space-x-0 sm:pt-4">
+          <DialogFooter className="flex shrink-0 flex-col-reverse gap-2 border-t border-border/40 pt-3 pb-[max(1rem,var(--safe-b))] sm:flex-row sm:space-x-0 sm:pt-4">
             <DialogClose asChild>
               <Button type="button" variant="outline" className="w-full">
                 Cancel

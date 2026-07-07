@@ -16,7 +16,7 @@ export default function AmountContainer({
   return (
     <div
       className={cn(
-        "flex justify-between text-neutral-600 font-light ",
+        "flex justify-between text-muted-foreground font-light ",
         leftClassName
       )}
     >
@@ -32,7 +32,7 @@ export default function AmountContainer({
         </span>
 
         {strikethoughText && (
-          <span className="text-neutral-400 line-through">{strikethoughText}</span>
+          <span className="text-muted-foreground line-through">{strikethoughText}</span>
         )}
       </p>
     </div>

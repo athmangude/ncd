@@ -88,7 +88,7 @@ export default function ResolveProvider() {
             <img src={resolveProviderIllustration} alt="Resolve Provider" />
           </div>
         </div>
-          <h2 className="text-xl font-semibold text-neutral-900">
+          <h2 className="text-foreground">
           Enter the hospital's payment details
           </h2>
         </div>
@@ -123,7 +123,7 @@ export default function ResolveProvider() {
           </div>
 
           {isPending && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="w-4 h-4 flex-shrink-0 animate-spin" />
               <span>Confirming payment number…</span>
             </div>
@@ -150,7 +150,7 @@ export default function ResolveProvider() {
                   <span>
                     Facility :
                   </span>
-                  <p className="text-base text-neutral-900 text-right">
+                  <p className="text-base text-foreground text-right">
                     {providerData?.facility?.name}
                   </p>
                 </div>
@@ -159,7 +159,7 @@ export default function ResolveProvider() {
                   <span>
                     Payment Station :
                   </span>
-                  <p className="text-base text-neutral-900 text-right">
+                  <p className="text-base text-foreground text-right">
                     {providerData.name}
                   </p>
                 </div>
@@ -168,7 +168,7 @@ export default function ResolveProvider() {
                   <span>
                     Payment Number :
                   </span>
-                  <p className="text-base text-neutral-900 text-right">
+                  <p className="text-base text-foreground text-right">
                     {formatPaymentNumber(providerData.paymentNumber)}
                   </p>
                 </div>
@@ -189,7 +189,7 @@ export default function ResolveProvider() {
           {!providerData && (
 
         <div className="mt-6 pt-6">
-        <div className="flex flex-col items-center text-neutral-500">
+        <div className="flex flex-col items-center text-muted-foreground">
             <span>Don't have code ?</span>
           </div>
           <button
@@ -197,10 +197,10 @@ export default function ResolveProvider() {
             onClick={() =>
               navigate("/patients/payment/request-payment/how-to-pay")
             }
-            className="w-full flex items-center justify-center gap-4 p-4 bg-white border border-neutral-200 rounded-xl shadow-sm hover:border-neutral-300 hover:shadow-md transition-all group"
+            className="w-full flex items-center justify-center gap-4 p-4 bg-white border border-border rounded-xl shadow-sm hover:border-border hover:shadow-md transition-all group"
           >
 
-              <p className="text-sm text-neutral-500 mt-0.5 text-center">
+              <p className="text-sm text-muted-foreground mt-0.5 text-center">
               Search by hospital name and location
               </p>
           </button>

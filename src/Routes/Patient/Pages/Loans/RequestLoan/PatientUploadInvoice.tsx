@@ -430,31 +430,31 @@ export default function PatientUploadInvoice() {
           {/* Help Accordion */}
           <div className="w-full max-w-md px-4 mt-4">
             <div className="border rounded-lg bg-white overflow-hidden">
-              <div className="p-4 border-b bg-neutral-50">
+              <div className="p-4 border-b bg-muted">
                 <h3>Have a problem with your invoice?</h3>
               </div>
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="border-b px-4">
-                  <AccordionTrigger className="py-3 text-sm text-neutral-700 hover:no-underline">
+                  <AccordionTrigger className="py-3 text-sm text-muted-foreground hover:no-underline">
                     <div className="flex items-center gap-3 text-left">
-                      <HelpCircle className="w-4 h-4 text-neutral-400 shrink-0" />
+                      <HelpCircle className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span>The details don't match the invoice uploaded</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-neutral-500 px-7">
+                  <AccordionContent className="text-muted-foreground px-7">
                     Please ensure that the invoice details entered match exactly
                     what is shown on the uploaded document.
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="item-2" className="border-b px-4">
-                  <AccordionTrigger className="py-3 text-sm text-neutral-700 hover:no-underline">
+                  <AccordionTrigger className="py-3 text-sm text-muted-foreground hover:no-underline">
                     <div className="flex items-center gap-3 text-left">
-                      <HelpCircle className="w-4 h-4 text-neutral-400 shrink-0" />
+                      <HelpCircle className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span>How to find downloaded files on your phone</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-neutral-500 px-7">
+                  <AccordionContent className="text-muted-foreground px-7">
                     Check your phone's "Downloads" or "Files" app. Most devices
                     sort files by date, so your most recent download should be
                     at the top.
@@ -462,13 +462,13 @@ export default function PatientUploadInvoice() {
                 </AccordionItem>
 
                 <AccordionItem value="item-3" className="px-4 border-none">
-                  <AccordionTrigger className="py-3 text-sm text-neutral-700 hover:no-underline">
+                  <AccordionTrigger className="py-3 text-sm text-muted-foreground hover:no-underline">
                     <div className="flex items-center gap-3 text-left">
-                      <HelpCircle className="w-4 h-4 text-neutral-400 shrink-0" />
+                      <HelpCircle className="w-4 h-4 text-muted-foreground shrink-0" />
                       <span>Invoice is not valid?</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="text-neutral-500 px-7">
+                  <AccordionContent className="text-muted-foreground px-7">
                     Ensure the image is clear, all text is readable, and it
                     contains the facility name, patient name, and billing
                     details.
@@ -481,20 +481,20 @@ export default function PatientUploadInvoice() {
           {/* Contact Support */}
           <div className="w-full max-w-md px-4 mb-8">
             <h3 className="mb-3">Need more help?</h3>
-            <p className="text-sm text-neutral-500 mb-3">
+            <p className="text-sm text-muted-foreground mb-3">
               Contact our support team
             </p>
             <a
               href="tel:+254117118511"
-              className="flex items-center justify-between p-4 bg-white border rounded-lg hover:bg-neutral-50 transition-colors"
+              className="flex items-center justify-between p-4 bg-white border rounded-lg hover:bg-muted transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-neutral-400" />
-                <span className="text-sm font-medium text-neutral-900">
+                <Phone className="w-5 h-5 text-muted-foreground" />
+                <span className="text-sm font-medium text-foreground">
                   Call Jireh Support
                 </span>
               </div>
-              <ArrowRight className="w-4 h-4 text-neutral-400" />
+              <ArrowRight className="w-4 h-4 text-muted-foreground" />
             </a>
           </div>
         </div>
@@ -507,7 +507,10 @@ export default function PatientUploadInvoice() {
       <PatientPageWrapper title="Uploading invoice" showHelp>
         <div className="flex flex-col items-center justify-center flex-1 min-h-[60vh] gap-6">
           <div className="relative">
-            <FileText className="w-20 h-20 text-neutral-300" strokeWidth={1} />
+            <FileText
+              className="w-20 h-20 text-muted-foreground/40"
+              strokeWidth={1}
+            />
             <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1">
               <img
                 src={clock}
@@ -518,10 +521,8 @@ export default function PatientUploadInvoice() {
             </div>
           </div>
           <div className="text-center space-y-2">
-            <h2 className="text-xl font-semibold text-neutral-900">
-              Processing your invoice...
-            </h2>
-            <p className="text-neutral-500 max-w-xs mx-auto text-sm">
+            <h2 className="text-foreground">Processing your invoice...</h2>
+            <p className="text-muted-foreground max-w-xs mx-auto text-sm">
               You should receive an update in a couple of seconds
             </p>
 
@@ -529,11 +530,11 @@ export default function PatientUploadInvoice() {
               <Loader className="w-12 h-12" />
             </div>
           </div>
-          <div className="bg-neutral-50 rounded-lg p-4 w-full max-w-sm mt-8 text-center">
-            <p className="text-sm font-medium text-neutral-500 mb-1">
+          <div className="bg-muted rounded-lg p-4 w-full max-w-sm mt-8 text-center">
+            <p className="text-sm font-medium text-muted-foreground mb-1">
               Next step:
             </p>
-            <p className="text-sm font-semibold text-neutral-900">
+            <p className="text-sm font-semibold text-foreground">
               Confirm invoice details
             </p>
           </div>
@@ -556,7 +557,7 @@ export default function PatientUploadInvoice() {
           onClick={() =>
             navigate("/patients/payment/request-payment/invoice-guide")
           }
-          className="flex p-2 bg-accent hover:bg-accent rounded-lg border border-neutral-200"
+          className="flex p-2 bg-accent hover:bg-accent rounded-lg border border-border"
         >
           <div className="flex gap-2">
             <div className="w-5 h-5 rounded-full flex items-center justify-center">
@@ -566,15 +567,13 @@ export default function PatientUploadInvoice() {
               Taking a good invoice photo
             </span>
           </div>
-          <ArrowRight className="w-5 h-5 text-neutral-600" />
+          <ArrowRight className="w-5 h-5 text-muted-foreground" />
         </Button>
 
         {/* Uploaded Files Section */}
         {uploadedFiles.length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-sm font-medium text-neutral-500">
-              Your invoice
-            </h2>
+            <h2 className="text-muted-foreground">Your invoice</h2>
             <div className="space-y-3">
               {uploadedFiles.map((uploadedFile) => (
                 <FileUploadCard
@@ -609,7 +608,7 @@ export default function PatientUploadInvoice() {
 
         {/* Consent Checkbox */}
         {!user.hasAcceptedMedicalConsentForm && (
-          <div className="bg-white rounded-lg border border-neutral-200 p-4 space-y-2">
+          <div className="bg-white rounded-lg border border-border p-4 space-y-2">
             <div className="flex items-start gap-3">
               <Checkbox
                 id="terms"
@@ -655,9 +654,9 @@ function FileUploadCard({
   onRetry: () => void
 }) {
   return (
-    <div className="bg-white rounded-lg border border-neutral-200 p-4 flex items-center gap-4">
+    <div className="bg-white rounded-lg border border-border p-4 flex items-center gap-4">
       {/* Thumbnail */}
-      <div className="flex-shrink-0 w-16 h-16 rounded overflow-hidden bg-neutral-100">
+      <div className="flex-shrink-0 w-16 h-16 rounded overflow-hidden bg-muted">
         {file.preview ? (
           <img
             src={file.preview}
@@ -672,8 +671,8 @@ function FileUploadCard({
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-8 h-8 bg-neutral-300 rounded flex items-center justify-center">
-              <Info className="w-4 h-4 text-neutral-500" />
+            <div className="w-8 h-8 bg-muted-foreground/30 rounded flex items-center justify-center">
+              <Info className="w-4 h-4 text-muted-foreground" />
             </div>
           </div>
         )}
@@ -681,7 +680,7 @@ function FileUploadCard({
 
       {/* File Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-black truncate">
+        <p className="text-sm font-medium text-foreground truncate">
           {file.file.name}
         </p>
         {file.status === "uploading" && (

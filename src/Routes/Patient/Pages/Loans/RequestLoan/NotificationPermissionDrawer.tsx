@@ -117,7 +117,7 @@ export function NotificationPermissionDrawer({
               <DrawerTitle className="text-center text-xl">
                 Notifications are blocked
               </DrawerTitle>
-              <DrawerDescription className="text-center text-neutral-500">
+              <DrawerDescription className="text-center text-muted-foreground">
                 We couldn't enable notifications. This might be because you are
                 in Incognito mode or have blocked notifications.
               </DrawerDescription>
@@ -125,7 +125,7 @@ export function NotificationPermissionDrawer({
 
             <div className="p-6">
               <div className="space-y-4 text-sm">
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   To enable notifications:
                 </p>
                 <div className="space-y-3">
@@ -134,10 +134,10 @@ export function NotificationPermissionDrawer({
                       <Settings className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-sm text-neutral-900">
+                      <p className="font-medium text-sm text-foreground">
                         Open browser settings
                       </p>
-                      <p className="text-xs text-neutral-500 mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Go to Settings {">"} Site settings {">"} Notifications
                       </p>
                     </div>
@@ -147,10 +147,10 @@ export function NotificationPermissionDrawer({
                       <Bell className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-sm text-neutral-900">
+                      <p className="font-medium text-sm text-foreground">
                         Allow notifications for Jireh
                       </p>
-                      <p className="text-xs text-neutral-500 mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Find Jireh and change permission to "Allow"
                       </p>
                     </div>
@@ -160,10 +160,10 @@ export function NotificationPermissionDrawer({
                       <Clock2 className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-sm text-neutral-900">
+                      <p className="font-medium text-sm text-foreground">
                         Refresh the page
                       </p>
-                      <p className="text-xs text-neutral-500 mt-0.5">
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         Reload this page to apply changes
                       </p>
                     </div>
@@ -175,7 +175,7 @@ export function NotificationPermissionDrawer({
             <DrawerFooter className="gap-3 pb-8">
               <Button
                 variant="outline"
-                className="w-full border-neutral-200 h-12 rounded-xl"
+                className="w-full border-border h-12 rounded-xl"
                 onClick={onSkip}
               >
                 Continue without notifications
@@ -195,7 +195,7 @@ export function NotificationPermissionDrawer({
             <DrawerTitle className="text-left text-lg">
               Stay in the loop
             </DrawerTitle>
-            <DrawerDescription className="text-left text-neutral-500">
+            <DrawerDescription className="text-left text-muted-foreground">
               Turn on notifications to get instant alerts for payments, loan
               approvals, and important care reminders.
             </DrawerDescription>
@@ -204,20 +204,20 @@ export function NotificationPermissionDrawer({
           <div className="p-6">
             <div className="space-y-3">
               <div className="flex items-center gap-3 ">
-                <Check className="w-4 h-4 text-neutral-500" />
-                <span className="text-neutral-900 font-medium text-sm">
+                <Check className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground font-medium text-sm">
                   Keep SMS for urgent alerts
                 </span>
               </div>
               <div className="flex items-center gap-3 ">
-                <Check className="w-4 h-4 text-neutral-500" />
-                <span className="text-neutral-900 font-medium text-sm">
+                <Check className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground font-medium text-sm">
                   Keep track of every transaction
                 </span>
               </div>
               <div className="flex items-center gap-3 ">
-                <Check className="w-4 h-4 text-neutral-500" />
-                <span className="text-neutral-900 font-medium text-sm">
+                <Check className="w-4 h-4 text-muted-foreground" />
+                <span className="text-foreground font-medium text-sm">
                   Get progress reminders and reports
                 </span>
               </div>

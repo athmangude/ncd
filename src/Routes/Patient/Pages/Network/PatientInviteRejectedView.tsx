@@ -134,7 +134,7 @@ export default function PatientInviteRejectedView() {
             onClick={() =>
               trackEvent(EVENTS.CIRCLE.INVITE_REJECTED_SEE_CIRCLE_TAPPED)
             }
-            className="mt-2 block rounded-xl border border-neutral-200 py-3 text-center font-medium text-neutral-900"
+            className="mt-2 block rounded-xl border border-border py-3 text-center font-medium text-foreground"
           >
             See my Circle
           </Link>

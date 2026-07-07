@@ -82,7 +82,7 @@ export function PatientIdVerificationOnboarding() {
       <div className="w-full flex flex-col gap-8">
         <div className="text-center">
           <h1>Enter your National ID number</h1>
-          <p className="text-neutral-500">
+          <p className="text-muted-foreground">
             Verify your identity and keep your account secure{" "}
           </p>
         </div>

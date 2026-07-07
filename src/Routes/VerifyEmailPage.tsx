@@ -89,9 +89,7 @@ export default function VerifyEmailPage() {
           <CheckEmail />
         ) : (
           <>
-            <h1 className="text-3xl text-black font-medium">
-              Email Verification
-            </h1>
+            <h1>Email Verification</h1>
 
             <p className="max-w-[55ch] text-sm">
               It seems your email has not been verified yet. Click on the button

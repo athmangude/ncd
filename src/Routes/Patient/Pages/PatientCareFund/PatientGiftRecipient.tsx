@@ -109,7 +109,7 @@ export default function PatientGiftRecipient() {
           aria-hidden="true"
         />
 
-        <h1 className="text-2xl font-medium text-center">
+        <h1 className="text-center">
           Who is receiving your gift?
         </h1>
 
@@ -249,7 +249,7 @@ function ConfirmGiftRecipient({
         </DrawerHeader>
 
         <form
-          className="flex flex-col text-center text-neutral-500"
+          className="flex flex-col text-center text-muted-foreground"
           onSubmit={async (e) => {
             e.preventDefault()
             await mutation.mutate()
@@ -262,7 +262,7 @@ function ConfirmGiftRecipient({
             aria-hidden="true"
           />
 
-          <h3 className="text-2xl font-medium text-neutral-800 mt-5">
+          <h3 className="mt-5">
             Confirm Recepient
           </h3>
 

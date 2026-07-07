@@ -11,7 +11,7 @@ interface FacilityListProps {
 
 function FacilityCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl p-3 shadow-sm border border-neutral-100">
+    <div className="bg-white rounded-xl p-3 shadow-sm border border-border">
       {/* Header: Title and details */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
@@ -43,7 +43,7 @@ function FacilityCardSkeleton() {
 
 export function FacilityList({ filteredFacilities, onFacilityClick, loading }: FacilityListProps) {
   return (
-    <div className="flex-1 overflow-hidden bg-neutral-50">
+    <div className="flex-1 overflow-hidden bg-muted">
       <ScrollArea className="h-full">
         <div className="p-4 pt-0 space-y-3 pb-20">
           {loading ? (

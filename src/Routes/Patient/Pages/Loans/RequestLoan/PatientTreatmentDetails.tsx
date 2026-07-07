@@ -305,7 +305,7 @@ function OutOfNetworkFacilityForm({ careProvider }: { careProvider: any }) {
     >
       <div className="flex flex-col gap-1">
         <h2>{name}</h2>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-muted-foreground">
           {county} • {plotNumber}
         </p>
       </div>
@@ -532,7 +532,7 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
     >
       <div className="flex flex-col gap-1">
         <h2>{name}</h2>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-muted-foreground">
           {county} • {plotNumber}
         </p>
       </div>
@@ -568,20 +568,20 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
 
       <div className="w-full mt-6 pt-6 border-t">
         <h3 className="mb-1">Can’t find your care provider?</h3>
-        <p className="text-sm text-neutral-500 mb-3">
+        <p className="text-sm text-muted-foreground mb-3">
           Contact our support team
         </p>
         <a
           href="tel:+254117118511"
-          className="flex items-center justify-between p-3 bg-white border rounded-xl hover:bg-neutral-50 transition-colors shadow-sm"
+          className="flex items-center justify-between p-3 bg-white border rounded-xl hover:bg-muted transition-colors shadow-sm"
         >
           <div className="flex items-center gap-3">
-            <Phone className="w-5 h-5 text-neutral-500" />
-            <span className="text-sm font-medium text-neutral-900">
+            <Phone className="w-5 h-5 text-muted-foreground" />
+            <span className="text-sm font-medium text-foreground">
               Call Jireh Support
             </span>
           </div>
-          <ChevronRight className="w-5 h-5 text-neutral-400" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </a>
       </div>
     </form>

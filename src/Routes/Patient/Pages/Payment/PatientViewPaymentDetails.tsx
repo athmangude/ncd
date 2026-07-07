@@ -187,7 +187,7 @@ export default function PatientViewPaymentDetails() {
     date: createdAt,
     title: `Paid at ${providerName}`,
     amount: formatMoney(totalBillAmount, currencyCode),
-    icon: <Wallet className="w-4 h-4 text-neutral-600" />,
+    icon: <Wallet className="w-4 h-4 text-muted-foreground" />,
     subEvents: [],
   }
 
@@ -200,7 +200,7 @@ export default function PatientViewPaymentDetails() {
   //           date: split.createdAt,
   //           title: `${formatEnum(split.wallet.type)} Wallet`,
   //           amount: formatMoney(split.paymentSplitAmount, currencyCode),
-  //           icon: <RefreshCcw className="w-3 h-3 text-neutral-500" />
+  //           icon: <RefreshCcw className="w-3 h-3 text-muted-foreground" />
   //       })
   //   })
   // }
@@ -224,7 +224,7 @@ export default function PatientViewPaymentDetails() {
         title: t.description,
         amount: formatMoney(t.amount, currencyCode),
         isScore: true,
-        icon: <Clock className="w-4 h-4 text-neutral-600" />,
+        icon: <Clock className="w-4 h-4 text-muted-foreground" />,
       })
     })
   }
@@ -238,7 +238,7 @@ export default function PatientViewPaymentDetails() {
         date: createdAt, // Assuming cashback happens at payment time
         title: `${c.source}`,
         amount: formatMoney(c.amount, currencyCode),
-        icon: <RefreshCcw className="w-4 h-4 text-neutral-600" />,
+        icon: <RefreshCcw className="w-4 h-4 text-muted-foreground" />,
       })
     })
   }
@@ -371,7 +371,7 @@ export default function PatientViewPaymentDetails() {
             </div>
 
             {/* Progress Bar */}
-            <div className="w-full bg-neutral-100 rounded-lg h-1.5 mb-2">
+            <div className="w-full bg-muted rounded-lg h-1.5 mb-2">
               <div
                 className="bg-purple-600 h-1.5 rounded-full transition-all duration-500"
                 style={{ width: `${Math.min(progress, 100)}%` }}
@@ -380,16 +380,16 @@ export default function PatientViewPaymentDetails() {
 
             <div className="flex justify-between text-sm mb-6">
               <div>
-                <p className="font-semibold text-neutral-900">
+                <p className="font-semibold text-foreground">
                   {formatMoney(totalRepaid, currencyCode)}
                 </p>
-                <p className="text-neutral-500 text-xs">Repaid</p>
+                <p className="text-muted-foreground text-xs">Repaid</p>
               </div>
               <div className="text-right">
-                <p className="font-semibold text-neutral-900">
+                <p className="font-semibold text-foreground">
                   {formatMoney(totalLoanAmount, currencyCode)}
                 </p>
-                <p className="text-neutral-500 text-xs">Total to repay</p>
+                <p className="text-muted-foreground text-xs">Total to repay</p>
               </div>
             </div>
 
@@ -415,11 +415,11 @@ export default function PatientViewPaymentDetails() {
                   <RefreshCcw className="w-5 h-5 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-neutral-900 font-medium text-sm">
+                  <p className="text-foreground font-medium text-sm">
                     Repay before{" "}
                     {loanDueDate ? format(loanDueDate, "dd MMM") : ""} and earn!
                   </p>
-                  <p className="text-neutral-500 text-xs mt-0.5 leading-relaxed">
+                  <p className="text-muted-foreground text-xs mt-0.5 leading-relaxed">
                     Earn {loan.amount * 0.05} cashback when you repay before the
                     due date!
                   </p>
@@ -451,7 +451,7 @@ export default function PatientViewPaymentDetails() {
         <div className="mt-4">
           {groupedEvents.map((group) => (
             <div key={group.dateLabel} className="mb-6">
-              <p className="text-neutral-500 text-xs font-medium mb-4 uppercase pl-2">
+              <p className="text-muted-foreground text-xs font-medium mb-4 uppercase pl-2">
                 {group.dateLabel}
               </p>
 
@@ -461,7 +461,7 @@ export default function PatientViewPaymentDetails() {
                   // Add border left only if not the last group or if it has multiple items?
                   // The design shows a continuous line.
                   // We can just put a border on the container and cover it up if needed.
-                  "border-l-2 border-neutral-100"
+                  "border-l-2 border-border"
                 )}
               >
                 {group.items.map((event) => (
@@ -527,13 +527,13 @@ function DetailRow({
     <div
       className={cn(
         "flex gap-3 py-3",
-        !isLast && "border-b border-neutral-100"
+        !isLast && "border-b border-border"
       )}
     >
       <div className="mt-1">{icon}</div>
       <div className="flex-1">
-        <p className="text-neutral-900 font-medium text-sm">{label}</p>
-        <div className="text-neutral-500 text-sm mt-0.5">{value}</div>
+        <p className="text-foreground font-medium text-sm">{label}</p>
+        <div className="text-muted-foreground text-sm mt-0.5">{value}</div>
       </div>
       {action && <div className="self-center">{action}</div>}
     </div>
@@ -574,16 +574,16 @@ function TimelineItem({
                   className="flex items-start gap-2 relative"
                 >
                   {/* Connector line */}
-                  <div className="absolute -left-[19px] top-2 w-3 h-[1px] bg-neutral-200"></div>
+                  <div className="absolute -left-[19px] top-2 w-3 h-[1px] bg-border"></div>
 
-                  <div className="bg-neutral-50 p-1 rounded-full border border-neutral-100">
+                  <div className="bg-muted p-1 rounded-full border border-border">
                     {subEvent.icon}
                   </div>
                   <div>
-                    <p className="text-neutral-700 text-xs font-medium">
+                    <p className="text-foreground text-xs font-medium">
                       {subEvent.title}
                     </p>
-                    <p className="text-neutral-500 text-xs">
+                    <p className="text-muted-foreground text-xs">
                       {subEvent.amount}
                     </p>
                   </div>
@@ -593,7 +593,7 @@ function TimelineItem({
           )}
         </div>
 
-        {time && <span className="text-neutral-400 text-xs">{time}</span>}
+        {time && <span className="text-muted-foreground text-xs">{time}</span>}
       </div>
     </div>
   )

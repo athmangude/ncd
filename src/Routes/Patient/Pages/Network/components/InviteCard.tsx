@@ -19,8 +19,8 @@ export function InviteCard({ onInviteClick }: InviteCardProps) {
           className="w-12 h-12 object-contain"
         />
         <div>
-          <h3 className="text-neutral-900 text-lg">Invite in a special way</h3>
-          <p className="text-neutral-500 text-sm">For those that you care about</p>
+          <h3 className="text-foreground">Invite in a special way</h3>
+          <p className="text-muted-foreground text-sm">For those that you care about</p>
         </div>
       </div>
       

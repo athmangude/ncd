@@ -56,7 +56,7 @@ export default function InvalidTenantPage() {
   return (
     <AppShell header={null} footer={null}>
       <div className="flex flex-col max-w-[400px] mx-auto text-center gap-10">
-        <h1 className="text-2xl font-bold">Invalid Tenant</h1>
+        <h1>Invalid Tenant</h1>
 
         <p>
           It seems you are trying to access a restricted page while already

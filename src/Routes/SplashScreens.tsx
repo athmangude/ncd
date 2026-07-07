@@ -147,7 +147,7 @@ export default function SplashScreens() {
       >
         <h1
           key={`title-${currentScreen}`}
-          className="text-2xl font-medium text-center mx-auto shrink-0"
+          className="text-center mx-auto shrink-0"
         >
           {activeScreen.title}
         </h1>

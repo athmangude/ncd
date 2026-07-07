@@ -12,7 +12,7 @@ export default function PatientMedicalConsentForm() {
   return (
     <PatientPageWrapper title="Medical Consent Form">
       <section className="flex flex-col gap-5 max-h-[80vh] overflow-scroll">
-        <h2 className="text-lg">Patient Data Consent Form</h2>
+        <h2>Patient Data Consent Form</h2>
 
         <p>
           I, <strong>{user.firstName + " " + user.lastName}</strong>,

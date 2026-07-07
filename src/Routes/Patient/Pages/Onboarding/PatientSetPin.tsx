@@ -6,10 +6,8 @@ import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
 import { useLocation, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { patientLoginDetailsQueryKey } from "../../hooks/useOnboardingChecklist"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { trackEvent, EVENTS } from "@/analytics"
 
 export default function PatientSetPin() {
@@ -127,13 +125,15 @@ export default function PatientSetPin() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title={step === 1 ? "Create your PIN" : "Confirm your PIN"}
-          onBack={handleBack}
-        />
+    <PatientPageWrapper
+      variant="content"
+      pageTitle={step === 1 ? "Create your PIN" : "Confirm your PIN"}
+      description={
+        step === 1
+          ? "You will use this PIN to confirm all payments."
+          : "Enter the PIN you just created."
       }
+      onBack={handleBack}
       footer={
         <PrimaryCTAFooter
           label={step === 1 ? "Save PIN" : "Confirm"}
@@ -148,15 +148,6 @@ export default function PatientSetPin() {
       }
       className="flex flex-col items-center"
     >
-      <div className="text-center">
-        <h1>{step === 1 ? "Create your PIN" : "Confirm your PIN"}</h1>
-        <p className="text-neutral-500 text-sm leading-relaxed px-4">
-          {step === 1
-            ? "You will use this PIN to confirm all payments."
-            : "Enter the PIN you just created."}
-        </p>
-      </div>
-
       <div className="w-full flex flex-col items-center gap-8 m-8">
         <div className="flex flex-col gap-2 items-center w-full">
           <InputOTP
@@ -185,6 +176,6 @@ export default function PatientSetPin() {
           {error && <p className="text-sm text-destructive mt-2">{error}</p>}
         </div>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

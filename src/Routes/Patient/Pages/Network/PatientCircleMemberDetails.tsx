@@ -62,7 +62,7 @@ export default function PatientCircleMemberDetails() {
       )}
       {!isLoading && notFound && (
         <div className="flex flex-col items-center gap-4 py-12 text-center">
-          <p className="text-neutral-700">
+          <p className="text-foreground">
             This member is no longer in your Circle.
           </p>
           <Link

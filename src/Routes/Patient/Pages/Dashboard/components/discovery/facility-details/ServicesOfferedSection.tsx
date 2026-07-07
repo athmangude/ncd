@@ -1,5 +1,10 @@
 import { useState, useMemo } from "react"
-import { ChevronRight, List, ChevronsUpDown, ChevronsDownUp } from "lucide-react"
+import {
+  ChevronRight,
+  List,
+  ChevronsUpDown,
+  ChevronsDownUp,
+} from "lucide-react"
 import { FacilityServiceListItem } from "../types"
 import {
   serviceCategoryLabel,
@@ -50,27 +55,27 @@ export function ServicesOfferedSection({
   return (
     <div className="flex flex-col w-full">
       <div className="flex items-center gap-2 py-1.5 w-full">
-        <List className="h-4 w-4 text-gray-700" />
+        <List className="h-4 w-4 text-muted-foreground" />
         <span className="flex-1 text-sm text-foreground font-medium">
           Services offered
         </span>
         <button
           type="button"
           onClick={expandAll}
-          className="flex items-center gap-0.5 text-sm text-neutral-800 font-medium"
+          className="flex items-center gap-0.5 text-sm text-foreground font-medium"
         >
           See all
           <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
 
-      <div className="flex flex-col rounded-xl border border-neutral-200 bg-white overflow-hidden">
+      <div className="flex flex-col rounded-xl border border-border bg-white overflow-hidden">
         {groups.map((g, idx) => {
           const isOpen = !!expanded[g.slug]
           return (
             <div
               key={g.slug}
-              className={idx > 0 ? "border-t border-neutral-100" : ""}
+              className={idx > 0 ? "border-t border-border" : ""}
             >
               <button
                 type="button"
@@ -85,9 +90,9 @@ export function ServicesOfferedSection({
                   {g.label}
                 </span>
                 {isOpen ? (
-                  <ChevronsDownUp className="h-4 w-4 text-gray-700 transition-transform duration-200" />
+                  <ChevronsDownUp className="h-4 w-4 text-muted-foreground transition-transform duration-200" />
                 ) : (
-                  <ChevronsUpDown className="h-4 w-4 text-gray-700 transition-transform duration-200" />
+                  <ChevronsUpDown className="h-4 w-4 text-muted-foreground transition-transform duration-200" />
                 )}
               </button>
               <div

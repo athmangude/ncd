@@ -33,8 +33,8 @@ export default function PatientCareFundSavings() {
           aria-hidden="true"
         />
         <div className="w-full flex flex-col gap-1">
-          <h1 className="text-2xl font-medium">Take charge of your health</h1>
-          <p className="text-neutral-500">
+          <h1>Take charge of your health</h1>
+          <p className="text-muted-foreground">
             Top up your balance to pay or share with your loved ones.
           </p>
         </div>

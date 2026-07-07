@@ -49,7 +49,7 @@ export function ConnectedNewBody({ member, you }: ConnectedNewBodyProps) {
         </div>
       </div>
       {member.joinedAt && (
-        <p className="mt-2 text-center text-sm text-neutral-500">
+        <p className="mt-2 text-center text-sm text-muted-foreground">
           Connected since {format(new Date(member.joinedAt), "EEE yyyy")}
         </p>
       )}

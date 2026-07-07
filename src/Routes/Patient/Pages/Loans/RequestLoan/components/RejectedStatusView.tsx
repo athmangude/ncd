@@ -37,10 +37,8 @@ export default function RejectedStatusView({
         </div>
 
         <div className="text-center space-y-2 px-4">
-          <h2 className="text-xl font-semibold text-neutral-900">
-            We could not accept this invoice.
-          </h2>
-          <p className="text-neutral-500 text-sm">
+          <h2 className="text-foreground">We could not accept this invoice.</h2>
+          <p className="text-muted-foreground text-sm">
             This action was taken because your account activities violated our
             Terms of Service, specifically relating to {rejectionReason}.
           </p>
@@ -48,13 +46,15 @@ export default function RejectedStatusView({
 
         <RejectionHelpAccordion />
 
-        <p className="text-sm text-neutral-500 mb-3">
+        <p className="text-sm text-muted-foreground mb-3">
           If you believe the invoice is incorrect, please try again.
         </p>
         <div className="w-full max-w-sm mt-8">
           <Button
             className="w-full"
-            onClick={() => navigate("/patients/payment/request-payment/upload-invoice")}
+            onClick={() =>
+              navigate("/patients/payment/request-payment/upload-invoice")
+            }
           >
             Upload a New Invoice <ArrowRight className="w-4 h-4" />
           </Button>

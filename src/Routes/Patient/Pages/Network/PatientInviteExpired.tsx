@@ -37,11 +37,11 @@ export function PatientInviteExpired() {
         aria-hidden="true"
       />
 
-      <h1 className="font-medium text-xl">
+      <h1>
         {state?.message || "Invite expired"}
       </h1>
 
-      <p className="text-lg text-neutral-500">
+      <p className="text-lg text-muted-foreground">
         Please ask the person who invited you to send you a new invite.
       </p>
 

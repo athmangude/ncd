@@ -14,8 +14,8 @@ export function InsurancePlan() {
           className="w-full max-w-[60px] scale-x-[-1]"
           aria-hidden="true"
         />
-        <h1 className="text-3xl font-medium ">Affordable health insurance</h1>
-        <p className="text-neutral-500 ">
+        <h1>Affordable health insurance</h1>
+        <p className="text-muted-foreground ">
           Don't let unexpected medical bills worry you again
         </p>
       </section>

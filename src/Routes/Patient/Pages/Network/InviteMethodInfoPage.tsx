@@ -52,22 +52,20 @@ export default function InviteMethodInfoPage() {
         <PrimaryCTAFooter
           label="Continue"
           onClick={handleContinue}
-          className="bg-[#f5f5f5]"
+          className="bg-muted"
         />
       }
       className="p-0"
     >
-      {/* Gray background matching Figma neutral-100 fills the scroll area */}
-      <div className="bg-[#f5f5f5] px-4 pt-6 pb-4 flex flex-col gap-6 min-h-full">
+      {/* Neutral background fills the scroll area */}
+      <div className="bg-muted px-4 pt-6 pb-4 flex flex-col gap-6 min-h-full">
         {/* Header: icon + title + subtitle */}
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="w-12 h-12 rounded-full bg-white border border-neutral-200 flex items-center justify-center">
-            <UserPlus className="w-6 h-6 text-[#525252]" />
+          <div className="w-12 h-12 rounded-full bg-white border border-border flex items-center justify-center">
+            <UserPlus className="w-6 h-6 text-muted-foreground" />
           </div>
-          <h1 className="text-xl font-medium text-[#171717] tracking-tight leading-snug">
-            Start building your Circle!
-          </h1>
-          <p className="text-sm text-[#525252] leading-5 max-w-xs">
+          <h1 className="leading-snug">Start building your Circle!</h1>
+          <p className="text-sm text-muted-foreground leading-5 max-w-xs">
             Access interest-free loans to pay medical bills instantly with
             flexible terms.
           </p>
@@ -75,7 +73,7 @@ export default function InviteMethodInfoPage() {
 
         {/* Steps list */}
         <div className="flex flex-col">
-          <p className="text-xs font-medium text-[#737373] tracking-wide px-2 mb-2">
+          <p className="text-xs font-medium text-muted-foreground tracking-wide px-2 mb-2">
             Information being collected:
           </p>
           <div className="flex flex-col gap-1">
@@ -84,13 +82,15 @@ export default function InviteMethodInfoPage() {
                 key={step.number}
                 className="bg-white rounded-md px-3 py-3 flex items-start gap-3 min-h-[44px]"
               >
-                <span className="font-mono text-sm text-[#737373] w-5 text-right flex-shrink-0 mt-0.5">
+                <span className="font-mono text-sm text-muted-foreground w-5 text-right flex-shrink-0 mt-0.5">
                   {step.number}
                 </span>
                 <div className="flex flex-col min-w-0">
-                  <span className="text-sm text-[#171717]">{step.label}</span>
+                  <span className="text-sm text-foreground">{step.label}</span>
                   {step.optional && (
-                    <span className="text-xs text-[#737373]">Optional</span>
+                    <span className="text-xs text-muted-foreground">
+                      Optional
+                    </span>
                   )}
                 </div>
               </div>

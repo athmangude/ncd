@@ -35,12 +35,12 @@ export function PatientPlan({
         {price && (
           <div className="flex flex-col items-center gap-1">
             <span
-              className={`flex items-center rounded-full  px-3 py-1 text-sm justify-center w-fit ${isActive ? "bg-primary text-white" : "bg-bubblegum-200"}`}
+              className={`flex items-center rounded-full  px-3 py-1 text-sm justify-center w-fit ${isActive ? "bg-primary text-white" : "bg-brand-gradient-200"}`}
             >
               {price.title}
             </span>
             {price.subtitle && (
-              <p className="text-sm text-neutral-500">{price.subtitle}</p>
+              <p className="text-sm text-muted-foreground">{price.subtitle}</p>
             )}
           </div>
         )}
@@ -53,7 +53,7 @@ export function PatientPlan({
             <div>
               <p className="font-medium">{description.title}</p>
               {description.description && (
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   {description.description}
                 </p>
               )}
@@ -63,7 +63,7 @@ export function PatientPlan({
       </ul>
 
       <button
-        className={`flex items-center justify-center text-center gap-2 font-medium h-full py-3 ${isActive ? "bg-primary text-white" : "bg-bubblegum-200"}`}
+        className={`flex items-center justify-center text-center gap-2 font-medium h-full py-3 ${isActive ? "bg-primary text-white" : "bg-brand-gradient-200"}`}
         onClick={cta.onClick}
       >
         {cta.title}

@@ -34,7 +34,7 @@ export function DashboardTabBar({
         </svg>
 
         <motion.div
-          className="absolute top-0 w-8 h-8 rounded-full bg-bubblegum-200 flex items-center justify-center pointer-events-none z-20"
+          className="absolute top-0 w-8 h-8 rounded-full bg-brand-gradient-200 flex items-center justify-center pointer-events-none z-20"
           style={{
             x: cx,
             translateX: "-50%",

@@ -14,6 +14,8 @@ import PatientWalletSelection from "./PatientWalletSelection"
 import PatientVerificationPending from "./PatientVerificationPending"
 import ProtectedLoanStep from "./ProtectedLoanStep"
 import HelpAndSupport from "../../Faqs/HelpAndSupport"
+import InvoiceDetailsMismatchGuide from "../../Faqs/InvoiceDetailsMismatchGuide"
+import InvoiceValidityGuide from "../../Faqs/InvoiceValidityGuide"
 
 export default function PatientLoanRequestWrapper() {
   return (
@@ -23,6 +25,22 @@ export default function PatientLoanRequestWrapper() {
         element={
           <RouteMetadata title="Help & Support">
             <HelpAndSupport />
+          </RouteMetadata>
+        }
+      />
+      <Route
+        path="/help/invoice-details-mismatch"
+        element={
+          <RouteMetadata title="Invoice Details Don't Match">
+            <InvoiceDetailsMismatchGuide />
+          </RouteMetadata>
+        }
+      />
+      <Route
+        path="/help/invoice-validity"
+        element={
+          <RouteMetadata title="Invoice Not Valid">
+            <InvoiceValidityGuide />
           </RouteMetadata>
         }
       />

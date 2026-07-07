@@ -98,17 +98,17 @@ export default function PatientDependentSelect({
                         className="h-10 w-10 aspect-square my rounded-full object-cover border"
                       />
                     ) : (
-                      <span className="rounded-full p-3 bg-neutral-200 aspect-square h-10 grid place-content-center text-neutral-700 font-bold">
+                      <span className="rounded-full p-3 bg-muted aspect-square h-10 grid place-content-center text-foreground font-bold">
                         {item.name[0]}
                       </span>
                     )}
                     <div className="flex flex-col text-sm">
                       {item.name?.toLowerCase()}
-                      <div className="text-xs text-neutral-500">
+                      <div className="text-xs text-muted-foreground">
                         {item.phoneNumber}
                       </div>
                     </div>
-                    <span className="border border-neutral-600 rounded-2xl px-3 ml-auto text-sm font-medium">
+                    <span className="border border-border rounded-2xl px-3 ml-auto text-sm font-medium">
                       {item.status === "ACCEPTED" ? "ACTIVE" : item.status}
                     </span>
                   </CommandItem>

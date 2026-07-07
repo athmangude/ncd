@@ -1,4 +1,5 @@
 import PatientPageWrapper from "../PatientPageWrapper"
+import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { DualActionFooter } from "@/Routes/shell/footers"
 import { useNavigate, useLocation } from "react-router-dom"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
@@ -126,7 +127,16 @@ export default function PatientPayMembership() {
 
   return (
     <PatientPageWrapper
-      title="Pay Membership"
+      variant="content"
+      pageTitle="Pay KES 499 to upgrade to Jireh Plus."
+      description="Jireh Plus grants you access to interest-free medical loans."
+      headerIcon={
+        <img
+          src={upgradeMembershipIcon}
+          alt="Upgrade to Jireh Plus"
+          className={HERO_ILLUSTRATION}
+        />
+      }
       className="items-center"
       footer={
         <DualActionFooter
@@ -152,26 +162,8 @@ export default function PatientPayMembership() {
       }
     >
       <div className="w-full flex flex-col gap-6 h-full">
-        <div className="flex flex-col items-center gap-2 mt-4">
-          <h1 className="text-xl  text-center">
-            Pay KES 499 to upgrade to Jireh Plus.
-          </h1>
-          <p className="text-neutral-500 text-center">
-            Jireh Plus grants you access to interest-free medical loans.
-          </p>
-        </div>
-
-        <div className="flex justify-center my-6">
-          {/* Using cashIcon as placeholder, or ideally a shield icon if available */}
-          <img
-            src={upgradeMembershipIcon}
-            alt="Upgrade to Jireh Plus"
-            className="w-40 h-40 object-contain"
-          />
-        </div>
-
         <div className="mt-auto flex flex-col gap-4 mb-6">
-          <p className="text-center text-neutral-600 text-sm px-4">
+          <p className="text-center text-muted-foreground text-sm px-4">
             You will receive a prompt to pay KES 499 to Jireh Health via MPesa,
             MPesa Till or Airtel Money.
           </p>

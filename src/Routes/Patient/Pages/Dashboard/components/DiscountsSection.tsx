@@ -13,6 +13,7 @@ import {
   DrawerClose,
 } from "@/components/Drawer"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import { Tag, Calendar, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react"
 import { toast } from "@/hooks/useToast"
 
@@ -99,7 +100,7 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
 
   return (
     <div className="flex flex-col gap-4 mt-2">
-      <h3 className="font-bold text-lg text-neutral-900">Discounts & Offers</h3>
+      <SectionTitle>Discounts & Offers</SectionTitle>
       <div 
         ref={scrollContainerRef}
         onScroll={handleScroll}
@@ -140,7 +141,7 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
           {discounts.map((_, i) => (
             <div 
               key={i} 
-              className={`h-1.5 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-8 bg-[#A855F7]' : 'w-1.5 bg-neutral-200'}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-8 bg-primary' : 'w-1.5 bg-muted'}`}
             ></div>
           ))}
         </div>
@@ -183,19 +184,19 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
                         <Copy className="h-4 w-4" />
                       </Button>
                     </div>
-                    <p className="text-neutral-600 font-medium">
+                    <p className="text-muted-foreground font-medium">
                       {selectedDiscount.description}
                     </p>
                   </div>
 
                   {/* Details Grid */}
                   <div className="grid grid-cols-1 gap-4">
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-neutral-50">
-                      <Tag className="w-5 h-5 text-neutral-400 mt-0.5" />
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+                      <Tag className="w-5 h-5 text-muted-foreground mt-0.5" />
                       <div>
-                        <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Discount Value</p>
-                        <p className="text-sm font-semibold text-neutral-900">
-                          {selectedDiscount.discountType === "PERCENTAGE" 
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Discount Value</p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {selectedDiscount.discountType === "PERCENTAGE"
                             ? `${parseFloat(selectedDiscount.discountValue)}% OFF`
                             : `${selectedDiscount.currency.symbol} ${parseFloat(selectedDiscount.discountValue).toLocaleString()}`
                           }
@@ -203,15 +204,15 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3 p-3 rounded-lg bg-neutral-50">
-                      <Calendar className="w-5 h-5 text-neutral-400 mt-0.5" />
+                    <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+                      <Calendar className="w-5 h-5 text-muted-foreground mt-0.5" />
                       <div>
-                        <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Valid Period</p>
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Valid Period</p>
                         <div className="flex flex-col gap-0.5">
-                          <p className="text-sm text-neutral-700">
+                          <p className="text-sm text-muted-foreground">
                             From: {selectedDiscount.validFrom ? format(new Date(selectedDiscount.validFrom), "MMM d, yyyy") : "Anytime"}
                           </p>
-                          <p className="text-sm text-neutral-700">
+                          <p className="text-sm text-muted-foreground">
                             To: {selectedDiscount.validUntil ? format(new Date(selectedDiscount.validUntil), "MMM d, yyyy") : "No expiry"}
                           </p>
                         </div>
@@ -219,17 +220,17 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
                     </div>
 
                     {(selectedDiscount.minimumOrderAmount || selectedDiscount.maximumDiscountAmount) && (
-                      <div className="flex items-start gap-3 p-3 rounded-lg bg-neutral-50">
-                        <AlertCircle className="w-5 h-5 text-neutral-400 mt-0.5" />
+                      <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+                        <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5" />
                         <div>
-                          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Conditions</p>
+                          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Conditions</p>
                           {selectedDiscount.minimumOrderAmount && (
-                            <p className="text-sm text-neutral-700">
+                            <p className="text-sm text-muted-foreground">
                               Min. Order: {selectedDiscount.currency.symbol} {parseFloat(selectedDiscount.minimumOrderAmount).toLocaleString()}
                             </p>
                           )}
                           {selectedDiscount.maximumDiscountAmount && (
-                            <p className="text-sm text-neutral-700">
+                            <p className="text-sm text-muted-foreground">
                               Max. Discount: {selectedDiscount.currency.symbol} {parseFloat(selectedDiscount.maximumDiscountAmount).toLocaleString()}
                             </p>
                           )}
@@ -255,7 +256,7 @@ export function DiscountsSection({ discounts = [] }: DiscountsSectionProps) {
               <Button
                 onClick={() => selectedDiscount && copyToClipboard(selectedDiscount.code)}
                 disabled={copied}
-                className="w-full bg-[#A855F7] hover:bg-[#9333EA] disabled:opacity-100"
+                className="w-full bg-primary hover:bg-primary/90 disabled:opacity-100"
               >
                 {copied ? (
                   <>

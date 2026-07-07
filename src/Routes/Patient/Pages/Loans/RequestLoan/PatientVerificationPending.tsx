@@ -1,7 +1,11 @@
 import PatientPageWrapper from "../../PatientPageWrapper"
 import { X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { getFromLocalStorage, setToLocalStorage, removeFromLocalStorage } from "@/utilities/localStorage"
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+  removeFromLocalStorage,
+} from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
@@ -18,7 +22,7 @@ export default function PatientVerificationPending() {
   const navigate = useNavigate()
   const [isExitDialogOpen, setIsExitDialogOpen] = useState(false)
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
-  
+
   // Handle back navigation - show confirmation dialog
   useEffect(() => {
     // Push current state to history to trap back button
@@ -36,7 +40,7 @@ export default function PatientVerificationPending() {
       window.removeEventListener("popstate", handlePopState)
     }
   }, [])
-  
+
   const handleExit = () => {
     setIsExitDialogOpen(true)
   }
@@ -45,9 +49,15 @@ export default function PatientVerificationPending() {
     navigate("/patients")
   }
 
-  const manualRequestId = useMemo(() => getFromLocalStorage("manualPaymentRequestId"), [])
-  const localData = useMemo(() => getFromLocalStorage(patientReviewInvoiceStorageKey), [])
-  
+  const manualRequestId = useMemo(
+    () => getFromLocalStorage("manualPaymentRequestId"),
+    []
+  )
+  const localData = useMemo(
+    () => getFromLocalStorage(patientReviewInvoiceStorageKey),
+    []
+  )
+
   const { data: verificationData } = useQuery({
     queryKey: ["manual-request", manualRequestId],
     queryFn: async () => {
@@ -60,11 +70,14 @@ export default function PatientVerificationPending() {
     enabled: !!manualRequestId,
     refetchInterval: (query) => {
       const latestStatus = query.state.data?.status
-      
-      if (latestStatus === PatientIdVerificationStatus.APPROVED || latestStatus === PatientIdVerificationStatus.REJECTED) {
+
+      if (
+        latestStatus === PatientIdVerificationStatus.APPROVED ||
+        latestStatus === PatientIdVerificationStatus.REJECTED
+      ) {
         return false
       }
-      
+
       return 5000
     },
     refetchOnMount: true,
@@ -86,11 +99,13 @@ export default function PatientVerificationPending() {
     const data = verificationData || localData
     if (!data) return null
 
-    const facilityName = data.kmpdcFacility?.name || data.careProviderName || "Unknown Facility"
+    const facilityName =
+      data.kmpdcFacility?.name || data.careProviderName || "Unknown Facility"
     const patient = data.dependent || data.patient
-    const patientName = patient?.name || 
-      (patient?.firstName && patient?.lastName 
-        ? `${patient.firstName} ${patient.lastName}` 
+    const patientName =
+      patient?.name ||
+      (patient?.firstName && patient?.lastName
+        ? `${patient.firstName} ${patient.lastName}`
         : patient?.firstName || patient?.lastName || "Unknown Patient")
     const billAmount = data.billAmount || data.totalBillAmount || 0
     const currency = data.currency || "KES"
@@ -99,7 +114,8 @@ export default function PatientVerificationPending() {
       facilityName,
       patientName,
       billAmount: Number(billAmount),
-      currency: typeof currency === "string" ? currency : currency?.code || "KES"
+      currency:
+        typeof currency === "string" ? currency : currency?.code || "KES",
     }
   }, [verificationData, localData])
 
@@ -117,7 +133,9 @@ export default function PatientVerificationPending() {
       await queryClient.cancelQueries({ queryKey: ["paymentRequests"] })
 
       // Snapshot the previous value
-      const previousRequests = queryClient.getQueryData<any[]>(["paymentRequests"])
+      const previousRequests = queryClient.getQueryData<any[]>([
+        "paymentRequests",
+      ])
 
       // Optimistically update the cache by removing the cancelled request
       queryClient.setQueryData<any[]>(["paymentRequests"], (old = []) => {
@@ -134,7 +152,8 @@ export default function PatientVerificationPending() {
       }
       toast({
         title: "Error",
-        description: error?.response?.data?.message || "Failed to cancel request",
+        description:
+          error?.response?.data?.message || "Failed to cancel request",
         variant: "destructive",
       })
     },
@@ -163,8 +182,12 @@ export default function PatientVerificationPending() {
     // Safety check: If we are in "manual request" mode (manualRequestId exists),
     // ensure we don't use stale localData from a different flow (e.g. previous approved invoice).
     // If localData.id doesn't match manualRequestId, ignore localData.
-    if (manualRequestId && localData?.id && String(localData.id) !== String(manualRequestId)) {
-        return PatientIdVerificationStatus.PENDING
+    if (
+      manualRequestId &&
+      localData?.id &&
+      String(localData.id) !== String(manualRequestId)
+    ) {
+      return PatientIdVerificationStatus.PENDING
     }
 
     // If API query hasn't completed yet, fall back to localStorage
@@ -173,7 +196,12 @@ export default function PatientVerificationPending() {
     }
     // Default to PENDING
     return PatientIdVerificationStatus.PENDING
-  }, [verificationData?.status, localData?.status, manualRequestId, localData?.id])
+  }, [
+    verificationData?.status,
+    localData?.status,
+    manualRequestId,
+    localData?.id,
+  ])
 
   const isPaid = useMemo(() => {
     if (verificationData?.payment?.paymentSplits?.length > 0) return true
@@ -204,7 +232,7 @@ export default function PatientVerificationPending() {
     return (
       <PatientPageWrapper
         title="Payment Status"
-        backIcon={<X className="w-6 h-6 text-neutral-600" />}
+        backIcon={<X className="w-6 h-6 text-muted-foreground" />}
         onBack={handleExit}
       >
         <PaidStatusView
@@ -221,7 +249,7 @@ export default function PatientVerificationPending() {
       <PatientPageWrapper
         title="Verification Complete"
         showHelp
-        backIcon={<X className="w-6 h-6 text-neutral-600" />}
+        backIcon={<X className="w-6 h-6 text-muted-foreground" />}
         onBack={handleExit}
       >
         <ApprovedStatusView
@@ -245,7 +273,7 @@ export default function PatientVerificationPending() {
       <PatientPageWrapper
         title="Invoice Review Failed"
         showHelp
-        backIcon={<X className="w-6 h-6 text-neutral-600" />}
+        backIcon={<X className="w-6 h-6 text-muted-foreground" />}
         onBack={handleExit}
       >
         <RejectedStatusView
@@ -262,7 +290,7 @@ export default function PatientVerificationPending() {
     <PatientPageWrapper
       title="Verification Pending"
       showHelp
-      backIcon={<X className="w-6 h-6 text-neutral-600" />}
+      backIcon={<X className="w-6 h-6 text-muted-foreground" />}
       onBack={handleExit}
     >
       <PendingStatusView

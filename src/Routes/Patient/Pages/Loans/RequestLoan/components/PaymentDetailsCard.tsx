@@ -20,10 +20,12 @@ export default function PaymentDetailsCard({
   compact = false,
 }: PaymentDetailsCardProps) {
   const containerClassName = compact
-    ? "bg-neutral-50 rounded-lg p-4 space-y-2"
+    ? "bg-muted rounded-lg p-4 space-y-2"
     : "w-full max-w-sm bg-white border rounded-lg p-4 space-y-3"
 
-  const titleClassName = compact ? "text-sm font-semibold text-neutral-900 mb-2" : "text-sm font-semibold text-neutral-900 mb-3"
+  const titleClassName = compact
+    ? "text-sm font-semibold text-foreground mb-2"
+    : "text-sm font-semibold text-foreground mb-3"
   const amountClassName = compact ? "text-sm" : undefined
 
   return (
@@ -48,7 +50,10 @@ export default function PaymentDetailsCard({
         />
         <AmountContainer
           leftText="Amount:"
-          rightText={formatMoney(paymentDetails.billAmount, paymentDetails.currency)}
+          rightText={formatMoney(
+            paymentDetails.billAmount,
+            paymentDetails.currency
+          )}
           leftClassName={amountClassName}
           rightClassName={amountClassName}
         />

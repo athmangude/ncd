@@ -57,14 +57,14 @@ const ReviewItem = ({
   isValid,
   onEdit,
 }: ReviewItemProps) => (
-  <div className="p-4 border-b border-neutral-100 last:border-0 flex items-start gap-3">
-    <div className="w-10 h-10 rounded-full bg-neutral-50 flex items-center justify-center flex-shrink-0">
-      <Icon className="w-5 h-5 text-neutral-600" />
+  <div className="p-4 border-b border-border last:border-0 flex items-start gap-3">
+    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+      <Icon className="w-5 h-5 text-muted-foreground" />
     </div>
     <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium text-neutral-900">{label}</p>
+      <p className="text-sm font-medium text-foreground">{label}</p>
       <p
-        className={`text-sm truncate ${isValid ? "text-neutral-500" : "text-red-500"}`}
+        className={`text-sm truncate ${isValid ? "text-muted-foreground" : "text-red-500"}`}
       >
         {value}
         {isValid && subValue && <span className="ml-1">({subValue})</span>}
@@ -72,7 +72,7 @@ const ReviewItem = ({
     </div>
     <button
       onClick={onEdit}
-      className="p-2 text-neutral-400 hover:text-neutral-600 transition-colors"
+      className="p-2 text-muted-foreground hover:text-foreground transition-colors"
       aria-label={`Edit ${label}`}
     >
       <Pencil className="w-4 h-4" />
@@ -327,12 +327,12 @@ export default function PatientReviewInvoice() {
       headerIcon={<HeaderIcon />}
       pageTitle="Review and confirm your information"
       footer={
-        <div className="p-4 bg-white border-t border-neutral-200">
+        <div className="p-4 bg-white border-t border-border">
           <Button
             className={`w-full font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg ${
               isFormValid
-                ? "bg-[#A826FF] hover:bg-[#9220DE] text-white"
-                : "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                ? "bg-primary hover:bg-primary/90 text-white"
+                : "bg-muted text-muted-foreground cursor-not-allowed"
             }`}
             onClick={() => mutation.mutate()}
             disabled={mutation.isPending || !isFormValid}
@@ -350,7 +350,7 @@ export default function PatientReviewInvoice() {
       }
     >
       <div className="flex flex-col gap-6">
-        <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-border overflow-hidden">
           <ReviewItem
             icon={User}
             label="I am paying for"

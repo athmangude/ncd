@@ -34,18 +34,6 @@ export default function PatientWrapper() {
           }
         />
 
-        {/* Onboarding */}
-
-        {/* TODO: Re-ebable this once we fix WhatsApp number */}
-        {/* <Route
-            path="/verify-whatsapp"
-            element={
-              <RouteMetadata title="Verify Whatsapp">
-                <PatientVerifyWhatsapp />
-              </RouteMetadata>
-            }
-          /> */}
-
         <Route
           path="/validate-referral"
           element={
