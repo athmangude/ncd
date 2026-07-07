@@ -11,7 +11,7 @@ const baseProps = {
 describe("CircleSlotAvatar", () => {
   it("renders a neutral halo with no dot or lock for variant=member", () => {
     render(<CircleSlotAvatar {...baseProps} variant="member" />)
-    expect(screen.getByTestId("avatar-halo")).toHaveClass("bg-neutral-200")
+    expect(screen.getByTestId("avatar-halo")).toHaveClass("bg-muted")
     expect(screen.queryByTestId("avatar-dot")).not.toBeInTheDocument()
     expect(screen.queryByTestId("lock-icon")).not.toBeInTheDocument()
   })
@@ -23,23 +23,23 @@ describe("CircleSlotAvatar", () => {
 
   it("renders the purple halo for variant=active", () => {
     render(<CircleSlotAvatar {...baseProps} variant="active" />)
-    expect(screen.getByTestId("avatar-halo")).toHaveClass("bg-purple-300")
+    expect(screen.getByTestId("avatar-halo")).toHaveClass("bg-secondary")
   })
 
   it("renders green halo + green dot for variant=new", () => {
     render(<CircleSlotAvatar {...baseProps} variant="new" />)
-    expect(screen.getByTestId("avatar-halo")).toHaveClass("bg-green-300")
-    expect(screen.getByTestId("avatar-dot")).toHaveClass("bg-green-500")
+    expect(screen.getByTestId("avatar-halo")).toHaveClass("bg-success")
+    expect(screen.getByTestId("avatar-dot")).toHaveClass("bg-success-solid")
   })
 
   it("renders orange dot for variant=pending", () => {
     render(<CircleSlotAvatar {...baseProps} variant="pending" />)
-    expect(screen.getByTestId("avatar-dot")).toHaveClass("bg-orange-500")
+    expect(screen.getByTestId("avatar-dot")).toHaveClass("bg-warning-solid")
   })
 
   it("renders red dot for variant=defaulted", () => {
     render(<CircleSlotAvatar {...baseProps} variant="defaulted" />)
-    expect(screen.getByTestId("avatar-dot")).toHaveClass("bg-red-500")
+    expect(screen.getByTestId("avatar-dot")).toHaveClass("bg-destructive")
   })
 
   it("renders a padlock for variant=inactive", () => {
@@ -54,7 +54,9 @@ describe("CircleSlotAvatar", () => {
 
   it("renders an empty-slot button with plus icon for variant=empty", () => {
     const onClick = vi.fn()
-    render(<CircleSlotAvatar {...baseProps} variant="empty" onClick={onClick} />)
+    render(
+      <CircleSlotAvatar {...baseProps} variant="empty" onClick={onClick} />
+    )
     const button = screen.getByTestId("empty-slot")
     expect(button).toBeInTheDocument()
     fireEvent.click(button)
@@ -63,7 +65,9 @@ describe("CircleSlotAvatar", () => {
 
   it("wraps in a button when onClick is provided on non-empty variants", () => {
     const onClick = vi.fn()
-    render(<CircleSlotAvatar {...baseProps} variant="active" onClick={onClick} />)
+    render(
+      <CircleSlotAvatar {...baseProps} variant="active" onClick={onClick} />
+    )
     const wrapper = screen.getByRole("button", { name: /Jane Doe/i })
     fireEvent.click(wrapper)
     expect(onClick).toHaveBeenCalledTimes(1)
@@ -83,7 +87,7 @@ describe("CircleSlotAvatar", () => {
     render(<CircleSlotAvatar {...baseProps} variant="new" showBadge />)
     const badge = screen.getByTestId("avatar-badge")
     expect(badge).toHaveTextContent("New!")
-    expect(badge).toHaveClass("bg-green-100", "text-green-700")
+    expect(badge).toHaveClass("bg-success", "text-success-foreground")
   })
 
   it("renders the pending badge text when showBadge is set", () => {
@@ -98,35 +102,35 @@ describe("CircleSlotAvatar", () => {
 
   it("defaults to md (48px) avatar size", () => {
     const { container } = render(
-      <CircleSlotAvatar {...baseProps} variant="active" />,
+      <CircleSlotAvatar {...baseProps} variant="active" />
     )
     expect(
-      container.querySelector('[data-testid="avatar-halo"] .h-12.w-12'),
+      container.querySelector('[data-testid="avatar-halo"] .h-12.w-12')
     ).not.toBeNull()
   })
 
   it("renders a larger avatar for size=lg", () => {
     const { container } = render(
-      <CircleSlotAvatar {...baseProps} variant="active" size="lg" />,
+      <CircleSlotAvatar {...baseProps} variant="active" size="lg" />
     )
     expect(
-      container.querySelector('[data-testid="avatar-halo"] .h-20.w-20'),
+      container.querySelector('[data-testid="avatar-halo"] .h-20.w-20')
     ).not.toBeNull()
   })
 
   it("renders a smaller avatar for size=sm", () => {
     const { container } = render(
-      <CircleSlotAvatar {...baseProps} variant="active" size="sm" />,
+      <CircleSlotAvatar {...baseProps} variant="active" size="sm" />
     )
     expect(
-      container.querySelector('[data-testid="avatar-halo"] .h-6.w-6'),
+      container.querySelector('[data-testid="avatar-halo"] .h-6.w-6')
     ).not.toBeNull()
   })
 
   it("scales the status dot with size=lg", () => {
     render(<CircleSlotAvatar {...baseProps} variant="new" size="lg" />)
     const dot = screen.getByTestId("avatar-dot")
-    expect(dot).toHaveClass("h-4", "w-4", "bg-green-500")
+    expect(dot).toHaveClass("h-4", "w-4", "bg-success-solid")
   })
 
   it("scales the empty-slot box with size=lg", () => {
@@ -142,7 +146,7 @@ describe("CircleSlotAvatar", () => {
         variant="new"
         showBadge
         onClick={onClick}
-      />,
+      />
     )
     const wrapper = screen.getByRole("button", { name: /Jane Doe/i })
     expect(wrapper).toContainElement(screen.getByTestId("avatar-badge"))

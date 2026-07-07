@@ -93,27 +93,27 @@ export default function YourTreatments({
 export function resolveStatusColor(status: string) {
   switch (status) {
     case "PENDING":
-      return "bg-neutral-400"
+      return "bg-muted-foreground"
     case "SUBMITTED_FOR_APPROVAL":
-      return "bg-orange-500"
+      return "bg-warning-solid"
     case "APPROVED":
-      return "bg-emerald-500"
+      return "bg-success-solid"
     case "PAID_TRANSACTION_FEE":
-      return "bg-purple-600"
+      return "bg-primary"
     case "DISBURSED":
-      return "bg-orange-400"
+      return "bg-warning-solid"
     case "PAID":
-      return "bg-emerald-500"
+      return "bg-success-solid"
     case "REPAYMENT":
-      return "bg-blue-500"
+      return "bg-info-solid"
     case "REJECTED":
-      return "bg-red-500"
+      return "bg-destructive"
     case "DEFAULTED":
-      return "bg-red-500"
+      return "bg-destructive"
     case "OVERDUE":
-      return "bg-red-500"
+      return "bg-destructive"
     default:
-      return "bg-neutral-400"
+      return "bg-muted-foreground"
   }
 }
 

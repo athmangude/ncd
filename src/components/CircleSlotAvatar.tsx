@@ -85,46 +85,52 @@ type SlotConfig = {
 const SLOT_CONFIG: Record<CircleSlotVariant, SlotConfig> = {
   // Plain confirmed member: neutral halo, no status dot, lock, or dimming.
   member: {
-    haloClass: "bg-neutral-200",
+    haloClass: "bg-muted",
     dotClass: null,
     showLock: false,
     isEmpty: false,
   },
   active: {
-    haloClass: "bg-purple-300",
+    haloClass: "bg-secondary",
     dotClass: null,
     showLock: false,
     isEmpty: false,
   },
   new: {
-    haloClass: "bg-green-300",
-    dotClass: "bg-green-500",
+    haloClass: "bg-success",
+    dotClass: "bg-success-solid",
     showLock: false,
     isEmpty: false,
-    badge: { label: "New!", className: "bg-green-100 text-green-700" },
+    badge: { label: "New!", className: "bg-success text-success-foreground" },
   },
   pending: {
-    haloClass: "bg-orange-300",
-    dotClass: "bg-orange-500",
+    haloClass: "bg-warning",
+    dotClass: "bg-warning-solid",
     showLock: false,
     isEmpty: false,
-    badge: { label: "Waiting...", className: "bg-orange-100 text-orange-700" },
+    badge: {
+      label: "Waiting...",
+      className: "bg-warning text-warning-foreground",
+    },
   },
   defaulted: {
-    haloClass: "bg-red-300",
-    dotClass: "bg-red-500",
+    haloClass: "bg-destructive",
+    dotClass: "bg-destructive",
     showLock: false,
     isEmpty: false,
-    badge: { label: "Default", className: "bg-red-100 text-red-700" },
+    badge: {
+      label: "Default",
+      className: "bg-destructive text-destructive-foreground",
+    },
   },
   inactive: {
-    haloClass: "bg-neutral-300",
+    haloClass: "bg-border",
     dotClass: null,
     showLock: true,
     isEmpty: false,
   },
   left: {
-    haloClass: "bg-neutral-300",
+    haloClass: "bg-border",
     dotClass: null,
     showLock: false,
     isEmpty: false,
@@ -176,7 +182,7 @@ export function CircleSlotAvatar({
           "shrink-0 rounded-full border-2 border-dashed bg-muted",
           sizes.emptyBoxClass,
           "border-border flex items-center justify-center text-muted-foreground",
-          onClick && "hover:border-purple-300 hover:text-purple-500",
+          onClick && "hover:border-secondary hover:text-primary",
           className
         )}
         aria-label="Add member"

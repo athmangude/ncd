@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
-import {
-  CircleMemberCard,
-  variantFromStatus,
-} from "./CircleMemberCard"
+import { CircleMemberCard, variantFromStatus } from "./CircleMemberCard"
 
 const NOW = new Date("2026-05-20T12:00:00Z")
 
@@ -43,10 +40,10 @@ describe("variantFromStatus", () => {
   ] as const)(
     "status=%s joinedAt=%s defaulted=%s → %s",
     (status, joinedAt, hasDefaultedLoan, expected) => {
-      expect(
-        variantFromStatus(status, { joinedAt, hasDefaultedLoan }),
-      ).toBe(expected)
-    },
+      expect(variantFromStatus(status, { joinedAt, hasDefaultedLoan })).toBe(
+        expected
+      )
+    }
   )
 })
 
@@ -59,69 +56,64 @@ describe("CircleMemberCard rendering", () => {
 
   it("active: lavender halo, no dot, no label pill", () => {
     const { container } = render(
-      <CircleMemberCard {...baseProps} variant="active" />,
+      <CircleMemberCard {...baseProps} variant="active" />
     )
     const halo = container.querySelector('[data-testid="avatar-halo"]')!
-    expect(halo.className).toContain("bg-purple-300")
+    expect(halo.className).toContain("bg-secondary")
     expect(container.querySelector('[data-testid="avatar-dot"]')).toBeNull()
     expect(container.querySelector('[data-testid="avatar-badge"]')).toBeNull()
   })
 
   it("new: green halo, green dot, 'New!' pill", () => {
     const { container } = render(
-      <CircleMemberCard {...baseProps} variant="new" />,
+      <CircleMemberCard {...baseProps} variant="new" />
     )
     const halo = container.querySelector('[data-testid="avatar-halo"]')!
-    expect(halo.className).toContain("bg-green-300")
+    expect(halo.className).toContain("bg-success")
     const dot = container.querySelector('[data-testid="avatar-dot"]')!
-    expect(dot.className).toContain("bg-green-500")
+    expect(dot.className).toContain("bg-success-solid")
     expect(screen.getByText("New!")).toBeInTheDocument()
-    expect(screen.getByText("New!").className).toContain("bg-green-100")
+    expect(screen.getByText("New!").className).toContain("bg-success")
   })
 
   it("pending: orange halo, orange dot, 'Waiting...' pill", () => {
     const { container } = render(
-      <CircleMemberCard {...baseProps} variant="pending" />,
+      <CircleMemberCard {...baseProps} variant="pending" />
     )
     const halo = container.querySelector('[data-testid="avatar-halo"]')!
-    expect(halo.className).toContain("bg-orange-300")
+    expect(halo.className).toContain("bg-warning")
     const dot = container.querySelector('[data-testid="avatar-dot"]')!
-    expect(dot.className).toContain("bg-orange-500")
+    expect(dot.className).toContain("bg-warning-solid")
     expect(screen.getByText("Waiting...")).toBeInTheDocument()
-    expect(screen.getByText("Waiting...").className).toContain("bg-orange-100")
+    expect(screen.getByText("Waiting...").className).toContain("bg-warning")
   })
 
   it("defaulted: red halo, red dot, 'Default' pill", () => {
     const { container } = render(
-      <CircleMemberCard {...baseProps} variant="defaulted" />,
+      <CircleMemberCard {...baseProps} variant="defaulted" />
     )
     const halo = container.querySelector('[data-testid="avatar-halo"]')!
-    expect(halo.className).toContain("bg-red-300")
+    expect(halo.className).toContain("bg-destructive")
     const dot = container.querySelector('[data-testid="avatar-dot"]')!
-    expect(dot.className).toContain("bg-red-500")
+    expect(dot.className).toContain("bg-destructive")
     expect(screen.getByText("Default")).toBeInTheDocument()
-    expect(screen.getByText("Default").className).toContain("bg-red-100")
+    expect(screen.getByText("Default").className).toContain("bg-destructive")
   })
 
   it("inactive: gray halo, lock icon, no dot, no pill", () => {
     const { container } = render(
-      <CircleMemberCard {...baseProps} variant="inactive" />,
+      <CircleMemberCard {...baseProps} variant="inactive" />
     )
     const halo = container.querySelector('[data-testid="avatar-halo"]')!
-    expect(halo.className).toContain("bg-neutral-300")
-    expect(container.querySelector('[data-testid="lock-icon"]'))
-      .not.toBeNull()
+    expect(halo.className).toContain("bg-border")
+    expect(container.querySelector('[data-testid="lock-icon"]')).not.toBeNull()
     expect(container.querySelector('[data-testid="avatar-dot"]')).toBeNull()
     expect(container.querySelector('[data-testid="avatar-badge"]')).toBeNull()
   })
 
   it("renders both layouts without error", () => {
-    render(
-      <CircleMemberCard {...baseProps} variant="new" layout="card" />,
-    )
-    render(
-      <CircleMemberCard {...baseProps} variant="new" layout="list" />,
-    )
+    render(<CircleMemberCard {...baseProps} variant="new" layout="card" />)
+    render(<CircleMemberCard {...baseProps} variant="new" layout="list" />)
     expect(screen.getAllByText("New!")).toHaveLength(2)
   })
 })
