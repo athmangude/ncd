@@ -26,7 +26,9 @@ function invite(overrides: Partial<SentInvite> = {}): SentInvite {
   } as SentInvite
 }
 
-function renderViz(props: Partial<Parameters<typeof CircleNetworkViz>[0]> = {}) {
+function renderViz(
+  props: Partial<Parameters<typeof CircleNetworkViz>[0]> = {}
+) {
   return render(
     <CircleNetworkViz
       currentUserFirstName="Test"
@@ -44,8 +46,8 @@ function renderViz(props: Partial<Parameters<typeof CircleNetworkViz>[0]> = {}) 
 
 // Adult connecting lines are keyed `al-<index>`; first 4 in document order.
 function adultLines(container: HTMLElement) {
-  return Array.from(container.querySelectorAll("line")).filter((l) =>
-    l.getAttribute("x2") !== null
+  return Array.from(container.querySelectorAll("line")).filter(
+    (l) => l.getAttribute("x2") !== null
   )
 }
 
@@ -56,7 +58,7 @@ describe("CircleNetworkViz connecting lines", () => {
     const { container } = renderViz({ adults: [adult()] })
     const line = container.querySelectorAll("line")[0]
     expect(line.getAttribute("stroke")).toBe("currentColor")
-    expect(line).toHaveClass("text-purple-300")
+    expect(line).toHaveClass("text-secondary")
     expect(line.getAttribute("stroke-dasharray")).toBeNull()
   })
 
@@ -65,14 +67,14 @@ describe("CircleNetworkViz connecting lines", () => {
       adults: [adult({ joinedAt: new Date().toISOString() })],
     })
     const line = container.querySelectorAll("line")[0]
-    expect(line).toHaveClass("text-green-300")
+    expect(line).toHaveClass("text-success")
     expect(line.getAttribute("stroke-dasharray")).toBeNull()
   })
 
   it("keeps a dashed line for a pending invite", () => {
     const { container } = renderViz({ invites: [invite()] })
     const line = container.querySelectorAll("line")[0]
-    expect(line).toHaveClass("text-orange-300")
+    expect(line).toHaveClass("text-warning")
     expect(line.getAttribute("stroke-dasharray")).toBe("4 4")
   })
 
@@ -94,7 +96,7 @@ describe("CircleNetworkViz connecting lines", () => {
     } as NetworkMember
     const { container } = renderViz({ childMembers: [child] })
     const childLine = adultLines(container).find((l) =>
-      l.getAttribute("class")?.includes("text-neutral-200")
+      l.getAttribute("class")?.includes("text-muted")
     )
     expect(childLine).toBeDefined()
     expect(childLine?.getAttribute("stroke-dasharray")).toBeNull()

@@ -85,7 +85,9 @@ describe("CircleAvatarRow", () => {
       />
     )
     const dots = screen.getAllByTestId("avatar-dot")
-    expect(dots.some((d) => d.classList.contains("bg-orange-500"))).toBe(true)
+    expect(dots.some((d) => d.classList.contains("bg-warning-solid"))).toBe(
+      true
+    )
   })
 
   it("highlights only the recently joined member with the new variant", () => {
@@ -113,7 +115,7 @@ describe("CircleAvatarRow", () => {
     )
     const greenDots = screen
       .getAllByTestId("avatar-dot")
-      .filter((d) => d.classList.contains("bg-green-500"))
+      .filter((d) => d.classList.contains("bg-success-solid"))
     expect(greenDots).toHaveLength(1)
   })
 
@@ -283,7 +285,9 @@ describe("CircleAvatarRow", () => {
       />
     )
     const dots = screen.getAllByTestId("avatar-dot")
-    expect(dots.some((d) => d.classList.contains("bg-orange-500"))).toBe(true)
+    expect(dots.some((d) => d.classList.contains("bg-warning-solid"))).toBe(
+      true
+    )
   })
 
   it("shows no locked avatars when 2 adults + 4 juniors fill all auxiliary slots", () => {

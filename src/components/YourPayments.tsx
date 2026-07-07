@@ -63,15 +63,15 @@ export default function YourPayments() {
 export function resolvePaymentStatusColor(status: string) {
   switch (status) {
     case "COMPLETED":
-      return "bg-emerald-500"
+      return "bg-success-solid"
     case "PENDING":
-      return "bg-orange-500"
+      return "bg-warning-solid"
     case "FAILED":
-      return "bg-red-500"
+      return "bg-destructive"
     case "PROCESSING":
-      return "bg-blue-500"
+      return "bg-info-solid"
     default:
-      return "bg-neutral-400"
+      return "bg-muted-foreground"
   }
 }
 

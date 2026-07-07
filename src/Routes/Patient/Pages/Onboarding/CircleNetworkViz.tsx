@@ -31,14 +31,14 @@ const LINE_STYLE: Record<
   CircleSlotVariant,
   { colorClass: string; dashed: boolean }
 > = {
-  member: { colorClass: "text-neutral-200", dashed: false },
-  active: { colorClass: "text-purple-300", dashed: false },
-  new: { colorClass: "text-green-300", dashed: false },
-  pending: { colorClass: "text-orange-300", dashed: true },
-  defaulted: { colorClass: "text-red-300", dashed: false },
-  inactive: { colorClass: "text-neutral-300", dashed: false },
-  left: { colorClass: "text-neutral-300", dashed: false },
-  empty: { colorClass: "text-[#efd0ff]", dashed: true },
+  member: { colorClass: "text-muted", dashed: false },
+  active: { colorClass: "text-secondary", dashed: false },
+  new: { colorClass: "text-success", dashed: false },
+  pending: { colorClass: "text-warning", dashed: true },
+  defaulted: { colorClass: "text-destructive", dashed: false },
+  inactive: { colorClass: "text-border", dashed: false },
+  left: { colorClass: "text-border", dashed: false },
+  empty: { colorClass: "text-secondary", dashed: true },
 }
 
 // 4 adult slots: top-left, top-right, mid-left, mid-right
