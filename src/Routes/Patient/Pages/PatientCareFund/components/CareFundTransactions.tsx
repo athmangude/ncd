@@ -10,6 +10,7 @@ import {
   Activity,
 } from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
+import { SectionTitle } from "@/components/SectionTitle"
 import { formatTime } from "@/utilities/dateUtilities"
 import { usePatientAuthStore } from "../../../stores/patientAuthStore"
 import PatientCareFundExplainer from "../PatientCareFundExplainer"
@@ -133,11 +134,13 @@ export function CareFundTransactions() {
 
   return (
     <div className="mt-8">
-      <h2 className="mb-4">Transactions History</h2>
+      <SectionTitle className="mb-4">Transactions History</SectionTitle>
       <div className="flex flex-col gap-6">
         {groupedTransactions.map((group) => (
           <div key={group.date}>
-            <h3 className="text-muted-foreground mb-2 ml-1">{group.date}</h3>
+            <SectionTitle level={3} className="mb-2 ml-1">
+              {group.date}
+            </SectionTitle>
             <div className="flex flex-col gap-3">
               {group.transactions.map((transaction) => {
                 const isReceiver =

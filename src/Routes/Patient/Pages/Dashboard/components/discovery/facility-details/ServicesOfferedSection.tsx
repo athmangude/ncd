@@ -10,6 +10,7 @@ import {
   serviceCategoryLabel,
   compareCategorySlugs,
 } from "./serviceCategoryLabels"
+import { SectionTitle } from "@/components/SectionTitle"
 
 interface ServicesOfferedSectionProps {
   services?: FacilityServiceListItem[]
@@ -56,9 +57,7 @@ export function ServicesOfferedSection({
     <div className="flex flex-col w-full">
       <div className="flex items-center gap-2 py-1.5 w-full">
         <List className="h-4 w-4 text-muted-foreground" />
-        <span className="flex-1 text-sm text-foreground font-medium">
-          Services offered
-        </span>
+        <SectionTitle className="flex-1">Services offered</SectionTitle>
         <button
           type="button"
           onClick={expandAll}

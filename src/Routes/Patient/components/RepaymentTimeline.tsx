@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { SectionTitle } from "@/components/SectionTitle"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { resolveOrdinal } from "@/utilities/textUtilities"
 import { addMonths } from "date-fns"
@@ -39,7 +40,9 @@ export function RepaymentTimeline({
 
   return (
     <div className={cn("overflow-x-auto no-scrollbar pb-1", className)}>
-      <h3 className="mb-2 text-muted-foreground">Salary Advance Plan</h3>
+      <SectionTitle level={3} className="mb-2">
+        Salary Advance Plan
+      </SectionTitle>
       <div className="flex gap-10">
         {installments.map((installment, index) => (
           <Installment

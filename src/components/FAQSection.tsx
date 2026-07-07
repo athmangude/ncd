@@ -1,6 +1,7 @@
 import { FC } from "react"
 import { ChevronRight } from "lucide-react"
 import { Card } from "./Card"
+import { SectionTitle } from "./SectionTitle"
 
 type FAQItem = {
   label: string
@@ -38,7 +39,7 @@ const FAQSection: FC<FAQSectionProps> = ({
 }) => {
   return (
     <Card className="p-4 bg-muted">
-      <p className="flex items-center gap-2">{title}</p>
+      <SectionTitle className="flex items-center gap-2">{title}</SectionTitle>
 
       <div className="flex flex-col gap-3 w-full my-4">
         {faqs.map((faq, idx) => (

@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
 import { Progress } from "@/components/Progress"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import { Input } from "@/components/Input"
 import Loader from "@/components/Loader"
 import {
@@ -573,7 +574,7 @@ export default function PatientUploadInvoice() {
         {/* Uploaded Files Section */}
         {uploadedFiles.length > 0 && (
           <div className="space-y-3">
-            <h2 className="text-muted-foreground">Your invoice</h2>
+            <SectionTitle>Your invoice</SectionTitle>
             <div className="space-y-3">
               {uploadedFiles.map((uploadedFile) => (
                 <FileUploadCard

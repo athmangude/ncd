@@ -14,6 +14,7 @@ import {
 } from "@/components/Drawer"
 import DeletableItem from "./DeletableItem"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import { usePatientAuthStore } from "../stores/patientAuthStore"
 import { Plus } from "lucide-react"
 
@@ -59,7 +60,7 @@ export default function AddCircleMembers({
 
       {circleMembers.length > 0 && (
         <>
-          <h2 className="text-muted-foreground mt-5">Your Circle</h2>
+          <SectionTitle className="mt-5">Your Circle</SectionTitle>
 
           <div className="grid w-full gap-2 border-y py-4">
             {circleMembers.map((member: any) => (

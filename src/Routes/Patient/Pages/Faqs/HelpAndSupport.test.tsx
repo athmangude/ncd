@@ -60,6 +60,21 @@ describe("Faqs/HelpAndSupport invoice-problem items", () => {
     )
   })
 
+  it("renders its section titles as <h2> headings (SectionTitle, not muted <h2> with a colour override)", () => {
+    renderScreen()
+    const invoiceSection = screen.getByRole("heading", {
+      level: 2,
+      name: "Have a problem with your invoice?",
+    })
+    const helpSection = screen.getByRole("heading", {
+      level: 2,
+      name: "Need more help?",
+    })
+    // SectionTitle inherits base heading styles — no per-call colour override.
+    expect(invoiceSection.className).not.toContain("text-muted-foreground")
+    expect(helpSection.className).not.toContain("text-muted-foreground")
+  })
+
   it("keeps the real support contact links (tel/sms/wa)", () => {
     renderScreen()
     // Contact items are real links, not console.log stubs.

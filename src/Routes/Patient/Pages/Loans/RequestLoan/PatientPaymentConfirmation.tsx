@@ -9,6 +9,7 @@ import { useMemo, useEffect } from "react"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import PatientPinPrompt from "@/Routes/Patient/components/PatientPinPrompt"
 import AmountContainer from "@/Routes/Patient/components/AmountContainer"
+import { SectionTitle } from "@/components/SectionTitle"
 import { Building2, ChevronRight, User } from "lucide-react"
 import {
   getFromLocalStorage,
@@ -376,7 +377,9 @@ export default function PatientPaymentConfirmation() {
         <div className="flex flex-col gap-5">
           {/* Card 1: Treatment Details */}
           <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
-            <h3 className="text-muted-foreground mb-4">Treatment details</h3>
+            <SectionTitle level={3} className="mb-4">
+              Treatment details
+            </SectionTitle>
 
             <div className="flex flex-col gap-4">
               {/* Row 1: Paying For */}
@@ -410,7 +413,9 @@ export default function PatientPaymentConfirmation() {
 
           {/* Card 2: Source of Funds */}
           <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
-            <h3 className="text-muted-foreground mb-3">Source of funds</h3>
+            <SectionTitle level={3} className="mb-3">
+              Source of funds
+            </SectionTitle>
 
             <div className="flex flex-col gap-3">
               {data.walletAllocations.map((allocation: WalletAllocation) => (

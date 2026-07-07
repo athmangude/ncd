@@ -1,5 +1,6 @@
 import PatientPinPrompt from "@/Routes/Patient/components/PatientPinPrompt"
 import AmountContainer from "@/Routes/Patient/components/AmountContainer"
+import { SectionTitle } from "@/components/SectionTitle"
 import { useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
@@ -166,7 +167,9 @@ export default function ConfirmPayment() {
 
         {/* Payment Details Card */}
         <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
-          <h3 className="text-muted-foreground mb-4">Payment Details</h3>
+          <SectionTitle level={3} className="mb-4">
+            Payment Details
+          </SectionTitle>
 
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3">
@@ -245,7 +248,9 @@ export default function ConfirmPayment() {
 
         {/* Source of Funds Card */}
         <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
-          <h3 className="text-muted-foreground mb-3">Source of Funds</h3>
+          <SectionTitle level={3} className="mb-3">
+            Source of Funds
+          </SectionTitle>
 
           <div className="flex flex-col gap-3">
             {splits.map((split, idx) =>

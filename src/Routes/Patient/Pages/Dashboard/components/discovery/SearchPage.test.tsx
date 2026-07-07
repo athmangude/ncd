@@ -39,6 +39,9 @@ describe("SearchPage (AppShell migration)", () => {
     render(wrap(<SearchPage />))
     expect(screen.getByRole("main")).toBeInTheDocument()
     expect(screen.getByRole("heading", { name: "Search" })).toBeInTheDocument()
-    expect(screen.getByText("Find care near you")).toBeInTheDocument()
+    // subtitle is now a SectionTitle (<h2>), not a bare styled node
+    expect(
+      screen.getByRole("heading", { level: 2, name: "Find care near you" })
+    ).toBeInTheDocument()
   })
 })

@@ -9,6 +9,7 @@ import { formatMoney } from "@/utilities/currencyUtilities"
 import { Button } from "@/components/Button"
 import { useLocation, useNavigate } from "react-router-dom"
 import FAQSection from "@/components/FAQSection"
+import { SectionTitle } from "@/components/SectionTitle"
 import StatementUploadForm from "@/components/StatementUploadForm"
 import { PhoneOutgoing } from "lucide-react"
 import { useFAQs } from "@/data/faqs"
@@ -56,7 +57,7 @@ function InstructionsSection() {
   return (
     <>
       <div>
-        <p className=" font-medium">What you'll need</p>
+        <SectionTitle>What you'll need</SectionTitle>
         <ul className="list-disc pl-6 text-muted-foreground text-sm mt-0">
           <li>
             Must be a <strong>PDF</strong> file from Safaricom

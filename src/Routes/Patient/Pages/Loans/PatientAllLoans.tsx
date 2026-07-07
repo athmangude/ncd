@@ -50,9 +50,7 @@ export default function PatientAllLoans() {
       }
     >
       <section className="text-center flex flex-col gap-1">
-        <SectionTitle className="text-muted-foreground">
-          Total To Repay
-        </SectionTitle>
+        <SectionTitle>Total To Repay</SectionTitle>
         <Amount
           value={loanStats?.outstandingAmount ?? 0}
           currency={loanStats?.currency || "KES"}
