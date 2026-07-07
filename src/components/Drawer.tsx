@@ -45,7 +45,7 @@ const DrawerContent = React.forwardRef<
       className={cn(
         // Constrain height to the viewport and let inner content scroll if needed,
         // so footers/buttons are not pushed below the visible area (even with toasts or browser chrome).
-        "fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100vh-env(safe-area-inset-top,0px)-1rem)] flex-col overflow-y-auto rounded-t-[10px] border bg-background",
+        "fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100vh-var(--safe-t)-1rem)] max-h-[calc(100dvh-var(--safe-t)-1rem)] flex-col overflow-y-auto rounded-t-[10px] border bg-background",
         className
       )}
       {...props}
@@ -75,7 +75,7 @@ const DrawerFooter = ({
   <div
     className={cn(
       // pb uses safe-area inset so primary actions are never hidden behind system chrome
-      "mt-auto flex flex-col gap-2 p-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]",
+      "mt-auto flex flex-col gap-2 p-4 pb-[calc(1rem+var(--safe-b))]",
       className
     )}
     {...props}

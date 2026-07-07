@@ -38,7 +38,7 @@ export default function AccordionMenu({
               </span>
             )}
           </h2>
-          <p className="text-xs text-neutral-500 mt-2">{description}</p>
+          <p className="text-xs text-muted-foreground mt-2">{description}</p>
         </div>
 
         <span

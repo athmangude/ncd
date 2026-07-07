@@ -23,7 +23,7 @@ export default function PatientDashboardSection({
 
         {link && (
           <Link
-            className="text-neutral-400 no-underline flex items-center"
+            className="text-muted-foreground no-underline flex items-center"
             to={link.href}
           >
             {link.text}

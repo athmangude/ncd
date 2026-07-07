@@ -18,11 +18,11 @@ interface FAQSectionProps {
 
 const FAQCard: FC<FAQItem> = ({ label, icon, onClick }) => (
   <div
-    className="flex justify-between bg-white p-4 items-center cursor-pointer hover:bg-neutral-100 rounded-lg transition"
+    className="flex justify-between bg-white p-4 items-center cursor-pointer hover:bg-accent rounded-lg transition"
     onClick={onClick}
   >
     <div className="flex gap-2 items-center">
-      <span className="text-sm text-neutral-500">{icon}</span>
+      <span className="text-sm text-muted-foreground">{icon}</span>
       <p>{label}</p>
     </div>
     <ChevronRight className="h-6 w-6 flex-shrink-0 self-center" />
@@ -37,7 +37,7 @@ const FAQSection: FC<FAQSectionProps> = ({
   supportAction,
 }) => {
   return (
-    <Card className="p-4 bg-neutral-50">
+    <Card className="p-4 bg-muted">
       <p className="flex items-center gap-2">{title}</p>
 
       <div className="flex flex-col gap-3 w-full my-4">
@@ -45,10 +45,10 @@ const FAQSection: FC<FAQSectionProps> = ({
           <FAQCard key={idx} {...faq} />
         ))}
 
-        <div className="flex gap-2 bg-neutral-50 rounded-lg p-4">
+        <div className="flex gap-2 bg-muted rounded-lg p-4">
           <div>
             <p>{supportText}</p>
-            <p className="mt-1 text-neutral-500">{supportSubtext}</p>
+            <p className="mt-1 text-muted-foreground">{supportSubtext}</p>
           </div>
         </div>
 

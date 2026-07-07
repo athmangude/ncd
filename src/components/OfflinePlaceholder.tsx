@@ -13,8 +13,8 @@ export function OfflinePlaceholder({ message }: OfflinePlaceholderProps) {
         />
       </div>
       <div className="flex flex-col gap-2">
-        <h2 className="text-xl font-bold text-neutral-900">You are offline</h2>
-        <p className="text-sm text-neutral-600 max-w-[55ch] mx-auto">
+        <h2 className="text-foreground">You are offline</h2>
+        <p className="text-sm text-muted-foreground max-w-[55ch] mx-auto">
           {message}
         </p>
       </div>

@@ -39,7 +39,7 @@ function CheckboxItem({
   return (
     <div className="flex items-center space-x-2">
       <Checkbox onCheckedChange={onChange} checked={checked} />
-      <label htmlFor="terms" className="text-neutral-700 text-sm">
+      <label htmlFor="terms" className="text-foreground text-sm">
         {label}
       </label>
     </div>

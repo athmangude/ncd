@@ -16,7 +16,7 @@ export default function SuccessBlock({
   return (
     <div className="flex flex-col gap-3 h-full text-center items-center">
       <CircleCheck className="h-16 w-16 text-green-500" />
-      <h1 className="text-xl font-bold">{title}</h1>
+      <h1>{title}</h1>
       <p>{message}</p>
 
       {action && (

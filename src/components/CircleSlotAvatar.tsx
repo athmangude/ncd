@@ -173,9 +173,9 @@ export function CircleSlotAvatar({
         onClick={onClick}
         disabled={!onClick}
         className={cn(
-          "shrink-0 rounded-full border-2 border-dashed bg-neutral-50",
+          "shrink-0 rounded-full border-2 border-dashed bg-muted",
           sizes.emptyBoxClass,
-          "border-neutral-300 flex items-center justify-center text-neutral-400",
+          "border-border flex items-center justify-center text-muted-foreground",
           onClick && "hover:border-purple-300 hover:text-purple-500",
           className,
         )}
@@ -199,13 +199,13 @@ export function CircleSlotAvatar({
       {showLock ? (
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-neutral-300/60",
+            "flex items-center justify-center rounded-full bg-muted",
             sizes.lockBoxClass,
           )}
         >
           <Lock
             data-testid="lock-icon"
-            className={cn(sizes.lockIconClass, "text-neutral-500")}
+            className={cn(sizes.lockIconClass, "text-muted-foreground")}
           />
         </div>
       ) : (

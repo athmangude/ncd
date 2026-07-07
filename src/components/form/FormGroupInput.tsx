@@ -79,14 +79,14 @@ export default function FormGroupInput({
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className="inline-flex items-center justify-center text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                className="inline-flex items-center justify-center text-muted-foreground hover:text-foreground focus:outline-none"
                 aria-label="Field information"
               >
                 <HelpCircle className="h-4 w-4" />
               </button>
             </PopoverTrigger>
             <PopoverContent
-              className="max-w-sm p-4 text-sm text-neutral-700 bg-white border border-neutral-200 shadow-lg leading-relaxed"
+              className="max-w-sm p-4 text-sm text-foreground bg-white border border-border shadow-lg leading-relaxed"
               side="top"
               align="start"
               sideOffset={5}

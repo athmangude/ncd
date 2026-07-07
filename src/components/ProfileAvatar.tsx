@@ -97,7 +97,7 @@ export function ProfileAvatar({
   const initials = useMemo(() => getInitials(name, firstName, lastName), [name, firstName, lastName])
 
   return (
-    <div className={cn("relative aspect-square overflow-hidden rounded-full bg-neutral-100 shrink-0", className)}>
+    <div className={cn("relative aspect-square overflow-hidden rounded-full bg-muted shrink-0", className)}>
       {/* Show skeleton while loading if we have a source */}
       {status === "loading" && src && (
          <div className="absolute inset-0 h-full w-full rounded-full animate-shimmer" />
@@ -120,7 +120,7 @@ export function ProfileAvatar({
 
       {/* Show fallback if error or no source */}
       {(status === "error" || !src) && (
-        <div className={cn("flex h-full w-full items-center justify-center bg-neutral-100 text-neutral-500 font-medium", fallbackClassName)}>
+        <div className={cn("flex h-full w-full items-center justify-center bg-muted text-muted-foreground font-medium", fallbackClassName)}>
             {initials ? (
                 <span>
                     {initials}

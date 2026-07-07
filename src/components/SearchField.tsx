@@ -269,7 +269,7 @@ export default function SearchField({
                       </div>
                       <div className="flex items-center">
                         {addedItems.has(result.id) ? (
-                          <Check className="h-5 w-5 text-neutral-400" />
+                          <Check className="h-5 w-5 text-muted-foreground" />
                         ) : (
                           <Plus className="h-5 w-5 text-primary hover:text-primary/80 transition-colors" />
                         )}
@@ -301,7 +301,7 @@ export default function SearchField({
 
 export function SearchFieldEmphasis({ text }: { text: string }) {
   return (
-    <div className="mt-2 text-xs bg-neutral-100 rounded-md px-2 py-1 flex items-center gap-2">
+    <div className="mt-2 text-xs bg-muted rounded-md px-2 py-1 flex items-center gap-2">
       <Sparkles className="inline size-3 text-[#1EDD05]" fill="#1EDD05" />
       <span>{text}</span>
     </div>

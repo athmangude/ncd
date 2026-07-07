@@ -10,7 +10,7 @@ export function TableTabs({
   setActiveStatus: (status: any) => void
 }) {
   return (
-    <div className="flex gap-3 rounded-lg bg-neutral-100 p-1 w-fit">
+    <div className="flex gap-3 rounded-lg bg-muted p-1 w-fit">
       {statuses.map((status) => (
         <TableTab
           key={status}

@@ -3,5 +3,5 @@ export default function DashboardSubtitle({
 }: {
   children: React.ReactNode
 }) {
-  return <h2 className="text-xl text-neutral-500">{children}</h2>
+  return <h2 className="text-muted-foreground">{children}</h2>
 }

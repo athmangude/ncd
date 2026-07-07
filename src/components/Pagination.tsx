@@ -41,7 +41,7 @@ export default function Pagination({
       aria-label="Pagination"
       className="mt-3 flex justify-between border-y py-2 font-medium"
     >
-      <p className="text-sm font-medium text-neutral-500">
+      <p className="text-sm font-medium text-muted-foreground">
         Showing page {currentPage} of {totalPages}
       </p>
       <ul className="flex gap-3 items-center">

@@ -15,7 +15,11 @@ export function Stepper({
   completedSteps,
 }: StepperProps) {
   return (
-    <div className={cn("flex items-center justify-center w-full", className)}>
+    <div
+      className={cn("flex items-center justify-center w-full", className)}
+      role="group"
+      aria-label={`Step ${currentStep} of ${totalSteps}`}
+    >
       {Array.from({ length: totalSteps }).map((_, index) => {
         const stepNumber = index + 1
 
@@ -36,7 +40,7 @@ export function Stepper({
                   ? "bg-purple-100 text-primary border-2 border-primary" // Completed style
                   : isCurrent
                     ? "bg-primary text-white " // Active style
-                    : "bg-white border-2 border-neutral-200 text-black"
+                    : "bg-white border-2 border-border text-foreground"
               )}
             >
               {isCompleted ? <Check className="w-5 h-5 " /> : stepNumber}
@@ -46,7 +50,7 @@ export function Stepper({
               <div
                 className={cn(
                   "h-[2px] w-4 rounded-full transition-colors duration-200",
-                  stepNumber < currentStep ? "bg-primary" : "bg-neutral-200"
+                  stepNumber < currentStep ? "bg-primary" : "bg-border"
                 )}
               />
             )}

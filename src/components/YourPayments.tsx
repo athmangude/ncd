@@ -43,7 +43,7 @@ export default function YourPayments() {
       <div className="flex flex-col max-h-[400px] overflow-y-auto gap-6">
         {groupedPayments.map((group) => (
           <div key={group.date} className="flex flex-col gap-3">
-            <p className="text-sm text-neutral-500 font-medium ml-1">
+            <p className="text-sm text-muted-foreground font-medium ml-1">
               {group.date}
             </p>
             <div className="flex flex-col gap-3">
@@ -142,7 +142,7 @@ export function PaymentCard({
 
   return (
     <div
-      className="p-4 flex flex-col gap-3 bg-white hover:bg-neutral-50 transition-colors cursor-pointer border rounded-xl"
+      className="p-4 flex flex-col gap-3 bg-white hover:bg-muted transition-colors cursor-pointer border rounded-xl"
       onClick={() =>
         navigate(`/patients/payments/payment-details/${paymentId}`, {
           state: navigationState,
@@ -152,27 +152,27 @@ export function PaymentCard({
       {/* Header Row */}
       <div className="flex justify-between items-start">
         <div className="flex-1 mr-2">
-          <p className="text-base text-neutral-900 line-clamp-1 capitalize">
+          <p className="text-base text-foreground line-clamp-1 capitalize">
             {(facilityName ?? "").startsWith("Paid at") ||
             (facilityName ?? "").startsWith("Payment at")
               ? (facilityName ?? "")
               : `Paid at ${(facilityName ?? "").toLocaleLowerCase()}`}
           </p>
-          <p className="text-sm text-neutral-500 mt-0.5">
+          <p className="text-sm text-muted-foreground mt-0.5">
             {formatMoney(Number(totalBillAmount), currencyCode)} •{" "}
             {formatTime(createdAt)}
           </p>
         </div>
-        <ChevronRight className="h-5 w-5 text-neutral-400 flex-shrink-0" />
+        <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
       </div>
 
       {/* Cashback Row */}
       {hasCashback && (
         <div className="flex items-center gap-2">
-          <Link className="w-4 h-4 text-neutral-500 rotate-45" />
+          <Link className="w-4 h-4 text-muted-foreground rotate-45" />
           <div className="flex flex-col">
-            <p className="text-sm text-neutral-900">Cashback earned</p>
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-foreground">Cashback earned</p>
+            <p className="text-sm text-muted-foreground">
               {formatMoney(totalCashback, currencyCode)}
             </p>
           </div>
@@ -186,8 +186,8 @@ export function PaymentCard({
             <>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-neutral-500" />
-                  <p className="text-sm text-neutral-900">Loan repayment due:</p>
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <p className="text-sm text-foreground">Loan repayment due:</p>
                 </div>
                 {dueDate && daysRemaining > 0 ? (
                   <div className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap">
@@ -202,7 +202,7 @@ export function PaymentCard({
               </div>
 
               <div className="pl-6">
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   {formatMoney(Number(outstandingAmount), currencyCode)} due by{" "}
                   {formattedDueDate}
                 </p>
@@ -225,13 +225,13 @@ export function PaymentCard({
             <>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-neutral-500" />
-                  <p className="text-sm text-neutral-900">Loan repaid</p>
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <p className="text-sm text-foreground">Loan repaid</p>
                 </div>
               </div>
 
               <div className="pl-6">
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   {formatMoney(Number(loan.totalPaid), currencyCode)}
                 </p>
               </div>

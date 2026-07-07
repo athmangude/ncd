@@ -157,12 +157,12 @@ const InstallAppCard = () => {
 
   return (
     <>
-      <div className=" w-full  rounded-3xl p-5 font-medium bg-gradient-card to-bubblegum-200 from-bubblegum-100 text-neutral-800 grid  ">
+      <div className=" w-full  rounded-3xl p-5 font-medium bg-gradient-card to-brand-gradient-200 from-brand-gradient-100 text-foreground grid  ">
         <div className="flex-1">
           <p className="text-sm md:text-base font-medium">
             Install Jireh app to get the full benefits of the app
           </p>
-          <p className="text-xs text-neutral-600 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Faster access, offline support, and timely notifications.
           </p>
           <div className="mt-3 flex justify-end">

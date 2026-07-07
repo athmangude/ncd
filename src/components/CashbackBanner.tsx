@@ -23,11 +23,11 @@ export function CashbackBanner({
         </div>
         <div>
           {title && (
-            <p className="text-sm font-bold text-neutral-900 mb-1">
+            <p className="text-sm font-bold text-foreground mb-1">
               {title}
             </p>
           )}
-          <div className="text-sm text-neutral-600 leading-relaxed">
+          <div className="text-sm text-muted-foreground leading-relaxed">
             {description}
           </div>
         </div>

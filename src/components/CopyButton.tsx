@@ -12,7 +12,7 @@ export default function CopyButton({ text }: { text: string }) {
 
   return (
     <button
-      className={`flex items-center gap-1 text-neutral-800 rounded-lg px-3 py-2 bg-neutral-100 font-medium transition-all duration-200 hover:bg-neutral-200 active:scale-95 ${
+      className={`flex items-center gap-1 text-foreground rounded-lg px-3 py-2 bg-muted font-medium transition-all duration-200 hover:bg-accent active:scale-95 ${
         isClicked ? "scale-105 bg-green-100 text-primary" : ""
       }`}
       onClick={handleClick}
