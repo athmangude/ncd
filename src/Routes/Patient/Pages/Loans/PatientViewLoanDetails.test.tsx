@@ -16,8 +16,9 @@ vi.mock("axios")
 // reads `loan.status` off it). Defaults to null for the direct-visit path.
 let mockLoan: unknown = null
 vi.mock("../../stores/patientLoanStore", () => ({
-  usePatientLoanStore: (sel: (s: { loan: unknown; setLoan: () => void }) => unknown) =>
-    sel({ loan: mockLoan, setLoan: () => {} }),
+  usePatientLoanStore: (
+    sel: (s: { loan: unknown; setLoan: () => void }) => unknown
+  ) => sel({ loan: mockLoan, setLoan: () => {} }),
 }))
 
 vi.mock("@/analytics", () => ({
@@ -90,7 +91,11 @@ describe("ViewLoanDetails crash guards", () => {
     // header rather than crashing into the error boundary.
     expect(await screen.findByText("Loan details")).toBeInTheDocument()
     // Amount renders via the "KES" fallback (formatted, may be split/repeated).
-    expect((await screen.findAllByText(/5,000/)).length).toBeGreaterThan(0)
+    const amounts = await screen.findAllByText(/5,000/)
+    expect(amounts.length).toBeGreaterThan(0)
+    // The money figures now go through the <Amount> primitive (mono/tabular),
+    // so at least one rendered amount carries its font-mono class.
+    expect(amounts.some((el) => el.className.includes("font-mono"))).toBe(true)
   })
 })
 

@@ -2,6 +2,7 @@ import PatientPageWrapper from "../PatientPageWrapper"
 import Tag from "@/components/Tag"
 import { DialogTrigger } from "@/components/Dialog"
 import { formatMoney } from "@/utilities/currencyUtilities"
+import { Amount } from "@/components/Amount"
 import { formatTime, formatDateLong } from "@/utilities/dateUtilities"
 import { Button } from "@/components/Button"
 import { useQuery } from "@tanstack/react-query"
@@ -244,17 +245,23 @@ export default function ViewLoanDetails() {
                 </div>
                 <div className="flex justify-between text-sm">
                   <div className="flex flex-col">
-                    <span className="font-medium text-foreground">
-                      {formatMoney(totalRepaid, currencyCode)}
-                    </span>
+                    <Amount
+                      value={totalRepaid}
+                      currency={currencyCode}
+                      size="sm"
+                      weight="bold"
+                    />
                     <span className="text-muted-foreground text-xs">
                       Repaid
                     </span>
                   </div>
                   <div className="flex flex-col text-right">
-                    <span className="font-medium text-foreground">
-                      {formatMoney(totalBillAmount, currencyCode)}
-                    </span>
+                    <Amount
+                      value={totalBillAmount}
+                      currency={currencyCode}
+                      size="sm"
+                      weight="bold"
+                    />
                     <span className="text-muted-foreground text-xs">
                       Total to repay
                     </span>
@@ -449,9 +456,12 @@ function TimelineItem({
         <div className="flex flex-col gap-0.5">
           <span className="text-sm font-medium text-foreground">{title}</span>
           {amount !== undefined && (
-            <span className="text-sm text-muted-foreground">
-              {formatMoney(amount, currency || "KES")}
-            </span>
+            <Amount
+              value={amount}
+              currency={currency || "KES"}
+              size="sm"
+              className="text-muted-foreground"
+            />
           )}
           {subtitle && (
             <span className="text-xs text-muted-foreground">{subtitle}</span>
