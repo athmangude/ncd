@@ -126,7 +126,7 @@ export default function PatientPaymentBreakdown() {
           <p className="text-muted-foreground text-sm mb-3 pl-1">
             Bill details
           </p>
-          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             <DetailRow
               label="Invoiced bill"
               value={
@@ -170,7 +170,7 @@ export default function PatientPaymentBreakdown() {
           <p className="text-muted-foreground text-sm mb-3 pl-1">
             Breakdown of payment sources
           </p>
-          <div className="bg-white rounded-xl border border-border shadow-sm overflow-hidden">
+          <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             {sources.map((source: any, idx: number) => (
               <SourceRow
                 key={source.id}

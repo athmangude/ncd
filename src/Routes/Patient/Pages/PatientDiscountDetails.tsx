@@ -105,7 +105,7 @@ export default function PatientDiscountDetails() {
       title="Discount details"
       onBack={() => navigate(-1)}
       footer={
-        <div className="border-t border-border bg-white p-4">
+        <div className="border-t border-border bg-card p-4">
           <div className="mx-auto flex max-w-[450px] gap-3">
             <Button variant="secondary" onClick={share} className="flex-1">
               Share

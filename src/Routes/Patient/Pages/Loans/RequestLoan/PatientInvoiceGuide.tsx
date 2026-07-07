@@ -26,7 +26,7 @@ export default function PatientInvoiceGuide() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center">
+              <div className="absolute bottom-2 right-2 w-8 h-8 bg-card rounded-full flex items-center justify-center">
                 <X className="w-6 h-6 text-red-500" />
               </div>
             </div>
@@ -40,7 +40,7 @@ export default function PatientInvoiceGuide() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="absolute bottom-2 right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center">
+              <div className="absolute bottom-2 right-2 w-8 h-8 bg-card rounded-full flex items-center justify-center">
                 <Check className="w-6 h-6 text-green-500" />
               </div>
             </div>

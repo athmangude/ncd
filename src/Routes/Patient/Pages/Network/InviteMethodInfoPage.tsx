@@ -61,7 +61,7 @@ export default function InviteMethodInfoPage() {
       <div className="bg-muted px-4 pt-6 pb-4 flex flex-col gap-6 min-h-full">
         {/* Header: icon + title + subtitle */}
         <div className="flex flex-col items-center gap-2 text-center">
-          <div className="w-12 h-12 rounded-full bg-white border border-border flex items-center justify-center">
+          <div className="w-12 h-12 rounded-full bg-card border border-border flex items-center justify-center">
             <UserPlus className="w-6 h-6 text-muted-foreground" />
           </div>
           <h1 className="leading-snug">Start building your Circle!</h1>
@@ -80,7 +80,7 @@ export default function InviteMethodInfoPage() {
             {steps.map((step) => (
               <div
                 key={step.number}
-                className="bg-white rounded-md px-3 py-3 flex items-start gap-3 min-h-[44px]"
+                className="bg-card rounded-md px-3 py-3 flex items-start gap-3 min-h-[44px]"
               >
                 <span className="font-mono text-sm text-muted-foreground w-5 text-right flex-shrink-0 mt-0.5">
                   {step.number}

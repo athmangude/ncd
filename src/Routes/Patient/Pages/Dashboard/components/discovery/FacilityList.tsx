@@ -11,7 +11,7 @@ interface FacilityListProps {
 
 function FacilityCardSkeleton() {
   return (
-    <div className="bg-white rounded-xl p-3 shadow-sm border border-border">
+    <div className="bg-card rounded-xl p-3 shadow-sm border border-border">
       {/* Header: Title and details */}
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1">

@@ -20,7 +20,7 @@ export default function PatientOrgHowItWorks() {
       variant="content"
       pageTitle="How it works"
       footer={
-        <div className="border-t bg-white p-4">
+        <div className="border-t bg-card p-4">
           <Button
             role="link"
             onClick={() => navigate(next)}

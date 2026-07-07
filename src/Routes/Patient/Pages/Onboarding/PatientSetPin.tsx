@@ -158,7 +158,7 @@ export default function PatientSetPin() {
             type="password"
             className="sensitive-data"
           >
-            <InputOTPGroup className="gap-0 bg-white shadow-sm">
+            <InputOTPGroup className="gap-0 bg-card shadow-sm">
               <InputOTPSlot
                 index={0}
                 className="h-14 w-14 border-y border-l text-xl"

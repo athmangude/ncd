@@ -74,7 +74,7 @@ export default function InviteTextPage() {
       title="Invite by SMS"
       onBack={handleBack}
       footer={
-        <div className="p-4 bg-white border-t border-border">
+        <div className="p-4 bg-card border-t border-border">
           <Button
             className="w-full"
             onClick={handleContinue}

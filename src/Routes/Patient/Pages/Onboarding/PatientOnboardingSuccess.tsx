@@ -44,7 +44,7 @@ export default function PatientOnboardingSuccess() {
     >
       <section className="text-center flex flex-col gap-5 items-center ">
         {showMatchWarning && (
-          <div className="bg-white p-4 rounded-xl w-full border border-purple-100 shadow-sm text-left">
+          <div className="bg-card p-4 rounded-xl w-full border border-purple-100 shadow-sm text-left">
             <p className="text-sm text-muted-foreground mb-3">
               Contact our support team for help.
             </p>

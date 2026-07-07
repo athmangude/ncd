@@ -245,7 +245,7 @@ function SearchHeader({
   onFilterTap: () => void
 }) {
   return (
-    <div className="bg-white flex flex-col gap-2 p-4 w-full border-b border-border">
+    <div className="bg-card flex flex-col gap-2 p-4 w-full border-b border-border">
       <div className="flex items-center gap-2 self-start">
         <Button
           variant="outline"
@@ -265,7 +265,7 @@ function SearchHeader({
         </p>
       </div>
 
-      <div className="flex items-center gap-2 h-11 w-full border border-border rounded-full pl-3 pr-2 bg-white shadow-sm">
+      <div className="flex items-center gap-2 h-11 w-full border border-border rounded-full pl-3 pr-2 bg-card shadow-sm">
         <Search className="h-4 w-4 text-muted-foreground shrink-0" />
         <input
           className="flex-1 min-w-0 text-base bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
@@ -479,7 +479,7 @@ function FacilityResultRow({
     <Item
       asChild
       size="sm"
-      className="flex-col items-start gap-1 bg-white text-left"
+      className="flex-col items-start gap-1 bg-card text-left"
     >
       <button type="button" onClick={onClick}>
         <span className="text-base font-medium text-foreground truncate">

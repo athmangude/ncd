@@ -121,7 +121,7 @@ export default function HelpAndSupport() {
 
         <div className="flex flex-col gap-4">
           <SectionTitle>Need more help?</SectionTitle>
-          <Card className="bg-white p-2 rounded-xl border-border">
+          <Card className="bg-card p-2 rounded-xl border-border">
             <div className="flex flex-col gap-1">
               {contactOptions.map((item, idx) => (
                 <HelpItemCard key={idx} {...item} />

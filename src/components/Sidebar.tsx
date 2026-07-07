@@ -9,7 +9,7 @@ interface SidebarProps {
 export function Sidebar({ children, className = "" }: SidebarProps) {
   return (
     <aside
-      className={`w-64 min-h-[90vh] px-5 py-10 overflow-y-auto border-r fixed hidden md:flex left-0 top-16 flex-col h-full z-50 bg-white ${className}`}
+      className={`w-64 min-h-[90vh] px-5 py-10 overflow-y-auto border-r fixed hidden md:flex left-0 top-16 flex-col h-full z-50 bg-card ${className}`}
     >
       <div className="flex flex-col justify-between h-full gap-7">
         {children}

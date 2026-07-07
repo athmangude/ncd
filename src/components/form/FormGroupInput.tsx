@@ -96,7 +96,7 @@ export default function FormGroupInput({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="max-w-sm p-4 text-sm text-foreground bg-white border border-border shadow-lg leading-relaxed"
+              className="max-w-sm p-4 text-sm text-foreground bg-card border border-border shadow-lg leading-relaxed"
               side="top"
               align="start"
               sideOffset={5}

@@ -36,7 +36,7 @@ function TableTab({
   return (
     <Button
       variant="ghost"
-      className={`capitalize hover:bg-primary/5 ${isActive ? "bg-white" : ""}`}
+      className={`capitalize hover:bg-primary/5 ${isActive ? "bg-card" : ""}`}
       onClick={() => {
         setActiveStatus(status)
       }}

@@ -187,7 +187,7 @@ function PwaInstallPrompt() {
     <div
       role="dialog"
       aria-live="polite"
-      className="fixed bottom-4 left-1/2 z-50 flex w-[min(96vw,720px)] -translate-x-1/2 flex-col gap-3 rounded-2xl border border-black/10 bg-white p-4 text-left shadow-xl shadow-black/25 dark:border-white/10 dark:bg-neutral-950"
+      className="fixed bottom-4 left-1/2 z-50 flex w-[min(96vw,720px)] -translate-x-1/2 flex-col gap-3 rounded-2xl border border-black/10 bg-card p-4 text-left shadow-xl shadow-black/25 dark:border-white/10"
     >
       <div className="flex flex-col gap-1">
         <p className="text-sm font-semibold text-foreground">

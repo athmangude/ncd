@@ -230,7 +230,7 @@ function CashbackCard({ transaction }: { transaction: any }) {
   }
 
   return (
-    <div className="bg-white p-4 rounded-xl border border-border shadow-sm flex justify-between items-center">
+    <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex justify-between items-center">
       <div>
         <p className="text-base text-foreground capitalize mb-1">{label}</p>
         <p className="text-sm text-muted-foreground flex items-center gap-2">

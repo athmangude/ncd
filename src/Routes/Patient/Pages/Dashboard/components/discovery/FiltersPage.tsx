@@ -80,7 +80,7 @@ export default function FiltersPage() {
   const onCancel = () => navigate(-1)
 
   const header = (
-    <div className="bg-white flex items-center gap-2 px-4 py-3 border-b border-border">
+    <div className="bg-card flex items-center gap-2 px-4 py-3 border-b border-border">
       <Button
         variant="outline"
         size="icon"
@@ -94,7 +94,7 @@ export default function FiltersPage() {
   )
 
   const footer = (
-    <div className="bg-white border-t border-border p-4 flex items-center gap-3">
+    <div className="bg-card border-t border-border p-4 flex items-center gap-3">
       <Button
         type="button"
         variant="outline"

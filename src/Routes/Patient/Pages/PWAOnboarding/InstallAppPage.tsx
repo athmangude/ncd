@@ -216,7 +216,7 @@ export default function InstallAppPage() {
       pageTitle="Install the app"
       description="Add Jireh to your home screen for faster access and offline reliability—no download required."
       footer={
-        <div className="border-t bg-white p-4">
+        <div className="border-t bg-card p-4">
           <div className="flex gap-4">
             <Button
               className="w-1/3 "
@@ -249,16 +249,16 @@ export default function InstallAppPage() {
       <div className="w-full">
         <p className="text-muted-foreground text-sm mb-1">Why?</p>
 
-        <div className="space-y-4 bg-white rounded-xl">
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg ">
+        <div className="space-y-4 bg-card rounded-xl">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-lg ">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground ">Use Jireh offline</span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg ">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-lg ">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground ">Use less data when online</span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg ">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-lg ">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground ">Access your account 24/7</span>
           </div>

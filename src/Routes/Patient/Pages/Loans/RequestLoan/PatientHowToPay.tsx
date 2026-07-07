@@ -17,7 +17,7 @@ export default function PatientHowToPay() {
       headerIcon={<img src={careproviderIcon} alt="" className={HEADER_ICON} />}
       pageTitle="Pay to over 14,000 licensed health facilities in Kenya."
       footer={
-        <div className="border-t bg-white p-4">
+        <div className="border-t bg-card p-4">
           <Button
             role="link"
             className="w-full"

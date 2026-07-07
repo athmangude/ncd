@@ -371,7 +371,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
       <PatientPageWrapper
         title="Read and Accept Shared Terms"
         footer={
-          <div className="p-4 bg-white border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          <div className="p-4 bg-card border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <div className="max-w-md mx-auto w-full flex flex-col gap-3">
               <Button
                 className={cn(
@@ -487,7 +487,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
             </AccordionItem>
           </Accordion>
 
-          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-card">
             <Checkbox
               id="accept-terms"
               className="mt-1"
@@ -565,7 +565,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
                 <User className="w-5 h-5 m-auto text-muted-foreground mt-2.5" />
               )}
             </div>
-            <div className="bg-white border border-border rounded-tr-2xl rounded-tl-2xl rounded-br-2xl px-4 py-3  flex-1">
+            <div className="bg-card border border-border rounded-tr-2xl rounded-tl-2xl rounded-br-2xl px-4 py-3  flex-1">
               <p className="text-muted-foreground text-[15px]">
                 {customMessage}
               </p>
@@ -574,7 +574,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         )}
 
         {voiceNoteUrl && (
-          <div className="w-full max-w-md bg-white rounded-full p-2 px-4 flex items-center gap-3 border shadow-sm mt-4 mb-6">
+          <div className="w-full max-w-md bg-card rounded-full p-2 px-4 flex items-center gap-3 border shadow-sm mt-4 mb-6">
             <Button
               size="icon"
               className="flex-shrink-0"
@@ -688,7 +688,7 @@ function QRInviteDetails({
     <PatientPageWrapper
       title="Join Circle via QR"
       footer={
-        <div className="p-4 bg-white border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="p-4 bg-card border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
           <div className="max-w-md mx-auto w-full">
             <Button
               className={cn(
@@ -803,7 +803,7 @@ function QRInviteDetails({
           </AccordionItem>
         </Accordion>
 
-        <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+        <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-card">
           <Checkbox
             id="accept-terms"
             className="mt-1"
@@ -825,7 +825,7 @@ function QRInviteDetails({
 
 function TermRewardItem({ text, subtext }: { text: string; subtext?: string }) {
   return (
-    <li className="flex items-start gap-3 bg-white">
+    <li className="flex items-start gap-3 bg-card">
       <div className="mt-0.5 min-w-[20px]">
         <Check className="w-5 h-5 text-muted-foreground" />
       </div>
@@ -845,7 +845,7 @@ function TermRewardItem({ text, subtext }: { text: string; subtext?: string }) {
 
 function BenefitItem({ text }: { text: string }) {
   return (
-    <li className="flex items-start gap-3 bg-white p-2 rounded-xl border border-border shadow-sm">
+    <li className="flex items-start gap-3 bg-card p-2 rounded-xl border border-border shadow-sm">
       <div className="mt-0.5 min-w-[20px]">
         <Check className="w-5 h-5 text-muted-foreground" />
       </div>

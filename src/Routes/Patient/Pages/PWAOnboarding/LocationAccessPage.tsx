@@ -65,7 +65,7 @@ export default function LocationAccessPage() {
       pageTitle="Find care near you"
       description="Enable location to instantly see verified hospitals and pharmacies in your area."
       footer={
-        <div className="border-t bg-white p-4">
+        <div className="border-t bg-card p-4">
           <div className="flex gap-4">
             <Button className="w-1/3 " variant="secondary" onClick={handleSkip}>
               Skip
@@ -95,18 +95,18 @@ export default function LocationAccessPage() {
       <div className="w-full">
         <p className="text-muted-foreground text-sm mb-4">Why?</p>
 
-        <div className="space-y-4 bg-white rounded-xl">
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg">
+        <div className="space-y-4 bg-card rounded-xl">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-lg">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground">Find hospitals near you</span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-lg">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground">
               Get notified of nearby offers
             </span>
           </div>
-          <div className="flex items-center gap-1 p-3 bg-white border border-border rounded-lg">
+          <div className="flex items-center gap-1 p-3 bg-card border border-border rounded-lg">
             <Check className="w-4 h-4 text-muted-foreground" />
             <span className="text-foreground">
               Save your care provider preferences for your next visit

@@ -89,7 +89,7 @@ export default function PatientDependentSelect({
                       field.onChange(currentValue === value ? "" : currentValue)
                       setOpen(false)
                     }}
-                    className="text-lg capitalize flex items-center jus gap-3 bg-white"
+                    className="text-lg capitalize flex items-center jus gap-3 bg-card"
                   >
                     {item.photo ? (
                       <img

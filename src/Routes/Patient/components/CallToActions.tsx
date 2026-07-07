@@ -199,7 +199,7 @@ export function FundTreatmentCTA() {
 
   return (
     <section className="w-full flex justify-center fixed bottom-0 left-0 ">
-      <div className="w-full px-3 py-2 bg-white border-t border-border max-w-[450px] flex flex-col gap-2">
+      <div className="w-full px-3 py-2 bg-card border-t border-border max-w-[450px] flex flex-col gap-2">
         {!canPayMedicalBill && (
           <CompleteMembershipSetupCTA orgName={orgName} patientType={type} />
         )}

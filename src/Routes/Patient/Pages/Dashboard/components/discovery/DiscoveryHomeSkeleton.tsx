@@ -8,7 +8,7 @@ export function DiscoveryHomeSkeleton() {
       className="flex flex-col w-full max-h-full overflow-y-auto no-scrollbar"
     >
       {/* Header */}
-      <div className="bg-white flex flex-col gap-2 items-center p-4 w-full shrink-0">
+      <div className="bg-card flex flex-col gap-2 items-center p-4 w-full shrink-0">
         <div className="flex flex-col gap-1 items-center w-full">
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-56 mt-1" />

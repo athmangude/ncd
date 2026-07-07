@@ -195,7 +195,7 @@ export default function FacilityDetailsPage() {
   const showRating = !!reviewAggregate && reviewAggregate.reviewCount > 0
 
   const header = (
-    <header className="flex w-full flex-col bg-white px-4 py-3">
+    <header className="flex w-full flex-col bg-card px-4 py-3">
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center gap-2">
           <Button
@@ -213,7 +213,7 @@ export default function FacilityDetailsPage() {
   )
 
   const footer = (
-    <div className="bg-white border-t border-border px-4 py-3 flex gap-3 w-full">
+    <div className="bg-card border-t border-border px-4 py-3 flex gap-3 w-full">
       {activeTab === "about" && (
         <>
           <Button
@@ -253,7 +253,7 @@ export default function FacilityDetailsPage() {
 
   return (
     <AppShell header={header} footer={footer} bodyPadding="none">
-      <section className="bg-white px-4 pt-6 pb-4 border-b border-border flex flex-col items-center text-center">
+      <section className="bg-card px-4 pt-6 pb-4 border-b border-border flex flex-col items-center text-center">
         <img
           src={facilityIcon}
           alt=""

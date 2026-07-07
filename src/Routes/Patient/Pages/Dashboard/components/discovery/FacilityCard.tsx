@@ -10,7 +10,7 @@ interface FacilityCardProps {
 export function FacilityCard({ facility, onClick }: FacilityCardProps) {
   return (
     <div
-      className="bg-white rounded-xl p-3 shadow-sm border border-border cursor-pointer hover:border-purple-200 transition-colors"
+      className="bg-card rounded-xl p-3 shadow-sm border border-border cursor-pointer hover:border-purple-200 transition-colors"
       onClick={() => onClick(facility)}
     >
       {/* Header: Icon, Recently Visited, Arrow */}

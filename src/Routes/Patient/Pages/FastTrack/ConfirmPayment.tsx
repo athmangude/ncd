@@ -166,7 +166,7 @@ export default function ConfirmPayment() {
         </div>
 
         {/* Payment Details Card */}
-        <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+        <div className="border border-border rounded-xl p-4 bg-card shadow-sm">
           <SectionTitle level={3} className="mb-4">
             Payment Details
           </SectionTitle>
@@ -247,7 +247,7 @@ export default function ConfirmPayment() {
         </div>
 
         {/* Source of Funds Card */}
-        <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+        <div className="border border-border rounded-xl p-4 bg-card shadow-sm">
           <SectionTitle level={3} className="mb-3">
             Source of Funds
           </SectionTitle>
