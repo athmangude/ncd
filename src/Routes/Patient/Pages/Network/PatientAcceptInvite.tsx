@@ -275,7 +275,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
     const error: any = query.error
 
     if (error.response?.status === HttpStatusCode.Gone) {
-      navigate("/patient/network/invite-expired", {
+      navigate("/patients/network/invite-expired", {
         state: {
           message: error.response?.data.message,
         },

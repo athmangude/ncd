@@ -156,6 +156,7 @@ export default function PatientSetPin() {
             onChange={step === 1 ? handlePinComplete : handleConfirmPinComplete}
             id={step === 1 ? "pin" : "confirmPin"}
             type="password"
+            className="sensitive-data"
           >
             <InputOTPGroup className="gap-0 bg-white shadow-sm">
               <InputOTPSlot

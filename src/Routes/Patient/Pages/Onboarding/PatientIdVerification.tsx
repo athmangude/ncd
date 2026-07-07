@@ -132,6 +132,7 @@ export function PatientIdVerification() {
               },
             })}
             error={errors.idNumber?.message}
+            sensitive
           />
         </form>
       </div>

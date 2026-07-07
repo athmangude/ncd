@@ -109,6 +109,7 @@ export function PatientPersonalDetails() {
               },
             })}
             error={errors.firstName?.message}
+            sensitive
           />
 
           <FormGroupInput
@@ -123,6 +124,7 @@ export function PatientPersonalDetails() {
               },
             })}
             error={errors.lastName?.message}
+            sensitive
           />
         </div>
       </form>

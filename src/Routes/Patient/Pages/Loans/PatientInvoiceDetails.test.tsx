@@ -117,4 +117,23 @@ describe("InvoiceDetails crash guards", () => {
       "success"
     )
   })
+
+  it("associates the consent label with the required agreement checkbox", async () => {
+    vi.mocked(axios.get).mockResolvedValue({ data: {} })
+    mockLoan = {
+      patientMedicalInfoRequest: {
+        healthcareMedicalInfoRequest: { invoiceItems: [] },
+      },
+    }
+
+    render(wrap(<InvoiceDetails />))
+
+    // Regression guard: the label previously pointed htmlFor="terms" at a
+    // non-existent id, so tapping the required-consent text did nothing. It
+    // must now target the checkbox's actual id.
+    const label = await screen.findByText(
+      /I confirm that I have reviewed and accept the invoice/i
+    )
+    expect(label.getAttribute("for")).toBe("hasAgreedToInvoiceDetails")
+  })
 })

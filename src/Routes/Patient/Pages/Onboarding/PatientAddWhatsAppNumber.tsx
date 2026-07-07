@@ -126,6 +126,7 @@ export default function PatientAddWhatsAppNumber() {
             },
           })}
           error={errors.whatsappPhoneNumber?.message}
+          sensitive
         />
 
         <div className="flex items-center space-x-2">

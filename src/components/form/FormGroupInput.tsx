@@ -34,6 +34,12 @@ type FormGroupProps = {
   countryCode?: CountryCode
   onCountryCodeChange?: (code: CountryCode) => void
   isDevMode?: boolean
+  /**
+   * Mark this input as rendering PII (name, national ID, phone, PIN, etc.).
+   * Adds the `.sensitive-data` class so Amplitude session replay masks the
+   * value. Default false. See CLAUDE.md analytics guardrail.
+   */
+  sensitive?: boolean
 } & (
   | { type: "file"; multiple?: boolean }
   | {
@@ -59,6 +65,7 @@ export default function FormGroupInput({
   countryCode = "KE",
   onCountryCodeChange,
   isDevMode = false,
+  sensitive = false,
 }: FormGroupProps) {
   const handleFlagClick = () => {
     if (isDevMode && onCountryCodeChange) {
@@ -139,7 +146,8 @@ export default function FormGroupInput({
           "[&#phoneNumber]:pl-9",
           error
             ? "border-destructive focus-visible:ring-destructive"
-            : "focus-visible:ring-[#A020F0]"
+            : "focus-visible:ring-[#A020F0]",
+          sensitive && "sensitive-data"
         )}
       />
       {error && <ErrorMessage message={error} />}

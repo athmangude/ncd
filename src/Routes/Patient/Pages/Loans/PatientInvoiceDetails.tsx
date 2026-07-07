@@ -61,7 +61,7 @@ export default function InvoiceDetails() {
           className="mt-1"
         />
         <label
-          htmlFor="terms"
+          htmlFor="hasAgreedToInvoiceDetails"
           className="text-sm text-muted-foreground leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
         >
           By ticking this box, I confirm that I have reviewed and accept the
