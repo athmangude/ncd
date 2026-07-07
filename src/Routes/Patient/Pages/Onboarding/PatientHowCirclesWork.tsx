@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { Info, Phone, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
 import { trackEvent, EVENTS } from "@/analytics"
 import giftBox from "@/assets/icons/gift-box.png"
@@ -51,7 +52,7 @@ function FeatureCard({
         />
       )}
       <div className="flex flex-col gap-1">
-        <h3 className="leading-5 text-foreground">{title}</h3>
+        <p className="text-sm font-medium leading-5 text-foreground">{title}</p>
         {description && (
           <p className="text-sm leading-5 text-muted-foreground">
             {description}
@@ -191,17 +192,15 @@ export default function PatientHowCirclesWork() {
         {/* What you get */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
-              What you get
-            </h2>
+            <SectionTitle>What you get</SectionTitle>
             <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               Your Circle is your financial support group.
             </p>
           </div>
           <div className="flex min-h-8 items-center py-[5.5px]">
-            <p className="whitespace-nowrap text-xs font-medium leading-4 tracking-[0.036px] text-muted-foreground">
+            <SectionTitle level={3} className="whitespace-nowrap">
               With a complete Circle, you can:
-            </p>
+            </SectionTitle>
           </div>
           <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden">
             <FeatureCard
@@ -233,17 +232,15 @@ export default function PatientHowCirclesWork() {
         {/* Who to add */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
-              Who to add
-            </h2>
+            <SectionTitle>Who to add</SectionTitle>
             <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               Add people you trust and who know your finances.
             </p>
           </div>
           <div className="flex min-h-8 items-center py-[5.5px]">
-            <p className="whitespace-nowrap text-xs font-medium leading-4 tracking-[0.036px] text-muted-foreground">
+            <SectionTitle level={3} className="whitespace-nowrap">
               Good Circle members:
-            </p>
+            </SectionTitle>
           </div>
           <div className="-mx-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden">
             <MemberCard
@@ -273,9 +270,7 @@ export default function PatientHowCirclesWork() {
         {/* The shared risk */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
-              The shared risk — important
-            </h2>
+            <SectionTitle>The shared risk — important</SectionTitle>
             <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               This is the part you must understand before you invite anyone.
             </p>
@@ -304,9 +299,7 @@ export default function PatientHowCirclesWork() {
         {/* How to add someone */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
-              How to add someone
-            </h2>
+            <SectionTitle>How to add someone</SectionTitle>
             <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               Tap &lsquo;Add member&rsquo; and choose how to invite them:
             </p>

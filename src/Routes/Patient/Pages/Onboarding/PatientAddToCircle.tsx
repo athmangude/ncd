@@ -1,5 +1,6 @@
 import PatientPageWrapper from "../PatientPageWrapper"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import { useLocation, useNavigate } from "react-router-dom"
 import useNextCircleSetupStep from "../../hooks/useNextCircleSetupStep"
 import { DetailsNotSet } from "../../components/DetailsNotSet"
@@ -111,7 +112,9 @@ export default function PatientAddToCircle() {
 
         {allMembers.length > 0 && (
           <div className="flex flex-col gap-3">
-            <h3 className="text-muted-foreground ml-1">Added Members</h3>
+            <SectionTitle level={3} className="ml-1">
+              Added Members
+            </SectionTitle>
             {allMembers.map((member) => (
               <NetworkItem
                 key={member.id}

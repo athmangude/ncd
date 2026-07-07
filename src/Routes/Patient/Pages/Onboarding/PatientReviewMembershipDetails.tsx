@@ -2,6 +2,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { DetailsNotSet } from "../../components/DetailsNotSet"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
@@ -197,7 +198,7 @@ function ReviewSection({
 }) {
   return (
     <section className="flex flex-col gap-2 pb-4 border-b">
-      <h1 className="text-muted-foreground mb-2">{title}</h1>
+      <SectionTitle className="mb-2">{title}</SectionTitle>
 
       {children}
     </section>

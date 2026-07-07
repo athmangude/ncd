@@ -10,6 +10,7 @@ import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
 import { patientLoginDetailsQueryKey } from "../PatientsHome"
 import FAQSection from "@/components/FAQSection"
+import { SectionTitle } from "@/components/SectionTitle"
 import StatementUploadForm from "@/components/StatementUploadForm"
 import { useFAQs } from "@/data/faqs"
 
@@ -86,7 +87,7 @@ function UploadStatements({
   return (
     <>
       <div>
-        <p className=" font-medium">What you'll need</p>
+        <SectionTitle>What you'll need</SectionTitle>
         <ul className="list-disc pl-6 text-muted-foreground text-sm mt-0">
           <li>
             Must be a <strong>PDF</strong> file from Safaricom

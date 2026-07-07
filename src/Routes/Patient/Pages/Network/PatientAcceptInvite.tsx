@@ -4,6 +4,7 @@ import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import axios, { HttpStatusCode } from "axios"
 import { useToast } from "@/hooks/useToast"
 import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
@@ -605,7 +606,9 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         )}
 
         <div className="w-full">
-          <h3 className="text-muted-foreground mb-4 pl-1">Benefits</h3>
+          <SectionTitle level={3} className="mb-4 pl-1">
+            Benefits
+          </SectionTitle>
           <ul className="space-y-4">
             <BenefitItem text="Get help paying medical bills" />
             <BenefitItem text="Access Lipa Baadaye " />

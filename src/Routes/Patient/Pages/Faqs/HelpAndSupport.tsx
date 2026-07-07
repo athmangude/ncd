@@ -8,6 +8,7 @@ import {
 } from "lucide-react"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { Card } from "@/components/Card"
+import { SectionTitle } from "@/components/SectionTitle"
 import { useNavigate } from "react-router-dom"
 
 type HelpItem = {
@@ -102,9 +103,7 @@ export default function HelpAndSupport() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h2 className="text-muted-foreground">
-            Have a problem with your invoice?
-          </h2>
+          <SectionTitle>Have a problem with your invoice?</SectionTitle>
           <div className="flex flex-col gap-3">
             {invoiceProblems.map((item, idx) => (
               <HelpItemCard key={idx} {...item} />
@@ -113,7 +112,7 @@ export default function HelpAndSupport() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <h2 className="text-muted-foreground">Need more help?</h2>
+          <SectionTitle>Need more help?</SectionTitle>
           <Card className="bg-white p-2 rounded-xl border-border">
             <div className="flex flex-col gap-1">
               {contactOptions.map((item, idx) => (

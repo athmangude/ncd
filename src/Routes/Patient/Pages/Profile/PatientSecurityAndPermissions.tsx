@@ -1,5 +1,6 @@
 import { Shield, ChevronRight, LayoutGrid, Bell, MapPin } from "lucide-react"
 import { Switch } from "@/components/Switch"
+import { SectionTitle } from "@/components/SectionTitle"
 import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
@@ -96,14 +97,14 @@ export default function PatientSecurityAndPermissions() {
             <Shield className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <h2 className="text-foreground">Change PIN</h2>
+            <SectionTitle level={3}>Change PIN</SectionTitle>
           </div>
           <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
         </button>
 
         {/* Permissions Section */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-muted-foreground">Permissions</h2>
+          <SectionTitle>Permissions</SectionTitle>
 
           <div className="flex flex-col gap-6">
             {/* Get the App */}
@@ -113,7 +114,7 @@ export default function PatientSecurityAndPermissions() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-foreground">Get the App</h2>
+                  <SectionTitle level={3}>Get the App</SectionTitle>
                   <Switch
                     checked={isInstalled}
                     onCheckedChange={handleInstallToggle}
@@ -134,7 +135,7 @@ export default function PatientSecurityAndPermissions() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-foreground">Receive Notifications</h2>
+                  <SectionTitle level={3}>Receive Notifications</SectionTitle>
                   <Switch
                     checked={notificationPermission === "granted"}
                     onCheckedChange={handleNotificationToggle}
@@ -155,7 +156,7 @@ export default function PatientSecurityAndPermissions() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-foreground">Use My Location</h2>
+                  <SectionTitle level={3}>Use My Location</SectionTitle>
                   <Switch
                     checked={locationPermission === "granted"}
                     onCheckedChange={handleLocationToggle}

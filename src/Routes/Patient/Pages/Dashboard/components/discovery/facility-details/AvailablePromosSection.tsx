@@ -2,6 +2,7 @@ import { ChevronRight, Gift } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { format } from "date-fns"
 import percentTile from "@/assets/icons/percent-tile.png"
+import { SectionTitle } from "@/components/SectionTitle"
 import { ActiveDiscount, FacilityActiveDiscount } from "../types"
 
 interface AvailablePromosSectionProps {
@@ -46,9 +47,7 @@ export function AvailablePromosSection({
     <div className="flex flex-col w-full">
       <div className="flex items-center gap-2 py-1.5 w-full">
         <Gift className="h-4 w-4 text-muted-foreground" />
-        <span className="flex-1 text-sm text-foreground ">
-          Available promos
-        </span>
+        <SectionTitle className="flex-1">Available promos</SectionTitle>
         {promos.length > 1 && (
           <button
             type="button"

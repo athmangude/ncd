@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../../PatientPageWrapper"
 import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { Button } from "@/components/Button"
+import { SectionTitle } from "@/components/SectionTitle"
 import useNextLoanApplicationStep from "@/Routes/Patient/hooks/useNextLoanApplicationStep"
 import careproviderIcon from "@/assets/icons/care-provider.png"
 
@@ -30,7 +31,7 @@ export default function PatientHowToPay() {
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
-          <h2 className="text-muted-foreground">How to pay :</h2>
+          <SectionTitle>How to pay :</SectionTitle>
 
           <div className="flex gap-3">
             <span className="text-sm text-muted-foreground font-normal flex-shrink-0">

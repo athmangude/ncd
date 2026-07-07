@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import { SectionTitle } from "@/components/SectionTitle"
 import { SentInviteCard } from "./SentInviteCard"
 
 interface Invite {
@@ -25,9 +26,7 @@ export function InvitationsSentSection({
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between px-1">
-        <h3 className="text-muted-foreground">
-          Sent Invites ({invites.length})
-        </h3>
+        <SectionTitle level={3}>Sent Invites ({invites.length})</SectionTitle>
         <span
           className="text-purple-600 font-medium text-sm cursor-pointer"
           onClick={() => navigate("/patients/network/invitations-sent")}

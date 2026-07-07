@@ -4,6 +4,7 @@ import AppShell from "@/Routes/AppShell"
 import { Button } from "@/components/Button"
 import { Switch } from "@/components/Switch"
 import { Skeleton } from "@/components/Skeleton"
+import { SectionTitle } from "@/components/SectionTitle"
 import {
   ArrowLeft,
   BadgeCheck,
@@ -252,7 +253,7 @@ function SearchHeader({
       </div>
 
       <div className="flex flex-col gap-1 items-center w-full text-center mt-4">
-        <h2 className="text-foreground">Find care near you</h2>
+        <SectionTitle>Find care near you</SectionTitle>
         <p className="text-sm text-muted-foreground">
           Search by name, area, or service.
         </p>
@@ -411,7 +412,9 @@ function Section({
 }) {
   return (
     <div className="flex flex-col w-full">
-      <p className="text-sm text-foreground font-medium py-1.5">{title}</p>
+      <SectionTitle level={3} className="py-1.5">
+        {title}
+      </SectionTitle>
       <div className="flex flex-col">{children}</div>
     </div>
   )
