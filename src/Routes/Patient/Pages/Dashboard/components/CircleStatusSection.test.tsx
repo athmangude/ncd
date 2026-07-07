@@ -60,6 +60,23 @@ describe("CircleStatusSection", () => {
     )
   })
 
+  it("renders the title as an <h2> so it matches its dashboard peers", async () => {
+    stubFetch({
+      network: async () => ({
+        network: [{ id: "a", firstName: "A", lastName: "B", profilePhoto: null }],
+        invites: [],
+        slots: {
+          accountable: { used: 1, reserved: 0, max: 3 },
+          auxiliary: { used: 0, reserved: 0, max: 2 },
+        },
+      }),
+      activity: async () => ({ events: [] }),
+    })
+    render(wrap(<CircleStatusSection />))
+    const heading = await screen.findByRole("heading", { name: "Your Circle" })
+    expect(heading.tagName).toBe("H2")
+  })
+
   it("does not render a banner in neutral state", async () => {
     stubFetch({
       network: async () => ({

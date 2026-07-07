@@ -73,6 +73,17 @@ function wrap(ui: ReactNode) {
 // ── Tests ──────────────────────────────────────────────────────────────────
 
 describe("PatientPayMembership footer migration", () => {
+  it("renders the page title as the single content-header h1", () => {
+    render(wrap(<PatientPayMembership />))
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: /Pay KES 499 to upgrade to Jireh Plus/i,
+      })
+    ).toBeInTheDocument()
+  })
+
   it("renders Later and Pay actions in the footer", () => {
     render(wrap(<PatientPayMembership />))
 
