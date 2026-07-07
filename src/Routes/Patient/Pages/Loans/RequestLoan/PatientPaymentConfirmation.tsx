@@ -492,7 +492,7 @@ export default function PatientPaymentConfirmation() {
               description: "Please enter your Jireh PIN to confirm payment",
               beforeSubmit: handleBeforeSubmit,
               triggerClassName:
-                "bg-[#A020F0] hover:bg-[#8a1bce] text-white rounded-lg py-6 text-base font-semibold mt-2 flex justify-center items-center",
+                "bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg py-6 text-base font-semibold mt-2 flex justify-center items-center",
             }}
             form={{
               url: "/payments/user/initiate-multi-payment",

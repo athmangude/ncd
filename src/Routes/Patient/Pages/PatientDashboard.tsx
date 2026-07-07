@@ -234,7 +234,7 @@ function AccountLockedDrawer() {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent className="bg-gradient-to-b from-[#ffe2e1] to-white">
+      <DrawerContent>
         <div className="mx-auto w-full max-w-md flex flex-col gap-3 pb-5 px-5 ">
           <DrawerHeader className="space-y-5">
             <img

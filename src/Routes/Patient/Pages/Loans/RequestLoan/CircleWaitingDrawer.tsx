@@ -40,7 +40,7 @@ function CreditScoreGauge() {
         cx={cx}
         cy={cy}
         r={r}
-        stroke="#efd0ff"
+        stroke="hsl(var(--secondary))"
         strokeWidth="3"
         strokeLinecap="round"
         fill="none"
@@ -65,7 +65,7 @@ function CreditScoreGauge() {
         y1={cy}
         x2={nx}
         y2={ny}
-        stroke="#3D3D3D"
+        stroke="hsl(var(--foreground))"
         strokeWidth="1.5"
         strokeLinecap="round"
       />
@@ -132,7 +132,7 @@ export function CircleWaitingDrawer({
         {/* header */}
         <div className="flex flex-col items-center gap-2 px-4 pt-6 pb-4 text-center shrink-0">
           <CreditScoreGauge />
-          <h1 className="text-foreground leading-[1.25] tracking-[-0.4px]">
+          <h1 className="text-foreground leading-[1.25]">
             Waiting on your Circle members
           </h1>
           <p className="text-sm text-muted-foreground leading-5">
