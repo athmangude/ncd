@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
+import { SectionTitle } from "@/components/SectionTitle"
 import { useCircleStatus } from "../hooks/useCircleStatus"
 import { CircleAvatarRow } from "./CircleAvatarRow"
 import { CircleActivityBanner } from "./CircleActivityBanner"
@@ -7,7 +8,9 @@ import { CircleActivityBanner } from "./CircleActivityBanner"
 export function CircleStatusSection() {
   const navigate = useNavigate()
   const status = useCircleStatus()
-  const user = usePatientAuthStore((state: { user?: unknown }) => state.user) as
+  const user = usePatientAuthStore(
+    (state: { user?: unknown }) => state.user
+  ) as
     | { firstName?: string; lastName?: string; profilePhoto?: string | null }
     | undefined
 
@@ -27,7 +30,7 @@ export function CircleStatusSection() {
   return (
     <section className="mt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold text-neutral-900">Your Circle</h2>
+        <SectionTitle>Your Circle</SectionTitle>
         <Link
           to="/patients/circle"
           className="text-sm font-medium text-purple-600"

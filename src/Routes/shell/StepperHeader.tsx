@@ -77,7 +77,7 @@ export default function StepperHeader({
         {showHelp && (
           <Button
             variant="outline"
-            className="rounded-full border-neutral-300 font-normal text-neutral-600 hover:bg-neutral-50"
+            className="rounded-full border-border font-normal text-muted-foreground hover:bg-muted"
             size="sm"
             onClick={() => navigate("/patients/payment/request-payment/help")}
           >

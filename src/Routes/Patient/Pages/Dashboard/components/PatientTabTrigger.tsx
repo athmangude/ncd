@@ -6,12 +6,16 @@ interface PatientTabTriggerProps {
   setRef: (el: HTMLButtonElement | null) => void
 }
 
-export function PatientTabTrigger({ value, icon, setRef }: PatientTabTriggerProps) {
+export function PatientTabTrigger({
+  value,
+  icon,
+  setRef,
+}: PatientTabTriggerProps) {
   return (
     <TabsTrigger
       ref={setRef}
       value={value}
-      className="group flex flex-col data-[state=active]:bg-transparent data-[state=active]:text-bubblegum-400 capitalize px-1 sm:px-3 text-xs sm:text-sm z-30 ring-offset-transparent focus-visible:ring-0 
+      className="group flex flex-col data-[state=active]:bg-transparent data-[state=active]:text-brand-gradient-200 capitalize px-1 sm:px-3 text-xs sm:text-sm z-30 ring-offset-transparent focus-visible:ring-0
       data-[state=active]:shadow-none 
       data-[state=active]:border-none"
     >

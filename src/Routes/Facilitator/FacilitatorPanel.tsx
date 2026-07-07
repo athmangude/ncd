@@ -400,7 +400,7 @@ export default function FacilitatorPanel() {
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-neutral-900">
+            <p className="truncate text-sm font-semibold text-foreground">
               {`${draft.firstName} ${draft.lastName}`.trim() ||
                 "New participant"}
             </p>
@@ -427,7 +427,7 @@ export default function FacilitatorPanel() {
           <p className="-mt-1 text-xs text-muted-foreground">
             Set the whole account in one tap and land on that screen.
           </p>
-          <p className="font-mono text-[11px] uppercase tracking-wide text-neutral-400">
+          <p className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
             Drop at onboarding stage
           </p>
           <div className="flex flex-wrap gap-2">
@@ -436,7 +436,7 @@ export default function FacilitatorPanel() {
                 key={stage.id}
                 type="button"
                 onClick={() => onStage(stage.id, stage.label)}
-                className="rounded-full border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 transition-colors hover:border-primary hover:bg-primary/5"
+                className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary hover:bg-primary/5"
               >
                 {stage.label}
               </button>
@@ -721,7 +721,7 @@ export default function FacilitatorPanel() {
 
             {pendingRequests.length > 0 && (
               <div className="mb-1 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-700">
+                <p className="text-xs font-medium text-muted-foreground">
                   Pending payment requests
                 </p>
                 {pendingRequests.map((request) => (
@@ -749,7 +749,9 @@ export default function FacilitatorPanel() {
 
             {loans.length > 0 && (
               <div className="mb-1 flex flex-col gap-2">
-                <p className="text-xs font-medium text-neutral-700">Loans</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Loans
+                </p>
                 {loans.map((loan) => (
                   <ListItem
                     key={loan.id}
@@ -800,7 +802,7 @@ export default function FacilitatorPanel() {
           />
           {confirmingFresh ? (
             <div className="flex flex-col gap-2 rounded-lg border border-destructive/40 bg-destructive/5 p-3">
-              <p className="text-sm font-medium text-neutral-900">
+              <p className="text-sm font-medium text-foreground">
                 Start fresh? This wipes everything and returns to the
                 phone-number entry — the same as the participant signing out.
               </p>
@@ -902,7 +904,7 @@ function SectionTitle({
   return (
     <div className="flex items-center gap-2">
       <span className="w-4 font-mono text-xs text-primary">{index}</span>
-      <h2 className="text-sm font-bold text-neutral-900">{title}</h2>
+      <h2 className="text-foreground">{title}</h2>
       {tag && (
         <span
           className={cn(
@@ -935,12 +937,12 @@ function Panel({
   return (
     <AccordionItem
       value={value}
-      className="rounded-xl border border-neutral-200 bg-white px-4"
+      className="rounded-xl border border-border bg-white px-4"
     >
       <AccordionTrigger className="no-underline hover:no-underline">
         <span className="flex items-center gap-2">
           <span className="w-4 font-mono text-xs text-primary">{index}</span>
-          <span className="text-sm font-bold text-neutral-900">{title}</span>
+          <span className="text-sm font-bold text-foreground">{title}</span>
           {tag && (
             <span className="rounded bg-green-50 px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase text-green-700">
               {tag}
@@ -948,7 +950,7 @@ function Panel({
           )}
         </span>
       </AccordionTrigger>
-      <AccordionContent className="flex flex-col gap-2 text-neutral-900">
+      <AccordionContent className="flex flex-col gap-2 text-foreground">
         {children}
       </AccordionContent>
     </AccordionItem>
@@ -965,10 +967,10 @@ function Row({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex items-center gap-3 border-b border-dashed border-neutral-100 py-2 last:border-0">
+    <div className="flex items-center gap-3 border-b border-dashed border-border py-2 last:border-0">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium text-neutral-900">{label}</p>
-        <p className="truncate font-mono text-[10px] text-neutral-400">
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="truncate font-mono text-[10px] text-muted-foreground">
           {field}
         </p>
       </div>
@@ -1014,7 +1016,7 @@ function MoneyRow({
   return (
     <Row label={label} field={field}>
       <div className="flex items-center">
-        <span className="rounded-l-md border border-r-0 border-neutral-200 bg-neutral-50 px-2 py-2 font-mono text-[11px] text-neutral-400">
+        <span className="rounded-l-md border border-r-0 border-border bg-muted px-2 py-2 font-mono text-[11px] text-muted-foreground">
           KES
         </span>
         <Input
@@ -1058,7 +1060,7 @@ function Segmented({
   onChange: (value: string) => void
 }) {
   return (
-    <div className="inline-flex gap-0.5 rounded-lg bg-neutral-100 p-0.5">
+    <div className="inline-flex gap-0.5 rounded-lg bg-muted p-0.5">
       {options.map((option) => (
         <button
           key={option.v}
@@ -1067,8 +1069,8 @@ function Segmented({
           className={cn(
             "rounded-md px-2 py-1 text-[11px] font-medium transition-colors",
             value === option.v
-              ? "bg-white text-neutral-900 shadow-sm"
-              : "text-neutral-500"
+              ? "bg-white text-foreground shadow-sm"
+              : "text-muted-foreground"
           )}
         >
           {option.label}
@@ -1088,9 +1090,9 @@ function ListItem({
   children: React.ReactNode
 }) {
   return (
-    <div className="flex items-center gap-2 rounded-lg border border-neutral-100 bg-neutral-50 p-2">
+    <div className="flex items-center gap-2 rounded-lg border border-border bg-muted p-2">
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm text-neutral-900">{title}</p>
+        <p className="truncate text-sm text-foreground">{title}</p>
         <p className="truncate text-xs text-muted-foreground">{subtitle}</p>
       </div>
       {children}
@@ -1112,10 +1114,10 @@ function MiniButton({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-md border border-neutral-200 bg-white px-2.5 py-1 text-xs font-medium",
+        "rounded-md border border-border bg-white px-2.5 py-1 text-xs font-medium",
         tone === "good" && "text-green-700",
         tone === "danger" && "text-destructive",
-        !tone && "text-neutral-600"
+        !tone && "text-muted-foreground"
       )}
     >
       {children}
@@ -1157,7 +1159,7 @@ function StateChip({
         "rounded-full px-2 py-0.5 text-[10px] font-semibold",
         tone === "good" && "bg-green-100 text-green-700",
         tone === "warn" && "bg-amber-100 text-amber-700",
-        tone === "neutral" && "bg-neutral-100 text-neutral-600",
+        tone === "neutral" && "bg-muted text-muted-foreground",
         tone === "accent" && "bg-primary/10 text-primary"
       )}
     >

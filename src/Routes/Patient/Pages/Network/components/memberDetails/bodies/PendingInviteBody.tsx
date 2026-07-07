@@ -10,7 +10,8 @@ interface PendingInviteBodyProps {
 }
 
 export function PendingInviteBody({ invite }: PendingInviteBodyProps) {
-  const name = `${invite.firstName ?? ""} ${invite.lastName ?? ""}`.trim() || "Pending"
+  const name =
+    `${invite.firstName ?? ""} ${invite.lastName ?? ""}`.trim() || "Pending"
   return (
     <div className="flex flex-col gap-4">
       {/* Invitee avatar with waiting indicator */}
@@ -35,7 +36,7 @@ export function PendingInviteBody({ invite }: PendingInviteBodyProps) {
       </div>
 
       {/* Title */}
-      <p className="text-center text-xl font-medium tracking-tight text-neutral-900">
+      <p className="text-center text-xl font-medium tracking-tight text-foreground">
         Your invite is still pending
       </p>
 
@@ -49,8 +50,10 @@ export function PendingInviteBody({ invite }: PendingInviteBodyProps) {
           className="h-10 w-10 shrink-0"
         />
         <div className="flex min-w-0 flex-1 flex-col">
-          <p className="truncate text-sm text-neutral-900">{name}</p>
-          <p className="truncate text-sm text-neutral-500">{invite.phoneNumber}</p>
+          <p className="truncate text-sm text-foreground">{name}</p>
+          <p className="truncate text-sm text-muted-foreground">
+            {invite.phoneNumber}
+          </p>
         </div>
         <span className="shrink-0 rounded-md bg-orange-100 px-2 py-0.5 text-xs font-semibold text-orange-700">
           Waiting...

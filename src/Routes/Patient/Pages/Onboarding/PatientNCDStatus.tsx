@@ -42,7 +42,7 @@ export default function PatientNCDStatus() {
             Are you interested in benefits for non-communicable or chronic
             illnesses?
           </h2>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             e.g. Asthma, Hypertension, Diabetes, Kidney disease, cancer, sickle
             cell etc.
           </p>
@@ -60,7 +60,7 @@ export default function PatientNCDStatus() {
                 "flex flex-col gap-2 p-4 border rounded-lg cursor-pointer transition-all",
                 hasNCD === true
                   ? "border-purple-500 bg-purple-50"
-                  : "border-neutral-200 hover:border-purple-200"
+                  : "border-border hover:border-purple-200"
               )}
             >
               <div className="flex items-center gap-2">
@@ -75,7 +75,7 @@ export default function PatientNCDStatus() {
                 "flex flex-col gap-2 p-4 border rounded-lg cursor-pointer transition-all",
                 hasNCD === false
                   ? "border-purple-500 bg-purple-50"
-                  : "border-neutral-200 hover:border-purple-200"
+                  : "border-border hover:border-purple-200"
               )}
             >
               <div className="flex items-center gap-2">

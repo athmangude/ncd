@@ -42,8 +42,36 @@ function getCircleActivity(): CircleActivityData {
   )
 }
 
+// Canonical invite payload for the accept-invite landing (both the standard
+// InviteDetails view and the "read terms" step). Served for any :inviteId so
+// the screen is reachable in the mock harness for QA; carries a custom message
+// so the message bubble renders (voiceNoteUrl is omitted — no audio asset to
+// stream in the mock).
+function buildInvite(inviteId: string) {
+  return {
+    inviteId,
+    status: "PENDING",
+    referrerFirstName: "Amina",
+    referrerLastName: "Otieno",
+    referrerProfilePhoto: null,
+    inviteePhoneNumber: null,
+    customMessage:
+      "Karibu! Join my Jireh Circle so we can support each other with medical bills.",
+    voiceNoteUrl: null,
+    voiceNoteDuration: 0,
+  }
+}
+
 export const networkHandlers = [
   http.get("/patient-network/network", () => HttpResponse.json(getNetwork())),
+
+  // Fetch a single invite by id (accept-invite landing). No stored state — the
+  // invite is synthesised so the branch renders for QA and tests. The
+  // accept/reject/QR-accept POSTs are already served (with real slot mutation)
+  // by the misc handlers, so this only fills the missing GET.
+  http.get("/patient-network/invite/:inviteId", ({ params }) =>
+    HttpResponse.json(buildInvite(String(params.inviteId)))
+  ),
 
   // Simulate the participant's pending circle invites all being accepted. The
   // KYC "Upgrade to Jireh Plus" flow polls this on a 20s timer so a participant

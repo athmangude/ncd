@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
-import { render, screen } from "@testing-library/react"
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest"
+import { render, screen, fireEvent } from "@testing-library/react"
 import { createElement, type ReactNode } from "react"
 import { MemoryRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -45,6 +45,22 @@ const wrap = (ui: ReactNode, route = "/patients/network/accept-invite") =>
     createElement(MemoryRouter, { initialEntries: [route] }, ui)
   )
 
+beforeAll(() => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+})
+
 describe("PatientAcceptInvite (AppShell migration)", () => {
   beforeEach(() => {
     localStorage.clear()
@@ -81,5 +97,36 @@ describe("PatientAcceptInvite (AppShell migration)", () => {
       await screen.findByRole("button", { name: "Read Terms & Accept invite" })
     ).toBeInTheDocument()
     expect(screen.getByRole("main")).toBeInTheDocument()
+  })
+
+  it("shows the accept/decline actions in the shell footer after reading terms", async () => {
+    getMock.mockResolvedValue({
+      data: {
+        referrerFirstName: "Jane",
+        referrerLastName: "Doe",
+        inviteId: "i1",
+        status: "PENDING",
+      },
+    })
+
+    render(
+      wrap(
+        <PatientAcceptInvite />,
+        "/patients/network/accept-invite?inviteId=i1"
+      )
+    )
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Read Terms & Accept invite" })
+    )
+
+    // The relocated footer bar (formerly a fixed bottom-0 wrapper) now lives in
+    // the AppShell footer slot.
+    expect(
+      screen.getByRole("button", { name: "Accept & Join Circle" })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: "Decline Invite" })
+    ).toBeInTheDocument()
   })
 })

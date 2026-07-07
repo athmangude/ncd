@@ -1,12 +1,28 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: ["class"],
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}"
-  ],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    // Replaces (not extends) Tailwind's default fontSize scale so off-scale
+    // arbitrary values stop compiling — see context/architecture or the
+    // Phase 2 design-token plan for the brand letter-spacing/line-height
+    // rules baked into each step.
+    fontSize: {
+      xs: ["0.75rem", { lineHeight: "1.5", letterSpacing: "0em" }],
+      sm: ["0.875rem", { lineHeight: "1.43", letterSpacing: "0em" }],
+      base: ["1rem", { lineHeight: "1.5", letterSpacing: "0em" }],
+      lg: ["1.125rem", { lineHeight: "1.4", letterSpacing: "0em" }],
+      xl: ["1.25rem", { lineHeight: "1.2", letterSpacing: "0em" }],
+      "2xl": ["1.5rem", { lineHeight: "1.15", letterSpacing: "0em" }],
+      "3xl": ["1.875rem", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
+      "4xl": ["2.25rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+      "5xl": ["3rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+    },
     extend: {
+      spacing: {
+        "safe-t": "env(safe-area-inset-top, 0px)",
+        "safe-b": "env(safe-area-inset-bottom, 0px)",
+      },
       backgroundImage: {
         "gradient-card":
           "radial-gradient(ellipse at top right, var(--tw-gradient-stops))",
@@ -22,9 +38,9 @@ export default {
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        bubblegum: {
-          "100": "hsl(var(--bubblegum-light))",
-          "200": "hsl(var(--bubblegum))",
+        "brand-gradient": {
+          "100": "hsl(var(--brand-gradient-light))",
+          "200": "hsl(var(--brand-gradient))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
@@ -54,17 +70,24 @@ export default {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
-        "jh-green": "#A8FF95",
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+          solid: "hsl(var(--success-solid))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+          solid: "hsl(var(--warning-solid))",
+        },
+        info: {
+          DEFAULT: "hsl(var(--info))",
+          foreground: "hsl(var(--info-foreground))",
+          solid: "hsl(var(--info-solid))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        chart: {
-          1: "hsl(var(--chart-1))",
-          2: "hsl(var(--chart-2))",
-          3: "hsl(var(--chart-3))",
-          4: "hsl(var(--chart-4))",
-          5: "hsl(var(--chart-5))",
-        },
       },
       fontFamily: {
         sans: ["var(--font-sans)"],

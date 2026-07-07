@@ -25,6 +25,7 @@ const CORE_GETS = [
   "/healthcare/discovery/facilities?latitude=-1.29&longitude=36.8",
   "/healthcare/discovery/verified-facilities?latitude=-1.29&longitude=36.8",
   "/healthcare/discovery/search?searchTerm=hosp",
+  "/patients/search-facilities?searchTerm=hosp",
   "/healthcare/discovery/service-categories",
   "/discount-codes/eligible",
   "/patient-network/network",
@@ -60,6 +61,31 @@ describe("mock API core GET endpoints", () => {
     expect(Array.isArray(data.loans)).toBe(true)
     expect(Array.isArray(data.payments)).toBe(true)
     expect(Array.isArray(data.medicalRequests)).toBe(true)
+  })
+
+  it("search-facilities filters by term and returns a facilities array (SearchField shape)", async () => {
+    const res = await fetch(
+      ORIGIN + "/patients/search-facilities?searchTerm=hospital"
+    )
+    const data = await res.json()
+    expect(Array.isArray(data.facilities)).toBe(true)
+    expect(data.facilities.length).toBeGreaterThan(0)
+    // The keys SearchField renders (titleKey/descriptionKey) are present.
+    expect(data.facilities[0].name).toBeTruthy()
+    expect(data.facilities[0]).toHaveProperty("plotNumber")
+    // Every match actually contains the term somewhere searchable.
+    for (const f of data.facilities) {
+      const haystack =
+        `${f.name} ${f.county} ${f.locationName ?? ""} ${f.facilityType}`.toLowerCase()
+      expect(haystack).toContain("hospital")
+    }
+  })
+
+  it("search-facilities returns an empty list for a blank term", async () => {
+    const data = await (
+      await fetch(ORIGIN + "/patients/search-facilities?searchTerm=")
+    ).json()
+    expect(data.facilities).toEqual([])
   })
 
   it("discovery returns a facilities array, and a detail by id resolves", async () => {
@@ -163,9 +189,7 @@ describe("cross-flow effects", () => {
       body: JSON.stringify({ plan: "JIREH_PLUS" }),
     })
 
-    const after = await (
-      await fetch(ORIGIN + "/patients/login-details")
-    ).json()
+    const after = await (await fetch(ORIGIN + "/patients/login-details")).json()
     expect(after.hasActiveMembership).toBe(true)
   })
 })

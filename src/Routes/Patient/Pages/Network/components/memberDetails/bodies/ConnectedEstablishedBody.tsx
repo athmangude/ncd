@@ -47,8 +47,7 @@ export function ConnectedEstablishedBody({
         variant={variant}
       />
       <p className="text-center text-xl font-medium">
-        You &amp;{" "}
-        <span className="text-primary">{member.firstName}</span>
+        You &amp; <span className="text-primary">{member.firstName}</span>
         <br /> are connected.
       </p>
       <div className="grid grid-cols-2 gap-3">
@@ -72,7 +71,7 @@ export function ConnectedEstablishedBody({
         joinedAt={member.joinedAt}
       />
       {member.joinedAt && (
-        <p className="text-center text-sm text-neutral-500">
+        <p className="text-center text-sm text-muted-foreground">
           Connected since {format(new Date(member.joinedAt), "EEE yyyy")}
         </p>
       )}

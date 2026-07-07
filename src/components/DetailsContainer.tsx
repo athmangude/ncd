@@ -13,8 +13,8 @@ export function DetailsContainer({
 }) {
   return (
     <section className="max-w-3xl flex flex-col gap-5">
-      {title && <h2 className="text-xl capitalize">{title}</h2>}
-      {description && <p className="text-neutral-500">{description}</p>}
+      {title && <h2 className="capitalize">{title}</h2>}
+      {description && <p className="text-muted-foreground">{description}</p>}
 
       <div className={cn("flex flex-col rounded-lg border", className)}>
         {children}
@@ -39,7 +39,7 @@ export function DetailsContainerRow({
         className
       )}
     >
-      <div className="text-neutral-500">{label}</div>
+      <div className="text-muted-foreground">{label}</div>
       <div>{value}</div>
     </div>
   )

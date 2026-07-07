@@ -97,7 +97,7 @@ const NotificationCard = ({
 }: any) => {
   return (
     <div
-      className="w-full rounded-3xl p-5 font-medium bg-gradient-card to-blue-200 from-blue-100 text-neutral-800 grid cursor-pointer hover:opacity-90 transition-opacity"
+      className="w-full rounded-3xl p-5 font-medium bg-gradient-card to-blue-200 from-blue-100 text-foreground grid cursor-pointer hover:opacity-90 transition-opacity"
       onClick={onCardClick}
       role="button"
       tabIndex={0}
@@ -115,14 +115,14 @@ const NotificationCard = ({
             <p className="text-sm md:text-base font-medium">
               Never Miss a Reward
             </p>
-            <p className="text-xs text-neutral-600 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Get personalised rewards alerts and transaction updates
             </p>
           </div>
         </div>
 
         {isDenied && (
-          <div className="mb-3 flex-1 gap-2 text-xs text-neutral-600 rounded-lg">
+          <div className="mb-3 flex-1 gap-2 text-xs text-muted-foreground rounded-lg">
             <p>
               Notifications are blocked in your browser. Turn them on in site
               settings.
@@ -252,7 +252,7 @@ export const NotificationHelpDialog = ({ open, onOpenChange }: any) => {
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-4 text-sm">
-          <p className="text-xs font-medium tracking-wide text-neutral-500">
+          <p className="text-xs font-medium tracking-wide text-muted-foreground">
             Your browser blocked notifications. Follow these steps to turn them
             back on:
           </p>

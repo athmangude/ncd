@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom"
 import PatientAuthHeadline from "../../components/PatientAuthHeadline"
 import PatientAuthWrapper from "../../components/PatientAuthWrapper"
 import { Button } from "@/components/Button"
-import { useForm } from "react-hook-form" 
+import { useForm } from "react-hook-form"
 import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
@@ -88,7 +88,7 @@ export default function PatientReferralCode() {
       >
         <PatientAuthHeadline text="Did someone help you to sign up?" />
 
-        <h2 className="text-center text-xl font-medium">
+        <h2 className="text-center">
           Enter the code you received from a receptionist or staff member
         </h2>
 

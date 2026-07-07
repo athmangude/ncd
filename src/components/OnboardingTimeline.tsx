@@ -15,7 +15,7 @@ export default function OnboardingTimeline({
 
       <div className="flex items-center  justify-between px-6 lg:px-18 relative w-3/4">
         <div className="absolute top-3 left-8 right-8 md:left-20 md:right-24 lg:left-28 lg:right-30 flex items-center">
-          <div className="flex-1 h-px bg-neutral-300 relative">
+          <div className="flex-1 h-px bg-border relative">
             <div
               className="absolute h-px bg-primary"
               style={{
@@ -32,14 +32,14 @@ export default function OnboardingTimeline({
           >
             <div
               className={`w-6 h-6 rounded-full ${
-                index <= currentStep ? "bg-primary" : "bg-neutral-300"
+                index <= currentStep ? "bg-primary" : "bg-border"
               } flex items-center justify-center text-white text-sm`}
             >
               {index + 1}
             </div>
             <span
               className={`hidden md:block mt-2 text-xs md:text-sm lg:text-base ${
-                index <= currentStep ? "text-primary" : "text-neutral-500"
+                index <= currentStep ? "text-primary" : "text-muted-foreground"
               }`}
             >
               {step}

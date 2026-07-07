@@ -17,8 +17,8 @@ import {
 const quickActionVariants = cva("flex flex-col gap-4", {
   variants: {
     variant: {
-      default: "bg-white text-neutral-800",
-      disabled: "filter grayscale text-neutral-500",
+      default: "bg-white text-foreground",
+      disabled: "filter grayscale text-muted-foreground",
     },
     defaultVariants: {
       variant: "default",
@@ -105,7 +105,7 @@ function QuickActionTile({
   return (
     <ProtectedResource userRole={userType} allowedRoles={allowedAccountTypes}>
       <Link
-        className="group first:bg-bubblegum-200 bg-neutral-100 rounded-xl p-3 flex flex-col gap-3 no-underline text-neutral-800 font-normal w-[150px] flex-shrink-0"
+        className="group first:bg-brand-gradient-200 bg-muted rounded-xl p-3 flex flex-col gap-3 no-underline text-foreground font-normal w-[150px] flex-shrink-0"
         to={href}
       >
         <div className="flex items-center gap-2">
@@ -122,7 +122,7 @@ function QuickActionTile({
         <div className="flex justify-between items-end group-first:font-medium ">
           <p className="flex-1">{title}</p>
 
-          <ChevronRight className="w-6 h-6 text-neutral-800 flex-shrink-0" />
+          <ChevronRight className="w-6 h-6 text-foreground flex-shrink-0" />
         </div>
       </Link>
     </ProtectedResource>

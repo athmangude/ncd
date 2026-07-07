@@ -48,9 +48,9 @@ export function PageMessageWrapper({
     >
       <div className="flex flex-col gap-3 max-w-md">
         {displayIcon}
-        <h1 className="text-xl font-bold text-neutral-900 sm:text-2xl">{title}</h1>
+        <h1 className="text-foreground">{title}</h1>
         {message && (
-          <p className="text-sm text-neutral-600 sm:text-base text-pretty">
+          <p className="text-sm text-muted-foreground sm:text-base text-pretty">
             {message}
           </p>
         )}

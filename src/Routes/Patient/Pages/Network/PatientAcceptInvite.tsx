@@ -95,8 +95,8 @@ function NoInviteFound() {
   return (
     <AppShell header={null} footer={null} className="grid place-items-center">
       <div className="flex flex-col items-center text-center">
-        <h2 className="text-2xl font-medium mb-2">No invite found</h2>
-        <p className="text-neutral-500 mb-6">
+        <h2 className="mb-2">No invite found</h2>
+        <p className="text-muted-foreground mb-6">
           We could not find the invite you are looking for.
         </p>
 
@@ -367,99 +367,16 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
 
   if (showTerms) {
     return (
-      <div className="flex flex-col min-h-screen bg-white mt-5 mx-2">
-        {/* Header */}
-        <PatientPageWrapper title="Read and Accept Shared Terms">
-          <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
-            <h2 className="text-2xl mb-2">Accept invitation?</h2>
-            <p className="text-neutral-500 mb-6 leading-relaxed">
-              Before you join the Circle, please review and accept the terms of
-              the Jireh mutual support system.
-            </p>
-
-            <Accordion
-              type="single"
-              collapsible
-              defaultValue="rewards"
-              className="space-y-4"
-            >
-              <AccordionItem value="rewards" className="border rounded-xl px-0">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  <span className="text-left">Key Rewards (What you GAIN)</span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <ul className="space-y-4 pt-2">
-                    <TermRewardItem
-                      text="Higher loan limits"
-                      subtext="Unlock higher limits together."
-                    />
-                    <TermRewardItem
-                      text="Shared discounts & rewards"
-                      subtext=" Earn and enjoy rewards together"
-                    />
-                    <TermRewardItem
-                      text="Support when needed"
-                      subtext="Get help when it matters most."
-                    />
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="risks" className="border rounded-xl px-0">
-                <AccordionTrigger className="px-4 hover:no-underline">
-                  <span className=" text-left">
-                    Shared Risk (What you RISK)
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-4">
-                  <ul className="space-y-4 pt-2">
-                    <TermRewardItem
-                      text="Group access can pause"
-                      subtext="If one person delays repayment, some Circle benefits and rewards may pause."
-                    />
-                    <TermRewardItem
-                      text="Circle limits may reduce"
-                      subtext=" Late payments can affect limits for the whole Circle."
-                    />
-                    <TermRewardItem
-                      text="Cashbacks may be used to resolve unpaid bills"
-                      subtext="If a loan stays unpaid for long, cashbacks may help cover it."
-                    />
-                    <TermRewardItem
-                      text="Circle updates keep everyone informed"
-                      subtext="You’ll get updates when the Circle needs attention."
-                    />
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-
-            <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
-              <Checkbox
-                id="accept-terms"
-                className="mt-1"
-                checked={termsAccepted}
-                onCheckedChange={(checked) =>
-                  setTermsAccepted(checked as boolean)
-                }
-              />
-              <label
-                htmlFor="accept-terms"
-                className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
-              >
-                I have read and understood the shared rewards and
-                responsibilities, and I agree to continue.
-              </label>
-            </div>
-          </div>
-
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <PatientPageWrapper
+        title="Read and Accept Shared Terms"
+        footer={
+          <div className="p-4 bg-white border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <div className="max-w-md mx-auto w-full flex flex-col gap-3">
               <Button
                 className={cn(
                   "w-full",
                   !termsAccepted
-                    ? "bg-neutral-300 text-white hover:bg-neutral-400"
+                    ? "bg-muted text-muted-foreground hover:bg-muted"
                     : ""
                 )}
                 type="button"
@@ -504,8 +421,89 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
               </Button>
             </div>
           </div>
-        </PatientPageWrapper>
-      </div>
+        }
+      >
+        <div className="flex-1 p-4 max-w-md mx-auto w-full">
+          <h2 className="mb-2">Accept invitation?</h2>
+          <p className="text-muted-foreground mb-6 leading-relaxed">
+            Before you join the Circle, please review and accept the terms of
+            the Jireh mutual support system.
+          </p>
+
+          <Accordion
+            type="single"
+            collapsible
+            defaultValue="rewards"
+            className="space-y-4"
+          >
+            <AccordionItem value="rewards" className="border rounded-xl px-0">
+              <AccordionTrigger className="px-4 hover:no-underline">
+                <span className="text-left">Key Rewards (What you GAIN)</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <ul className="space-y-4 pt-2">
+                  <TermRewardItem
+                    text="Higher loan limits"
+                    subtext="Unlock higher limits together."
+                  />
+                  <TermRewardItem
+                    text="Shared discounts & rewards"
+                    subtext=" Earn and enjoy rewards together"
+                  />
+                  <TermRewardItem
+                    text="Support when needed"
+                    subtext="Get help when it matters most."
+                  />
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="risks" className="border rounded-xl px-0">
+              <AccordionTrigger className="px-4 hover:no-underline">
+                <span className=" text-left">Shared Risk (What you RISK)</span>
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                <ul className="space-y-4 pt-2">
+                  <TermRewardItem
+                    text="Group access can pause"
+                    subtext="If one person delays repayment, some Circle benefits and rewards may pause."
+                  />
+                  <TermRewardItem
+                    text="Circle limits may reduce"
+                    subtext=" Late payments can affect limits for the whole Circle."
+                  />
+                  <TermRewardItem
+                    text="Cashbacks may be used to resolve unpaid bills"
+                    subtext="If a loan stays unpaid for long, cashbacks may help cover it."
+                  />
+                  <TermRewardItem
+                    text="Circle updates keep everyone informed"
+                    subtext="You’ll get updates when the Circle needs attention."
+                  />
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+
+          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+            <Checkbox
+              id="accept-terms"
+              className="mt-1"
+              checked={termsAccepted}
+              onCheckedChange={(checked) =>
+                setTermsAccepted(checked as boolean)
+              }
+            />
+            <label
+              htmlFor="accept-terms"
+              className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+            >
+              I have read and understood the shared rewards and
+              responsibilities, and I agree to continue.
+            </label>
+          </div>
+        </div>
+      </PatientPageWrapper>
     )
   }
 
@@ -535,7 +533,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
           />
         </div>
 
-        <h1 className="text-center text-xl leading-tight font-medium  font-bold block  ">
+        <h1 className="text-center leading-tight block">
           <span className="text-purple-600 font-semibold block mb-1 ">
             {referrerFirstName} {referrerLastName}
           </span>
@@ -546,7 +544,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
 
         {voiceNoteUrl && (
           <>
-            <p className="text-neutral-500 text-sm font-medium mb-4 pl-1">
+            <p className="text-muted-foreground text-sm font-medium mb-4 pl-1">
               {referrerFirstName} {referrerLastName} sent you a personalized
               voice message
             </p>
@@ -554,7 +552,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         )}
         {customMessage && (
           <div className="flex items-center gap-3 w-full max-w-[90%] mx-auto mb-auto mt-3">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-neutral-200 flex-shrink-0 border border-neutral-100">
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-muted flex-shrink-0 border border-border">
               {referrerProfilePhoto ? (
                 <img
                   src={referrerProfilePhoto || avatarPlaceholder}
@@ -562,11 +560,13 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User className="w-5 h-5 m-auto text-neutral-500 mt-2.5" />
+                <User className="w-5 h-5 m-auto text-muted-foreground mt-2.5" />
               )}
             </div>
-            <div className="bg-white border border-neutral-200 rounded-tr-2xl rounded-tl-2xl rounded-br-2xl px-4 py-3  flex-1">
-              <p className="text-neutral-600 text-[15px]">{customMessage}</p>
+            <div className="bg-white border border-border rounded-tr-2xl rounded-tl-2xl rounded-br-2xl px-4 py-3  flex-1">
+              <p className="text-muted-foreground text-[15px]">
+                {customMessage}
+              </p>
             </div>
           </div>
         )}
@@ -590,7 +590,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
               {renderVisualizer()}
             </div>
 
-            <span className="text-xs font-mono text-neutral-500 w-10 text-right">
+            <span className="text-xs font-mono text-muted-foreground w-10 text-right">
               {formatTime(voiceNoteDuration || 0)}
             </span>
 
@@ -605,9 +605,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         )}
 
         <div className="w-full">
-          <h3 className="text-neutral-500 text-sm font-medium mb-4 pl-1">
-            Benefits
-          </h3>
+          <h3 className="text-muted-foreground mb-4 pl-1">Benefits</h3>
           <ul className="space-y-4">
             <BenefitItem text="Get help paying medical bills" />
             <BenefitItem text="Access Lipa Baadaye " />
@@ -684,113 +682,16 @@ function QRInviteDetails({
   )
 
   return (
-    <div className="flex flex-col min-h-screen bg-white mt-5 mx-2">
-      <PatientPageWrapper title="Join Circle via QR">
-        <div className="flex-1 p-4 pb-32 max-w-md mx-auto w-full">
-          <div className="mb-6 flex justify-center">
-            <img
-              src={fullLogo}
-              alt="Jireh Logo"
-              className="w-32 object-contain"
-            />
-          </div>
-
-          <h2 className="text-2xl mb-2 text-center">Accept invitation?</h2>
-          <p className="text-neutral-500 mb-6 leading-relaxed text-center">
-            You have been invited to join a Jireh Circle. Please confirm your
-            relationship to the inviter and accept the terms.
-          </p>
-
-          <div className="mb-6">
-            <Controller
-              name="relationship"
-              control={control}
-              rules={{ required: "Relationship is required" }}
-              render={({ field }) => (
-                <FormGroupSelect
-                  id="relationship"
-                  label="Relationship to Inviter"
-                  placeholder="Select relationship"
-                  field={field}
-                  error={undefined} // handled by form state if needed, but button disabled logic covers it
-                  options={adultRelationshipOptions}
-                />
-              )}
-            />
-          </div>
-
-          <Accordion
-            type="single"
-            collapsible
-            defaultValue="rewards"
-            className="space-y-4"
-          >
-            <AccordionItem value="rewards" className="border rounded-xl px-0">
-              <AccordionTrigger className="px-4 hover:no-underline">
-                <span className="text-left">Key Rewards (What you GAIN)</span>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <ul className="space-y-4 pt-2">
-                  <TermRewardItem
-                    text="Unlock Higher Loan Limits"
-                    subtext="Access to loans and financial utility."
-                  />
-                  <TermRewardItem
-                    text="Lower Loan Interest Rates"
-                    subtext="Unlock better loan terms up to 5%"
-                  />
-                  <TermRewardItem
-                    text="Shared Circle discounts"
-                    subtext="Access to Circle grace periods and higher limits."
-                  />
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="risks" className="border rounded-xl px-0">
-              <AccordionTrigger className="px-4 hover:no-underline">
-                <span className=" text-left">Shared Risk (What you RISK)</span>
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4">
-                <ul className="space-y-4 pt-2">
-                  <li className="flex items-start gap-3">
-                    <span className="text-sm text-neutral-700 leading-relaxed">
-                      If a member of your circle defaults, your cashback or
-                      savings may be used to cover their debt. This is the core
-                      of our mutual support system.
-                    </span>
-                  </li>
-                </ul>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-
-          <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
-            <Checkbox
-              id="accept-terms"
-              className="mt-1"
-              checked={termsAccepted}
-              onCheckedChange={(checked) =>
-                setTermsAccepted(checked as boolean)
-              }
-            />
-            <label
-              htmlFor="accept-terms"
-              className="text-sm text-neutral-600 leading-relaxed cursor-pointer"
-            >
-              I understand and accept the shared rewards and the progressive
-              penalties, including the risk of cashback offset.
-            </label>
-          </div>
-        </div>
-
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+    <PatientPageWrapper
+      title="Join Circle via QR"
+      footer={
+        <div className="p-4 bg-white border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
           <div className="max-w-md mx-auto w-full">
             <Button
               className={cn(
                 "w-full",
                 !termsAccepted
-                  ? "bg-neutral-300 text-white hover:bg-neutral-400"
+                  ? "bg-muted text-muted-foreground hover:bg-muted"
                   : ""
               )}
               type="button"
@@ -806,12 +707,6 @@ function QRInviteDetails({
                 if (session.loading) return
 
                 if (!session.doesSessionExist) {
-                  // Store QR params in localStorage or URL?
-                  // JoinCircleRedirect handles URL, but if we go to auth we lose params.
-                  // We need to persist them.
-                  // Actually, PatientAcceptInvite is an authenticated route (or SessionAuth wrapped).
-                  // If !doesSessionExist, we redirect to /patients/auth
-                  // We should store params.
                   localStorage.setItem("qrToken", token)
                   localStorage.setItem("qrSignature", signature)
                   navigate("/patients/auth")
@@ -824,8 +719,104 @@ function QRInviteDetails({
             </Button>
           </div>
         </div>
-      </PatientPageWrapper>
-    </div>
+      }
+    >
+      <div className="flex-1 p-4 max-w-md mx-auto w-full">
+        <div className="mb-6 flex justify-center">
+          <img
+            src={fullLogo}
+            alt="Jireh Logo"
+            className="w-32 object-contain"
+          />
+        </div>
+
+        <h2 className="mb-2 text-center">Accept invitation?</h2>
+        <p className="text-muted-foreground mb-6 leading-relaxed text-center">
+          You have been invited to join a Jireh Circle. Please confirm your
+          relationship to the inviter and accept the terms.
+        </p>
+
+        <div className="mb-6">
+          <Controller
+            name="relationship"
+            control={control}
+            rules={{ required: "Relationship is required" }}
+            render={({ field }) => (
+              <FormGroupSelect
+                id="relationship"
+                label="Relationship to Inviter"
+                placeholder="Select relationship"
+                field={field}
+                error={undefined} // handled by form state if needed, but button disabled logic covers it
+                options={adultRelationshipOptions}
+              />
+            )}
+          />
+        </div>
+
+        <Accordion
+          type="single"
+          collapsible
+          defaultValue="rewards"
+          className="space-y-4"
+        >
+          <AccordionItem value="rewards" className="border rounded-xl px-0">
+            <AccordionTrigger className="px-4 hover:no-underline">
+              <span className="text-left">Key Rewards (What you GAIN)</span>
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <ul className="space-y-4 pt-2">
+                <TermRewardItem
+                  text="Unlock Higher Loan Limits"
+                  subtext="Access to loans and financial utility."
+                />
+                <TermRewardItem
+                  text="Lower Loan Interest Rates"
+                  subtext="Unlock better loan terms up to 5%"
+                />
+                <TermRewardItem
+                  text="Shared Circle discounts"
+                  subtext="Access to Circle grace periods and higher limits."
+                />
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="risks" className="border rounded-xl px-0">
+            <AccordionTrigger className="px-4 hover:no-underline">
+              <span className=" text-left">Shared Risk (What you RISK)</span>
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-4">
+              <ul className="space-y-4 pt-2">
+                <li className="flex items-start gap-3">
+                  <span className="text-sm text-muted-foreground leading-relaxed">
+                    If a member of your circle defaults, your cashback or
+                    savings may be used to cover their debt. This is the core of
+                    our mutual support system.
+                  </span>
+                </li>
+              </ul>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <div className="mt-8 p-4 border rounded-xl flex items-start gap-3 bg-white">
+          <Checkbox
+            id="accept-terms"
+            className="mt-1"
+            checked={termsAccepted}
+            onCheckedChange={(checked) => setTermsAccepted(checked as boolean)}
+          />
+          <label
+            htmlFor="accept-terms"
+            className="text-sm text-muted-foreground leading-relaxed cursor-pointer"
+          >
+            I understand and accept the shared rewards and the progressive
+            penalties, including the risk of cashback offset.
+          </label>
+        </div>
+      </div>
+    </PatientPageWrapper>
   )
 }
 
@@ -833,14 +824,14 @@ function TermRewardItem({ text, subtext }: { text: string; subtext?: string }) {
   return (
     <li className="flex items-start gap-3 bg-white">
       <div className="mt-0.5 min-w-[20px]">
-        <Check className="w-5 h-5 text-neutral-500" />
+        <Check className="w-5 h-5 text-muted-foreground" />
       </div>
       <div className="flex flex-col">
-        <span className="text-sm text-neutral-900 font-medium leading-snug">
+        <span className="text-sm text-foreground font-medium leading-snug">
           {text}
         </span>
         {subtext && (
-          <span className="text-xs text-neutral-500 leading-snug mt-0.5">
+          <span className="text-xs text-muted-foreground leading-snug mt-0.5">
             {subtext}
           </span>
         )}
@@ -851,11 +842,11 @@ function TermRewardItem({ text, subtext }: { text: string; subtext?: string }) {
 
 function BenefitItem({ text }: { text: string }) {
   return (
-    <li className="flex items-start gap-3 bg-white p-2 rounded-xl border border-neutral-100 shadow-sm">
+    <li className="flex items-start gap-3 bg-white p-2 rounded-xl border border-border shadow-sm">
       <div className="mt-0.5 min-w-[20px]">
-        <Check className="w-5 h-5 text-neutral-500" />
+        <Check className="w-5 h-5 text-muted-foreground" />
       </div>
-      <span className="text-sm text-neutral-700 font-medium leading-snug">
+      <span className="text-sm text-muted-foreground font-medium leading-snug">
         {text}
       </span>
     </li>

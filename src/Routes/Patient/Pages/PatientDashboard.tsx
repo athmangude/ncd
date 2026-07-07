@@ -155,7 +155,7 @@ function Dashboard({ data }: { data: any }) {
   // (framer-motion measured) and the tab content reserves space for it via its
   // own pb-* padding.
   const header = (
-    <div className="flex justify-between items-center px-5 py-3 w-full bg-white/95 backdrop-blur-sm shadow-sm border-b border-neutral-100">
+    <div className="flex justify-between items-center px-5 py-3 w-full bg-white/95 backdrop-blur-sm shadow-sm border-b border-border">
       <div className=" scale-90 sm:scale-100 origin-top-right">
         <img src={logoIcon} alt="Jireh Logo" width="150" className="h-auto" />
       </div>
@@ -184,10 +184,10 @@ function Dashboard({ data }: { data: any }) {
           variant="ghost"
           size="icon"
           aria-label="Notifications"
-          className="relative hover:bg-neutral-100 rounded-full"
+          className="relative hover:bg-muted rounded-full"
           onClick={() => navigate("/patients/notifications")}
         >
-          <Bell className="w-6 h-6 text-neutral-600" />
+          <Bell className="w-6 h-6 text-muted-foreground" />
           {unreadCount > 0 && (
             <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-[10px] text-white ring-2 ring-white">
               {unreadCount > 9 ? "9+" : unreadCount}
@@ -245,7 +245,7 @@ function AccountLockedDrawer() {
             <DrawerTitle className="text-3xl font-medium mt-5 text-center">
               Internal funds are blocked.
             </DrawerTitle>
-            <DrawerDescription className="text-neutral-500 max-w-[35ch] mx-auto text-base">
+            <DrawerDescription className="text-muted-foreground max-w-[35ch] mx-auto text-base">
               You are unable to use your Care Fund and Medical Loan limit due to
               failed security attempts.
             </DrawerDescription>
@@ -253,10 +253,10 @@ function AccountLockedDrawer() {
 
           <div className="space-y-5 p-5">
             <div className="flex gap-5  items-center bg-white px-3 py-2 rounded-lg">
-              <Percent className="h-5 w-5 text-neutral-500" />
+              <Percent className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="">Your Jireh Care Fund</p>
-                <p className="text-neutral-500">
+                <p className="text-muted-foreground">
                   Balance:{" "}
                   {formatMoney(careFundAccount?.careFundBalance || 0, "KES")}
                 </p>
@@ -266,10 +266,10 @@ function AccountLockedDrawer() {
             </div>
 
             <div className="flex gap-5  items-center bg-white px-3 py-2 rounded-2xl">
-              <Percent className="h-5 w-5 text-neutral-500" />
+              <Percent className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="">Jireh Medical Loan</p>
-                <p className="text-neutral-500">
+                <p className="text-muted-foreground">
                   Limit:{" "}
                   {formatMoney(displayedRemainingCreditLimitAmout || 0, "KES")}
                 </p>

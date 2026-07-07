@@ -16,7 +16,10 @@ export function SendReminderCard({ inviteId }: SendReminderCardProps) {
   const onSend = async () => {
     try {
       await reminder.mutateAsync(inviteId)
-      toast({ title: "Reminder sent", description: "We just nudged them via SMS." })
+      toast({
+        title: "Reminder sent",
+        description: "We just nudged them via SMS.",
+      })
       trackEvent(EVENTS.CIRCLE.MEMBER_DETAILS_REMINDER_SENT)
     } catch (err) {
       const error = err as { message?: string }
@@ -32,8 +35,12 @@ export function SendReminderCard({ inviteId }: SendReminderCardProps) {
     <div className="flex items-center gap-4 rounded-md bg-purple-50 px-4 py-2.5">
       <div className="flex flex-1 flex-col gap-3">
         <div>
-          <p className="text-base font-medium leading-6 text-neutral-900">Send a reminder</p>
-          <p className="text-sm text-neutral-500">Create or edit your SMS</p>
+          <p className="text-base font-medium leading-6 text-foreground">
+            Send a reminder
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Create or edit your SMS
+          </p>
         </div>
         <button
           type="button"

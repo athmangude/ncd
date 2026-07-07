@@ -1,5 +1,6 @@
 import { PaymentCard } from "@/components/YourPayments"
 import { Skeleton } from "@/components/Skeleton"
+import { SectionTitle } from "@/components/SectionTitle"
 import { formatDateLong } from "@/utilities/dateUtilities"
 
 interface SortedPaymentsProps {
@@ -23,7 +24,10 @@ const groupItemsByDate = (items: any[]) => {
   return groups
 }
 
-export function SortedPayments({ sortedPayments, isLoading }: SortedPaymentsProps) {
+export function SortedPayments({
+  sortedPayments,
+  isLoading,
+}: SortedPaymentsProps) {
   if (isLoading) {
     return (
       <>
@@ -34,7 +38,7 @@ export function SortedPayments({ sortedPayments, isLoading }: SortedPaymentsProp
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-4 flex flex-col gap-3 bg-white border border-neutral-100 rounded-xl shadow-sm"
+              className="p-4 flex flex-col gap-3 bg-card border border-border rounded-xl shadow-sm"
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1 mr-2 space-y-2">
@@ -59,13 +63,15 @@ export function SortedPayments({ sortedPayments, isLoading }: SortedPaymentsProp
   return (
     <>
       <div className="flex justify-between items-center mt-2">
-        <h3 className="font-bold text-lg text-neutral-900">Payment History</h3>
+        <SectionTitle>Payment History</SectionTitle>
       </div>
 
       <div className="flex flex-col gap-6 pb-24">
         {groupedPayments.map((group) => (
           <div key={group.date} className="flex flex-col gap-3">
-            <p className="text-sm text-neutral-500 font-medium ml-1">{group.date}</p>
+            <p className="text-sm text-muted-foreground font-medium ml-1">
+              {group.date}
+            </p>
             <div className="flex flex-col gap-3">
               {group.items.map((payment: any) => (
                 <PaymentCard key={payment.id} payment={payment} />

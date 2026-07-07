@@ -1,14 +1,31 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { describe, it, expect, vi, beforeAll, beforeEach } from "vitest"
 import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import { createElement, type ReactNode } from "react"
 import { MemoryRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
+// The content-header variant mounts StepperHeader → useJourneyStepper →
+// usePWAOnboardingStatus, which reads window.matchMedia in an effect.
+beforeAll(() => {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  })
+})
+
 const navigateMock = vi.fn()
 vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual<typeof import("react-router-dom")>(
-    "react-router-dom"
-  )
+  const actual =
+    await vi.importActual<typeof import("react-router-dom")>("react-router-dom")
   return {
     ...actual,
     useNavigate: () => navigateMock,
@@ -19,9 +36,11 @@ vi.mock("react-router-dom", async () => {
 const toastMock = vi.fn()
 vi.mock("@/hooks/useToast", () => ({ useToast: () => ({ toast: toastMock }) }))
 
-vi.mock("../../hooks/useNextOnboardingStep", () => ({
-  default: () => "/patients/next-step",
-}))
+vi.mock("../../hooks/useNextOnboardingStep", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("../../hooks/useNextOnboardingStep")>()
+  return { ...actual, default: () => "/patients/next-step" }
+})
 
 vi.mock("@/analytics", () => ({
   trackEvent: vi.fn(),
@@ -29,14 +48,20 @@ vi.mock("@/analytics", () => ({
 }))
 
 const postMock = vi.fn().mockResolvedValue({ data: { success: true } })
-vi.mock("axios", () => ({ default: { post: (...a: unknown[]) => postMock(...a) } }))
+vi.mock("axios", () => ({
+  default: { post: (...a: unknown[]) => postMock(...a) },
+}))
 
 import PatientSetPin from "./PatientSetPin"
 
 const wrap = (ui: ReactNode) =>
   createElement(
     QueryClientProvider,
-    { client: new QueryClient({ defaultOptions: { queries: { retry: false } } }) },
+    {
+      client: new QueryClient({
+        defaultOptions: { queries: { retry: false } },
+      }),
+    },
     createElement(MemoryRouter, { initialEntries: ["/patients/set-pin"] }, ui)
   )
 
@@ -52,10 +77,10 @@ describe("PatientSetPin (MobileWrapper migration)", () => {
     postMock.mockClear()
   })
 
-  it("shows the step-1 header title and a disabled Save PIN footer", () => {
+  it("shows the step-1 title once (content header, no duplicate app-bar title) and a disabled Save PIN footer", () => {
     render(wrap(<PatientSetPin />))
-    // BackTitleHeader title + body heading both read "Create your PIN".
-    expect(screen.getAllByText("Create your PIN").length).toBeGreaterThan(0)
+    // After the content-header migration the title lives only in the PageHeader.
+    expect(screen.getAllByText("Create your PIN")).toHaveLength(1)
     expect(screen.getByRole("button", { name: "Save PIN" })).toBeDisabled()
   })
 
@@ -69,7 +94,7 @@ describe("PatientSetPin (MobileWrapper migration)", () => {
     render(wrap(<PatientSetPin />))
     typePin("1234")
     fireEvent.click(screen.getByRole("button", { name: "Save PIN" }))
-    expect(screen.getAllByText("Confirm your PIN").length).toBeGreaterThan(0)
+    expect(screen.getAllByText("Confirm your PIN")).toHaveLength(1)
     expect(screen.getByRole("button", { name: "Confirm" })).toBeInTheDocument()
   })
 

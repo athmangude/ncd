@@ -161,38 +161,38 @@ export default function PatientProfile() {
     {
       title: "Payment History",
       description: "View your treatments/invoices",
-      icon: <History className="h-5 w-5 text-neutral-500" />,
+      icon: <History className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/patients/payments"),
     },
     {
       title: "Security & Permissions",
       description: "Change PIN and allow permissions",
-      icon: <ShieldCheck className="h-5 w-5 text-neutral-500" />,
+      icon: <ShieldCheck className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/patients/security-and-permissions"),
     },
     {
       title: "Help & Support",
       description: "Reach out to us for any queries or read FAQs",
-      icon: <HelpCircle className="h-5 w-5 text-neutral-500" />,
+      icon: <HelpCircle className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/patients/help-and-support"),
     },
     {
       title: "Refer & Earn",
       description: "Share Jireh with friends and get rewarded",
-      icon: <Share2 className="h-5 w-5 text-neutral-500" />,
+      icon: <Share2 className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/patients/referral-and-earn"),
     },
     {
       title: "Facilitator Tools",
       description: "Edit balances, approvals and circle (researcher only)",
-      icon: <Wrench className="h-5 w-5 text-neutral-500" />,
+      icon: <Wrench className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/facilitator"),
     },
   ]
 
   if (isLoading && !user) {
     return (
-      <div className="flex flex-col gap-5 pb-20 px-2 animate-pulse">
+      <div className="flex flex-col gap-5 pb-20 px-2">
         {/* User Info Skeleton */}
         <div className="flex flex-row items-center gap-4 py-2">
           <Skeleton className="h-20 w-20 rounded-full" />
@@ -218,7 +218,7 @@ export default function PatientProfile() {
   // If no user but not loading/error, theoretically shouldn't happen if auth is required, but handle it
   if (!user) return <LoadingPage />
   return (
-    <div className="flex flex-col gap-5 pb-20 px-2 mt-5 sm:mt-0 ">
+    <div className="flex flex-col gap-5 pb-32 px-2 mt-5 sm:mt-0 ">
       {/* User Info */}
       <div className="flex flex-row items-center gap-4 py-2">
         <div
@@ -242,7 +242,7 @@ export default function PatientProfile() {
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-black/20 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                 <Camera className="h-6 w-6" />
               </div>
-              <div className="absolute bottom-0 right-0 bg-neutral-900 text-white p-1.5 rounded-full border-2 border-white">
+              <div className="absolute bottom-0 right-0 bg-foreground text-white p-1.5 rounded-full border-2 border-white">
                 <Camera className="h-3 w-3" />
               </div>
             </>
@@ -250,10 +250,10 @@ export default function PatientProfile() {
         </div>
 
         <div className="text-left">
-          <h2 className="text-lg font-bold capitalize text-neutral-900">
+          <h2 className="capitalize text-foreground">
             {user.firstName} {user.lastName}
           </h2>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-muted-foreground text-sm">
             {maskPhoneNumber(user.phoneNumber)}
           </p>
         </div>
@@ -331,18 +331,16 @@ export default function PatientProfile() {
           <button
             key={index}
             onClick={option.onClick}
-            className="flex items-center gap-4 p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md hover:border-neutral-200 transition-all text-left group"
+            className="flex items-center gap-4 p-4 bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-muted-foreground/30 transition-all text-left group"
           >
-            <div className="text-neutral-500">{option.icon}</div>
+            <div className="text-muted-foreground">{option.icon}</div>
             <div className="flex-1">
-              <h3 className="font-semibold text-sm text-neutral-900">
-                {option.title}
-              </h3>
+              <h3 className="text-foreground">{option.title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {option.description}
               </p>
             </div>
-            <ChevronRight className="h-5 w-5 text-neutral-300 group-hover:text-neutral-400 transition-colors" />
+            <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
           </button>
         ))}
       </div>
@@ -350,7 +348,7 @@ export default function PatientProfile() {
       {/* Sign Out — confirms first, then wipes this participant's data. */}
       <Button
         variant="outline"
-        className="bg-white border-neutral-200 text-neutral-900 hover:bg-neutral-50 font-semibold w-full h-12 rounded-xl mt-2 shadow-sm"
+        className="bg-white border-border text-foreground hover:bg-muted font-semibold w-full h-12 rounded-xl mt-2 shadow-sm"
         onClick={() => setIsSignOutOpen(true)}
       >
         Sign Out
@@ -381,7 +379,7 @@ export default function PatientProfile() {
         </DrawerContent>
       </Drawer>
 
-      <p className="text-center text-xs text-neutral-400">v{version}</p>
+      <p className="text-center text-xs text-muted-foreground">v{version}</p>
     </div>
   )
 }

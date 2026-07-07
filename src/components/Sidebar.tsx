@@ -42,9 +42,7 @@ interface SidebarSubsectionProps {
 export function SidebarSubsection({ title, children }: SidebarSubsectionProps) {
   return (
     <div className="flex flex-col gap-1">
-      {title && (
-        <h2 className="font-medium text-neutral-500 uppercase text-sm">{title}</h2>
-      )}
+      {title && <h2 className="text-muted-foreground uppercase">{title}</h2>}
       <ul className="flex flex-col gap-2 mt-1">{children}</ul>
     </div>
   )
@@ -61,7 +59,7 @@ export function SidebarLink({ to, onClick, children }: SidebarLinkProps) {
   return (
     <Link
       to={to}
-      className={`flex gap-2 items-center px-2 py-2 text-neutral-700 no-underline hover:text-primary hover:bg-neutral-100 `}
+      className={`flex gap-2 items-center px-2 py-2 text-foreground no-underline hover:text-primary hover:bg-accent `}
       onClick={onClick}
     >
       {children}

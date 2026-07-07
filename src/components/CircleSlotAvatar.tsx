@@ -173,11 +173,11 @@ export function CircleSlotAvatar({
         onClick={onClick}
         disabled={!onClick}
         className={cn(
-          "shrink-0 rounded-full border-2 border-dashed bg-neutral-50",
+          "shrink-0 rounded-full border-2 border-dashed bg-muted",
           sizes.emptyBoxClass,
-          "border-neutral-300 flex items-center justify-center text-neutral-400",
+          "border-border flex items-center justify-center text-muted-foreground",
           onClick && "hover:border-purple-300 hover:text-purple-500",
-          className,
+          className
         )}
         aria-label="Add member"
       >
@@ -193,19 +193,19 @@ export function CircleSlotAvatar({
         "relative shrink-0 rounded-full p-1",
         haloClass,
         avatarOpacity,
-        className,
+        className
       )}
     >
       {showLock ? (
         <div
           className={cn(
-            "flex items-center justify-center rounded-full bg-neutral-300/60",
-            sizes.lockBoxClass,
+            "flex items-center justify-center rounded-full bg-muted",
+            sizes.lockBoxClass
           )}
         >
           <Lock
             data-testid="lock-icon"
-            className={cn(sizes.lockIconClass, "text-neutral-500")}
+            className={cn(sizes.lockIconClass, "text-muted-foreground")}
           />
         </div>
       ) : (
@@ -225,7 +225,7 @@ export function CircleSlotAvatar({
             "absolute -top-0.5 -right-0.5 rounded-full",
             sizes.dotClass,
             "border-2 border-white",
-            dotClass,
+            dotClass
           )}
         />
       )}
@@ -242,7 +242,7 @@ export function CircleSlotAvatar({
             "absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap",
             "rounded-full px-2 py-0.5 font-medium",
             sizes.badgeTextClass,
-            badge.className,
+            badge.className
           )}
         >
           {badge.label}

@@ -12,7 +12,9 @@ export default function PatientPlansHowItWorks() {
 
   return (
     <PatientPageWrapper title="How it works">
-      {resolveComponent(state.plan)}
+      {/* Direct visits/refreshes arrive without router state — show the FREE
+          plan rather than crashing on state.plan. */}
+      {resolveComponent(state?.plan ?? "FREE")}
     </PatientPageWrapper>
   )
 }
@@ -189,7 +191,7 @@ function PlanTemplate({
           >
             <p className="text-3xl font-medium text-center">{tab.title}</p>
 
-            <p className="text-neutral-500 text-center">{tab.subtitle}</p>
+            <p className="text-muted-foreground text-center">{tab.subtitle}</p>
 
             <ul className="flex flex-col gap-2">
               {tab.content.map((content, index) => (
@@ -239,8 +241,8 @@ function PlanHeader({
         aria-hidden="true"
       />
       <div className="flex flex-col gap-1">
-        <h1 className="text-4xl font-bold flex items-center gap-1">
-          <span className="text-lg text-neutral-500 font-normal">
+        <h1 className="flex items-center gap-1">
+          <span className="text-muted-foreground font-normal">
             {price.currency}
           </span>
           {price.amount}

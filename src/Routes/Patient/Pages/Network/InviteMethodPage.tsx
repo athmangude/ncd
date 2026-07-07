@@ -44,16 +44,18 @@ export default function InviteMethodPage() {
       {/* Drawer-style header */}
       <div className="flex flex-col items-center gap-3 pt-2 pb-6">
         <div
-          className="rounded-full border-[3.5px] border-dashed border-[#efd0ff] bg-[#f6e5ff] flex items-center justify-center flex-shrink-0"
+          className="rounded-full border-[3.5px] border-dashed border-[#efd0ff] bg-secondary flex items-center justify-center flex-shrink-0"
           style={{ width: 84, height: 84 }}
         >
-          <Plus className="text-[#b325ff]" style={{ width: 42, height: 42 }} strokeWidth={1.5} />
+          <Plus
+            className="text-primary"
+            style={{ width: 42, height: 42 }}
+            strokeWidth={1.5}
+          />
         </div>
         <div className="text-center">
-          <h1 className="text-xl font-medium text-[#171717] tracking-tight">
-            Send a personal message
-          </h1>
-          <p className="text-sm text-[#525252] mt-1">
+          <h1>Send a personal message</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Choose people who&apos;ll say yes
           </p>
         </div>
@@ -65,7 +67,7 @@ export default function InviteMethodPage() {
         <button
           type="button"
           onClick={handleSMS}
-          className="w-full bg-[#fbf4ff] rounded-lg px-4 py-[10px] flex items-center gap-4 text-left hover:bg-purple-100 transition-colors"
+          className="w-full bg-muted rounded-lg px-4 py-[10px] flex items-center gap-4 text-left hover:bg-secondary transition-colors"
         >
           <img
             src={textMessageIllustration}
@@ -75,12 +77,18 @@ export default function InviteMethodPage() {
           />
           <div className="flex flex-col justify-between flex-1 self-stretch min-w-0">
             <div>
-              <p className="text-sm font-medium text-[#171717]">Text message</p>
-              <p className="text-sm text-[#737373]">Works on any phone</p>
+              <p className="text-sm font-medium text-foreground">
+                Text message
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Works on any phone
+              </p>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#f5e5ff] px-2 h-6 rounded self-start">
-              <span className="text-sm font-medium text-[#8112b7]">Send SMS</span>
-              <ChevronRight className="w-4 h-4 text-[#8112b7]" />
+            <div className="flex items-center gap-1.5 bg-secondary px-2 h-6 rounded self-start">
+              <span className="text-sm font-medium text-secondary-foreground">
+                Send SMS
+              </span>
+              <ChevronRight className="w-4 h-4 text-secondary-foreground" />
             </div>
           </div>
         </button>
@@ -89,18 +97,20 @@ export default function InviteMethodPage() {
         <button
           type="button"
           onClick={handleVoice}
-          className="w-full bg-[#fbf4ff] rounded-lg px-4 py-[10px] flex items-center gap-[10px] text-left hover:bg-purple-100 transition-colors"
+          className="w-full bg-muted rounded-lg px-4 py-[10px] flex items-center gap-[10px] text-left hover:bg-secondary transition-colors"
         >
           <div className="flex flex-col justify-between flex-1 self-stretch min-w-0">
             <div>
-              <p className="text-sm font-medium text-[#171717]">Voice note</p>
-              <p className="text-sm text-[#737373]">
+              <p className="text-sm font-medium text-foreground">Voice note</p>
+              <p className="text-sm text-muted-foreground">
                 Good if they&apos;re not on data bundles
               </p>
             </div>
-            <div className="flex items-center gap-1.5 bg-[#f5e5ff] px-2 h-6 rounded self-start">
-              <span className="text-sm font-medium text-[#8112b7]">Record</span>
-              <ChevronRight className="w-4 h-4 text-[#8112b7]" />
+            <div className="flex items-center gap-1.5 bg-secondary px-2 h-6 rounded self-start">
+              <span className="text-sm font-medium text-secondary-foreground">
+                Record
+              </span>
+              <ChevronRight className="w-4 h-4 text-secondary-foreground" />
             </div>
           </div>
           <img
@@ -115,7 +125,7 @@ export default function InviteMethodPage() {
         <button
           type="button"
           onClick={handleQR}
-          className="w-full bg-[#fbf4ff] rounded-lg px-[10px] py-2 flex items-center gap-3 text-left hover:bg-purple-100 transition-colors"
+          className="w-full bg-muted rounded-lg px-[10px] py-2 flex items-center gap-3 text-left hover:bg-secondary transition-colors"
         >
           <img
             src={qrIllustration}
@@ -124,8 +134,10 @@ export default function InviteMethodPage() {
             style={{ width: 124, height: 84 }}
           />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-[#171717]">Show your QR code</p>
-            <p className="text-sm text-[#737373]">
+            <p className="text-sm font-medium text-foreground">
+              Show your QR code
+            </p>
+            <p className="text-sm text-muted-foreground">
               Let them scan your screen to join instantly
             </p>
           </div>

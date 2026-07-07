@@ -158,29 +158,27 @@ export default function ConfirmPayment() {
       <div className="flex flex-col gap-5 px-1 pb-8">
         {/* Header */}
         <div className="flex flex-col items-center text-center gap-2">
-          <h2 className="text-xl font-semibold text-neutral-900">
-            Confirm Payment
-          </h2>
-          <p className="text-sm text-neutral-500">
+          <h2 className="text-foreground">Confirm Payment</h2>
+          <p className="text-sm text-muted-foreground">
             Review the details below before submitting
           </p>
         </div>
 
         {/* Payment Details Card */}
-        <div className="border border-neutral-200 rounded-xl p-4 bg-white shadow-sm">
-          <h3 className="text-neutral-500 text-sm mb-4">Payment Details</h3>
+        <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+          <h3 className="text-muted-foreground mb-4">Payment Details</h3>
 
           <div className="flex flex-col gap-4">
             <div className="flex items-start gap-3">
-              <Building2 className="w-5 h-5 text-neutral-500 mt-0.5" />
+              <Building2 className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <span className="text-sm font-medium text-neutral-900">
+                <span className="text-sm font-medium text-foreground">
                   I am paying at
                 </span>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   {provider?.facility?.name || "—"}
                 </p>
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   {provider?.name || "—"} &middot;{" "}
                   {provider?.paymentNumber
                     ? formatPaymentNumber(provider.paymentNumber)
@@ -190,14 +188,14 @@ export default function ConfirmPayment() {
             </div>
 
             <div className="flex items-start gap-3">
-              <User className="w-5 h-5 text-neutral-500 mt-0.5" />
+              <User className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <span className="text-sm font-medium text-neutral-900">
+                <span className="text-sm font-medium text-foreground">
                   I am paying for
                 </span>
-                <p className="text-sm text-neutral-500">{patientName}</p>
+                <p className="text-sm text-muted-foreground">{patientName}</p>
                 {patient?.phoneNumber && (
-                  <p className="text-xs text-neutral-400">
+                  <p className="text-xs text-muted-foreground">
                     {patient.phoneNumber}
                   </p>
                 )}
@@ -205,37 +203,37 @@ export default function ConfirmPayment() {
             </div>
 
             <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-neutral-500 mt-0.5" />
+              <FileText className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <span className="text-sm font-medium text-neutral-900">
+                <span className="text-sm font-medium text-foreground">
                   Invoice
                 </span>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   {invoiceNumber || "—"}
                 </p>
               </div>
             </div>
 
             <div className="flex items-start gap-3">
-              <Receipt className="w-5 h-5 text-neutral-500 mt-0.5" />
+              <Receipt className="w-5 h-5 text-muted-foreground mt-0.5" />
               <div>
-                <span className="text-sm font-medium text-neutral-900">
+                <span className="text-sm font-medium text-foreground">
                   Total Bill Amount
                 </span>
                 {discountAmount > 0 ? (
-                  <p className="text-sm text-neutral-500 ">
+                  <p className="text-sm text-muted-foreground ">
                     {" "}
-                    <span className="text-sm text-neutral-500 line-through">
+                    <span className="text-sm text-muted-foreground line-through">
                       {" "}
                       {formatMoney(invoiceAmount, "KES") || "—"}{" "}
                     </span>{" "}
-                    <span className="text-sm text-neutral-500">
+                    <span className="text-sm text-muted-foreground">
                       {" "}
                       {formatMoney(netAmount, "KES") || "—"}
                     </span>
                   </p>
                 ) : (
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-sm text-muted-foreground">
                     {" "}
                     {formatMoney(netAmount, "KES") || "—"}
                   </p>
@@ -246,17 +244,17 @@ export default function ConfirmPayment() {
         </div>
 
         {/* Source of Funds Card */}
-        <div className="border border-neutral-200 rounded-xl p-4 bg-white shadow-sm">
-          <h3 className="text-neutral-500 text-sm mb-3">Source of Funds</h3>
+        <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+          <h3 className="text-muted-foreground mb-3">Source of Funds</h3>
 
           <div className="flex flex-col gap-3">
             {splits.map((split, idx) =>
               split.mode !== "DISCOUNT" && split.mode !== "LOAN" ? (
                 <div key={idx} className="flex justify-between items-center">
-                  <span className="text-sm text-neutral-900">
+                  <span className="text-sm text-foreground">
                     {SPLIT_MODE_LABELS[split.mode]}
                   </span>
-                  <span className="text-sm text-neutral-900 font-medium">
+                  <span className="text-sm text-foreground font-medium">
                     {formatMoney(split.amount, "KES")}
                   </span>
                 </div>
@@ -264,10 +262,10 @@ export default function ConfirmPayment() {
             )}
             {dueLater > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-neutral-900">
+                <span className="text-sm text-foreground">
                   Medical Loan (Due by {formattedRepaymentDateShort})
                 </span>
-                <span className="text-sm text-neutral-900 font-medium">
+                <span className="text-sm text-foreground font-medium">
                   {formatMoney(dueLater, "KES")}
                 </span>
               </div>

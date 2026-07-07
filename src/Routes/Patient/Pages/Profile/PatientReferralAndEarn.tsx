@@ -80,16 +80,16 @@ export default function PatientReferralAndEarn() {
         </div>
 
         {/* Code Display */}
-        <div className="w-full max-w-sm bg-neutral-50 border border-dashed border-neutral-300 rounded-xl p-6 flex flex-col items-center gap-3 relative">
-          <span className="text-sm text-neutral-500 uppercase tracking-wider font-medium">
+        <div className="w-full max-w-sm bg-muted border border-dashed border-border rounded-xl p-6 flex flex-col items-center gap-3 relative">
+          <span className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
             Your Referral Code
           </span>
-          <div className="text-3xl font-bold text-neutral-900 tracking-widest">
+          <div className="text-3xl font-bold text-foreground tracking-widest">
             {referralCode}
           </div>
           <button
             onClick={handleCopy}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-neutral-400 hover:text-purple-600 transition-colors"
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-muted-foreground hover:text-purple-600 transition-colors"
             aria-label="Copy code"
           >
             {copied ? (
@@ -100,7 +100,7 @@ export default function PatientReferralAndEarn() {
           </button>
         </div>
 
-        <p className="text-xs text-neutral-400 max-w-xs">
+        <p className="text-xs text-muted-foreground max-w-xs">
           Terms and conditions apply. Rewards are credited after the referred
           user completes their first transaction.
         </p>

@@ -33,16 +33,15 @@ export default function PatientReviewMembershipDetails() {
     mutationFn: async (data: any) => {
       const payload: any = {
         plan: data.plan,
-        skipCreditLimitUpdate: data.skipCreditLimitUpdate
+        skipCreditLimitUpdate: data.skipCreditLimitUpdate,
       }
-      
+
       if (data.plan === "FREE") {
-         delete payload.plan
+        delete payload.plan
       }
 
       const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL +
-          "/patients/submit-plan-details",
+        import.meta.env.VITE_API_BASE_URL + "/patients/submit-plan-details",
         payload
       )
 
@@ -198,7 +197,7 @@ function ReviewSection({
 }) {
   return (
     <section className="flex flex-col gap-2 pb-4 border-b">
-      <h1 className="text-neutral-500 mb-2">{title}</h1>
+      <h1 className="text-muted-foreground mb-2">{title}</h1>
 
       {children}
     </section>
@@ -215,14 +214,16 @@ function ReviewItem({
   tag?: string
 }) {
   return (
-    <div className="flex justify-between items-center gap-1 bg-neutral-50 px-3  py-2 rounded-xl">
+    <div className="flex justify-between items-center gap-1 bg-muted px-3  py-2 rounded-xl">
       <div className="grid gap-1">
-        <p className="text-neutral-600">{title}</p>
-        {description && <p className="text-xs text-neutral-400">{description}</p>}
+        <p className="text-muted-foreground">{title}</p>
+        {description && (
+          <p className="text-xs text-muted-foreground">{description}</p>
+        )}
       </div>
 
       {tag && (
-        <span className="rounded-full border border-neutral-400 text-xs grid place-content-center px-3 h-fit py-1">
+        <span className="rounded-full border border-border text-xs grid place-content-center px-3 h-fit py-1">
           {tag}
         </span>
       )}
@@ -232,7 +233,7 @@ function ReviewItem({
 
 function BasicPlanInfo() {
   return (
-    <div className="flex flex-col gap-2 bg-bubblegum-100 rounded-xl p-4 items-center text-center">
+    <div className="flex flex-col gap-2 bg-brand-gradient-100 rounded-xl p-4 items-center text-center">
       <img
         src={cashIcon}
         alt="cash icon"
@@ -244,7 +245,7 @@ function BasicPlanInfo() {
         Pay KES 499 to access interest-free credit
       </p>
 
-      <p className="text-neutral-500">
+      <p className="text-muted-foreground">
         Get immediate access to funds to cover your hospital bills
       </p>
     </div>

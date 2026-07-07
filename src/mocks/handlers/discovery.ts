@@ -282,6 +282,26 @@ export const discoveryHandlers = [
     return HttpResponse.json(discoveryResponse(filtered))
   }),
 
+  // Facility name/term search for the onboarding "preferred hospitals" and the
+  // payment "where are you receiving treatment?" flows. `SearchField` reads
+  // `response.data.facilities` and renders each item's `name` / `plotNumber`, so
+  // this returns the raw seed facilities (a superset of those keys) filtered by
+  // the search term.
+  http.get("/patients/search-facilities", ({ request }) => {
+    const url = new URL(request.url)
+    const term = (url.searchParams.get("searchTerm") ?? "").trim().toLowerCase()
+    const matched = term
+      ? facilities.filter(
+          (f) =>
+            f.name.toLowerCase().includes(term) ||
+            f.county.toLowerCase().includes(term) ||
+            (f.locationName ?? "").toLowerCase().includes(term) ||
+            f.facilityType.toLowerCase().includes(term)
+        )
+      : []
+    return HttpResponse.json({ facilities: matched, total: matched.length })
+  }),
+
   // Single facility detail (superset of Facility with services + discounts).
   http.get("/healthcare/discovery/facilities/:facilityId", ({ params }) => {
     const facilityId = params.facilityId as string

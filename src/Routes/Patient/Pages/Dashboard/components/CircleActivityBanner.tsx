@@ -94,7 +94,7 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
         }}
         className={cn(
           "mt-3 w-full flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left",
-          "bg-red-50 border-red-100",
+          "bg-red-50 border-red-100"
         )}
       >
         <div className="flex items-center gap-3">
@@ -112,11 +112,11 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
               className={cn(
                 "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full",
                 "border-2 border-white",
-                "bg-red-500",
+                "bg-red-500"
               )}
             />
           </div>
-          <span className="text-sm text-neutral-900">
+          <span className="text-sm text-foreground">
             {member.firstName} declined your invite.
           </span>
         </div>
@@ -150,7 +150,7 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
       onClick={onTap}
       className={cn(
         "mt-3 w-full flex items-center justify-between gap-3 rounded-xl border px-3 py-2.5 text-left",
-        containerClass,
+        containerClass
       )}
     >
       <div className="flex items-center gap-3">
@@ -168,11 +168,11 @@ export function CircleActivityBanner({ banner }: CircleActivityBannerProps) {
             className={cn(
               "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full",
               "border-2 border-white",
-              dotClass,
+              dotClass
             )}
           />
         </div>
-        <span className="text-sm text-neutral-900">{copy}</span>
+        <span className="text-sm text-foreground">{copy}</span>
       </div>
       <ChevronRight className={cn("h-5 w-5 shrink-0", chevronClass)} />
     </button>

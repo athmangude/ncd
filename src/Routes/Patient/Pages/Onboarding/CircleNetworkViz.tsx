@@ -3,6 +3,7 @@ import {
   SLOT_RENDERED_SIZE,
   type CircleSlotVariant,
 } from "@/components/CircleSlotAvatar"
+import { Skeleton } from "@/components/Skeleton"
 import type { NetworkMember, SentInvite } from "@/hooks/usePatientNetwork"
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
@@ -148,8 +149,8 @@ export function CircleNetworkViz({
   if (isLoading) {
     return (
       <div className="relative h-[155px] w-full" aria-hidden="true">
-        <div
-          className="absolute rounded-full animate-pulse bg-neutral-200"
+        <Skeleton
+          className="absolute rounded-full bg-muted"
           style={{
             width: SLOT_RENDERED_SIZE.lg,
             height: SLOT_RENDERED_SIZE.lg,
@@ -159,9 +160,9 @@ export function CircleNetworkViz({
           }}
         />
         {ADULT_POSITIONS.map((pos, i) => (
-          <div
+          <Skeleton
             key={i}
-            className="absolute rounded-full animate-pulse bg-neutral-200"
+            className="absolute rounded-full bg-muted"
             style={{
               width: SLOT_RENDERED_SIZE.md,
               height: SLOT_RENDERED_SIZE.md,

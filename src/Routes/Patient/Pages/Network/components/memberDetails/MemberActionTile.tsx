@@ -6,7 +6,11 @@ interface MemberActionTileProps {
   onClick: () => void
 }
 
-export function MemberActionTile({ icon: Icon, label, onClick }: MemberActionTileProps) {
+export function MemberActionTile({
+  icon: Icon,
+  label,
+  onClick,
+}: MemberActionTileProps) {
   return (
     <button
       type="button"
@@ -15,7 +19,7 @@ export function MemberActionTile({ icon: Icon, label, onClick }: MemberActionTil
     >
       <span className="flex items-center gap-3">
         <Icon className="h-5 w-5 text-purple-700" />
-        <span className="text-sm font-medium text-neutral-900">{label}</span>
+        <span className="text-sm font-medium text-foreground">{label}</span>
       </span>
       <ChevronRight className="h-4 w-4 text-purple-700" />
     </button>

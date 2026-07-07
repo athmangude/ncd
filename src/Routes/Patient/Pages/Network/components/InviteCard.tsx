@@ -19,19 +19,21 @@ export function InviteCard({ onInviteClick }: InviteCardProps) {
           className="w-12 h-12 object-contain"
         />
         <div>
-          <h3 className="text-neutral-900 text-lg">Invite in a special way</h3>
-          <p className="text-neutral-500 text-sm">For those that you care about</p>
+          <h3 className="text-foreground">Invite in a special way</h3>
+          <p className="text-muted-foreground text-sm">
+            For those that you care about
+          </p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-2">
-        <Button 
+        <Button
           className="bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center gap-2 h-12"
           onClick={onInviteClick}
         >
           <Mic className="w-4 h-4 shrink-0" /> Text/Voice
         </Button>
-        <Button 
+        <Button
           className="bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center gap-2 h-12"
           onClick={() => navigate("/patients/scan-qr-intro")}
         >

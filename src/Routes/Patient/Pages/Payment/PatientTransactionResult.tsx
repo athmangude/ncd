@@ -103,10 +103,10 @@ function TransactionResultScreen({ query }: { query: any }) {
       <Title>{title}</Title>
 
       {(status === "success" || status === "COMPLETED") && (
-        <p className="text-neutral-600 capitalize">
+        <p className="text-muted-foreground capitalize">
           {formatMoney(displayAmount, "KES")}{" "}
           {displayDescription?.toLowerCase()} on
-          <span className="font-medium text-black">
+          <span className="font-medium text-foreground">
             {" "}
             {formatDateLong(displayDate)} at {formatTime(displayDate)}
           </span>
@@ -114,10 +114,10 @@ function TransactionResultScreen({ query }: { query: any }) {
       )}
       {isLoanRepayment && (
         <div className=" flex  text-center ">
-          <Coins className="text-neutral-500" />
-          <p className="text-neutral-600 capitalize">
+          <Coins className="text-muted-foreground" />
+          <p className="text-muted-foreground capitalize">
             You have earned
-            <span className="font-medium text-black">
+            <span className="font-medium text-foreground">
               {" "}
               {formatMoney(displayAmount * 0.05, "KES")}
             </span>{" "}
@@ -155,7 +155,7 @@ function TransactionResultScreen({ query }: { query: any }) {
           if (calculatedPotentialAmount <= 0) return null
 
           return (
-            <div className="w-full bg-[#FAF5FF] border border-[#A855F7] rounded-xl p-4 flex items-center gap-3 text-left mt-2">
+            <div className="w-full bg-secondary border border-primary rounded-xl p-4 flex items-center gap-3 text-left mt-2">
               <div className="flex-shrink-0 relative">
                 <img
                   src={successIcon}
@@ -163,7 +163,7 @@ function TransactionResultScreen({ query }: { query: any }) {
                   className="w-12 h-12 object-contain"
                 />
               </div>
-              <p className="font-medium text-sm text-neutral-900">
+              <p className="font-medium text-sm text-foreground">
                 Earn {formatMoney(calculatedPotentialAmount, "KES")} when you
                 repay before the due date!
               </p>

@@ -30,39 +30,39 @@ export default function PatientHowToPay() {
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">
-          <h2 className="text-sm font-normal text-neutral-500">How to pay :</h2>
+          <h2 className="text-muted-foreground">How to pay :</h2>
 
           <div className="flex gap-3">
-            <span className="text-sm text-neutral-500 font-normal flex-shrink-0">
+            <span className="text-sm text-muted-foreground font-normal flex-shrink-0">
               01
             </span>
             <div className="flex flex-col gap-1">
               <p className="text-black">Upload your invoice.</p>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-muted-foreground">
                 Confirm the details are correct.
               </p>
             </div>
           </div>
 
           <div className="flex gap-3">
-            <span className="text-sm text-neutral-500 font-normal flex-shrink-0">
+            <span className="text-sm text-muted-foreground font-normal flex-shrink-0">
               02
             </span>
             <div className="flex flex-col gap-1">
               <p className="text-black">Choose how you want to pay.</p>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-muted-foreground">
                 Use MPESA, Card, cashback or a Jireh loan.
               </p>
             </div>
           </div>
 
           <div className="flex gap-3">
-            <span className="text-sm text-neutral-500 font-normal flex-shrink-0">
+            <span className="text-sm text-muted-foreground font-normal flex-shrink-0">
               03
             </span>
             <div className="flex flex-col gap-1">
               <p className="text-black">Make payment.</p>
-              <p className="text-sm text-neutral-500">Get care now.</p>
+              <p className="text-sm text-muted-foreground">Get care now.</p>
             </div>
           </div>
         </div>

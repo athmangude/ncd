@@ -329,10 +329,22 @@ export default function FastTrackWalletSelection() {
       headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."
+      footer={
+        <div className="border-t border-border bg-white p-4">
+          <Button
+            className="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-lg shadow-purple-200"
+            onClick={handleProceed}
+            disabled={totalAllocated !== netAmount}
+          >
+            Review Payment
+            <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
+      }
     >
-      <div className="flex flex-col gap-6 pb-32">
-        <div className="bg-white border border-neutral-200 rounded-xl p-4 mx-1 space-y-3">
-          <label className="text-sm font-medium text-neutral-900">
+      <div className="flex flex-col gap-6">
+        <div className="bg-white border border-border rounded-xl p-4 mx-1 space-y-3">
+          <label className="text-sm font-medium text-foreground">
             Discount Code (Optional)
           </label>
           <div className="flex gap-2">
@@ -347,10 +359,10 @@ export default function FastTrackWalletSelection() {
                   setDiscountAmount("0")
                 }}
                 placeholder="Enter discount code"
-                className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-[#A826FF] focus:outline-none focus:ring-1 focus:ring-[#A826FF]"
+                className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               />
               {validateDiscountCodeMutation.isPending && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-neutral-400" />
+                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
               )}
             </div>
             <Button
@@ -403,40 +415,40 @@ export default function FastTrackWalletSelection() {
           )}
         </div>
 
-        <div className="bg-neutral-50 rounded-xl p-5 flex flex-col gap-3 mx-1">
-          <div className="w-full bg-neutral-200 rounded-full h-2">
+        <div className="bg-muted rounded-xl p-5 flex flex-col gap-3 mx-1">
+          <div className="w-full bg-muted rounded-full h-2">
             <div
-              className="bg-[#A826FF] h-2 rounded-full transition-all duration-300"
+              className="bg-primary h-2 rounded-full transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-lg font-bold text-neutral-900">
+              <p className="text-lg font-bold text-foreground">
                 {formatMoney(totalAllocated, "KES")}
               </p>
-              <p className="text-sm text-neutral-500">Allocated</p>
+              <p className="text-sm text-muted-foreground">Allocated</p>
             </div>
             <div className="text-right">
               <p
-                className="text-lg font-bold text-neutral-900 flex items-center justify-end gap-2 cursor-pointer"
+                className="text-lg font-bold text-foreground flex items-center justify-end gap-2 cursor-pointer"
                 onClick={handleEditAmount}
               >
-                <Pencil className="w-4 h-4 text-neutral-400" />
+                <Pencil className="w-4 h-4 text-muted-foreground" />
                 {formatMoney(netAmount, "KES")}
                 {discountAmount > 0 && (
-                  <span className="text-neutral-400 line-through text-base">
+                  <span className="text-muted-foreground line-through text-base">
                     {formatMoney(totalBillAmount, "KES")}
                   </span>
                 )}
               </p>
-              <p className="text-sm text-neutral-500">Amount to pay</p>
+              <p className="text-sm text-muted-foreground">Amount to pay</p>
             </div>
           </div>
           {discountAmount > 0 && (
             <div className="border-t pt-3">
               <div className="flex justify-between items-center text-sm">
-                <p className="text-neutral-600">Discount</p>
+                <p className="text-muted-foreground">Discount</p>
                 <p className="font-medium text-green-600">
                   -{formatMoney(discountAmount, "KES")}
                 </p>
@@ -447,7 +459,9 @@ export default function FastTrackWalletSelection() {
 
         {allocatedWallets.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-neutral-500 font-medium px-1">Source of funds</p>
+            <p className="text-muted-foreground font-medium px-1">
+              Source of funds
+            </p>
             <div className="flex flex-col gap-3">
               {allocatedWallets.map((wallet) => {
                 const allocation = allocations[wallet.id]
@@ -457,10 +471,10 @@ export default function FastTrackWalletSelection() {
                 return (
                   <div
                     key={wallet.id}
-                    className={`border border-neutral-200 rounded-xl p-4 flex items-center justify-between transition-colors ${
+                    className={`border border-border rounded-xl p-4 flex items-center justify-between transition-colors ${
                       isAllocatedLoanDisabled
-                        ? "bg-neutral-50 cursor-not-allowed opacity-75"
-                        : "bg-white cursor-pointer hover:border-[#A826FF]"
+                        ? "bg-muted cursor-not-allowed opacity-75"
+                        : "bg-white cursor-pointer hover:border-primary"
                     }`}
                     onClick={() =>
                       !isAllocatedLoanDisabled && handleWalletClick(wallet.id)
@@ -474,23 +488,23 @@ export default function FastTrackWalletSelection() {
                         <Minus className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="font-semibold text-neutral-900">
+                        <p className="font-semibold text-foreground">
                           {getWalletName(wallet.type)}
                         </p>
                         <div className="flex flex-col">
-                          <p className="text-sm text-neutral-500">
+                          <p className="text-sm text-muted-foreground">
                             {formatMoney(allocation.amount, "KES")}
                           </p>
                           {wallet.type === "MPESA" &&
                             allocation.phoneNumber && (
-                              <p className="text-xs text-neutral-400 mt-0.5">
+                              <p className="text-xs text-muted-foreground mt-0.5">
                                 {allocation.phoneNumber}
                               </p>
                             )}
                         </div>
                       </div>
                     </div>
-                    <Pencil className="w-5 h-5 text-neutral-400" />
+                    <Pencil className="w-5 h-5 text-muted-foreground" />
                   </div>
                 )
               })}
@@ -499,7 +513,7 @@ export default function FastTrackWalletSelection() {
         )}
 
         <div className="flex flex-col gap-2">
-          <p className="text-neutral-500 font-medium px-1">
+          <p className="text-muted-foreground font-medium px-1">
             Add source of funds
           </p>
           <div className="flex flex-col gap-3">
@@ -517,8 +531,8 @@ export default function FastTrackWalletSelection() {
                   key={wallet.id}
                   className={`border rounded-xl p-4 flex items-center justify-between gap-4 transition-colors ${
                     isLoanDisabled
-                      ? "border-neutral-200 bg-neutral-50 cursor-not-allowed"
-                      : "border-neutral-200 bg-white cursor-pointer hover:border-[#A826FF]"
+                      ? "border-border bg-muted cursor-not-allowed"
+                      : "border-border bg-white cursor-pointer hover:border-primary"
                   }`}
                   onClick={() => {
                     if (!isLoanDisabled) handleWalletClick(wallet.id)
@@ -529,26 +543,26 @@ export default function FastTrackWalletSelection() {
                       className={`p-2 rounded-lg bg-transparent shrink-0 ${isLoanDisabled ? "opacity-50" : ""}`}
                     >
                       {wallet.type === "MPESA" && (
-                        <Smartphone className="w-6 h-6 text-neutral-500" />
+                        <Smartphone className="w-6 h-6 text-muted-foreground" />
                       )}
                       {wallet.type === "CASHBACK" && (
-                        <Percent className="w-6 h-6 text-neutral-500" />
+                        <Percent className="w-6 h-6 text-muted-foreground" />
                       )}
                       {wallet.type === "LOAN" && (
                         <Clock2
-                          className={`w-6 h-6 ${isLoanDisabled ? "text-neutral-400" : "text-neutral-500"}`}
+                          className={`w-6 h-6 ${isLoanDisabled ? "text-muted-foreground" : "text-muted-foreground"}`}
                         />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className={isLoanDisabled ? "opacity-50" : ""}>
                         <p
-                          className={`font-medium ${isLoanDisabled ? "text-neutral-500" : "text-neutral-900"}`}
+                          className={`font-medium ${isLoanDisabled ? "text-muted-foreground" : "text-foreground"}`}
                         >
                           {getWalletName(wallet.type)}
                         </p>
                         <p
-                          className={`text-sm mt-0.5 ${isLoanDisabled ? "text-neutral-400" : "text-neutral-500"}`}
+                          className={`text-sm mt-0.5 ${isLoanDisabled ? "text-muted-foreground" : "text-muted-foreground"}`}
                         >
                           {getWalletSubtitle(wallet)}
                         </p>
@@ -557,8 +571,8 @@ export default function FastTrackWalletSelection() {
                         <div className="mt-2 flex items-center gap-2 flex-wrap">
                           {isLoanDisabledByPlus ? (
                             <>
-                              <Lock className="w-3 h-3 text-neutral-400 shrink-0" />
-                              <p className="text-xs text-neutral-500">
+                              <Lock className="w-3 h-3 text-muted-foreground shrink-0" />
+                              <p className="text-xs text-muted-foreground">
                                 Upgrade to Jireh Plus to unlock
                               </p>
                               <button
@@ -571,7 +585,7 @@ export default function FastTrackWalletSelection() {
                                     },
                                   })
                                 }}
-                                className="bg-[#9333EA] hover:bg-[#7E22CE] text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shrink-0"
+                                className="bg-primary hover:bg-primary/90 text-white text-xs font-medium px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 shrink-0"
                               >
                                 Upgrade
                                 <ChevronRight className="w-3 h-3" />
@@ -595,26 +609,15 @@ export default function FastTrackWalletSelection() {
                   </div>
                   {!isLoanDisabled ? (
                     <div className="bg-purple-100 p-1 rounded-md shrink-0">
-                      <Plus className="w-5 h-5 text-[#A826FF]" />
+                      <Plus className="w-5 h-5 text-primary" />
                     </div>
                   ) : isLoanDisabledByCircle ? (
-                    <Lock className="w-4 h-4 text-neutral-400 shrink-0" />
+                    <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
                   ) : null}
                 </div>
               )
             })}
           </div>
-        </div>
-
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-neutral-200 md:static md:border-0 md:p-0 md:bg-transparent z-10">
-          <Button
-            className="w-full bg-[#A826FF] hover:bg-[#9220DE] text-white font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg shadow-lg shadow-purple-200"
-            onClick={handleProceed}
-            disabled={totalAllocated !== netAmount}
-          >
-            Review Payment
-            <ChevronRight className="w-5 h-5" />
-          </Button>
         </div>
 
         <WalletDrawer

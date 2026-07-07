@@ -19,7 +19,7 @@ export function PatientCareFund() {
 
   const user = usePatientAuthStore((state: any) => state.user)
   const { canPayMedicalBill } = user || {}
-  
+
   const { data: paymentHistory } = usePaymentHistory()
   const careFundAccount = paymentHistory?.careFundAccount
 
@@ -30,13 +30,13 @@ export function PatientCareFund() {
         {canPayMedicalBill && careFundAccount && (
           <section className="grid grid-cols-2 gap-4">
             <CareFundCTA
-              icon={<Banknote className="w-8 h-8 text-[#9333EA] font-sm" />}
+              icon={<Banknote className="w-8 h-8 text-primary font-sm" />}
               title="Redeem"
               link={next}
             />
 
             <CareFundCTA
-              icon={<ArrowUpRight className="w-8 h-8 text-[#9333EA]" />}
+              icon={<ArrowUpRight className="w-8 h-8 text-primary" />}
               title="Share"
               link="/patients/care-fund/gift-recipient"
             />
@@ -62,14 +62,12 @@ function CareFundCTA({
 
   return (
     <button
-      className="bg-[#F3E8FF] hover:bg-[#E9D5FF] rounded-2xl flex flex-col items-start justify-between p-4  transition-colors w-full"
+      className="bg-secondary hover:bg-secondary/80 rounded-2xl flex flex-col items-start justify-between p-4  transition-colors w-full"
       onClick={() => navigate(link)}
     >
-      <div className="">
-        {icon}
-      </div>
+      <div className="">{icon}</div>
 
-      <span className=" text-neutral-900">{title}</span>
+      <span className=" text-foreground">{title}</span>
     </button>
   )
 }

@@ -46,6 +46,12 @@ describe("FiltersPage (AppShell migration)", () => {
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument()
   })
 
+  it("renders the Services section label as a heading", () => {
+    render(wrap(<FiltersPage />))
+    const heading = screen.getByRole("heading", { name: "Services" })
+    expect(heading.tagName).toBe("H2")
+  })
+
   it("navigates back when Apply is tapped", () => {
     navigate.mockClear()
     render(wrap(<FiltersPage />))

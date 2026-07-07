@@ -87,7 +87,7 @@ function UploadStatements({
     <>
       <div>
         <p className=" font-medium">What you'll need</p>
-        <ul className="list-disc pl-6 text-neutral-500 text-sm mt-0">
+        <ul className="list-disc pl-6 text-muted-foreground text-sm mt-0">
           <li>
             Must be a <strong>PDF</strong> file from Safaricom
           </li>
@@ -165,11 +165,11 @@ function SuccessScreen() {
 
   return (
     <>
-      <h2 className="text-center font-medium text-xl">
+      <h2 className="text-center">
         Your statements have been uploaded successfully
       </h2>
 
-      <p className="text-center text-neutral-500">
+      <p className="text-center text-muted-foreground">
         {returnTo
           ? "Your credit limit has been updated. You can now proceed with your loan request."
           : "We are analyzing your statements and will notify you once your increased credit limit has been approved"}

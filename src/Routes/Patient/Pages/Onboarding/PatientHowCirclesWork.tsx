@@ -41,7 +41,7 @@ function FeatureCard({
   description,
 }: FeatureCardProps) {
   return (
-    <div className="flex h-[220px] w-[200px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-neutral-100 p-4">
+    <div className="flex h-[220px] w-[200px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-muted p-4">
       {iconPosition === "top" && (
         <img
           src={icon}
@@ -51,11 +51,11 @@ function FeatureCard({
         />
       )}
       <div className="flex flex-col gap-1">
-        <h3 className="text-sm font-medium leading-5 text-neutral-900">
-          {title}
-        </h3>
+        <h3 className="leading-5 text-foreground">{title}</h3>
         {description && (
-          <p className="text-sm leading-5 text-neutral-500">{description}</p>
+          <p className="text-sm leading-5 text-muted-foreground">
+            {description}
+          </p>
         )}
       </div>
       {iconPosition === "bottom" && (
@@ -84,7 +84,7 @@ function MemberCard({
   iconPosition = "bottom",
 }: MemberCardProps) {
   return (
-    <div className="flex h-[160px] w-[160px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-neutral-100 p-4">
+    <div className="flex h-[160px] w-[160px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-muted p-4">
       {iconPosition === "top" && (
         <img
           src={icon}
@@ -94,9 +94,9 @@ function MemberCard({
         />
       )}
       <div className="flex flex-col">
-        <p className="text-sm font-medium leading-5 text-neutral-900">{title}</p>
+        <p className="text-sm font-medium leading-5 text-foreground">{title}</p>
         {subtitle && (
-          <p className="text-sm leading-5 text-neutral-500">{subtitle}</p>
+          <p className="text-sm leading-5 text-muted-foreground">{subtitle}</p>
         )}
       </div>
       {iconPosition === "bottom" && (
@@ -125,13 +125,23 @@ function InviteCard({
   imgClassName = "h-[84px] w-24 object-contain",
 }: InviteCardProps) {
   return (
-    <div className="flex h-[160px] w-[160px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-neutral-100 p-4">
+    <div className="flex h-[160px] w-[160px] flex-shrink-0 snap-start flex-col justify-between rounded-lg bg-muted p-4">
       {illustrationPosition === "top" && (
-        <img src={illustration} alt="" aria-hidden="true" className={imgClassName} />
+        <img
+          src={illustration}
+          alt=""
+          aria-hidden="true"
+          className={imgClassName}
+        />
       )}
-      <p className="text-sm font-medium leading-5 text-neutral-900">{title}</p>
+      <p className="text-sm font-medium leading-5 text-foreground">{title}</p>
       {illustrationPosition === "bottom" && (
-        <img src={illustration} alt="" aria-hidden="true" className={imgClassName} />
+        <img
+          src={illustration}
+          alt=""
+          aria-hidden="true"
+          className={imgClassName}
+        />
       )}
     </div>
   )
@@ -153,7 +163,7 @@ export default function PatientHowCirclesWork() {
 
   const handleCallSupport = () => {
     trackEvent(EVENTS.CIRCLE.HOW_IT_WORKS_CALL_SUPPORT_TAP)
-    window.location.href = "tel:+254700000000"
+    window.location.href = "tel:+254117118511"
   }
 
   return (
@@ -162,14 +172,14 @@ export default function PatientHowCirclesWork() {
         <BackTitleHeader title="How Circles work" onBack={() => navigate(-1)} />
       }
       footer={
-        <div className="flex w-full flex-col gap-2 border-t border-neutral-100 bg-white px-4 pb-4 pt-3">
+        <div className="flex w-full flex-col gap-2 border-t border-border bg-white px-4 pb-4 pt-3">
           <Button
-            className="h-11 w-full rounded-md bg-[#b325ff] text-base font-semibold hover:bg-[#9a1fd4]"
+            className="h-11 w-full rounded-md bg-primary text-base font-semibold hover:bg-primary/90"
             onClick={handleContinue}
           >
             I understand — set up my Circle
           </Button>
-          <p className="text-center text-sm leading-5 tracking-[0.014px] text-neutral-600">
+          <p className="text-center text-sm leading-5 tracking-[0.014px] text-muted-foreground">
             Children and dependents can join as junior members. They do not
             count toward your qualifying 2 adults.
           </p>
@@ -181,15 +191,15 @@ export default function PatientHowCirclesWork() {
         {/* What you get */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-neutral-900">
+            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
               What you get
             </h2>
-            <p className="text-sm leading-5 tracking-[0.014px] text-neutral-500">
+            <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               Your Circle is your financial support group.
             </p>
           </div>
           <div className="flex min-h-8 items-center py-[5.5px]">
-            <p className="whitespace-nowrap text-xs font-medium leading-4 tracking-[0.036px] text-neutral-500">
+            <p className="whitespace-nowrap text-xs font-medium leading-4 tracking-[0.036px] text-muted-foreground">
               With a complete Circle, you can:
             </p>
           </div>
@@ -223,15 +233,15 @@ export default function PatientHowCirclesWork() {
         {/* Who to add */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-neutral-900">
+            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
               Who to add
             </h2>
-            <p className="text-sm leading-5 tracking-[0.014px] text-neutral-500">
+            <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               Add people you trust and who know your finances.
             </p>
           </div>
           <div className="flex min-h-8 items-center py-[5.5px]">
-            <p className="whitespace-nowrap text-xs font-medium leading-4 tracking-[0.036px] text-neutral-500">
+            <p className="whitespace-nowrap text-xs font-medium leading-4 tracking-[0.036px] text-muted-foreground">
               Good Circle members:
             </p>
           </div>
@@ -253,7 +263,7 @@ export default function PatientHowCirclesWork() {
               subtitle="(18 years or over)"
             />
           </div>
-          <p className="text-sm leading-5 tracking-[0.014px] text-neutral-900">
+          <p className="text-sm leading-5 tracking-[0.014px] text-foreground">
             You can add younger family members too. They share cashback but
             cannot unlock loans. We call these{" "}
             <span className="font-bold">Junior slots.</span>
@@ -263,22 +273,22 @@ export default function PatientHowCirclesWork() {
         {/* The shared risk */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-neutral-900">
+            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
               The shared risk — important
             </h2>
-            <p className="text-sm leading-5 tracking-[0.014px] text-neutral-500">
+            <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               This is the part you must understand before you invite anyone.
             </p>
           </div>
-          <div className="flex gap-2 items-start rounded-md bg-[#edf7f7] px-2 py-[6px]">
+          <div className="flex gap-2 items-start rounded-md bg-accent px-2 py-[6px]">
             <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <Info className="h-4 w-4 text-neutral-900" />
+              <Info className="h-4 w-4 text-foreground" />
             </div>
             <div className="flex flex-1 flex-col gap-3 text-sm tracking-[0.014px]">
-              <p className="leading-5 text-neutral-900">
+              <p className="leading-5 text-foreground">
                 Only invite people you trust to repay.
               </p>
-              <div className="flex flex-col gap-3 text-neutral-500">
+              <div className="flex flex-col gap-3 text-muted-foreground">
                 <p className="leading-5">
                   If any member of your Circle stops repaying their loan, your
                   loan access will be paused.
@@ -294,10 +304,10 @@ export default function PatientHowCirclesWork() {
         {/* How to add someone */}
         <section className="flex flex-col gap-2">
           <div className="flex flex-col">
-            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-neutral-900">
+            <h2 className="text-lg font-medium leading-7 tracking-[-0.018px] text-foreground">
               How to add someone
             </h2>
-            <p className="text-sm leading-5 tracking-[0.014px] text-neutral-500">
+            <p className="text-sm leading-5 tracking-[0.014px] text-muted-foreground">
               Tap &lsquo;Add member&rsquo; and choose how to invite them:
             </p>
           </div>
@@ -321,25 +331,25 @@ export default function PatientHowCirclesWork() {
               imgClassName="h-[84px] w-[84px] object-contain"
             />
           </div>
-          <p className="text-sm font-medium leading-5 tracking-[0.014px] text-neutral-900">
+          <p className="text-sm font-medium leading-5 tracking-[0.014px] text-foreground">
             They will receive an invitation. Once they accept, their slot turns
             green.
           </p>
 
           {/* Avatar status chain */}
-          <div className="flex flex-col gap-3 rounded-lg bg-neutral-100 p-4">
+          <div className="flex flex-col gap-3 rounded-lg bg-muted p-4">
             <div className="flex items-start justify-start gap-4">
               {/* Empty / add slot */}
               <div className="flex flex-col items-center gap-2">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-dashed border-[#dfacff] bg-[#f5e5ff]">
-                  <Plus className="h-6 w-6 text-[#b325ff]" />
+                  <Plus className="h-6 w-6 text-primary" />
                 </div>
               </div>
-              <div className="mt-[14px] text-neutral-400">→</div>
+              <div className="mt-[14px] text-muted-foreground">→</div>
               {/* Waiting member */}
               <div className="flex flex-col items-center gap-2">
                 <div className="relative">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#ffb86a] bg-white text-base font-medium text-neutral-700">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#ffb86a] bg-white text-base font-medium text-foreground">
                     FL
                   </div>
                   <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-[#ff8904]" />
@@ -350,11 +360,11 @@ export default function PatientHowCirclesWork() {
                   </span>
                 </div>
               </div>
-              <div className="mt-[14px] text-neutral-400">→</div>
+              <div className="mt-[14px] text-muted-foreground">→</div>
               {/* Accepted member */}
               <div className="flex flex-col items-center gap-2">
                 <div className="relative">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#7bf1a8] bg-white text-base font-medium text-neutral-700">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#7bf1a8] bg-white text-base font-medium text-foreground">
                     FL
                   </div>
                   <div className="absolute right-0 top-0 h-2.5 w-2.5 rounded-full bg-[#05df72]" />
@@ -368,9 +378,9 @@ export default function PatientHowCirclesWork() {
             </div>
             <div className="flex gap-2 items-start rounded-md bg-white px-2 py-[6px]">
               <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-                <Info className="h-4 w-4 text-neutral-900" />
+                <Info className="h-4 w-4 text-foreground" />
               </div>
-              <p className="flex-1 text-sm leading-5 tracking-[0.014px] text-neutral-900">
+              <p className="flex-1 text-sm leading-5 tracking-[0.014px] text-foreground">
                 Your Circle is ready when 2 people have accepted your invite.
               </p>
             </div>
@@ -378,12 +388,12 @@ export default function PatientHowCirclesWork() {
         </section>
 
         {/* Need more help */}
-        <section className="flex flex-col gap-3 rounded-lg border border-neutral-200 bg-neutral-50 px-4 pb-4 pt-3">
+        <section className="flex flex-col gap-3 rounded-lg border border-border bg-muted px-4 pb-4 pt-3">
           <div className="flex flex-col text-sm tracking-[0.014px]">
-            <p className="font-medium leading-5 text-neutral-900">
+            <p className="font-medium leading-5 text-foreground">
               Need more help?
             </p>
-            <p className="leading-5 text-neutral-600">
+            <p className="leading-5 text-muted-foreground">
               Contact our support team
             </p>
           </div>
@@ -393,13 +403,13 @@ export default function PatientHowCirclesWork() {
             className="flex min-h-8 items-center gap-2 rounded-md bg-white px-2 py-[6px]"
           >
             <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <Phone className="h-4 w-4 text-neutral-900" />
+              <Phone className="h-4 w-4 text-foreground" />
             </div>
-            <p className="flex-1 text-left text-sm leading-5 tracking-[0.014px] text-neutral-900">
+            <p className="flex-1 text-left text-sm leading-5 tracking-[0.014px] text-foreground">
               Call Jireh Support
             </p>
             <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
-              <ChevronRight className="h-4 w-4 text-neutral-900" />
+              <ChevronRight className="h-4 w-4 text-foreground" />
             </div>
           </button>
         </section>

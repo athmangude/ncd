@@ -42,8 +42,6 @@ export default function PatientAddWhatsAppNumber() {
 
   const { isPending, isSuccess, mutateAsync } = useMutation({
     mutationFn: async (data: Inputs) => {
-      console.log(data)
-
       const result = await axios.post(
         `${
           import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
@@ -90,7 +88,7 @@ export default function PatientAddWhatsAppNumber() {
           mutateAsync(data)
         })}
       >
-        <h1 className="text-xl font-bold">Enter your WhatsApp number </h1>
+        <h1>Enter your WhatsApp number </h1>
         <p>This is where you will receive updates.</p>
 
         <input type="hidden" value="KE" {...register("whatsappCountryCode")} />

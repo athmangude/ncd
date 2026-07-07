@@ -13,7 +13,11 @@ import networkCircleIcon from "@/assets/icons/network-circle.png"
 import kycSetup from "@/assets/icons/kyc-setup.png"
 import { ChevronRight, ShieldCheck, QrCode } from "lucide-react"
 import { UserType } from "../constants/userTypes"
-import { PWA_START_URL, usePWAOnboardingStatus, PWA_STEP_CONFIG } from "../hooks/useNextPWAOnboardingStep"
+import {
+  PWA_START_URL,
+  usePWAOnboardingStatus,
+  PWA_STEP_CONFIG,
+} from "../hooks/useNextPWAOnboardingStep"
 import pwaSetup from "@/assets/icons/pwa-setup.png"
 import { AlertTriangle, Bell } from "lucide-react"
 import axios from "axios"
@@ -48,37 +52,60 @@ export function AlertCard({ alert }: { alert: DashboardAlert }) {
         )
     }
   }, [alert.alert_id, stepStatus])
-  
+
   const getIcon = (alertId: string) => {
     switch (alertId) {
       case "PIN_REQUIRED":
         return <ShieldCheck className="w-12 h-12 text-[#00b9db]" />
       case "ID_VERIFICATION_REQUIRED":
-          return <AlertTriangle className="w-8 h-8 text-neutral-500 font-normal" />
+        return (
+          <AlertTriangle className="w-8 h-8 text-muted-foreground font-normal" />
+        )
       case "DOCUMENT_VERIFICATION_REQUIRED":
-        return <img src={kycSetup} alt="KYC" className="w-12 h-12 object-contain" />
+        return (
+          <img src={kycSetup} alt="KYC" className="w-12 h-12 object-contain" />
+        )
       case "INSTALL_APP":
-        return <img src={pwaSetup} alt="Circle" className="w-12 h-12 object-contain" />
+        return (
+          <img
+            src={pwaSetup}
+            alt="Circle"
+            className="w-12 h-12 object-contain"
+          />
+        )
       case "CARE_PROFILE_SETUP_REQUIRED":
-        return <img src={verifiedTileIcon} alt="KYC" className="w-12 h-12 object-contain" />
+        return (
+          <img
+            src={verifiedTileIcon}
+            alt="KYC"
+            className="w-12 h-12 object-contain"
+          />
+        )
       case "CIRCLE_CREATE":
       case "CIRCLE_SETUP_INCOMPLETE":
-        return <img src={networkCircleIcon} alt="Circle" className="w-12 h-12 object-contain" />
+        return (
+          <img
+            src={networkCircleIcon}
+            alt="Circle"
+            className="w-12 h-12 object-contain"
+          />
+        )
       case "LOAN_DEFAULT":
-        return <AlertTriangle className="w-8 h-8 text-neutral-500 font-normal" />
+        return (
+          <AlertTriangle className="w-8 h-8 text-muted-foreground font-normal" />
+        )
       default:
         return <Bell className="w-12 h-12 text-primary" />
     }
   }
-
 
   const getStyle = (priority: string) => {
     if (priority === "P0") {
       // Critical - reddish/warm
       return "bg-red-50 border-red-100"
     }
-    // Important - default bubblegum/blueish
-    return "bg-bubblegum-100 border-purple-100"
+    // Important - default brand-gradient/blueish
+    return "bg-brand-gradient-100 border-purple-100"
   }
 
   return (
@@ -86,12 +113,8 @@ export function AlertCard({ alert }: { alert: DashboardAlert }) {
       <div className="flex gap-3 items-center mb-4">
         {getIcon(alert.alert_id)}
         <div>
-          <h3 className="text-base font-semibold text-neutral-900 m-0">
-            {alert.title}
-          </h3>
-          <p className="text-sm text-neutral-500 m-0">
-            {alert.message}
-          </p>
+          <h3 className="text-foreground m-0">{alert.title}</h3>
+          <p className="text-sm text-muted-foreground m-0">{alert.message}</p>
         </div>
       </div>
 
@@ -108,7 +131,6 @@ export function AlertCard({ alert }: { alert: DashboardAlert }) {
     </div>
   )
 }
-
 
 export function UploadFinancialStatementsCTA() {
   return (
@@ -169,7 +191,7 @@ export function FundTreatmentCTA() {
 
   return (
     <section className="w-full flex justify-center fixed bottom-0 left-0 ">
-      <div className="w-full px-3 py-2 bg-white border-t border-neutral-50 max-w-[450px] flex flex-col gap-2">
+      <div className="w-full px-3 py-2 bg-white border-t border-border max-w-[450px] flex flex-col gap-2">
         {!canPayMedicalBill && (
           <CompleteMembershipSetupCTA orgName={orgName} patientType={type} />
         )}
@@ -183,7 +205,7 @@ export function SetPinCTA() {
 
   return (
     <button
-      className="bg-[#cefafe] border border-blue-200 p-4 no-underline flex   gap-3 justify-between rounded-lg mb-7 text-left"
+      className="bg-brand-gradient-100 border border-purple-100 p-4 no-underline flex   gap-3 justify-between rounded-lg mb-7 text-left"
       onClick={() => {
         navigate("/patients/set-pin", {
           state: {
@@ -192,14 +214,14 @@ export function SetPinCTA() {
         })
       }}
     >
-      <ShieldCheck className="w-7 h-7 text-[#00b9db] mt-1" aria-hidden="true" />
+      <ShieldCheck className="w-7 h-7 text-primary mt-1" aria-hidden="true" />
       <div className="col-span-3">
         <p className="text-lg font-semibold">Set up Payment PIN</p>
-        <p className="font-normal text-sm text-neutral-500">
+        <p className="font-normal text-sm text-muted-foreground">
           You will use this to pay
         </p>
       </div>
-      <ChevronRight className="w-7 h-7 text-neutral-500 ml-auto mt-1" />
+      <ChevronRight className="w-7 h-7 text-muted-foreground ml-auto mt-1" />
     </button>
   )
 }
@@ -212,12 +234,11 @@ export function CareProfileSetupCTA() {
     user.favoriteCareProviders?.length > 0 &&
     user.focusAreas?.length > 0 &&
     user.ncdStatus !== null
- 
 
   if (hasCareProfile) return null
 
   return (
-    <div className="bg-bubblegum-100 border border-purple-100 p-4 rounded-xl mb-7">
+    <div className="bg-brand-gradient-100 border border-purple-100 p-4 rounded-xl mb-7">
       <div className="flex gap-3 items-center mb-4">
         <img
           src={verifiedTileIcon}
@@ -226,10 +247,8 @@ export function CareProfileSetupCTA() {
           aria-hidden="true"
         />
         <div>
-          <h3 className="text-base font-semibold text-neutral-900 m-0">
-            Set up your Jireh Profile
-          </h3>
-          <p className="text-sm text-neutral-500 m-0">
+          <h3 className="text-foreground m-0">Set up your Jireh Profile</h3>
+          <p className="text-sm text-muted-foreground m-0">
             Add your insurance and favorite hospitals for a better experience.
           </p>
         </div>
@@ -252,7 +271,7 @@ export function CreateCircleCTA() {
   if (hasCircle) return null
 
   return (
-    <div className="bg-bubblegum-100 border border-purple-100 p-4 rounded-xl mb-7">
+    <div className="bg-brand-gradient-100 border border-purple-100 p-4 rounded-xl mb-7">
       <div className="flex gap-3 items-center mb-4">
         <img
           src={networkCircleIcon}
@@ -260,10 +279,8 @@ export function CreateCircleCTA() {
           className="w-12 h-12 object-contain"
         />
         <div>
-          <h3 className="text-base font-semibold text-neutral-900 m-0">
-            Care for those you love
-          </h3>
-          <p className="text-sm text-neutral-500 m-0">
+          <h3 className="text-foreground m-0">Care for those you love</h3>
+          <p className="text-sm text-muted-foreground m-0">
             Share benefits & support.
           </p>
         </div>
@@ -286,7 +303,7 @@ export function CompleteKYCCTA() {
   if (user.isBasicMember) return null
 
   return (
-    <div className="bg-bubblegum-100 border border-purple-100 p-4 rounded-xl mb-7">
+    <div className="bg-brand-gradient-100 border border-purple-100 p-4 rounded-xl mb-7">
       <div className="flex gap-3 items-center mb-4">
         <img
           src={kycSetup}
@@ -295,11 +312,9 @@ export function CompleteKYCCTA() {
           aria-hidden="true"
         />
         <div>
-          <h3 className="text-base font-semibold text-neutral-900 m-0">
-          Jireh Plus saves you more
-          </h3>
-          <p className="text-sm text-neutral-500 m-0">
-          Upgrade for higher savings
+          <h3 className="text-foreground m-0">Jireh Plus saves you more</h3>
+          <p className="text-sm text-muted-foreground m-0">
+            Upgrade for higher savings
           </p>
         </div>
       </div>
@@ -320,12 +335,12 @@ export function PWAOnboardingCTA() {
   if (loading) return null
 
   // Check if every step is either completed or skipped
-  const isComplete = PWA_STEP_CONFIG.every(step => stepStatus[step.id])
+  const isComplete = PWA_STEP_CONFIG.every((step) => stepStatus[step.id])
 
   if (isComplete) return null
 
   return (
-    <div className="bg-bubblegum-100 border border-purple-100 p-4 rounded-xl mb-7">
+    <div className="bg-brand-gradient-100 border border-purple-100 p-4 rounded-xl mb-7">
       <div className="flex gap-3 items-center mb-4">
         <img
           src={pwaSetup}
@@ -334,10 +349,8 @@ export function PWAOnboardingCTA() {
           aria-hidden="true"
         />
         <div>
-          <h3 className="text-base font-semibold text-neutral-900 m-0">
-            Get the full experience
-          </h3>
-          <p className="text-sm text-neutral-500 m-0">
+          <h3 className="text-foreground m-0">Get the full experience</h3>
+          <p className="text-sm text-muted-foreground m-0">
             Install app and enable notifications
           </p>
         </div>
@@ -364,15 +377,17 @@ export function ScanQRCTA() {
       }}
     >
       <div className="bg-purple-100 p-2 rounded-full h-fit shrink-0">
-         <QrCode className="w-6 h-6 text-purple-600" aria-hidden="true" />
+        <QrCode className="w-6 h-6 text-purple-600" aria-hidden="true" />
       </div>
       <div className="flex-1">
-        <p className="text-base font-semibold text-neutral-900">Scan to Join Circle</p>
-        <p className="font-normal text-sm text-neutral-500">
+        <p className="text-base font-semibold text-foreground">
+          Scan to Join Circle
+        </p>
+        <p className="font-normal text-sm text-muted-foreground">
           Show your QR code to invite friends
         </p>
       </div>
-      <ChevronRight className="w-5 h-5 text-neutral-400 ml-auto mt-2" />
+      <ChevronRight className="w-5 h-5 text-muted-foreground ml-auto mt-2" />
     </button>
   )
 }

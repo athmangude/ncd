@@ -5,10 +5,8 @@ import DeletableItem from "../../components/DeletableItem"
 import FormGroupWrapper from "@/components/form/FormGroupWrapper"
 import { usePersistentForm } from "@/hooks/usePersistentForm"
 import useNextCareProfileStep from "../../hooks/useNextCareProfileStep"
-import { Button } from "@/components/Button"
 import { DualActionFooter } from "@/Routes/shell/footers"
 import { patientMembershipStorageKey } from "./PatientReviewMembershipDetails"
-import { ChevronRight, Search } from "lucide-react"
 
 type Inputs = {
   InsuranceProviders: any[]
@@ -25,25 +23,6 @@ export default function PatientFavoriteCareProviders() {
   )
 
   const { submitStep, skipStep, isSubmitting } = useNextCareProfileStep()
-
-  const requestLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser")
-      return
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        console.log("Location access granted", position)
-      },
-      (error) => {
-        console.error("Error requesting location", error)
-        if (error.code === error.PERMISSION_DENIED) {
-          alert("Please allow location access to find hospitals near you.")
-        }
-      }
-    )
-  }
 
   useEffect(() => {
     // Load existing insurance providers from local storage if available
@@ -92,22 +71,7 @@ export default function PatientFavoriteCareProviders() {
         />
       }
     >
-      <h1 className="text-2xl ">Add your prefferd hospitals</h1>
-      <Button
-        type="button"
-        onClick={requestLocation}
-        className="flex items-center justify-between w-full p-4 bg-green-50 rounded-lg border border-green-200 hover:bg-green-100 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-5  flex items-center justify-center flex-shrink-0">
-            <Search className="w-5 h-5 text-neutral-600" />
-          </div>
-          <span className="text-sm font-medium text-neutral-800">
-            Find hospitals near me
-          </span>
-        </div>
-        <ChevronRight className="w-5 h-5 text-neutral-600" />
-      </Button>
+      <h1>Add your preferred hospitals</h1>
       <form className="flex flex-col gap-5 w-full" onSubmit={onSubmit}>
         <FormGroupWrapper>
           <SearchField

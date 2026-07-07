@@ -9,8 +9,8 @@ const explainerVariants = cva(
       variant: {
         current: "text-primary border border-primary",
         next: "text-secondary-foreground filter grayscale border",
-        completed: "bg-neutral-100 text-accent-foreground ",
-        info: "bg-neutral-100 text-accent-foreground ",
+        completed: "bg-muted text-accent-foreground ",
+        info: "bg-muted text-accent-foreground ",
       },
     },
     defaultVariants: {

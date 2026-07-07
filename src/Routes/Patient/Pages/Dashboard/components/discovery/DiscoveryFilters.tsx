@@ -45,9 +45,9 @@ export function DiscoverySearchBar({
       <button
         type="button"
         onClick={handleSearch}
-        className="absolute left-3 top-1/2 -translate-y-1/2 p-1 hover:bg-neutral-200 rounded-full transition-colors z-10"
+        className="absolute left-3 top-1/2 -translate-y-1/2 p-1 hover:bg-muted rounded-full transition-colors z-10"
       >
-        <Search className="h-4 w-4 text-neutral-400" />
+        <Search className="h-4 w-4 text-muted-foreground" />
       </button>
       <Input
         placeholder={placeholder}
@@ -101,9 +101,11 @@ export function DiscoveryFilters({
       {/* Filters Row */}
       <div className="flex gap-2 flex-col sm:flex-row">
         <div className="w-full sm:w-1/2">
-          <span className="text-xs text-neutral-500 mb-1 block ml-1">Filters</span>
+          <span className="text-xs text-muted-foreground mb-1 block ml-1">
+            Filters
+          </span>
           <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="h-9 rounded-lg border-neutral-200 bg-white">
+            <SelectTrigger className="h-9 rounded-lg border-border bg-white">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent className="max-h-[min(70vh,400px)]">
@@ -117,9 +119,11 @@ export function DiscoveryFilters({
           </Select>
         </div>
         <div className="w-full sm:w-1/2">
-          <span className="text-xs text-neutral-500 mb-1 block ml-1 opacity-0 hidden sm:block">.</span>
+          <span className="text-xs text-muted-foreground mb-1 block ml-1 opacity-0 hidden sm:block">
+            .
+          </span>
           <Select value={filterLevel} onValueChange={setFilterLevel}>
-            <SelectTrigger className="h-9 rounded-lg border-neutral-200 bg-white">
+            <SelectTrigger className="h-9 rounded-lg border-border bg-white">
               <SelectValue placeholder="Level" />
             </SelectTrigger>
             <SelectContent>
@@ -139,22 +143,28 @@ export function DiscoveryFilters({
         <button
           onClick={() => setActiveTab("all")}
           className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            activeTab === "all" 
-            ? "bg-purple-600 text-white shadow-sm" 
-            : "text-purple-600 hover:bg-purple-100"
+            activeTab === "all"
+              ? "bg-purple-600 text-white shadow-sm"
+              : "text-purple-600 hover:bg-purple-100"
           }`}
         >
-          All <span className="ml-1 opacity-80 text-xs bg-white/20 rounded-full">{facilitiesCount}</span>
+          All{" "}
+          <span className="ml-1 opacity-80 text-xs bg-white/20 rounded-full">
+            {facilitiesCount}
+          </span>
         </button>
         <button
           onClick={() => setActiveTab("jireh")}
           className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${
-            activeTab === "jireh" 
-            ? "bg-purple-600 text-white shadow-sm" 
-            : "text-purple-600 hover:bg-purple-100"
+            activeTab === "jireh"
+              ? "bg-purple-600 text-white shadow-sm"
+              : "text-purple-600 hover:bg-purple-100"
           }`}
         >
-          Jireh Accepted <span className="ml-1 opacity-80 text-xs bg-purple-200 text-purple-700 rounded-full">{jirehAcceptedCount}</span>
+          Jireh Accepted{" "}
+          <span className="ml-1 opacity-80 text-xs bg-purple-200 text-purple-700 rounded-full">
+            {jirehAcceptedCount}
+          </span>
         </button>
       </div>
     </div>

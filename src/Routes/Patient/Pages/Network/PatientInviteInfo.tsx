@@ -19,13 +19,15 @@ export function PatientInviteInfo({
         aria-hidden="true"
       />
 
-      <h1 className="font-medium text-xl">
+      <h1>
         <span className="capitalize">{firstName.toLocaleLowerCase()}</span>{" "}
         <span className="capitalize">{lastName.toLocaleLowerCase()}</span> has
         invited you to join their network
       </h1>
 
-      <p className="text-lg text-neutral-500">You can accept the invite below</p>
+      <p className="text-lg text-muted-foreground">
+        You can accept the invite below
+      </p>
 
       <PatientNetworkFAQ />
     </section>
@@ -52,7 +54,7 @@ export function PatientCareFundInviteInfo({
         aria-hidden="true"
       />
 
-      <h1 className="text-2xl max-w-[17ch]">
+      <h1 className="max-w-[17ch]">
         <span className="font-medium">
           {firstName} {lastName}
         </span>{" "}

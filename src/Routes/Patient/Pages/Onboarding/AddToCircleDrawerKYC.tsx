@@ -45,15 +45,12 @@ export function AddToCircleDrawerKYC({
   const user = usePatientAuthStore((state) => state.user)
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <div className="w-full max-w-lg mx-auto">
           <DrawerHeader>
             <div className="flex flex-col items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-[#9333EA] flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
                 <Users className="w-8 h-8 text-white" />
               </div>
               <DrawerTitle className="text-center">
@@ -160,7 +157,9 @@ export function AddToCircleDrawerKYC({
                 },
               })}
               error={errors.phoneNumber?.message}
-              defaultValue={control._defaultValues["phoneNumber"]?.toString() || "254"}
+              defaultValue={
+                control._defaultValues["phoneNumber"]?.toString() || "254"
+              }
             />
 
             <Controller
@@ -174,7 +173,9 @@ export function AddToCircleDrawerKYC({
                   placeholder="Select an item"
                   field={field}
                   error={errors.relationship?.message}
-                  options={relationshipOptions.filter(opt => opt.value !== "CHILD")}
+                  options={relationshipOptions.filter(
+                    (opt) => opt.value !== "CHILD"
+                  )}
                 />
               )}
             />
@@ -186,18 +187,28 @@ export function AddToCircleDrawerKYC({
               placeholder="e.g. Msee wa mayai"
               register={register("nickname" as any)}
               error={(errors as any).nickname?.message}
-              defaultValue={(control._defaultValues as any)?.nickname?.toString()}
+              defaultValue={(
+                control._defaultValues as any
+              )?.nickname?.toString()}
             />
 
             <Button
               className={cn(
                 "w-full",
-                watch("firstName") && watch("lastName") && watch("relationship") && watch("phoneNumber")
-                  ? "bg-[#9333EA] hover:bg-[#7E22CE] text-white"
-                  : "bg-neutral-200 text-neutral-500 cursor-not-allowed"
+                watch("firstName") &&
+                  watch("lastName") &&
+                  watch("relationship") &&
+                  watch("phoneNumber")
+                  ? "bg-primary hover:bg-primary/90 text-white"
+                  : "bg-muted text-muted-foreground cursor-not-allowed"
               )}
               type="submit"
-              disabled={!watch("firstName") || !watch("lastName") || !watch("relationship") || !watch("phoneNumber")}
+              disabled={
+                !watch("firstName") ||
+                !watch("lastName") ||
+                !watch("relationship") ||
+                !watch("phoneNumber")
+              }
             >
               Save
             </Button>

@@ -55,6 +55,7 @@ import PatientSubscriptionsWrapper from "./Subscriptions/PatientSubscriptionsWra
 import DownloadedFilesGuide from "@/Routes/Patient/Pages/Faqs/DownloadedFilesGuide"
 import PasscodeGuide from "@/Routes/Patient/Pages/Faqs/PasscodeGuide"
 import MpesaStatementGuide from "@/Routes/Patient/Pages/Faqs/MpesaStatementGuide"
+import FaqsPage from "@/Routes/Patient/Pages/Faqs/FaqsPage"
 import PaymentWrapper from "./Payment/PaymentWrapper"
 import PaymentRequestWrapper from "./Payment/PaymentRequestWrapper"
 import PatientSetPin from "./Onboarding/PatientSetPin"
@@ -627,6 +628,16 @@ export default function PatientsHome() {
             }
           />
         </Route>
+
+        {/* General member FAQs (all members — not loan-gated) */}
+        <Route
+          path="/faqs"
+          element={
+            <RouteMetadata title="FAQs">
+              <FaqsPage />
+            </RouteMetadata>
+          }
+        />
 
         {/* Network */}
         <Route

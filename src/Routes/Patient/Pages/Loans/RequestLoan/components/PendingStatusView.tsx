@@ -52,18 +52,18 @@ export default function PendingStatusView({
       <div className="flex flex-col items-center justify-center flex-1 min-h-[60vh] gap-6">
         <VerificationStatusIcon />
         <div className="text-center space-y-2">
-          <h2 className="text-xl font-semibold text-neutral-900">
-            Verification in progress...
-          </h2>
-          <p className="text-neutral-500 max-w-xs mx-auto text-sm">
+          <h2 className="text-foreground">Verification in progress...</h2>
+          <p className="text-muted-foreground max-w-xs mx-auto text-sm">
             You should receive an SMS in{" "}
             <span className="font-bold text-primary">5</span> minutes for you to
             choose how you want to pay.
           </p>
         </div>
-        <div className="bg-neutral-50 rounded-lg p-4 w-full max-w-sm mt-8 text-center">
-          <p className="text-sm font-medium text-neutral-500 mb-1">Next step:</p>
-          <p className="text-sm font-semibold text-neutral-900">
+        <div className="bg-muted rounded-lg p-4 w-full max-w-sm mt-8 text-center">
+          <p className="text-sm font-medium text-muted-foreground mb-1">
+            Next step:
+          </p>
+          <p className="text-sm font-semibold text-foreground">
             Choose how to pay your bill
           </p>
         </div>

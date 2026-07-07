@@ -7,25 +7,22 @@ import { useNavigate } from "react-router-dom"
 
 export default function PatientInvitationsReceived() {
   const navigate = useNavigate()
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isOffline,
-  } = usePatientNetwork()
+  const { data, isLoading, isError, error, isOffline } = usePatientNetwork()
 
   if (isLoading) {
     return <LoadingPage />
   }
 
   if (isError) {
-    return <ErrorBlock message={
-      isOffline 
-        ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard." 
-        : (error as any)?.response?.data?.message || (error as any)?.message
-    }
-  />
+    return (
+      <ErrorBlock
+        message={
+          isOffline
+            ? "You are offline and no cached data is available. Please connect to the internet to load your dashboard."
+            : (error as any)?.response?.data?.message || (error as any)?.message
+        }
+      />
+    )
   }
 
   const { receivedInvites = [] } = data || {}
@@ -41,18 +38,19 @@ export default function PatientInvitationsReceived() {
       footer={null}
     >
       <div className="flex flex-col gap-3 mt-4">
-        <div className="text-neutral-500 mb-2">
+        <div className="text-muted-foreground mb-2">
           Received ({receivedInvites.length})
         </div>
         {receivedInvites.length === 0 ? (
-                 <div className="text-neutral-400 text-sm pl-8">No received invitations</div>
-            ) : (
-                receivedInvites.map((invite) => (
-                     <ReceivedInviteItem key={invite.id} {...invite} />
-                ))
-            )}
-        </div>
+          <div className="text-muted-foreground text-sm pl-8">
+            No received invitations
+          </div>
+        ) : (
+          receivedInvites.map((invite) => (
+            <ReceivedInviteItem key={invite.id} {...invite} />
+          ))
+        )}
+      </div>
     </MobileWrapper>
   )
 }
-

@@ -188,10 +188,10 @@ export default function PaymentDetails() {
     <PatientPageWrapper title="Payment Details">
       <div className="flex flex-col gap-5 px-1 pb-8">
         <div className="flex flex-col items-center text-center gap-2 mt-2">
-          <h2 className="text-xl font-semibold text-neutral-900">
+          <h2 className="text-foreground">
             Fill these details from your invoice.
           </h2>
-          <p className="text-sm text-neutral-500 max-w-xs">
+          <p className="text-sm text-muted-foreground max-w-xs">
             You might need to ask the cashier for your invoice if one is not
             provided to you.
           </p>
@@ -201,7 +201,7 @@ export default function PaymentDetails() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="invoiceNumber"
-            className="text-sm font-medium text-neutral-700"
+            className="text-sm font-medium text-foreground"
           >
             Invoice Number
           </label>
@@ -209,7 +209,7 @@ export default function PaymentDetails() {
             <FileText
               className={cn(
                 "absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4",
-                invoiceFieldError ? "text-red-400" : "text-neutral-400"
+                invoiceFieldError ? "text-red-400" : "text-muted-foreground"
               )}
             />
             <input
@@ -228,7 +228,7 @@ export default function PaymentDetails() {
                 "w-full pl-10 pr-4 py-3 border rounded-xl text-sm focus:outline-none focus:ring-2 transition-all",
                 invoiceFieldError
                   ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                  : "border-neutral-200 focus:ring-purple-500 focus:border-transparent"
+                  : "border-border focus:ring-purple-500 focus:border-transparent"
               )}
             />
           </div>
@@ -264,12 +264,12 @@ export default function PaymentDetails() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="invoiceAmount"
-            className="text-sm font-medium text-neutral-700"
+            className="text-sm font-medium text-foreground"
           >
             Total Bill Amount
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-neutral-500">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">
               KES
             </span>
             <input
@@ -288,7 +288,7 @@ export default function PaymentDetails() {
                 if (value.startsWith("-")) return
                 setInvoiceAmount(value)
               }}
-              className="w-full pl-14 pr-4 py-3 border border-neutral-200 rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+              className="w-full pl-14 pr-4 py-3 border border-border rounded-xl text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
             />
           </div>
           {invoiceAmount !== "" &&

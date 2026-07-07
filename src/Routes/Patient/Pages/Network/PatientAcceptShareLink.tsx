@@ -68,7 +68,7 @@ function NoInviteFound() {
         />
       }
     >
-      <h2 className="text-center font-medium text-2xl">No invite found</h2>
+      <h2 className="text-center">No invite found</h2>
       <p>We could not find the invite you are looking for.</p>
     </MobileWrapper>
   )
@@ -278,7 +278,7 @@ function IsAlreadyConnected({
         aria-hidden="true"
       />
 
-      <h1 className="font-medium text-xl">
+      <h1>
         You are already connected with{" "}
         <span className="capitalize">{firstName.toLocaleLowerCase()}</span>{" "}
         <span className="capitalize">{lastName.toLocaleLowerCase()}</span>

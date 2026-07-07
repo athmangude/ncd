@@ -34,7 +34,11 @@ export function ConnectedNewBody({ member, you }: ConnectedNewBodyProps) {
     <div className="flex flex-col gap-6">
       <LinkedAvatarPair
         you={you}
-        them={{ firstName: member.firstName, lastName: member.lastName, profilePhoto: member.profilePhoto }}
+        them={{
+          firstName: member.firstName,
+          lastName: member.lastName,
+          profilePhoto: member.profilePhoto,
+        }}
         variant="new"
       />
       <p className="text-center text-xl font-medium">
@@ -44,12 +48,20 @@ export function ConnectedNewBody({ member, you }: ConnectedNewBodyProps) {
       <div className="grid grid-cols-2 gap-2">
         <MemberBalanceCard />
         <div className="flex flex-col gap-2">
-          <MemberActionTile icon={Building2} label="Pay their medical bill" onClick={goPayBill} />
-          <MemberActionTile icon={Gift} label="Send them cashback" onClick={goSendCashback} />
+          <MemberActionTile
+            icon={Building2}
+            label="Pay their medical bill"
+            onClick={goPayBill}
+          />
+          <MemberActionTile
+            icon={Gift}
+            label="Send them cashback"
+            onClick={goSendCashback}
+          />
         </div>
       </div>
       {member.joinedAt && (
-        <p className="mt-2 text-center text-sm text-neutral-500">
+        <p className="mt-2 text-center text-sm text-muted-foreground">
           Connected since {format(new Date(member.joinedAt), "EEE yyyy")}
         </p>
       )}

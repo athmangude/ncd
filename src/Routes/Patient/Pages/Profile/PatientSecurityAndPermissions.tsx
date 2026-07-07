@@ -82,7 +82,7 @@ export default function PatientSecurityAndPermissions() {
         {/* Header Section */}
         <div className="text-center items-center">
           <h1>Unlock the full experience</h1>
-          <p className="text-neutral-500 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
             You can manage these permissions anytime in your settings.
           </p>
         </div>
@@ -92,39 +92,35 @@ export default function PatientSecurityAndPermissions() {
           onClick={() => navigate("/patients/change-pin")}
           className="flex items-center gap-4 bg-transparent text-left group w-full py-2"
         >
-          <div className="text-neutral-500">
+          <div className="text-muted-foreground">
             <Shield className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <h2 className="font-medium text-base text-neutral-900">
-              Change PIN
-            </h2>
+            <h2 className="text-foreground">Change PIN</h2>
           </div>
-          <ChevronRight className="h-5 w-5 text-neutral-400 group-hover:text-neutral-600 transition-colors" />
+          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
         </button>
 
         {/* Permissions Section */}
         <div className="flex flex-col gap-4">
-          <h2 className="text-neutral-500 text-sm font-medium">Permissions</h2>
+          <h2 className="text-muted-foreground">Permissions</h2>
 
           <div className="flex flex-col gap-6">
             {/* Get the App */}
             <div className="flex items-start gap-4">
-              <div className="text-neutral-500 mt-1">
+              <div className="text-muted-foreground mt-1">
                 <LayoutGrid className="h-6 w-6" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-medium text-base text-neutral-900">
-                    Get the App
-                  </h2>
+                  <h2 className="text-foreground">Get the App</h2>
                   <Switch
                     checked={isInstalled}
                     onCheckedChange={handleInstallToggle}
                     disabled={isInstalled} // Disable if already installed so user can't toggle off (which doesn't make sense for PWA install)
                   />
                 </div>
-                <p className="text-neutral-500 text-sm mt-1 leading-relaxed">
+                <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
                   Install Jireh to your home screen for faster access and an
                   app-like experience, including offline access.
                 </p>
@@ -133,21 +129,19 @@ export default function PatientSecurityAndPermissions() {
 
             {/* Receive Notifications */}
             <div className="flex items-start gap-4">
-              <div className="text-neutral-500 mt-1">
+              <div className="text-muted-foreground mt-1">
                 <Bell className="h-6 w-6" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-medium text-base text-neutral-900">
-                    Receive Notifications
-                  </h2>
+                  <h2 className="text-foreground">Receive Notifications</h2>
                   <Switch
                     checked={notificationPermission === "granted"}
                     onCheckedChange={handleNotificationToggle}
                     disabled={notificationPermission === "granted"}
                   />
                 </div>
-                <p className="text-neutral-500 text-sm mt-1 leading-relaxed">
+                <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
                   Stay up-to-date with important alerts, updates, or special
                   offers relevant to you.
                 </p>
@@ -156,21 +150,19 @@ export default function PatientSecurityAndPermissions() {
 
             {/* Use My Location */}
             <div className="flex items-start gap-4">
-              <div className="text-neutral-500 mt-1">
+              <div className="text-muted-foreground mt-1">
                 <MapPin className="h-6 w-6" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h2 className="font-medium text-base text-neutral-900">
-                    Use My Location
-                  </h2>
+                  <h2 className="text-foreground">Use My Location</h2>
                   <Switch
                     checked={locationPermission === "granted"}
                     onCheckedChange={handleLocationToggle}
                     disabled={locationPermission === "granted"}
                   />
                 </div>
-                <p className="text-neutral-500 text-sm mt-1 leading-relaxed">
+                <p className="text-muted-foreground text-sm mt-1 leading-relaxed">
                   Find nearby services, personalize content, and provide local
                   updates.
                 </p>

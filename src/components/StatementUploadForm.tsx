@@ -42,7 +42,13 @@ export default function StatementUploadForm({
   const { reset } = useForm<Inputs>()
 
   const mutation = useMutation({
-    mutationFn: async ({ file, passcode }: { file: File, passcode?: string }) => {
+    mutationFn: async ({
+      file,
+      passcode,
+    }: {
+      file: File
+      passcode?: string
+    }) => {
       const formData = new FormData()
       formData.append("financialStatementFile", file)
       if (passcode) {
@@ -54,7 +60,7 @@ export default function StatementUploadForm({
 
       await axios.post(
         import.meta.env.VITE_API_BASE_URL +
-        "/underwriting/upload-mpesa-statement",
+          "/underwriting/upload-mpesa-statement",
         formData,
         {
           headers: {
@@ -84,7 +90,7 @@ export default function StatementUploadForm({
     },
     onError: (error: any) => {
       reset()
-      setUploadProgress(0) 
+      setUploadProgress(0)
       toast({
         title: "Error",
         description: error.response?.data?.message || error.message,
@@ -99,12 +105,12 @@ export default function StatementUploadForm({
       description={description}
       onClick={() => setActive(!active)}
       buttonLabel="show upload form"
-      icon={<CloudUpload className="w-7 h-7 text-neutral-500" />}
+      icon={<CloudUpload className="w-7 h-7 text-muted-foreground" />}
       active={active}
       isRequired={true}
       buttonDisabled={mutation.isPending}
     >
-      <div className="text-neutral-500 text-xs mt-3 -mb-3 font-medium flex justify-between items-center pb-2">
+      <div className="text-muted-foreground text-xs mt-3 -mb-3 font-medium flex justify-between items-center pb-2">
         Files uploaded ({files?.length})
       </div>
 
@@ -116,7 +122,7 @@ export default function StatementUploadForm({
                 {files.map((file: any) => (
                   <div
                     key={file.id}
-                    className="flex gap-2 items-center bg-neutral-50 px-3 py-2 text-xs border border-dashed rounded-md"
+                    className="flex gap-2 items-center bg-muted px-3 py-2 text-xs border border-dashed rounded-md"
                   >
                     {file.fileName}
                   </div>
@@ -124,13 +130,10 @@ export default function StatementUploadForm({
               </div>
             </div>
           )}
-          <form
-            className="mt-5 text-neutral-500 flex flex-col gap-4"
-          >
+          <form className="mt-5 text-muted-foreground flex flex-col gap-4">
             <div className={`${mutation.isPending && "hidden"}`}>
               <p className="text-xs text-center pb-1">
-                Browse to select a document, then click to upload to save
-                it.
+                Browse to select a document, then click to upload to save it.
               </p>
               <Input
                 type="file"
@@ -172,7 +175,9 @@ export default function StatementUploadForm({
                   <div className="flex items-center gap-2 font-medium text-primary">
                     <Loader /> Uploading...
                   </div>
-                  <span className="text-neutral-500">{uploadProgress}%</span>
+                  <span className="text-muted-foreground">
+                    {uploadProgress}%
+                  </span>
                 </div>
               </div>
             )}

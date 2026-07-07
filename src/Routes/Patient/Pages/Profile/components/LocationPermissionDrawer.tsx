@@ -20,7 +20,7 @@ export function LocationPermissionDrawer({
   isOpen,
   onClose,
   onEnable,
-  isLoading
+  isLoading,
 }: LocationPermissionDrawerProps) {
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -30,40 +30,43 @@ export function LocationPermissionDrawer({
             <DrawerTitle className="text-left  text-lg">
               Find care near you
             </DrawerTitle>
-            <DrawerDescription className="text-left text-neutral-500">
-              Enable location to instantly see verified hospitals and pharmacies in your area.
+            <DrawerDescription className="text-left text-muted-foreground">
+              Enable location to instantly see verified hospitals and pharmacies
+              in your area.
             </DrawerDescription>
           </DrawerHeader>
 
           <div className="p-6">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
-                <Check className="h-5 w-5 text-neutral-500" />
+                <Check className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-neutral-900 text-sm ">Find hospitals near you</p>
+                  <p className="text-foreground text-sm ">
+                    Find hospitals near you
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Check className="h-5 w-5 text-neutral-500" />
+                <Check className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-neutral-900 text-sm ">Get notified of nearby offers</p>
+                  <p className="text-foreground text-sm ">
+                    Get notified of nearby offers
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Check className="h-5 w-5 text-neutral-500" />
+                <Check className="h-5 w-5 text-muted-foreground" />
                 <div>
-                <p className="text-neutral-900 text-sm ">Save your care provider preferences for your next visit</p>
+                  <p className="text-foreground text-sm ">
+                    Save your care provider preferences for your next visit
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
           <DrawerFooter className="gap-3 pb-8">
-            <Button
-              className="w-full "
-              onClick={onEnable}
-              disabled={isLoading}
-            >
+            <Button className="w-full " onClick={onEnable} disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

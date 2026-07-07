@@ -76,19 +76,18 @@ export function MemberActivityFeed({
                 className="h-10 w-10"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-500">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-muted-foreground">
                 <UserPlus className="h-5 w-5" />
               </div>
             )}
           </div>
-          <div className="flex-1 text-sm text-neutral-700">
+          <div className="flex-1 text-sm text-muted-foreground">
             {item.kind === "transaction" ? (
               <>
                 {item.direction === "sent" ? (
                   <>
-                    You have sent{" "}
-                    {formatMoney(item.amount, item.currencyCode)} to{" "}
-                    {item.counterpartFirstName} {item.counterpartLastName}.
+                    You have sent {formatMoney(item.amount, item.currencyCode)}{" "}
+                    to {item.counterpartFirstName} {item.counterpartLastName}.
                   </>
                 ) : (
                   <>
@@ -100,9 +99,12 @@ export function MemberActivityFeed({
             ) : (
               <>{item.firstName} just joined your circle!</>
             )}
-            <Gift className="ml-1 inline h-3 w-3 text-neutral-400" aria-hidden />
+            <Gift
+              className="ml-1 inline h-3 w-3 text-muted-foreground"
+              aria-hidden
+            />
           </div>
-          <span className="shrink-0 text-xs text-neutral-400">
+          <span className="shrink-0 text-xs text-muted-foreground">
             <time dateTime={item.createdAt}>
               {relativeTimeShort(item.createdAt)}
             </time>

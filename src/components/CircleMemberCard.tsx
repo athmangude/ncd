@@ -39,7 +39,7 @@ export function CircleMemberCard({
     return (
       <div
         className={cn(
-          "bg-white p-4 rounded-xl shadow-sm border border-neutral-100",
+          "bg-white p-4 rounded-xl shadow-sm border border-border",
           "min-w-[240px] w-[240px] shrink-0 snap-center flex flex-col items-center gap-2",
           className
         )}
@@ -52,12 +52,14 @@ export function CircleMemberCard({
           showBadge
         />
         <div className="text-center overflow-hidden w-full">
-          <p className="font-medium text-neutral-900 truncate text-sm">{name}</p>
+          <p className="font-medium text-foreground truncate text-sm">{name}</p>
           {phoneNumber && (
-            <p className="text-neutral-500 text-xs truncate">{phoneNumber}</p>
+            <p className="text-muted-foreground text-xs truncate">
+              {phoneNumber}
+            </p>
           )}
           {relationship && (
-            <p className="text-neutral-400 text-xs capitalize truncate">
+            <p className="text-muted-foreground text-xs capitalize truncate">
               {relationship.toLowerCase()}
             </p>
           )}
@@ -72,8 +74,8 @@ export function CircleMemberCard({
     <div
       className={cn(
         "bg-white p-3 rounded-xl shadow-sm flex items-center gap-3",
-        "border border-neutral-100",
-        className,
+        "border border-border",
+        className
       )}
     >
       <CircleSlotAvatar
@@ -85,23 +87,23 @@ export function CircleMemberCard({
       />
 
       <div className="flex flex-col min-w-0 flex-1 gap-0.5">
-        <span className="font-medium truncate text-neutral-900 text-sm">
+        <span className="font-medium truncate text-foreground text-sm">
           {name}
         </span>
         {phoneNumber && (
-          <span className="text-neutral-400 text-sm truncate">{phoneNumber}</span>
+          <span className="text-muted-foreground text-sm truncate">
+            {phoneNumber}
+          </span>
         )}
         {relationship && (
-          <span className="text-neutral-400 text-xs capitalize">
+          <span className="text-muted-foreground text-xs capitalize">
             {relationship.toLowerCase()}
           </span>
         )}
       </div>
 
       {children && (
-        <div className="flex items-center gap-1 shrink-0 ml-2">
-          {children}
-        </div>
+        <div className="flex items-center gap-1 shrink-0 ml-2">{children}</div>
       )}
     </div>
   )

@@ -9,14 +9,14 @@ interface DashboardCTAProps {
 export function DashboardCTA({ icon, title, onClick }: DashboardCTAProps) {
   return (
     <button
-      className="bg-[#F3E8FF] hover:bg-[#E9D5FF] rounded-2xl flex flex-col items-start justify-between p-4 h-auto min-h-[100px] transition-colors w-full gap-2"
+      className="bg-secondary hover:bg-secondary/80 rounded-2xl flex flex-col items-start justify-between p-4 h-auto min-h-[100px] transition-colors w-full gap-2"
       onClick={onClick}
     >
-      <div className="">
-        {icon}
-      </div>
+      <div className="">{icon}</div>
 
-      <span className="text-neutral-900 font-medium text-left leading-tight">{title}</span>
+      <span className="text-foreground font-medium text-left leading-tight">
+        {title}
+      </span>
     </button>
   )
 }

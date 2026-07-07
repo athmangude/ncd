@@ -10,7 +10,7 @@ export function PatientNetworkFAQ() {
     <Accordion type="multiple" className="w-full flex flex-col gap-3">
       <AccordionItem value="item-1">
         <AccordionTrigger>
-          <UsersRound className="w-5 h-5 text-neutral-500" />
+          <UsersRound className="w-5 h-5 text-muted-foreground" />
           What are Jireh Networks?
         </AccordionTrigger>
         <AccordionContent>
@@ -22,7 +22,7 @@ export function PatientNetworkFAQ() {
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>
-          <BadgeCheck className="w-5 h-5 text-neutral-500" />
+          <BadgeCheck className="w-5 h-5 text-muted-foreground" />
           Why join Jireh?
         </AccordionTrigger>
         <AccordionContent>
@@ -42,7 +42,7 @@ export function PatientCareFundFAQ() {
     <Accordion type="multiple" className="w-full flex flex-col gap-3">
       <AccordionItem value="item-1">
         <AccordionTrigger>
-          <UsersRound className="w-5 h-5 text-neutral-500" />
+          <UsersRound className="w-5 h-5 text-muted-foreground" />
           What is Jireh?
         </AccordionTrigger>
         <AccordionContent>
@@ -60,7 +60,7 @@ export function PatientCareFundFAQ() {
       </AccordionItem>
       <AccordionItem value="item-2">
         <AccordionTrigger>
-          <Building className="w-5 h-5 text-neutral-500" />
+          <Building className="w-5 h-5 text-muted-foreground" />
           Which hospitals can you use Jireh?
         </AccordionTrigger>
         <AccordionContent>
@@ -73,7 +73,7 @@ export function PatientCareFundFAQ() {
 
       <AccordionItem value="item-3">
         <AccordionTrigger>
-          <Coins className="w-5 h-5 text-neutral-500" />
+          <Coins className="w-5 h-5 text-muted-foreground" />
           What is the cost of using Jireh for medical bills?
         </AccordionTrigger>
         <AccordionContent>

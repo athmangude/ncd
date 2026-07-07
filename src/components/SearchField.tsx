@@ -131,7 +131,7 @@ export default function SearchField({
     setQuery(result[dataDetails.titleKey])
 
     // Toggle the item in addedItems
-    setAddedItems(prev => {
+    setAddedItems((prev) => {
       const newSet = new Set(prev)
       if (newSet.has(result.id)) {
         newSet.delete(result.id)
@@ -253,8 +253,7 @@ export default function SearchField({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm break-words capitalize "
-                        >
+                        <h4 className="font-medium text-sm break-words capitalize ">
                           {highlightSearchTerm(
                             result[dataDetails.titleKey].toLowerCase(),
                             debouncedQuery
@@ -269,15 +268,17 @@ export default function SearchField({
                       </div>
                       <div className="flex items-center">
                         {addedItems.has(result.id) ? (
-                          <Check className="h-5 w-5 text-neutral-400" />
+                          <Check className="h-5 w-5 text-muted-foreground" />
                         ) : (
                           <Plus className="h-5 w-5 text-primary hover:text-primary/80 transition-colors" />
                         )}
                       </div>
                     </div>
-                    {emphasis && result[emphasis.key] && (!emphasis.condition || emphasis.condition(result)) && (
-                      <SearchFieldEmphasis text={emphasis.text} />
-                    )}
+                    {emphasis &&
+                      result[emphasis.key] &&
+                      (!emphasis.condition || emphasis.condition(result)) && (
+                        <SearchFieldEmphasis text={emphasis.text} />
+                      )}
                   </div>
                 ))}
               </div>
@@ -301,7 +302,7 @@ export default function SearchField({
 
 export function SearchFieldEmphasis({ text }: { text: string }) {
   return (
-    <div className="mt-2 text-xs bg-neutral-100 rounded-md px-2 py-1 flex items-center gap-2">
+    <div className="mt-2 text-xs bg-muted rounded-md px-2 py-1 flex items-center gap-2">
       <Sparkles className="inline size-3 text-[#1EDD05]" fill="#1EDD05" />
       <span>{text}</span>
     </div>

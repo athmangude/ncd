@@ -21,7 +21,7 @@ const getInitials = (name?: string, firstName?: string, lastName?: string) => {
   if (name) {
     const parts = name.trim().split(" ")
     if (parts.length >= 2) {
-        return `${parts[0].charAt(0).toUpperCase()}${parts[1].charAt(0).toUpperCase()}`
+      return `${parts[0].charAt(0).toUpperCase()}${parts[1].charAt(0).toUpperCase()}`
     }
     return name.substring(0, 2).toUpperCase()
   }
@@ -37,7 +37,7 @@ export function ProfileAvatar({
   alt,
   fallbackClassName,
   iconClassName,
-  priority = false
+  priority = false,
 }: ProfileAvatarProps) {
   const [status, setStatus] = useState<"loading" | "loaded" | "error">(() => {
     if (!src) return "error"
@@ -64,12 +64,12 @@ export function ProfileAvatar({
 
     // Reset status if src changes
     setStatus("loading")
-    
+
     const img = new Image()
     img.src = src
-    
+
     if (priority) {
-       img.fetchPriority = "high"
+      img.fetchPriority = "high"
     }
 
     const handleLoad = () => {
@@ -82,34 +82,42 @@ export function ProfileAvatar({
     }
 
     if (img.complete) {
-        handleLoad()
+      handleLoad()
     } else {
-        img.onload = handleLoad
-        img.onerror = handleError
+      img.onload = handleLoad
+      img.onerror = handleError
     }
-    
+
     return () => {
-        img.onload = null
-        img.onerror = null
+      img.onload = null
+      img.onerror = null
     }
   }, [src, priority])
 
-  const initials = useMemo(() => getInitials(name, firstName, lastName), [name, firstName, lastName])
+  const initials = useMemo(
+    () => getInitials(name, firstName, lastName),
+    [name, firstName, lastName]
+  )
 
   return (
-    <div className={cn("relative aspect-square overflow-hidden rounded-full bg-neutral-100 shrink-0", className)}>
+    <div
+      className={cn(
+        "relative aspect-square overflow-hidden rounded-full bg-muted shrink-0",
+        className
+      )}
+    >
       {/* Show skeleton while loading if we have a source */}
       {status === "loading" && src && (
-         <div className="absolute inset-0 h-full w-full rounded-full animate-shimmer" />
+        <div className="absolute inset-0 h-full w-full rounded-full animate-shimmer" />
       )}
-      
+
       {/* Show image only when loaded */}
       {status === "loaded" && currentSrc && (
         <img
           src={currentSrc}
           alt={alt || name || "Profile"}
           className={cn(
-            "h-full w-full object-cover transition-opacity duration-300", 
+            "h-full w-full object-cover transition-opacity duration-300",
             // Fade in effect
             "opacity-100"
           )}
@@ -120,17 +128,19 @@ export function ProfileAvatar({
 
       {/* Show fallback if error or no source */}
       {(status === "error" || !src) && (
-        <div className={cn("flex h-full w-full items-center justify-center bg-neutral-100 text-neutral-500 font-medium", fallbackClassName)}>
-            {initials ? (
-                <span>
-                    {initials}
-                </span>
-            ) : (
-                <User className={cn("h-1/2 w-1/2", iconClassName)} />
-            )}
+        <div
+          className={cn(
+            "flex h-full w-full items-center justify-center bg-muted text-muted-foreground font-medium",
+            fallbackClassName
+          )}
+        >
+          {initials ? (
+            <span>{initials}</span>
+          ) : (
+            <User className={cn("h-1/2 w-1/2", iconClassName)} />
+          )}
         </div>
       )}
     </div>
   )
 }
-

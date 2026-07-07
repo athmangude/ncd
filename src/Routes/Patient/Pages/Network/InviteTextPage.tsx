@@ -74,9 +74,9 @@ export default function InviteTextPage() {
       title="Invite by SMS"
       onBack={handleBack}
       footer={
-        <div className="p-4 bg-white border-t border-neutral-100">
+        <div className="p-4 bg-white border-t border-border">
           <Button
-            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-neutral-300 disabled:text-neutral-500"
+            className="w-full bg-[#A822F4] hover:bg-[#901DD0] disabled:bg-muted disabled:text-muted-foreground"
             onClick={handleContinue}
             disabled={message.length === 0 || message.length > MAX_CHARS}
           >
@@ -87,25 +87,23 @@ export default function InviteTextPage() {
     >
       <div className="flex flex-col">
         <div className="flex flex-col mb-8">
-          <h2 className="text-2xl font-semibold text-neutral-900 mb-1">
-            Write up to 140 characters
-          </h2>
-          <p className="text-neutral-500 text-sm">
+          <h2 className="text-foreground mb-1">Write up to 140 characters</h2>
+          <p className="text-muted-foreground text-sm">
             e.g. &ldquo;This is for managing Mom&apos;s care&rdquo;.
           </p>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-neutral-900">
+          <label className="text-sm font-medium text-foreground">
             Text Message
           </label>
           <Textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder=""
-            className="min-h-[80px] p-3 text-base rounded-sm border-neutral-200 focus:border-purple-500 focus:ring-purple-500"
+            className="min-h-[80px] p-3 text-base rounded-sm border-border focus:border-purple-500 focus:ring-purple-500"
           />
-          <div className="text-left text-xs text-neutral-400">
+          <div className="text-left text-xs text-muted-foreground">
             {message.length}/{MAX_CHARS} characters
           </div>
         </div>

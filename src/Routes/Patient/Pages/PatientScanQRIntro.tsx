@@ -50,7 +50,10 @@ export default function PatientScanQRIntro() {
   return (
     <MobileWrapper
       header={
-        <BackTitleHeader title="Invite by QR code" onBack={() => navigate(-1)} />
+        <BackTitleHeader
+          title="Invite by QR code"
+          onBack={() => navigate(-1)}
+        />
       }
       footer={null}
       className="flex flex-col items-center"
@@ -64,7 +67,7 @@ export default function PatientScanQRIntro() {
             className="object-contain"
             style={{ width: 124, height: 84 }}
           />
-          <h1 className="text-xl font-medium text-neutral-900 tracking-tight leading-[1.25] text-center">
+          <h1 className="leading-[1.25] text-center">
             Scan this QR code
             <br />
             to join {firstName}&apos;s Circle
@@ -72,7 +75,7 @@ export default function PatientScanQRIntro() {
         </div>
 
         {/* QR code frame */}
-        <div className="relative size-[200px] rounded-2xl bg-neutral-100 overflow-hidden">
+        <div className="relative size-[200px] rounded-2xl bg-muted overflow-hidden">
           <img
             src={qrCodeUrl || qrPlaceHolder}
             alt="QR Code"
@@ -83,21 +86,23 @@ export default function PatientScanQRIntro() {
         {/* Benefits */}
         <div className="flex flex-col w-full">
           <div className="px-2 py-1.5">
-            <p className="text-xs font-medium text-neutral-500">Benefits:</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              Benefits:
+            </p>
           </div>
           <div className="flex flex-col gap-1">
             <BenefitItem
-              icon={<HeartHandshake className="w-4 h-4 text-neutral-900" />}
+              icon={<HeartHandshake className="w-4 h-4 text-foreground" />}
               title="Share your cashback"
               body="If someone in your Circle needs help, send your cashback balance directly to them."
             />
             <BenefitItem
-              icon={<Dumbbell className="w-4 h-4 text-neutral-900" />}
+              icon={<Dumbbell className="w-4 h-4 text-foreground" />}
               title="Ready before an emergency hits"
               body="With a Circle ready, you can borrow in minutes, not days."
             />
             <BenefitItem
-              icon={<FileCheck2 className="w-4 h-4 text-neutral-900" />}
+              icon={<FileCheck2 className="w-4 h-4 text-foreground" />}
               title="Borrow when you need it"
               body="A confirmed Circle unlocks your loan."
             />
@@ -123,8 +128,8 @@ function BenefitItem({
         {icon}
       </div>
       <div className="flex flex-col flex-1 min-w-0 leading-5">
-        <p className="text-sm text-neutral-900">{title}</p>
-        <p className="text-sm text-neutral-500">{body}</p>
+        <p className="text-sm text-foreground">{title}</p>
+        <p className="text-sm text-muted-foreground">{body}</p>
       </div>
     </div>
   )

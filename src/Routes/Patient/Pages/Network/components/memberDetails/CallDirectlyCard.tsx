@@ -18,8 +18,10 @@ export function CallDirectlyCard({ phoneNumber }: CallDirectlyCardProps) {
       />
       <div className="flex flex-1 flex-col gap-3">
         <div>
-          <p className="text-base font-medium leading-6 text-neutral-900">Call them directly</p>
-          <p className="text-sm text-neutral-500">on {phoneNumber}</p>
+          <p className="text-base font-medium leading-6 text-foreground">
+            Call them directly
+          </p>
+          <p className="text-sm text-muted-foreground">on {phoneNumber}</p>
         </div>
         <a
           href={`tel:${phoneNumber}`}

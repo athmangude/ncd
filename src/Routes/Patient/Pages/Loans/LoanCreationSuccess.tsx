@@ -68,7 +68,7 @@ function LoanSubmittedForApproval({ data }: { data: any }) {
       <p>
         We will send you a link to complete the disbursement of{" "}
         <span className="font-medium">
-          {formatMoney(totalBillAmount, currency.code)}
+          {formatMoney(totalBillAmount, currency?.code)}
         </span>{" "}
         to <span className="font-medium">{careProvider?.name}</span>
         once we have approved your request.
@@ -93,7 +93,7 @@ function LoanDisbursed({ data }: { data: any }) {
 
       <p>
         <span className="font-medium">
-          {formatMoney(totalBillAmount, currency.code)}
+          {formatMoney(totalBillAmount, currency?.code)}
         </span>{" "}
         has been paid to{" "}
         <span className="font-medium">{careProvider?.name}</span> at{" "}

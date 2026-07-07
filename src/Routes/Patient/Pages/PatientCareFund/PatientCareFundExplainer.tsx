@@ -10,7 +10,7 @@ export default function PatientCareFundExplainer() {
 
   return (
     <section className="flex flex-col gap-5">
-      <h3 className="font-bold text-lg text-neutral-900 mt-2">How it works</h3>
+      <h3 className="mt-2">How it works</h3>
 
       {careFundAccount ? (
         <ActiveCareFundExplainer />

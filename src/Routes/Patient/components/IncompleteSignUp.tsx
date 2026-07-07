@@ -84,9 +84,10 @@ export default function IncompleteSignUp({
   // Self-shells via AppShell (migrated in Phase 4 alongside the dashboard): the
   // routes that render it (the "/patients" incomplete state and
   // "/complete-profile") are now passthrough in PatientsHome's container, so the
-  // canonical shell draws the frame here. The bespoke #FDF4FF tint and its
-  // (buggy but intentional) conditional are preserved verbatim — relocate, not
-  // restyle.
+  // canonical shell draws the frame here. The bespoke #FDF4FF canvas tint (Task 8
+  // batch 2) is dropped so the screen inherits the shell's single surface instead
+  // of painting its own — this also permanently retires the footer-vs-card tint
+  // disagreement the §0 pass patched (there is no tint left to disagree on).
   const header = (
     <header className="w-full max-w-[400px] mx-auto py-5 flex justify-center">
       <img src={fullLogo} alt="Jireh Logo" className="w-1/2" />
@@ -94,14 +95,7 @@ export default function IncompleteSignUp({
   )
 
   const footer = (
-    <div
-      className={cn(
-        "p-4",
-        !fromPayMedicalBill || !isCompletingProfile
-          ? "bg-[#FDF4FF]"
-          : "bg-white"
-      )}
-    >
+    <div className="p-4">
       <Button
         className="w-full"
         role="link"
@@ -124,13 +118,7 @@ export default function IncompleteSignUp({
   )
 
   return (
-    <AppShell
-      header={header}
-      footer={footer}
-      cardClassName={cn(
-        !fromPayMedicalBill || (!isCompletingProfile && "bg-[#FDF4FF]")
-      )}
-    >
+    <AppShell header={header} footer={footer}>
       <section className="max-w-[400px] rounded-sm w-full mx-auto flex flex-col gap-7">
         <div className="flex flex-col items-center gap-2 mb-2">
           <div className="flex flex-col items-center justify-center mb-6">
@@ -152,7 +140,7 @@ export default function IncompleteSignUp({
               }
             />
           </div>
-          <p className="text-neutral-500 text-center text-sm">
+          <p className="text-muted-foreground text-center text-sm">
             {fromPayMedicalBill || isCompletingProfile
               ? "Unlock cashback when you pay with Jireh Health."
               : "Secure your identity to unlock healthcare support."}
@@ -164,7 +152,7 @@ export default function IncompleteSignUp({
         </div>
 
         <div className="flex flex-col gap-4 w-full">
-          <p className="text-neutral-500 text-sm font-medium">
+          <p className="text-muted-foreground text-sm font-medium">
             Information being collected:
           </p>
           <div className="flex flex-col gap-3">
@@ -183,14 +171,14 @@ export default function IncompleteSignUp({
                     "flex items-center justify-between p-4 rounded-lg border transition-colors",
                     isCompleted
                       ? "bg-green-50 border-green-500"
-                      : "bg-white border-neutral-200"
+                      : "bg-white border-border"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <span
                       className={cn(
                         "text-sm font-medium",
-                        isCompleted ? "text-green-700" : "text-neutral-400"
+                        isCompleted ? "text-green-700" : "text-muted-foreground"
                       )}
                     >
                       {String(step.id).padStart(2, "0")}
@@ -198,7 +186,7 @@ export default function IncompleteSignUp({
                     <span
                       className={cn(
                         "font-medium text-sm",
-                        isCompleted ? "text-green-900" : "text-neutral-900"
+                        isCompleted ? "text-green-900" : "text-foreground"
                       )}
                     >
                       {step.label}
@@ -215,7 +203,7 @@ export default function IncompleteSignUp({
                   )}
 
                   {isCurrent && !isCompleted && (
-                    <span className="text-sm text-neutral-400 font-medium">
+                    <span className="text-sm text-muted-foreground font-medium">
                       Next
                     </span>
                   )}

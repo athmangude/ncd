@@ -39,9 +39,7 @@ export function RepaymentTimeline({
 
   return (
     <div className={cn("overflow-x-auto no-scrollbar pb-1", className)}>
-      <h3 className="mb-2 text-neutral-500 font-light text-lg">
-        Salary Advance Plan
-      </h3>
+      <h3 className="mb-2 text-muted-foreground">Salary Advance Plan</h3>
       <div className="flex gap-10">
         {installments.map((installment, index) => (
           <Installment
@@ -54,7 +52,7 @@ export function RepaymentTimeline({
         ))}
       </div>
       <div
-        className="w-full h-1 rounded-full bg-neutral-200"
+        className="w-full h-1 rounded-full bg-muted"
         aria-hidden="true"
       ></div>
     </div>
@@ -81,7 +79,7 @@ function Installment({
     : false
   return (
     <div className="flex flex-col gap-2 transform translate-y-2 ">
-      <div className="text-neutral-500 text-sm flex">
+      <div className="text-muted-foreground text-sm flex">
         {`${resolveOrdinal(installmentNumber)} deduction`}
       </div>
       <div className={`${dueDateHasPassed && "line-through"}`}>
@@ -89,12 +87,12 @@ function Installment({
       </div>
 
       <div
-        className={`text-neutral-500 flex ${dueDateHasPassed && "line-through"}`}
+        className={`text-muted-foreground flex ${dueDateHasPassed && "line-through"}`}
       >
         {month}
       </div>
 
-      <div className="w-3 h-3 rounded-full bg-neutral-200 font-medium"></div>
+      <div className="w-3 h-3 rounded-full bg-muted font-medium"></div>
     </div>
   )
 }

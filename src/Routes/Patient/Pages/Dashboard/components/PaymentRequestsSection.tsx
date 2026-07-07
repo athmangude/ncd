@@ -1,7 +1,10 @@
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { formatDateTime } from "@/utilities/dateUtilities"
 import { useNavigate } from "react-router-dom"
-import { setToLocalStorage, removeFromLocalStorage } from "@/utilities/localStorage"
+import {
+  setToLocalStorage,
+  removeFromLocalStorage,
+} from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "../../Loans/RequestLoan/PatientUploadInvoice"
 import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -17,6 +20,9 @@ import {
   DialogTitle,
 } from "@/components/Dialog"
 import { Button } from "@/components/Button"
+import { Badge } from "@/components/Badge"
+import { SectionTitle } from "@/components/SectionTitle"
+import { resolveStatusVariant } from "@/utilities/statusUtilities"
 
 export interface PaymentRequest {
   id: string
@@ -59,14 +65,20 @@ interface PaymentRequestsSectionProps {
   isLoading?: boolean
 }
 
-export function PaymentRequestsSection({ requests, isLoading }: PaymentRequestsSectionProps) {
+export function PaymentRequestsSection({
+  requests,
+  isLoading,
+}: PaymentRequestsSectionProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col gap-3">
         <Skeleton className="h-6 w-40 mt-2" />
         <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4">
           {[1, 2].map((i) => (
-            <Skeleton key={i} className="h-32 w-[85%] sm:w-[300px] rounded-xl shrink-0" />
+            <Skeleton
+              key={i}
+              className="h-32 w-[85%] sm:w-[300px] rounded-xl shrink-0"
+            />
           ))}
         </div>
       </div>
@@ -78,13 +90,16 @@ export function PaymentRequestsSection({ requests, isLoading }: PaymentRequestsS
   return (
     <div className="flex flex-col gap-3">
       <div className="flex justify-between items-center mt-2">
-        <h3 className="font-bold text-lg text-neutral-900">Payment Requests</h3>
+        <SectionTitle>Payment Requests</SectionTitle>
       </div>
 
       {/* Horizontal Scroll Container */}
       <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {requests.map((request) => (
-          <div key={request.id} className="snap-center shrink-0 w-[85%] sm:w-[300px]">
+          <div
+            key={request.id}
+            className="snap-center shrink-0 w-[85%] sm:w-[300px]"
+          >
             <PaymentRequestCard request={request} />
           </div>
         ))}
@@ -98,18 +113,12 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const {
-    id,
-    careProviderName,
-    billAmount,
-    createdAt,
-    status,
-  } = request
+  const { id, careProviderName, billAmount, createdAt, status } = request
 
   const handleClick = () => {
-      removeFromLocalStorage(patientReviewInvoiceStorageKey)
-      setToLocalStorage("manualPaymentRequestId", id)
-      navigate("/patients/payment/request-payment/verification-pending")
+    removeFromLocalStorage(patientReviewInvoiceStorageKey)
+    setToLocalStorage("manualPaymentRequestId", id)
+    navigate("/patients/payment/request-payment/verification-pending")
   }
 
   const deleteMutation = useMutation({
@@ -126,12 +135,17 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
       await queryClient.cancelQueries({ queryKey: ["paymentRequests"] })
 
       // Snapshot the previous value
-      const previousRequests = queryClient.getQueryData<PaymentRequest[]>(["paymentRequests"])
+      const previousRequests = queryClient.getQueryData<PaymentRequest[]>([
+        "paymentRequests",
+      ])
 
       // Optimistically update the cache by removing the deleted request
-      queryClient.setQueryData<PaymentRequest[]>(["paymentRequests"], (old = []) => {
-        return old.filter((request) => request.id !== requestId)
-      })
+      queryClient.setQueryData<PaymentRequest[]>(
+        ["paymentRequests"],
+        (old = []) => {
+          return old.filter((request) => request.id !== requestId)
+        }
+      )
 
       // Return a context object with the snapshotted value
       return { previousRequests }
@@ -179,45 +193,38 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
 
   return (
     <>
-      <div 
-        className="p-4 flex flex-col gap-3 bg-white hover:bg-neutral-50 transition-colors cursor-pointer border rounded-xl h-full shadow-sm"
+      <div
+        className="p-4 flex flex-col gap-3 bg-card hover:bg-muted transition-colors cursor-pointer border rounded-xl h-full shadow-sm"
         onClick={handleClick}
       >
         <div className="flex justify-between items-start">
           <div className="flex-1 mr-2">
-            <p className="text-base text-neutral-900 line-clamp-1 capitalize font-medium">
+            <p className="text-base text-foreground line-clamp-1 capitalize font-medium">
               {careProviderName}
             </p>
-            <p className="text-sm text-neutral-500 mt-0.5">
-              {formatMoney(Number(billAmount), "KES")} • {formatDateTime(createdAt)}
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {formatMoney(Number(billAmount), "KES")} •{" "}
+              {formatDateTime(createdAt)}
             </p>
           </div>
-          <div className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${
-            status === 'APPROVED' ? 'bg-green-100 text-green-700' :
-            status === 'PENDING' ? 'bg-orange-100 text-orange-700' :
-            'bg-neutral-100 text-neutral-700'
-          }`}>
-            {status}
-          </div>
+          <Badge variant={resolveStatusVariant(status)}>{status}</Badge>
         </div>
 
-          <div className="flex gap-2 mt-1">
-            <button
-              className="flex-1 py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors"
-              onClick={handleSendPaymentClick}
-            >
-             Send Payment
-            </button>
-            <button
-              className="px-3 py-2 bg-red-100 text-red-700 text-sm font-semibold rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center"
-              onClick={handleDeleteClick}
-              aria-label="Delete payment request"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
-          </div>
-        
-
+        <div className="flex gap-2 mt-1">
+          <button
+            className="flex-1 py-2 bg-purple-100 text-purple-700 text-sm font-semibold rounded-lg hover:bg-purple-200 transition-colors"
+            onClick={handleSendPaymentClick}
+          >
+            Send Payment
+          </button>
+          <button
+            className="px-3 py-2 bg-red-100 text-red-700 text-sm font-semibold rounded-lg hover:bg-red-200 transition-colors flex items-center justify-center"
+            onClick={handleDeleteClick}
+            aria-label="Delete payment request"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
@@ -225,8 +232,8 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
           <DialogHeader>
             <DialogTitle>Delete Payment Request</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this payment request for {careProviderName}? 
-              This action cannot be undone.
+              Are you sure you want to delete this payment request for{" "}
+              {careProviderName}? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2">

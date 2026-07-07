@@ -51,49 +51,47 @@ export function CircleInviteReminderCard({
   return (
     <div
       className={cn(
-        "bg-white border border-neutral-200 rounded-lg overflow-hidden",
-        readStatus === "UNREAD" && "bg-blue-50/30",
+        "bg-card border border-border rounded-lg overflow-hidden",
+        readStatus === "UNREAD" && "bg-blue-50/30"
       )}
     >
       {/* Header row */}
       <div className="flex items-center gap-2 px-[10px] py-[8px]">
         <div className="flex items-center justify-center size-[20px] shrink-0">
-          <UserRoundPlus
-            size={16}
-            className="text-neutral-600"
-          />
+          <UserRoundPlus size={16} className="text-muted-foreground" />
         </div>
-        <span className="flex-1 text-sm font-medium text-neutral-900">
+        <span className="flex-1 text-sm font-medium text-foreground">
           {title}
         </span>
-        <span className="text-xs text-neutral-600 shrink-0">{timestamp}</span>
+        <span className="text-xs text-muted-foreground shrink-0">
+          {timestamp}
+        </span>
       </div>
 
       {/* Body text */}
       <div className="px-[10px] pb-[4px] pl-[36px]">
-        <p className="text-sm font-normal text-neutral-500">{body}</p>
+        <p className="text-sm font-normal text-muted-foreground">{body}</p>
       </div>
 
       {/* Action row */}
       <div
         className={cn(
-          "flex items-center gap-[8px] pb-[16px] pl-[36px] pr-[8px] pt-[4px]",
+          "flex items-center gap-[8px] pb-[16px] pl-[36px] pr-[8px] pt-[4px]"
         )}
       >
         {is4h ? (
           <>
             <button
               type="button"
-              className="h-[24px] px-[8px] bg-transparent text-sm font-medium text-neutral-800 rounded"
+              className="h-[24px] px-[8px] bg-transparent text-sm font-medium text-foreground rounded"
               onClick={handleNavigate}
             >
               View details
             </button>
-            <div className="w-px h-[16px] bg-neutral-200" />
+            <div className="w-px h-[16px] bg-border" />
             <button
               type="button"
-              className="flex items-center gap-[6px] h-[24px] px-[8px] rounded-[4px] text-sm font-medium"
-              style={{ backgroundColor: "#f5e5ff", color: "#8112b7" }}
+              className="flex items-center gap-[6px] h-[24px] px-[8px] rounded-[4px] text-sm font-medium text-secondary-foreground bg-secondary"
               onClick={handleNavigate}
             >
               Resend invite
@@ -103,8 +101,7 @@ export function CircleInviteReminderCard({
         ) : (
           <button
             type="button"
-            className="flex items-center gap-[6px] h-[24px] px-[8px] rounded-[4px] text-sm font-medium"
-            style={{ backgroundColor: "#f5e5ff", color: "#8112b7" }}
+            className="flex items-center gap-[6px] h-[24px] px-[8px] rounded-[4px] text-sm font-medium text-secondary-foreground bg-secondary"
             onClick={handleNavigate}
           >
             Invite another person

@@ -19,7 +19,7 @@ export default function PatientInvoiceGuide() {
           <div className="grid grid-cols-2 gap-4">
             {/* Bad Example */}
             <div className="relative">
-              <div className="aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden border-2 border-neutral-300">
+              <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden border-2 border-border">
                 <img
                   src={invoiceBadExample}
                   alt="Blurry or angled invoice example"
@@ -33,7 +33,7 @@ export default function PatientInvoiceGuide() {
 
             {/* Good Example */}
             <div className="relative">
-              <div className="aspect-[3/4] bg-neutral-100 rounded-lg overflow-hidden ">
+              <div className="aspect-[3/4] bg-muted rounded-lg overflow-hidden ">
                 <img
                   src={invoiceGoodExample}
                   alt="Clear and straight invoice example"
@@ -56,33 +56,33 @@ export default function PatientInvoiceGuide() {
 
           <div className="flex flex-col gap-2">
             <div className="flex gap-4">
-              <p className="text-neutral-500 font-mono">01</p>
+              <p className="text-muted-foreground font-mono">01</p>
               <div>
                 <p>Good lighting</p>
-                <p className="text-neutral-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Make sure the invoice is well-lit and in focus.
                 </p>
-                <p className="text-neutral-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   No shadows and avoid reflective glare on the document.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-4">
-              <p className="text-neutral-500 font-mono">02</p>
+              <p className="text-muted-foreground font-mono">02</p>
               <div>
                 <p>Include all 4 corners</p>
-                <p className="text-neutral-500 text-sm">
+                <p className="text-muted-foreground text-sm">
                   Ensure all information is visible.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-4">
-              <p className="text-neutral-500 font-mono">03</p>
+              <p className="text-muted-foreground font-mono">03</p>
               <div>
                 <p>Steady camera</p>
-                <p className="text-neutral-500 text-sm leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   Keep your device steady or place the invoice on a flat surface
                   for a clear, non-blurry image.
                 </p>

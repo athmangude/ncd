@@ -7,7 +7,7 @@ const ArrowButton = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Button
         ref={ref}
-        className="rounded-none mx-auto disabled:bg-neutral-500 shadow-sm shadow-neutral-500"
+        className="rounded-none mx-auto disabled:bg-muted-foreground shadow-sm shadow-muted-foreground"
         {...props}
       >
         <div className="flex items-center gap-2">

@@ -37,7 +37,7 @@ function wrap(ui: ReactNode) {
 
 // PatientSubscriptionsTransactionResult self-shells via AppShell (Phase 5): the
 // legacy padded container in PatientsHome was deleted, so this screen draws its
-// own canonical frame with the CTA in the footer slot and the bespoke bubblegum
+// own canonical frame with the CTA in the footer slot and the bespoke brand-gradient
 // tint preserved verbatim.
 describe("PatientSubscriptionsTransactionResult", () => {
   it("renders the success content with the Continue CTA inside the shell", async () => {
@@ -46,7 +46,7 @@ describe("PatientSubscriptionsTransactionResult", () => {
     expect(await screen.findByText("Payment complete!")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Continue/i })).toBeInTheDocument()
     expect(screen.getByRole("main")).toBeInTheDocument()
-    // Bespoke bubblegum tint is preserved (relocate, not restyle).
-    expect(document.querySelector(".bg-bubblegum-100")).toBeTruthy()
+    // Bespoke brand-gradient tint is preserved (relocate, not restyle).
+    expect(document.querySelector(".bg-brand-gradient-100")).toBeTruthy()
   })
 })

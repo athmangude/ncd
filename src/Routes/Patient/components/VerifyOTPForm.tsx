@@ -15,7 +15,10 @@ import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import useNextOnboardingStep from "../hooks/useNextOnboardingStep"
 import { useWebOTP } from "../hooks/useWebOTP"
 import { trackEvent, EVENTS } from "@/analytics"
-import MobileWrapper, { LogoHeader, PrimaryCTAFooter } from "@/Routes/MobileWrapper"
+import MobileWrapper, {
+  LogoHeader,
+  PrimaryCTAFooter,
+} from "@/Routes/MobileWrapper"
 
 export default function VerifyOTPForm() {
   const navigate = useNavigate()
@@ -185,7 +188,7 @@ export default function VerifyOTPForm() {
       className="flex flex-col items-center gap-6"
     >
       <div className="text-center space-y-2">
-        <h1 className="text-2xl font-semibold">Enter your One-Time-PIN</h1>
+        <h1>Enter your One-Time-PIN</h1>
         <p className="text-muted-foreground text-center">
           We sent an SMS to your phone number <br />({data.phoneNumber}).
         </p>
@@ -263,9 +266,7 @@ export default function VerifyOTPForm() {
       {resendMutation.isError && (
         <ErrorMessage message={resendMutation.error.message} />
       )}
-      {resendMutation.data && (
-        <SuccessMessage message={resendMutation.data} />
-      )}
+      {resendMutation.data && <SuccessMessage message={resendMutation.data} />}
     </MobileWrapper>
   )
 }

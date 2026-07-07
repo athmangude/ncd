@@ -45,7 +45,7 @@ export function AvailablePromosSection({
   return (
     <div className="flex flex-col w-full">
       <div className="flex items-center gap-2 py-1.5 w-full">
-        <Gift className="h-4 w-4 text-gray-700" />
+        <Gift className="h-4 w-4 text-muted-foreground" />
         <span className="flex-1 text-sm text-foreground ">
           Available promos
         </span>
@@ -53,7 +53,7 @@ export function AvailablePromosSection({
           <button
             type="button"
             onClick={handleSeeAll}
-            className="flex items-center gap-0.5 text-sm text-neutral-800 "
+            className="flex items-center gap-0.5 text-sm text-foreground "
           >
             See all
             <ChevronRight className="h-3.5 w-3.5" />
@@ -67,7 +67,7 @@ export function AvailablePromosSection({
             key={p.id}
             type="button"
             onClick={() => navigate(`/patients/discounts/${p.id}`)}
-            className="border border-neutral-200 rounded-xl p-3 shrink-0 w-[220px] text-left flex items-center gap-3"
+            className="border border-border rounded-xl p-3 shrink-0 w-[220px] text-left flex items-center gap-3"
           >
             <img
               src={percentTile}
@@ -81,7 +81,8 @@ export function AvailablePromosSection({
               </p>
               {p.maximumDiscountAmount && (
                 <p className="text-xs text-muted-foreground">
-                  up to KES {parseFloat(p.maximumDiscountAmount).toLocaleString()}
+                  up to KES{" "}
+                  {parseFloat(p.maximumDiscountAmount).toLocaleString()}
                 </p>
               )}
               {!p.maximumDiscountAmount && p.validUntil && (

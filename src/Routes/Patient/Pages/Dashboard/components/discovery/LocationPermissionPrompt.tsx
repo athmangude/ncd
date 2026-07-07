@@ -1,4 +1,5 @@
 import { Button } from "@/components/Button"
+import { Alert, AlertTitle, AlertDescription } from "@/components/Alert"
 import { Loader2, MapPin, Check, CircleAlert } from "lucide-react"
 import locationMapIllustration from "@/assets/images/location-map-illustration.svg"
 import { TabsContent } from "@/components/Tabs"
@@ -41,7 +42,7 @@ export function LocationPermissionPrompt({
     return (
       <TabsContent
         value="explore"
-        className="flex flex-col w-full h-[calc(100vh-100px)] overflow-y-auto"
+        className="flex flex-col w-full h-[calc(100vh-100px)] h-[calc(100dvh-100px)] overflow-y-auto"
       >
         <div className="flex flex-col items-center gap-2 text-center w-full p-4">
           {illustration}
@@ -59,30 +60,31 @@ export function LocationPermissionPrompt({
     return (
       <TabsContent
         value="explore"
-        className="flex flex-col w-full h-[calc(100vh-100px)] overflow-y-auto"
+        className="flex flex-col w-full h-[calc(100vh-100px)] h-[calc(100dvh-100px)] overflow-y-auto"
       >
         <div className="flex flex-col items-center gap-2 text-center w-full p-4">
           {illustration}
           <h1>Finding facilities near you...</h1>
-          <div className="flex items-start justify-between gap-3 w-full bg-orange-50 border border-orange-700 rounded-lg px-3.5 py-3 mt-2">
+          <Alert
+            variant="warning"
+            className="flex items-start justify-between gap-3 w-full px-3.5 py-3 mt-2"
+          >
             <div className="flex gap-3 items-start flex-1 min-w-0">
               <div className="pt-0.5 shrink-0">
-                <CircleAlert className="h-4 w-4 text-orange-700" />
+                <CircleAlert className="h-4 w-4" />
               </div>
               <div className="flex flex-col flex-1 min-w-0 text-sm leading-5">
-                <p className="font-medium text-orange-700">
-                  Sharing location access was dismissed
-                </p>
-                <p className="text-muted-foreground">
+                <AlertTitle>Sharing location access was dismissed</AlertTitle>
+                <AlertDescription>
                   To use your current location, allow access in your browser
                   settings and refresh.
-                </p>
+                </AlertDescription>
               </div>
             </div>
             <Button size="sm" onClick={handleRequestTap} className="shrink-0">
               Retry
             </Button>
-          </div>
+          </Alert>
         </div>
       </TabsContent>
     )
@@ -91,7 +93,7 @@ export function LocationPermissionPrompt({
   return (
     <TabsContent
       value="explore"
-      className="flex flex-col w-full h-[calc(100vh-100px)] items-center overflow-y-auto"
+      className="flex flex-col w-full h-[calc(100vh-100px)] h-[calc(100dvh-100px)] items-center overflow-y-auto"
     >
       <div className="flex flex-col items-center justify-center gap-6 w-full max-w-md p-4 flex-1">
         <div className="flex flex-col items-center gap-2 w-full text-center">

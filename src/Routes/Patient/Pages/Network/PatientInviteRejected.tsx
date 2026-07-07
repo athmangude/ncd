@@ -25,7 +25,9 @@ export default function PatientInviteRejected() {
       footer={
         <PrimaryCTAFooter
           label={isNewUser ? "Sign Up" : "Back to Dashboard"}
-          onClick={() => navigate(isNewUser ? nextOnboardingStep : "/patients/")}
+          onClick={() =>
+            navigate(isNewUser ? nextOnboardingStep : "/patients/")
+          }
         />
       }
       className="flex flex-col gap-7 text-center items-center"
@@ -37,9 +39,9 @@ export default function PatientInviteRejected() {
         aria-hidden="true"
       />
 
-      <h1 className="font-medium text-xl ">Invite Declined</h1>
+      <h1>Invite Declined</h1>
 
-      <p className="text-lg text-neutral-500 ">
+      <p className="text-lg text-muted-foreground ">
         You have rejected{" "}
         <span className="font-medium text-black capitalizeMin">
           {state?.firstName?.toLowerCase()}{" "}

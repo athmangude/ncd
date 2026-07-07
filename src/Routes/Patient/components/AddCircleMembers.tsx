@@ -59,7 +59,7 @@ export default function AddCircleMembers({
 
       {circleMembers.length > 0 && (
         <>
-          <h2 className="text-neutral-500 mt-5">Your Circle</h2>
+          <h2 className="text-muted-foreground mt-5">Your Circle</h2>
 
           <div className="grid w-full gap-2 border-y py-4">
             {circleMembers.map((member: any) => (
@@ -108,10 +108,7 @@ export function AddToCircleDrawer({
   const user = usePatientAuthStore((state) => state.user)
 
   return (
-    <Drawer
-      open={open}
-      onOpenChange={setOpen}
-    >
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
         <div className="w-full max-w-lg mx-auto">
           <DrawerHeader>

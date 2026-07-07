@@ -19,7 +19,7 @@ export function RatingPeopleBar({ score }: RatingPeopleBarProps) {
           key={i}
           className={cn(
             "h-7 w-7",
-            i < filled ? "text-teal-500" : "text-neutral-300"
+            i < filled ? "text-teal-500" : "text-muted-foreground/40"
           )}
         />
       ))}

@@ -41,7 +41,9 @@ export default function PatientNotificationsPage() {
   const [error, setError] = useState<string | null>(null)
   const [showHelp, setShowHelp] = useState(false)
   const [isRequesting, setIsRequesting] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<"ALL" | "CIRCLE" | "LOANS" | "SAVINGS">("ALL")
+  const [activeFilter, setActiveFilter] = useState<
+    "ALL" | "CIRCLE" | "LOANS" | "SAVINGS"
+  >("ALL")
   const { toast } = useToast()
   const {
     notificationPermission,
@@ -59,7 +61,9 @@ export default function PatientNotificationsPage() {
     const fetchNotifications = async () => {
       try {
         setIsLoading(true)
-        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/notifications`)
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/notifications`
+        )
         setNotifications(response.data.notifications)
       } catch (err: any) {
         console.error("Error fetching notifications:", err)
@@ -90,11 +94,16 @@ export default function PatientNotificationsPage() {
   const handleMarkAllAsRead = async () => {
     // Optimistic update
     const previousNotifications = [...notifications]
-    const updatedNotifications = notifications.map((n) => ({ ...n, readStatus: "READ" as const }))
+    const updatedNotifications = notifications.map((n) => ({
+      ...n,
+      readStatus: "READ" as const,
+    }))
     setNotifications(updatedNotifications)
-    
+
     try {
-      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`)
+      await axios.put(
+        `${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`
+      )
       toast({
         title: "Success",
         description: "All notifications marked as read",
@@ -127,7 +136,7 @@ export default function PatientNotificationsPage() {
     toast({
       title: "Success",
       description: "Link copied to clipboard!",
-    });
+    })
   }
 
   const renderMessageWithLink = (message: string) => {
@@ -138,10 +147,10 @@ export default function PatientNotificationsPage() {
     return (
       <>
         {parts[0]}
-        <a 
-          href={url} 
-          target="_blank" 
-          rel="noopener noreferrer" 
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-blue-600 underline hover:text-blue-800 break-all"
           onClick={(e) => e.stopPropagation()}
         >
@@ -152,7 +161,7 @@ export default function PatientNotificationsPage() {
     )
   }
 
-  const filteredNotifications = notifications.filter(n => {
+  const filteredNotifications = notifications.filter((n) => {
     if (activeFilter === "ALL") return true
     return n.type === activeFilter
   })
@@ -192,32 +201,32 @@ export default function PatientNotificationsPage() {
         className="flex flex-col items-center justify-center text-center"
       >
         <div className="mb-6 relative">
-          <Bell className="w-16 h-16 text-neutral-400 stroke-1" />
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-neutral-200 rounded-full" />
+          <Bell className="w-16 h-16 text-muted-foreground stroke-1" />
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-border rounded-full" />
         </div>
 
-        <h2 className="text-2xl font-semibold mb-3">Stay in the loop</h2>
-        <p className="text-neutral-500 mb-8 max-w-xs">
+        <h2 className="mb-3">Stay in the loop</h2>
+        <p className="text-muted-foreground mb-8 max-w-xs">
           Turn on notifications to get instant alerts for payments, loan
           approvals, and important care reminders.
         </p>
 
         <div className="w-full space-y-4 text-left bg-white rounded-xl">
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-neutral-50">
-            <Check className="w-5 h-5 text-neutral-600 mt-0.5 shrink-0" />
-            <span className="text-sm font-medium text-neutral-700">
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+            <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <span className="text-sm font-medium text-foreground">
               Keep SMS for urgent alerts
             </span>
           </div>
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-neutral-50">
-            <Check className="w-5 h-5 text-neutral-600 mt-0.5 shrink-0" />
-            <span className="text-sm font-medium text-neutral-700">
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+            <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <span className="text-sm font-medium text-foreground">
               Keep track of every transaction
             </span>
           </div>
-          <div className="flex items-start gap-3 p-3 rounded-lg bg-neutral-50">
-            <Check className="w-5 h-5 text-neutral-600 mt-0.5 shrink-0" />
-            <span className="text-sm font-medium text-neutral-700">
+          <div className="flex items-start gap-3 p-3 rounded-lg bg-muted">
+            <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <span className="text-sm font-medium text-foreground">
               Get progress reminders and reports
             </span>
           </div>
@@ -259,13 +268,11 @@ export default function PatientNotificationsPage() {
         className="flex flex-col items-center justify-center text-center"
       >
         <div className="mb-6 relative">
-          <Bell className="w-16 h-16 text-neutral-400 stroke-1" />
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-neutral-200 rounded-full" />
+          <Bell className="w-16 h-16 text-muted-foreground stroke-1" />
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-border rounded-full" />
         </div>
-        <h2 className="text-xl font-semibold mb-2">
-          You have no notifications yet
-        </h2>
-        <p className="text-neutral-500">
+        <h2 className="mb-2">You have no notifications yet</h2>
+        <p className="text-muted-foreground">
           Notifications you get will appear here
         </p>
       </MobileWrapper>
@@ -285,7 +292,7 @@ export default function PatientNotificationsPage() {
         <div className="border-t bg-white dark:bg-neutral-950 flex items-center p-4">
           <Button
             variant="outline"
-            className="w-full py-6 text-lg border-neutral-200"
+            className="w-full py-6 text-lg border-border"
             onClick={handleMarkAllAsRead}
           >
             Mark all as read
@@ -294,32 +301,48 @@ export default function PatientNotificationsPage() {
       }
       className="p-0"
     >
-      <div className="px-4 py-4 overflow-x-auto whitespace-nowrap scrollbar-hide border-b border-neutral-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="px-4 py-4 overflow-x-auto whitespace-nowrap scrollbar-hide border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="flex gap-2">
           <Button
             variant={activeFilter === "ALL" ? "default" : "ghost"}
-            className={activeFilter === "ALL" ? "rounded-full bg-[#A855F7] hover:bg-[#9333EA] text-white px-6" : "rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-6"}
+            className={
+              activeFilter === "ALL"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("ALL")}
           >
             All
           </Button>
           <Button
             variant={activeFilter === "CIRCLE" ? "default" : "ghost"}
-            className={activeFilter === "CIRCLE" ? "rounded-full bg-[#A855F7] hover:bg-[#9333EA] text-white px-6" : "rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-6"}
+            className={
+              activeFilter === "CIRCLE"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("CIRCLE")}
           >
             Circle
           </Button>
           <Button
             variant={activeFilter === "LOANS" ? "default" : "ghost"}
-            className={activeFilter === "LOANS" ? "rounded-full bg-[#A855F7] hover:bg-[#9333EA] text-white px-6" : "rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-6"}
+            className={
+              activeFilter === "LOANS"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("LOANS")}
           >
             Loan
           </Button>
           <Button
             variant={activeFilter === "SAVINGS" ? "default" : "ghost"}
-            className={activeFilter === "SAVINGS" ? "rounded-full bg-[#A855F7] hover:bg-[#9333EA] text-white px-6" : "rounded-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 px-6"}
+            className={
+              activeFilter === "SAVINGS"
+                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+            }
             onClick={() => setActiveFilter("SAVINGS")}
           >
             Savings
@@ -329,9 +352,9 @@ export default function PatientNotificationsPage() {
 
       <div>
         {filteredNotifications.length === 0 ? (
-           <div className="flex flex-col items-center justify-center p-10 text-center text-neutral-500">
-             <p>No notifications found in this category.</p>
-           </div>
+          <div className="flex flex-col items-center justify-center p-10 text-center text-muted-foreground">
+            <p>No notifications found in this category.</p>
+          </div>
         ) : (
           filteredNotifications.map((notification) => {
             const isCircleReminder =
@@ -346,7 +369,9 @@ export default function PatientNotificationsPage() {
               return (
                 <div key={notification.id} className="px-4 py-2">
                   <CircleInviteReminderCard
-                    subType={notification.notificationSubType as CircleInviteSubType}
+                    subType={
+                      notification.notificationSubType as CircleInviteSubType
+                    }
                     invitationId={notification.relatedEntityId}
                     inviteeFirstName={notification.metadata.inviteeFirstName}
                     sentAt={notification.sentAt}
@@ -361,22 +386,31 @@ export default function PatientNotificationsPage() {
               <div
                 key={notification.id}
                 className={cn(
-                  "flex items-start gap-4 p-4 hover:bg-neutral-50 transition-colors cursor-pointer group relative",
+                  "flex items-start gap-4 p-4 hover:bg-muted transition-colors cursor-pointer group relative",
                   notification.readStatus === "UNREAD" ? "bg-blue-50/30" : ""
                 )}
               >
                 {notification.readStatus === "UNREAD" && (
-                  <div className="w-2 h-2 rounded-full bg-[#A855F7] mt-2 shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
                 )}
                 {notification.readStatus === "READ" && (
                   <div className="w-2 h-2 rounded-full bg-transparent mt-2 shrink-0" />
                 )}
-                
+
                 <div className="flex-1 pr-8">
-                  <p className={cn("text-sm", notification.readStatus === "UNREAD" ? "font-medium text-neutral-900" : "text-neutral-700")}>
+                  <p
+                    className={cn(
+                      "text-sm",
+                      notification.readStatus === "UNREAD"
+                        ? "font-medium text-foreground"
+                        : "text-foreground"
+                    )}
+                  >
                     {renderMessageWithLink(notification.message)}
                   </p>
-                  <p className="text-neutral-500 text-xs mt-1">{formatDate(notification.sentAt)}</p>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    {formatDate(notification.sentAt)}
+                  </p>
                 </div>
 
                 {url && (
@@ -387,7 +421,7 @@ export default function PatientNotificationsPage() {
                     onClick={(e) => handleCopyLink(e, url)}
                     title="Copy link"
                   >
-                    <Copy className="w-4 h-4 text-neutral-500" />
+                    <Copy className="w-4 h-4 text-muted-foreground" />
                   </Button>
                 )}
               </div>

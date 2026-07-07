@@ -4,9 +4,12 @@ import {
   Mail,
   Instagram,
   Facebook,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react"
-import MobileWrapper, { BackTitleHeader, PrimaryCTAFooter } from "@/Routes/MobileWrapper"
+import MobileWrapper, {
+  BackTitleHeader,
+  PrimaryCTAFooter,
+} from "@/Routes/MobileWrapper"
 import { useToast } from "@/hooks/useToast"
 import { useMutation } from "@tanstack/react-query"
 import axios from "axios"
@@ -44,13 +47,16 @@ export default function PatientHelpAndSupport() {
     onSuccess: () => {
       toast({
         title: "Request Sent",
-        description: "We have received your request and will call you back shortly.",
+        description:
+          "We have received your request and will call you back shortly.",
       })
     },
     onError: (error: any) => {
       toast({
         title: "Request Failed",
-        description: error.response?.data?.message || "Something went wrong. Please try again.",
+        description:
+          error.response?.data?.message ||
+          "Something went wrong. Please try again.",
         variant: "destructive",
       })
     },
@@ -60,31 +66,31 @@ export default function PatientHelpAndSupport() {
     {
       title: "FAQs",
       description: "Got questions? we have answers",
-      icon: <HelpCircle className="h-5 w-5 text-neutral-500" />,
-      onClick: () => window.open("https://jireh-health.com/", "_blank"), // Placeholder to one of the FAQ pages or a general FAQ list if it exists
+      icon: <HelpCircle className="h-5 w-5 text-muted-foreground" />,
+      onClick: () => navigate("/patients/faqs"),
     },
     {
       title: "WhatsApp",
       description: "+254 117 118 511",
-      icon: <MessageCircle className="h-5 w-5 text-neutral-500" />,
+      icon: <MessageCircle className="h-5 w-5 text-muted-foreground" />,
       onClick: () => window.open("https://wa.me/254117118511", "_blank"),
     },
     {
       title: "Email",
       description: "support@jireh-health.com",
-      icon: <Mail className="h-5 w-5 text-neutral-500" />,
+      icon: <Mail className="h-5 w-5 text-muted-foreground" />,
       onClick: () => window.open("mailto:support@jireh-health.com", "_blank"),
     },
     {
       title: "Instagram",
       description: "@jirehhealth",
-      icon: <Instagram className="h-5 w-5 text-neutral-500" />,
+      icon: <Instagram className="h-5 w-5 text-muted-foreground" />,
       onClick: () => window.open("https://instagram.com/jirehhealth", "_blank"),
     },
     {
       title: "Facebook",
       description: "Jireh Health",
-      icon: <Facebook className="h-5 w-5 text-neutral-500" />,
+      icon: <Facebook className="h-5 w-5 text-muted-foreground" />,
       onClick: () => window.open("https://facebook.com/jirehhealth", "_blank"),
     },
   ]
@@ -116,7 +122,7 @@ export default function PatientHelpAndSupport() {
       }
     >
       <div className="flex flex-col gap-3">
-        <p className="text-neutral-500 text-sm mb-2">
+        <p className="text-muted-foreground text-sm mb-2">
           Reach out to us for any queries or read FAQs
         </p>
 
@@ -124,16 +130,16 @@ export default function PatientHelpAndSupport() {
           <button
             key={index}
             onClick={option.onClick}
-            className="flex items-center gap-4 p-4 bg-white rounded-xl border border-neutral-100 shadow-sm hover:shadow-md hover:border-neutral-200 transition-all text-left group"
+            className="flex items-center gap-4 p-4 bg-white rounded-xl border border-border shadow-sm hover:shadow-md hover:border-muted-foreground/30 transition-all text-left group"
           >
-            <div className="text-neutral-500">
-              {option.icon}
-            </div>
+            <div className="text-muted-foreground">{option.icon}</div>
             <div className="flex-1">
-              <h3 className="font-semibold text-sm text-neutral-900">{option.title}</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">{option.description}</p>
+              <h3 className="text-foreground">{option.title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {option.description}
+              </p>
             </div>
-            <ChevronRight className="h-5 w-5 text-neutral-300 group-hover:text-neutral-400 transition-colors" />
+            <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors" />
           </button>
         ))}
       </div>

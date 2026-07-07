@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom"
 import { CircleSetupContent } from "./CircleSetupContent"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 
 type LocationState = {
   source?: string
@@ -31,15 +31,16 @@ export default function PatientCircleSetupIntro() {
     navigate("/patients/circle-how-it-works", { state })
 
   return (
-    <MobileWrapper
-      header={<BackTitleHeader title="My Jireh Circle" onBack={handleBack} />}
-      footer={null}
+    <PatientPageWrapper
+      variant="content"
+      onBack={handleBack}
+      showStepper={false}
     >
       <CircleSetupContent
         onAddMember={handleAddMember}
         onNodeClick={handleNodeClick}
         onLearnMore={handleLearnMore}
       />
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

@@ -12,6 +12,7 @@ interface LoansTabContentProps {
   loans: any
   loanStats: any
   hasActiveMembership: boolean
+  isFrozen?: boolean
   onUpgrade: () => void
   type: string
   isLoading?: boolean
@@ -21,6 +22,7 @@ export function LoansTabContent({
   loans,
   loanStats,
   hasActiveMembership,
+  isFrozen = false,
   onUpgrade,
   type,
   isLoading,
@@ -33,6 +35,7 @@ export function LoansTabContent({
         loans={loans}
         loanStats={loanStats}
         isLocked={!hasActiveMembership}
+        isFrozen={isFrozen}
         onUpgrade={onUpgrade}
         isLoading={isLoading}
       />
@@ -42,7 +45,7 @@ export function LoansTabContent({
             non-members never land on the "not authorized" page. */}
         <ProtectedResource userRole={type} allowedRoles={MEMBER_LOAN_ROLES}>
           <DashboardCTA
-            icon={<Info className="w-8 h-8 text-[#9333EA]" />}
+            icon={<Info className="w-8 h-8 text-primary" />}
             title="How to raise my limit"
             onClick={() =>
               navigate("/patients/financial-statements-with-credit-update")
@@ -52,7 +55,7 @@ export function LoansTabContent({
 
         <ProtectedResource userRole={type} allowedRoles={MEMBER_LOAN_ROLES}>
           <DashboardCTA
-            icon={<HandCoins className="w-8 h-8 text-[#9333EA]" />}
+            icon={<HandCoins className="w-8 h-8 text-primary" />}
             title="Repay Loans"
             onClick={() => {
               try {
@@ -70,7 +73,7 @@ export function LoansTabContent({
 
       {!hasActiveMembership && (
         <Button
-          className="w-full bg-[#F3E8FF] text-[#9333EA] hover:bg-[#E9D5FF] "
+          className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/80 "
           onClick={onUpgrade}
         >
           <Lock className="w-4 h-4 mr-2" />
@@ -78,43 +81,41 @@ export function LoansTabContent({
         </Button>
       )}
       {!hasActiveMembership && (
-        <div className="bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm">
-          <h3 className="font-bold text-lg text-neutral-900 mb-4">
-            Unlock full financial limits
-          </h3>
+        <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
+          <h3 className="text-foreground mb-4">Unlock full financial limits</h3>
 
           <div className="flex flex-col gap-4">
             <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-neutral-400 mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   Unlock Higher Loan Limits
                 </p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Access to loans and financial utility.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-neutral-400 mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   Pay hospital bills instantly
                 </p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Settle medical bills directly.
                 </p>
               </div>
             </div>
 
             <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-neutral-400 mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
               <div>
-                <p className="font-medium text-neutral-900">
+                <p className="font-medium text-foreground">
                   Flexible, interest-free terms
                 </p>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-muted-foreground">
                   Repay comfortably with 0% interest.
                 </p>
               </div>
@@ -124,13 +125,13 @@ export function LoansTabContent({
       )}
 
       <div className="flex justify-between items-center mt-2">
-        <h3 className="font-bold text-lg text-neutral-900">Loan History</h3>
+        <h3 className="text-foreground">Loan History</h3>
       </div>
 
       {loans?.length > 0 ? (
         <YourTreatments showTitle={false} loans={loans} />
       ) : (
-        <div className="text-center py-10 text-neutral-500 bg-neutral-50 rounded-2xl border border-dashed border-neutral-200">
+        <div className="text-center py-10 text-muted-foreground bg-muted rounded-2xl border border-dashed border-border">
           <p className="font-medium">No loans yet</p>
           <p className="text-sm mt-1">Your loans history will appear here</p>
         </div>

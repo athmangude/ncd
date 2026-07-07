@@ -22,13 +22,7 @@ export default function PatientAddToCircle() {
   const user = usePatientAuthStore((state) => state.user)
   const { type } = user || {}
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    isOffline,
-  } = useOfflinePatientData<{
+  const { data, isLoading, isError, error, isOffline } = useOfflinePatientData<{
     network: any[]
     invites: any[]
     receivedInvites: any[]
@@ -39,7 +33,7 @@ export default function PatientAddToCircle() {
         `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/network`,
         {
           credentials: "include",
-        },
+        }
       )
       if (!resp.ok) {
         const text = await resp.text().catch(() => "")
@@ -87,7 +81,7 @@ export default function PatientAddToCircle() {
   return (
     <PatientPageWrapper
       title="Add people"
-      className="flex flex-col min-h-[calc(100vh-140px)]"
+      className="flex flex-col min-h-[calc(100vh-140px)] min-h-[calc(100dvh-140px)]"
     >
       <div className="flex-1 w-full flex flex-col gap-6">
         <div className="bg-purple-50 rounded-xl p-6 flex flex-col items-center text-center border border-purple-100 shadow-sm">
@@ -101,10 +95,8 @@ export default function PatientAddToCircle() {
               <Plus className="w-3 h-3 text-white" />
             </div>
           </div>
-          <h2 className="text-lg font-semibold mb-2 text-neutral-900">
-            Add people to your circle
-          </h2>
-          <p className="text-neutral-500 mb-6 text-sm max-w-[260px]">
+          <h2 className="mb-2">Add people to your circle</h2>
+          <p className="text-muted-foreground mb-6 text-sm max-w-[260px]">
             To unlock loans, invite 2+ trusted adults to your circle
           </p>
 
@@ -119,9 +111,7 @@ export default function PatientAddToCircle() {
 
         {allMembers.length > 0 && (
           <div className="flex flex-col gap-3">
-            <h3 className="text-sm font-medium text-neutral-500 ml-1">
-              Added Members
-            </h3>
+            <h3 className="text-muted-foreground ml-1">Added Members</h3>
             {allMembers.map((member) => (
               <NetworkItem
                 key={member.id}

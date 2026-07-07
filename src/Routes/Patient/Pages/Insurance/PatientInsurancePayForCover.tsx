@@ -14,9 +14,7 @@ export default function PatientInsurancePayForCover() {
 
   return (
     <PatientPageWrapper title="Pay">
-      <h1 className="text-2xl font-medium text-center mb-4">
-        Pay for your cover
-      </h1>
+      <h1 className="text-center mb-4">Pay for your cover</h1>
       <SummaryBlock />
 
       <section className="flex flex-col gap-5">

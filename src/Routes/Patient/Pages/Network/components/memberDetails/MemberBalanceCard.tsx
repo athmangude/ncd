@@ -19,12 +19,14 @@ export function MemberBalanceCard() {
   })
 
   return (
-    <div className="rounded-xl bg-neutral-50 p-4">
+    <div className="rounded-xl bg-muted p-4">
       <span className="inline-block rounded-full bg-purple-100 px-3 py-0.5 text-sm font-medium text-purple-700">
         Care fund
       </span>
-      <p className="mt-3 text-sm text-neutral-500">Your Balance (KES):</p>
-      <p className="text-xl font-medium font-mono text-neutral-900">{formattedBalance}</p>
+      <p className="mt-3 text-sm text-muted-foreground">Your Balance (KES):</p>
+      <p className="text-xl font-medium font-mono text-foreground">
+        {formattedBalance}
+      </p>
     </div>
   )
 }

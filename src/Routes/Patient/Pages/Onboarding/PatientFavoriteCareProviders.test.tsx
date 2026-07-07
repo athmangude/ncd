@@ -89,4 +89,15 @@ describe("PatientFavoriteCareProviders footer migration", () => {
     expect(skipStep).toHaveBeenCalledTimes(1)
     expect(submitStep).not.toHaveBeenCalled()
   })
+
+  it("keeps the facility search field and drops the redundant geolocation button", () => {
+    render(wrap(<PatientFavoriteCareProviders />))
+
+    // The facility search (same pattern as the invoice out-of-network flow) stays.
+    expect(screen.getByLabelText("Search Field")).toBeInTheDocument()
+    // The console.log-only "Find hospitals near me" button is removed.
+    expect(
+      screen.queryByRole("button", { name: /find hospitals near me/i })
+    ).not.toBeInTheDocument()
+  })
 })

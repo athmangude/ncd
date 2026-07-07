@@ -10,11 +10,10 @@ import {
 import { useNavigate } from "react-router-dom"
 import { format } from "date-fns"
 import { TabsContent } from "@/components/Tabs"
-import { cn } from "@/lib/utils"
+import { Switch } from "@/components/Switch"
+import { SectionTitle } from "@/components/SectionTitle"
 import { Facility } from "./types"
-import {
-  DiscountCode,
-} from "../DiscountsSection"
+import { DiscountCode } from "../DiscountsSection"
 
 interface DiscoveryHomeViewProps {
   facilities: Facility[]
@@ -49,24 +48,22 @@ export function DiscoveryHomeView({
       {/* Header */}
       <div className="bg-white flex flex-col gap-2 items-center p-4 mt-4 w-full shrink-0">
         <div className="flex flex-col gap-1 items-center w-full text-center">
-          <h2 className="text-xl font-semibold text-foreground tracking-tight">
-            Find care near you
-          </h2>
+          <h2 className="text-foreground">Find care near you</h2>
           <p className="text-sm text-muted-foreground">
             Search by name, area, or service.
           </p>
         </div>
 
         {/* Search bar acts as a navigation trigger to the dedicated Search page */}
-        <div className="flex items-center gap-2 h-11 w-full border border-neutral-300 rounded-full pl-3 pr-2 bg-white shadow-sm">
+        <div className="flex items-center gap-2 h-11 w-full border border-border rounded-full pl-3 pr-2 bg-white shadow-sm">
           <button
             type="button"
             onClick={() => navigate("/patients/search")}
             aria-label="Search facilities"
             className="flex flex-1 min-w-0 items-center gap-2 h-full text-left"
           >
-            <Search className="h-4 w-4 text-neutral-500 shrink-0" />
-            <span className="flex-1 min-w-0 text-base text-neutral-400 truncate">
+            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+            <span className="flex-1 min-w-0 text-base text-muted-foreground truncate">
               Search facilities
             </span>
           </button>
@@ -85,27 +82,19 @@ export function DiscoveryHomeView({
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2 px-2 py-1.5">
             <MapPin className="h-4 w-4 text-foreground shrink-0" />
-            <span className="text-sm text-foreground">{locationName ?? "My location"}</span>
+            <span className="text-sm text-foreground">
+              {locationName ?? "My location"}
+            </span>
           </div>
           <div className="flex items-center gap-2 px-2 py-1.5">
             <span className="text-sm text-foreground">Verified</span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={verifiedOnly}
-              onClick={() => setActiveTab(verifiedOnly ? "all" : "jireh")}
-              className={cn(
-                "h-[18px] w-[33px] rounded-full relative transition-colors shrink-0",
-                verifiedOnly ? "bg-primary" : "bg-neutral-300"
-              )}
-            >
-              <div
-                className={cn(
-                  "absolute top-1/2 -translate-y-1/2 h-3.5 w-3.5 rounded-full bg-white shadow-sm transition-transform",
-                  verifiedOnly ? "left-[15px]" : "left-[2px]"
-                )}
-              />
-            </button>
+            <Switch
+              size="sm"
+              checked={verifiedOnly}
+              onCheckedChange={() =>
+                setActiveTab(verifiedOnly ? "all" : "jireh")
+              }
+            />
           </div>
         </div>
       </div>
@@ -126,24 +115,20 @@ export function DiscoveryHomeView({
                   d.discountType === "PERCENTAGE"
                     ? `${parseFloat(d.discountValue)}% off`
                     : `${d.currency?.symbol ?? ""} ${parseFloat(
-                        d.discountValue,
+                        d.discountValue
                       ).toLocaleString()} off`
                 return (
                   <button
                     key={d.id}
                     type="button"
-                    onClick={() =>
-                      navigate(`/patients/discounts/${d.id}`)
-                    }
+                    onClick={() => navigate(`/patients/discounts/${d.id}`)}
                     className="bg-primary text-white rounded-[14px] p-4 flex flex-col justify-between shrink-0 w-[220px] h-[160px] text-left border-2 border-dashed border-white/30"
                   >
                     <div className="flex flex-col gap-1">
                       <p className="text-base font-bold leading-tight line-clamp-3">
                         {d.description ?? headline}
                       </p>
-                      <p className="text-sm opacity-80 truncate">
-                        {d.code}
-                      </p>
+                      <p className="text-sm opacity-80 truncate">{d.code}</p>
                     </div>
                     {d.validUntil && (
                       <p className="text-sm opacity-75">
@@ -226,7 +211,7 @@ function SectionHeader({
   return (
     <div className="flex items-center gap-2 py-1.5 w-full">
       <span className="text-foreground">{icon}</span>
-      <span className="flex-1 text-sm text-foreground font-medium">{title}</span>
+      <SectionTitle className="flex-1">{title}</SectionTitle>
       {count != null && (
         <span className="text-sm text-muted-foreground font-normal">
           {count} partners
@@ -236,7 +221,7 @@ function SectionHeader({
         <button
           type="button"
           onClick={onSeeAll}
-          className="flex items-center gap-0.5 text-sm text-neutral-800 font-medium"
+          className="flex items-center gap-0.5 text-sm text-foreground font-medium"
         >
           See all
           <ChevronRight className="h-3.5 w-3.5" />
@@ -246,16 +231,27 @@ function SectionHeader({
   )
 }
 
-const CATEGORY_ACRONYMS = new Set(["icu", "ent", "nicu", "hdu", "x-ray", "ct", "mri"])
+const CATEGORY_ACRONYMS = new Set([
+  "icu",
+  "ent",
+  "nicu",
+  "hdu",
+  "x-ray",
+  "ct",
+  "mri",
+])
 
 function formatServiceCategory(slug: string): string {
-  const cleaned = slug.replace(/_services$/i, "").replace(/_/g, " ").trim()
+  const cleaned = slug
+    .replace(/_services$/i, "")
+    .replace(/_/g, " ")
+    .trim()
   return cleaned
     .split(" ")
     .map((word) =>
       CATEGORY_ACRONYMS.has(word.toLowerCase())
         ? word.toUpperCase()
-        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(),
+        : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
     )
     .join(" ")
 }
@@ -279,14 +275,14 @@ function PartnerCard({
     <button
       type="button"
       onClick={onClick}
-      className="bg-[#F5F0FF] border border-purple-200 rounded-2xl p-4 flex flex-col gap-3 w-full text-left"
+      className="bg-secondary border border-purple-200 rounded-2xl p-4 flex flex-col gap-3 w-full text-left"
     >
-      <p className="text-sm text-neutral-900 truncate w-full leading-tight">
+      <p className="text-sm text-foreground truncate w-full leading-tight">
         {facility.name}
       </p>
 
       <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-1.5 text-sm text-neutral-700">
+        <div className="flex items-center gap-1.5 text-sm text-foreground">
           <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.75} />
           <span>{distance != null ? `${distance.toFixed(1)} km` : "—"}</span>
         </div>
@@ -307,7 +303,7 @@ function PartnerCard({
             </span>
           ))}
           {overflowCount > 0 && (
-            <span className="text-sm text-neutral-500 shrink-0">
+            <span className="text-sm text-muted-foreground shrink-0">
               +{overflowCount} more
             </span>
           )}

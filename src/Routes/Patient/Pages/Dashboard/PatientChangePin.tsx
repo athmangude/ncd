@@ -123,40 +123,41 @@ export default function PatientChangePin() {
   }
 
   // Footer actions are driven by the current step.
-  const footerConfig = {
-    1: {
-      primary: {
-        label: "Continue",
-        onClick: handleOldPinNext,
-        disabled: oldPin.length < 4,
+  const footerConfig =
+    {
+      1: {
+        primary: {
+          label: "Continue",
+          onClick: handleOldPinNext,
+          disabled: oldPin.length < 4,
+        },
+        secondary: {
+          label: "Cancel",
+          onClick: () => navigate("/patients/security-and-permissions"),
+        },
       },
-      secondary: {
-        label: "Cancel",
-        onClick: () => navigate("/patients/security-and-permissions"),
+      2: {
+        primary: {
+          label: "Save PIN",
+          onClick: handleNewPinNext,
+          disabled: newPin.length < 4,
+        },
+        secondary: { label: "Back", onClick: handleBack },
       },
-    },
-    2: {
-      primary: {
-        label: "Save PIN",
-        onClick: handleNewPinNext,
-        disabled: newPin.length < 4,
+      3: {
+        primary: {
+          label: "Confirm",
+          onClick: handleSubmit,
+          isLoading: isPending,
+          disabled: isPending || isSuccess || confirmPin.length < 4,
+        },
+        secondary: {
+          label: "Back",
+          onClick: handleBack,
+          disabled: isPending || isSuccess,
+        },
       },
-      secondary: { label: "Back", onClick: handleBack },
-    },
-    3: {
-      primary: {
-        label: "Confirm",
-        onClick: handleSubmit,
-        isLoading: isPending,
-        disabled: isPending || isSuccess || confirmPin.length < 4,
-      },
-      secondary: {
-        label: "Back",
-        onClick: handleBack,
-        disabled: isPending || isSuccess,
-      },
-    },
-  }[step] ?? null
+    }[step] ?? null
 
   return (
     <MobileWrapper
@@ -178,10 +179,8 @@ export default function PatientChangePin() {
               alt="Pin protect icon"
               className="w-32 h-32 mx-auto"
             />
-            <h1 className="text-2xl font-bold text-center">
-              Enter your current PIN
-            </h1>
-            <p className="text-center text-neutral-500">
+            <h1 className="text-center">Enter your current PIN</h1>
+            <p className="text-center text-muted-foreground">
               Please enter your current PIN to continue.
             </p>
 
@@ -219,10 +218,8 @@ export default function PatientChangePin() {
               alt="Pin protect icon"
               className="w-32 h-32 mx-auto"
             />
-            <h1 className="text-2xl font-bold text-center">
-              Create your new PIN
-            </h1>
-            <p className="text-center text-neutral-500">
+            <h1 className="text-center">Create your new PIN</h1>
+            <p className="text-center text-muted-foreground">
               You will use this PIN to confirm all payments.
             </p>
 
@@ -254,10 +251,8 @@ export default function PatientChangePin() {
               className="w-32 h-32 mx-auto"
             />
 
-            <h1 className="text-2xl font-bold text-center">
-              Confirm your new PIN
-            </h1>
-            <p className="text-center text-neutral-500">
+            <h1 className="text-center">Confirm your new PIN</h1>
+            <p className="text-center text-muted-foreground">
               Enter the new PIN you just created.
             </p>
 

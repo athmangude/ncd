@@ -64,8 +64,10 @@ export default function FastTrackPaymentStatus() {
     return (
       <PatientPageWrapper title="Payment Status" onBack={handleBackToDashboard}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 px-4 text-center">
-          <Clock className="w-12 h-12 text-neutral-400" />
-          <p className="text-neutral-600">No transaction information found.</p>
+          <Clock className="w-12 h-12 text-muted-foreground" />
+          <p className="text-muted-foreground">
+            No transaction information found.
+          </p>
           <Button onClick={handleBackToDashboard}>Back to Dashboard</Button>
         </div>
       </PatientPageWrapper>
@@ -101,13 +103,13 @@ export default function FastTrackPaymentStatus() {
             />
           </div>
         ) : (
-          <CircleAlert size={80} className="mx-auto text-orange-500" />
+          <CircleAlert size={80} className="mx-auto text-warning-solid" />
         )}
 
         <Title>{isSuccess ? "Payment Successful" : "Payment Processing"}</Title>
 
         {isSuccess && (
-          <p className="text-neutral-600 capitalize">
+          <p className="text-muted-foreground capitalize">
             {formatMoney(totalBillAmount, "KES")} paid to{" "}
             {providerName || "the provider"} on
             <span className="font-medium text-black">

@@ -1,6 +1,7 @@
 import { Eye, EyeOff } from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Progress } from "@/components/Progress"
+import { Amount } from "@/components/Amount"
 import logoIcon from "@/assets/icons/logo-layered.png"
 import frozenLock from "@/assets/icons/frozen-card-lock.svg"
 import loansCardBackground from "@/assets/images/loans-card-background.png"
@@ -14,7 +15,17 @@ import { Skeleton } from "@/components/Skeleton"
 interface LoansCardProps {
   loans?: any[]
   loanStats?: LoanStats | null
+  /**
+   * Borrowing is not yet unlocked (no active membership). The card renders
+   * normally but its coloured background is desaturated — an invitation to
+   * upgrade, not a broken state.
+   */
   isLocked?: boolean
+  /**
+   * Borrowing has been revoked (account/circle frozen — e.g. default). This is
+   * the only state that shows the frozen, cracked-glass overlay.
+   */
+  isFrozen?: boolean
   onUpgrade?: () => void
   isLoading?: boolean
 }
@@ -22,6 +33,7 @@ interface LoansCardProps {
 export function LoansCard({
   loanStats,
   isLocked = false,
+  isFrozen = false,
   onUpgrade,
   isLoading,
 }: LoansCardProps) {
@@ -43,14 +55,14 @@ export function LoansCard({
   const totalLoanValue = outstandingAmount + totalPaid
   const progress = totalLoanValue > 0 ? (totalPaid / totalLoanValue) * 100 : 0
 
-  if (isLocked) {
+  if (isFrozen) {
     return (
       <div className="flex flex-col gap-4" onClick={onUpgrade}>
-        <div className="relative w-full aspect-[1.586] rounded-[clamp(1.5rem,1.35rem+0.75vw,2rem)] overflow-hidden shadow-xl shadow-neutral-300 transition-all duration-300 hover:shadow-2xl hover:shadow-neutral-400/50 cursor-pointer hover:opacity-95">
+        <div className="relative w-full aspect-[1.586] rounded-[var(--fluid-card-radius)] overflow-hidden shadow-xl shadow-muted-foreground transition-all duration-300 hover:shadow-2xl hover:shadow-muted-foreground/50 cursor-pointer hover:opacity-95">
           {/* Muted grey base */}
           <div
             aria-hidden
-            className="absolute inset-0 mix-blend-luminosity opacity-50 bg-neutral-700 bg-cover bg-center bg-no-repeat"
+            className="absolute inset-0 mix-blend-luminosity opacity-50 bg-muted-foreground bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${lockedCardBackground})` }}
           />
 
@@ -68,44 +80,45 @@ export function LoansCard({
           />
 
           {/* Card content — at full opacity, not affected by blend modes */}
-          <div className="relative z-10 flex flex-col h-full justify-between p-[clamp(1.25rem,1.15rem+0.5vw,1.5rem)] text-white drop-shadow-md">
+          <div className="relative z-10 flex flex-col h-full justify-between p-[var(--fluid-card-padding)] text-white drop-shadow-md">
             <div className="flex justify-between items-start">
-              <div className="bg-white/25 backdrop-blur-md py-[clamp(0.25rem,0.2rem+0.25vw,0.375rem)] px-[clamp(0.75rem,0.65rem+0.5vw,1rem)] rounded-full text-[clamp(10px,9px+0.5vw,12px)] font-semibold tracking-wide border border-white/20 uppercase">
+              <div className="bg-white/25 backdrop-blur-md py-[var(--fluid-badge-py)] px-[var(--fluid-badge-px)] rounded-full text-[length:var(--fluid-badge-text)] font-semibold tracking-wide border border-white/20 uppercase">
                 LOANS
               </div>
-              <div
-                className="origin-top-right"
-                style={{
-                  transform: "scale(calc(0.9 + 0.1 * (100vw - 320px) / 520))",
-                }}
-              >
-                <img
-                  src={logoIcon}
-                  alt="Jireh Logo"
-                  width="40"
-                  className="h-auto"
-                />
-              </div>
+              <img
+                src={logoIcon}
+                alt="Jireh Logo"
+                width="40"
+                className="h-auto"
+              />
             </div>
 
-            <div className="flex flex-col mt-auto gap-[clamp(0.125rem,0.1rem+0.125vw,0.25rem)]">
+            <div className="flex flex-col mt-auto gap-[var(--fluid-card-gap)]">
               <div className="mb-1 opacity-90">
                 <ChipIcon
                   style={{
-                    width: "clamp(36px, 34px + 1vw, 45px)",
-                    height: "clamp(28px, 26.5px + 0.75vw, 35px)",
+                    width: "var(--fluid-logo-size)",
+                    height: "var(--fluid-logo-height)",
                   }}
                 />
               </div>
-              <p className="text-white font-semibold text-[clamp(12px,11px+0.5vw,14px)]">
+              <p className="text-white font-semibold text-[length:var(--fluid-label-text)]">
                 Available to Borrow
               </p>
               <div className="flex items-center gap-3">
-                <h2 className="font-mono font-bold tracking-tight leading-none text-white text-[clamp(24px,22px+1vw,30px)]">
-                  {showBalance
-                    ? formatMoney(remainingCreditLimit, currencyCode)
-                    : "KES ****"}
-                </h2>
+                {showBalance ? (
+                  <Amount
+                    value={remainingCreditLimit}
+                    currency={currencyCode}
+                    size="hero"
+                    weight="bold"
+                    className="text-white"
+                  />
+                ) : (
+                  <span className="font-mono font-bold tracking-tight leading-none text-white text-[length:var(--fluid-amount-text)]">
+                    KES ****
+                  </span>
+                )}
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
@@ -116,21 +129,21 @@ export function LoansCard({
                   {showBalance ? (
                     <EyeOff
                       style={{
-                        width: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
-                        height: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
+                        width: "var(--fluid-icon-size)",
+                        height: "var(--fluid-icon-size)",
                       }}
                     />
                   ) : (
                     <Eye
                       style={{
-                        width: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
-                        height: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
+                        width: "var(--fluid-icon-size)",
+                        height: "var(--fluid-icon-size)",
                       }}
                     />
                   )}
                 </button>
               </div>
-              <p className="text-white font-medium text-[clamp(12px,11px+0.5vw,14px)] mt-[clamp(0.125rem,0.1rem+0.125vw,0.25rem)]">
+              <p className="text-white font-medium text-[length:var(--fluid-label-text)] mt-[var(--fluid-card-gap)]">
                 Total to repay:{" "}
                 <span className="font-mono">
                   {showBalance
@@ -145,7 +158,7 @@ export function LoansCard({
           <img
             src={frozenLock}
             alt="Locked — tap to upgrade"
-            className="absolute z-20 top-[clamp(0.875rem,0.8rem+0.375vw,1.125rem)] right-[clamp(0.875rem,0.8rem+0.375vw,1.125rem)] w-[clamp(2rem,1.85rem+0.75vw,2.75rem)] h-auto pointer-events-none drop-shadow-lg"
+            className="absolute z-20 top-[var(--fluid-corner-offset)] right-[var(--fluid-corner-offset)] w-[var(--fluid-corner-icon)] h-auto pointer-events-none drop-shadow-lg"
           />
         </div>
 
@@ -154,18 +167,18 @@ export function LoansCard({
             <Progress
               value={progress}
               className="h-2 bg-purple-200"
-              indicatorClassName="bg-[#A855F7]"
+              indicatorClassName="bg-primary"
             />
             <div className="flex justify-between text-sm font-medium">
-              <span className="text-neutral-600">
+              <span className="text-muted-foreground">
                 Paid:{" "}
-                <span className="text-neutral-900">
+                <span className="text-foreground">
                   {formatMoney(totalPaid, currencyCode)}
                 </span>
               </span>
-              <span className="text-neutral-600">
+              <span className="text-muted-foreground">
                 Due:{" "}
-                <span className="text-neutral-900">
+                <span className="text-foreground">
                   {formatMoney(outstandingAmount, currencyCode)}
                 </span>
               </span>
@@ -178,50 +191,62 @@ export function LoansCard({
 
   return (
     <div className="flex flex-col gap-4">
-      <div
-        className="relative w-full aspect-[1.586] rounded-[clamp(1.5rem,1.35rem+0.75vw,2rem)] p-[clamp(1.25rem,1.15rem+0.5vw,1.5rem)] text-white overflow-hidden shadow-xl shadow-blue-200 bg-cover bg-center bg-no-repeat transition-all duration-300 hover:shadow-2xl hover:shadow-blue-300/50 bg-blue-600 flex flex-col"
-        style={{ backgroundImage: `url(${loansCardBackground})` }}
-      >
+      <div className="relative w-full aspect-[1.586] rounded-[var(--fluid-card-radius)] p-[var(--fluid-card-padding)] text-white overflow-hidden flex flex-col">
+        {/* Background — until borrowing is unlocked (isLocked) the card uses the
+            neutral grey art, so it reads as "available, not yet active" rather
+            than broken (the cracked-glass frozen overlay is reserved for the
+            revoked / defaulted state above). */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${
+              isLocked ? lockedCardBackground : loansCardBackground
+            })`,
+          }}
+        />
+
         {/* Card Content */}
         <div className="relative z-10 flex flex-col flex-grow justify-between">
           <div className="flex justify-between items-start">
-            <div className="bg-white/20 backdrop-blur-md py-[clamp(0.25rem,0.2rem+0.25vw,0.375rem)] px-[clamp(0.75rem,0.65rem+0.5vw,1rem)] rounded-full text-[clamp(10px,9px+0.5vw,12px)] font-medium tracking-wide border border-white/10 uppercase">
+            <div className="bg-white/20 backdrop-blur-md py-[var(--fluid-badge-py)] px-[var(--fluid-badge-px)] rounded-full text-[length:var(--fluid-badge-text)] font-medium tracking-wide border border-white/10 uppercase">
               LOANS
             </div>
-            <div
-              className="origin-top-right"
-              style={{
-                transform: "scale(calc(0.9 + 0.1 * (100vw - 320px) / 520))",
-              }}
-            >
-              <img
-                src={logoIcon}
-                alt="Jireh Logo"
-                width="80"
-                className="h-auto"
-              />
-            </div>
+            <img
+              src={logoIcon}
+              alt="Jireh Logo"
+              width="40"
+              className="h-auto"
+            />
           </div>
 
-          <div className="flex flex-col mt-auto gap-[clamp(0.125rem,0.1rem+0.125vw,0.25rem)]">
+          <div className="flex flex-col mt-auto gap-[var(--fluid-card-gap)]">
             {/* Chip Icon */}
             <div className="mb-1 opacity-80">
               <ChipIcon
                 style={{
-                  width: "clamp(36px, 34px + 1vw, 45px)",
-                  height: "clamp(28px, 26.5px + 0.75vw, 35px)",
+                  width: "var(--fluid-logo-size)",
+                  height: "var(--fluid-logo-height)",
                 }}
               />
             </div>
-            <p className="text-white font-medium text-[clamp(12px,11px+0.5vw,14px)]">
+            <p className="text-white font-medium text-[length:var(--fluid-label-text)]">
               Available to borrow
             </p>
             <div className="flex items-center gap-3">
-              <h2 className="text-white font-mono font-bold tracking-tight leading-none text-[clamp(24px,22px+1vw,30px)]">
-                {showBalance
-                  ? formatMoney(remainingCreditLimit, currencyCode)
-                  : "KES ****"}
-              </h2>
+              {showBalance ? (
+                <Amount
+                  value={remainingCreditLimit}
+                  currency={currencyCode}
+                  size="hero"
+                  weight="bold"
+                  className="text-white"
+                />
+              ) : (
+                <span className="font-mono font-bold tracking-tight leading-none text-white text-[length:var(--fluid-amount-text)]">
+                  KES ****
+                </span>
+              )}
               <button
                 onClick={toggleBalance}
                 className="text-white hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
@@ -229,21 +254,21 @@ export function LoansCard({
                 {showBalance ? (
                   <EyeOff
                     style={{
-                      width: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
-                      height: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
+                      width: "var(--fluid-icon-size)",
+                      height: "var(--fluid-icon-size)",
                     }}
                   />
                 ) : (
                   <Eye
                     style={{
-                      width: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
-                      height: "clamp(1rem, 0.95rem + 0.25vw, 1.25rem)",
+                      width: "var(--fluid-icon-size)",
+                      height: "var(--fluid-icon-size)",
                     }}
                   />
                 )}
               </button>
             </div>
-            <p className="text-white text-[clamp(12px,11px+0.5vw,14px)] mt-[clamp(0.125rem,0.1rem+0.125vw,0.25rem)]">
+            <p className="text-white text-[length:var(--fluid-label-text)] mt-[var(--fluid-card-gap)]">
               Total to repay{" "}
               <span className="font-mono">
                 {showBalance
@@ -260,18 +285,18 @@ export function LoansCard({
           <Progress
             value={progress}
             className="h-2 bg-purple-200"
-            indicatorClassName="bg-[#A855F7]"
+            indicatorClassName="bg-primary"
           />
           <div className="flex justify-between text-sm font-medium">
-            <span className="text-neutral-600">
+            <span className="text-muted-foreground">
               Paid:{" "}
-              <span className="text-neutral-900">
+              <span className="text-foreground">
                 {formatMoney(totalPaid, currencyCode)}
               </span>
             </span>
-            <span className="text-neutral-600">
+            <span className="text-muted-foreground">
               Due:{" "}
-              <span className="text-neutral-900">
+              <span className="text-foreground">
                 {formatMoney(outstandingAmount, currencyCode)}
               </span>
             </span>

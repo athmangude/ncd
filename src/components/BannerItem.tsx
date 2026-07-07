@@ -9,12 +9,12 @@ const bannerItemVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-neutral-300",
-        active: "bg-bubblegum-100 border-bubblegum-200 font-medium",
+        default: "border-border",
+        active: "bg-brand-gradient-100 border-brand-gradient-200 font-medium",
         final: "items-center text-center justify-center filter grayscale",
-        completed: "bg-neutral-50 border-neutral-50",
+        completed: "bg-muted border-muted",
         finalCompleted:
-          "bg-bubblegum-100 border-bubblegum-200 items-center text-center justify-center",
+          "bg-brand-gradient-100 border-brand-gradient-200 items-center text-center justify-center",
       },
     },
   }
@@ -55,7 +55,7 @@ export function BannerItem({
       <div className="flex gap-2 justify-between items-center">
         <div className={cn(stepCounterVariants({ variant }))}>
           {variant === "completed" ? (
-            <Check className="h-5 w-5 text-neutral-800" />
+            <Check className="h-5 w-5 text-foreground" />
           ) : (
             step
           )}

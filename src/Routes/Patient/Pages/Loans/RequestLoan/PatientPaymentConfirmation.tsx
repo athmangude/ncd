@@ -10,7 +10,10 @@ import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import PatientPinPrompt from "@/Routes/Patient/components/PatientPinPrompt"
 import AmountContainer from "@/Routes/Patient/components/AmountContainer"
 import { Building2, ChevronRight, User } from "lucide-react"
-import { getFromLocalStorage, setToLocalStorage } from "@/utilities/localStorage"
+import {
+  getFromLocalStorage,
+  setToLocalStorage,
+} from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import axios from "axios"
@@ -230,7 +233,8 @@ export default function PatientPaymentConfirmation() {
 
     // Mark discount as redeemed if discount was used in payment splits
     const discountAllocation = data.walletAllocations.find(
-      (alloc: WalletAllocation) => alloc.type === "DISCOUNT" && alloc.discountCode
+      (alloc: WalletAllocation) =>
+        alloc.type === "DISCOUNT" && alloc.discountCode
     )
 
     if (discountAllocation && discountAllocation.discountCode) {
@@ -337,7 +341,9 @@ export default function PatientPaymentConfirmation() {
               paymentAmount: allocation.amount,
               type: allocation.type,
               // discountCode is optional for non-discount types
-              ...(allocation.discountCode && { discountCode: allocation.discountCode }),
+              ...(allocation.discountCode && {
+                discountCode: allocation.discountCode,
+              }),
             }
           }
         ),
@@ -364,23 +370,23 @@ export default function PatientPaymentConfirmation() {
             className="w-[50px] mb-3"
             aria-hidden="true"
           />
-          <h2 className="text-xl font-semibold text-black">Confirm payment</h2>
+          <h2 className="text-black">Confirm payment</h2>
         </div>
 
         <div className="flex flex-col gap-5">
           {/* Card 1: Treatment Details */}
-          <div className="border border-neutral-200 rounded-xl p-4 bg-white shadow-sm">
-            <h3 className="text-neutral-500 text-sm mb-4">Treatment details</h3>
+          <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+            <h3 className="text-muted-foreground mb-4">Treatment details</h3>
 
             <div className="flex flex-col gap-4">
               {/* Row 1: Paying For */}
               <div className="flex items-start gap-3">
-                <User className="w-6 h-6 text-neutral-500" />
+                <User className="w-6 h-6 text-muted-foreground" />
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-neutral-900">
+                  <span className="text-sm font-medium text-foreground">
                     I am paying for
                   </span>
-                  <span className="text-sm text-neutral-500">
+                  <span className="text-sm text-muted-foreground">
                     {data.patient.name ||
                       `${data.patient.firstName} ${data.patient.lastName} (${data.patient?.type || data.dependent?.type || "myself"})`}
                   </span>
@@ -389,12 +395,12 @@ export default function PatientPaymentConfirmation() {
 
               {/* Row 2: Paying At */}
               <div className="flex items-start gap-3">
-                <Building2 className="w-6 h-6 text-neutral-500" />
+                <Building2 className="w-6 h-6 text-muted-foreground" />
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-neutral-900">
+                  <span className="text-sm font-medium text-foreground">
                     I am paying at
                   </span>
-                  <span className="text-sm text-neutral-500">
+                  <span className="text-sm text-muted-foreground">
                     {data.careProvider.name}
                   </span>
                 </div>
@@ -403,8 +409,8 @@ export default function PatientPaymentConfirmation() {
           </div>
 
           {/* Card 2: Source of Funds */}
-          <div className="border border-neutral-200 rounded-xl p-4 bg-white shadow-sm">
-            <h3 className="text-neutral-500 text-sm mb-3">Source of funds</h3>
+          <div className="border border-border rounded-xl p-4 bg-white shadow-sm">
+            <h3 className="text-muted-foreground mb-3">Source of funds</h3>
 
             <div className="flex flex-col gap-3">
               {data.walletAllocations.map((allocation: WalletAllocation) => (
@@ -412,7 +418,7 @@ export default function PatientPaymentConfirmation() {
                   key={allocation.walletId}
                   className="flex justify-between items-center"
                 >
-                  <span className="text-sm text-neutral-900">
+                  <span className="text-sm text-foreground">
                     {allocation.type === "MPESA"
                       ? "MPESA"
                       : allocation.type === "CARD"
@@ -423,24 +429,21 @@ export default function PatientPaymentConfirmation() {
                             ? "Jireh Medical Loan"
                             : allocation.type}
                   </span>
-                  <span className="text-sm text-neutral-900 font-medium">
+                  <span className="text-sm text-foreground font-medium">
                     {formatMoney(allocation.amount, "KES")}
                   </span>
                 </div>
               ))}
 
               {repaymentDate && (
-                <div className="flex justify-between items-center text-sm text-neutral-500">
+                <div className="flex justify-between items-center text-sm text-muted-foreground">
                   <span>Repayment date</span>
                   <span>{repaymentDate}</span>
                 </div>
               )}
 
               {/* Divider */}
-              <div
-                className="h-px w-full bg-neutral-100 my-1"
-                aria-hidden="true"
-              />
+              <div className="h-px w-full bg-muted my-1" aria-hidden="true" />
 
               {/* Total Bill */}
               <div className="flex justify-between items-center">
@@ -455,17 +458,17 @@ export default function PatientPaymentConfirmation() {
           {/* Summary Footer Text */}
           <div className="mt-2 flex flex-col gap-2">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-neutral-900">You pay today</span>
-              <span className="text-sm text-neutral-900 font-medium">
+              <span className="text-sm text-foreground">You pay today</span>
+              <span className="text-sm text-foreground font-medium">
                 {formatMoney(payToday, "KES")}
               </span>
             </div>
             {dueLater > 0 && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-neutral-900">
+                <span className="text-sm text-foreground">
                   Due by {formattedRepaymentDateShort}
                 </span>
-                <span className="text-sm text-neutral-900 font-medium">
+                <span className="text-sm text-foreground font-medium">
                   {formatMoney(dueLater, "KES")}
                 </span>
               </div>

@@ -1,5 +1,5 @@
 export default function Logo({
-  fill = "#b325ff",
+  fill = "hsl(var(--primary))",
   width = "500",
   height = "250",
 }) {

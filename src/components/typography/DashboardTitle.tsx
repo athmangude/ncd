@@ -3,5 +3,5 @@ export default function DashboardTitle({
 }: {
   children: React.ReactNode
 }) {
-  return <h1 className="text-3xl font-medium">{children}</h1>
+  return <h1>{children}</h1>
 }
