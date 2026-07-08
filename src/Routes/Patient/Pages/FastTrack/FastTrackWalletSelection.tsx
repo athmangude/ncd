@@ -330,19 +330,16 @@ export default function FastTrackWalletSelection() {
       headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."
-      footer={
-        <div className="border-t border-border bg-card p-4">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={handleProceed}
-            disabled={totalAllocated !== netAmount}
-          >
+      primaryCta={{
+        label: (
+          <>
             Review Payment
             <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-      }
+          </>
+        ),
+        onClick: handleProceed,
+        disabled: totalAllocated !== netAmount,
+      }}
     >
       <div className="flex flex-col gap-6">
         <div className="bg-card border border-border rounded-xl p-4 mx-1 space-y-3">

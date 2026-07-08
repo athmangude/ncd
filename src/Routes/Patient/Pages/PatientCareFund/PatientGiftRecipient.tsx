@@ -86,8 +86,19 @@ export default function PatientGiftRecipient() {
   )
 
   return (
-    <PatientPageWrapper title="Gift Recipient">
+    <PatientPageWrapper
+      title="Gift Recipient"
+      primaryCta={{
+        label: "Continue",
+        type: "submit",
+        form: "gift-recipient-form",
+        onClick: () => {
+          setIsOpen(true)
+        },
+      }}
+    >
       <form
+        id="gift-recipient-form"
         className="flex flex-col gap-7"
         onSubmit={handleSubmit((data) => {
           const patient = patients.find(
@@ -165,14 +176,6 @@ export default function PatientGiftRecipient() {
           error={errors.transferAmount?.message}
           description={`Max: ${formatMoney(careFundBalance, currency.code)}`}
         />
-
-        <Button
-          onClick={() => {
-            setIsOpen(true)
-          }}
-        >
-          Continue
-        </Button>
 
         {transferDetails && (
           <ConfirmGiftRecipient

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
 import AppShell from "@/Routes/AppShell"
 import { Button } from "@/components/Button"
+import { BackTitleHeader } from "@/Routes/shell/headers"
 import facilityIcon from "@/assets/icons/hospital.png"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/Tabs"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -195,21 +195,7 @@ export default function FacilityDetailsPage() {
   const showRating = !!reviewAggregate && reviewAggregate.reviewCount > 0
 
   const header = (
-    <header className="flex w-full flex-col bg-card px-4 py-3">
-      <div className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate(-1)}
-            aria-label="Back"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Button>
-          <h1 className="capitalize">Facility details</h1>
-        </div>
-      </div>
-    </header>
+    <BackTitleHeader title="Facility details" onBack={() => navigate(-1)} />
   )
 
   const footer = (

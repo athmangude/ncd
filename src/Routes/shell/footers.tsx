@@ -38,6 +38,7 @@ export function PrimaryCTAFooter({
         type={type}
         form={form}
         disabled={disabled ?? isLoading}
+        isLoading={isLoading}
       >
         {label}
       </Button>
@@ -48,13 +49,18 @@ export function PrimaryCTAFooter({
 interface DualActionFooterProps {
   primary: {
     label: React.ReactNode
-    onClick: () => void
+    /** Optional when the primary submits a form via `form`+`type="submit"`. */
+    onClick?: () => void
+    type?: "submit" | "button" | "reset"
+    form?: string
     disabled?: boolean
     isLoading?: boolean
   }
   secondary: {
     label: React.ReactNode
-    onClick: () => void
+    onClick?: () => void
+    type?: "submit" | "button" | "reset"
+    form?: string
     disabled?: boolean
   }
   className?: string
@@ -75,6 +81,8 @@ export function DualActionFooter({
       <Button
         variant="outline"
         onClick={secondary.onClick}
+        type={secondary.type ?? "button"}
+        form={secondary.form}
         disabled={secondary.disabled}
       >
         {secondary.label}
@@ -82,7 +90,10 @@ export function DualActionFooter({
       <Button
         className="w-full"
         onClick={primary.onClick}
+        type={primary.type ?? "button"}
+        form={primary.form}
         disabled={primary.disabled ?? primary.isLoading}
+        isLoading={primary.isLoading}
       >
         {primary.label}
       </Button>

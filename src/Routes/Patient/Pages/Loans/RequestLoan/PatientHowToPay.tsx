@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../../PatientPageWrapper"
 import { HEADER_ICON } from "@/Routes/shell/PageHeader"
-import { Button } from "@/components/Button"
 import { SectionTitle } from "@/components/SectionTitle"
 import useNextLoanApplicationStep from "@/Routes/Patient/hooks/useNextLoanApplicationStep"
 import careproviderIcon from "@/assets/icons/care-provider.png"
@@ -16,18 +15,10 @@ export default function PatientHowToPay() {
       headerAlign="start"
       headerIcon={<img src={careproviderIcon} alt="" className={HEADER_ICON} />}
       pageTitle="Pay to over 14,000 licensed health facilities in Kenya."
-      footer={
-        <div className="border-t bg-card p-4">
-          <Button
-            role="link"
-            className="w-full"
-            size="lg"
-            onClick={() => navigate(next)}
-          >
-            Proceed to pay
-          </Button>
-        </div>
-      }
+      primaryCta={{
+        label: "Proceed to pay",
+        onClick: () => navigate(next),
+      }}
     >
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-4">

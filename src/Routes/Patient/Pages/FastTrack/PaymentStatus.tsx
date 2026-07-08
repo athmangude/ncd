@@ -5,7 +5,7 @@ import { Button } from "@/components/Button"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import { useFastTrackStore } from "./useFastTrackStore"
-import { CircleAlert, Clock, Receipt } from "lucide-react"
+import { CircleAlert, Clock } from "lucide-react"
 import successIcon from "@/assets/icons/success-icon.png"
 import Title from "@/components/typography/Title"
 import { formatDateLong, formatTime } from "@/utilities/dateUtilities"
@@ -92,6 +92,17 @@ export default function FastTrackPaymentStatus() {
     <PatientPageWrapper
       title="Transaction Result"
       onBack={handleBackToDashboard}
+      dualCta={{
+        primary: {
+          label: "View receipt",
+          onClick: () =>
+            navigate(`/patients/payments/payment-details/${transactionId}`),
+        },
+        secondary: {
+          label: "Back to dashboard",
+          onClick: handleBackToDashboard,
+        },
+      }}
     >
       <div className="flex flex-col gap-6 text-center items-center mt-10 px-4">
         {isSuccess ? (
@@ -118,27 +129,6 @@ export default function FastTrackPaymentStatus() {
             </span>
           </p>
         )}
-
-        <Button
-          variant="secondary"
-          onClick={() =>
-            navigate(`/patients/payments/payment-details/${transactionId}`)
-          }
-          className="w-full mt-4"
-          size="lg"
-        >
-          <Receipt className="w-4 h-4 m-1" />
-          View receipt
-        </Button>
-
-        <Button
-          role="link"
-          onClick={handleBackToDashboard}
-          className="w-full"
-          size="lg"
-        >
-          Back to dashboard
-        </Button>
       </div>
     </PatientPageWrapper>
   )

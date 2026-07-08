@@ -63,4 +63,60 @@ describe("PatientPageWrapper", () => {
     render(<PatientPageWrapper bodyPadding="none">x</PatientPageWrapper>)
     expect(screen.getByRole("main").className).not.toContain("p-4")
   })
+
+  it("renders a PrimaryCTAFooter from the primaryCta prop", () => {
+    const onClick = vi.fn()
+    render(
+      <PatientPageWrapper primaryCta={{ label: "Continue", onClick }}>
+        x
+      </PatientPageWrapper>
+    )
+    const btn = screen.getByRole("button", { name: "Continue" })
+    expect(btn).toBeInTheDocument()
+    // CTA lives in the pinned footer, so the body loses its safe-pb inset.
+    expect(screen.getByRole("main").className).not.toContain("safe-pb")
+  })
+
+  it("forwards form/type on primaryCta so a footer CTA can submit a body form", () => {
+    render(
+      <PatientPageWrapper
+        primaryCta={{ label: "Submit", type: "submit", form: "my-form" }}
+      >
+        x
+      </PatientPageWrapper>
+    )
+    const btn = screen.getByRole("button", { name: "Submit" })
+    expect(btn).toHaveAttribute("type", "submit")
+    expect(btn).toHaveAttribute("form", "my-form")
+  })
+
+  it("renders a DualActionFooter (secondary + primary) from the dualCta prop", () => {
+    render(
+      <PatientPageWrapper
+        dualCta={{
+          primary: { label: "Pay", onClick: vi.fn() },
+          secondary: { label: "Back", onClick: vi.fn() },
+        }}
+      >
+        x
+      </PatientPageWrapper>
+    )
+    expect(screen.getByRole("button", { name: "Pay" })).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument()
+  })
+
+  it("lets an explicit footer node win over primaryCta/dualCta", () => {
+    render(
+      <PatientPageWrapper
+        footer={<div>the-footer</div>}
+        primaryCta={{ label: "Continue" }}
+      >
+        x
+      </PatientPageWrapper>
+    )
+    expect(screen.getByText("the-footer")).toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: "Continue" })
+    ).not.toBeInTheDocument()
+  })
 })

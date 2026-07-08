@@ -10,7 +10,6 @@ import axios from "axios"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Button } from "@/components/Button"
 import {
   getFromLocalStorage,
   setToLocalStorage,
@@ -83,8 +82,14 @@ export default function PatientSelectPatient() {
       variant="content"
       headerIcon={<img src={patientIcon} alt="" className={HEADER_ICON} />}
       pageTitle="Who is the patient today?"
+      primaryCta={{
+        label: "Continue",
+        type: "submit",
+        form: "select-patient-form",
+      }}
     >
       <form
+        id="select-patient-form"
         className="flex flex-col gap-7"
         onSubmit={handleSubmit((data) => {
           const patient = patientOptions.find(
@@ -143,8 +148,6 @@ export default function PatientSelectPatient() {
             />
           )}
         />
-
-        <Button className="w-full mt-5">Continue</Button>
       </form>
     </PatientPageWrapper>
   )

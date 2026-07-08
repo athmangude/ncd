@@ -10,7 +10,6 @@ import {
   Sparkles,
   ChevronRight,
   CreditCard,
-  Loader2,
   LucideIcon,
 } from "lucide-react"
 
@@ -327,28 +326,17 @@ export default function PatientReviewInvoice() {
       showHelp
       headerIcon={<HeaderIcon />}
       pageTitle="Review and confirm your information"
-      footer={
-        <div className="p-4 bg-card border-t border-border">
-          <Button
-            className={`w-full font-semibold py-6 rounded-xl flex items-center justify-center gap-2 text-lg ${
-              isFormValid
-                ? "bg-primary hover:bg-primary/90 text-white"
-                : "bg-muted text-muted-foreground cursor-not-allowed"
-            }`}
-            onClick={() => mutation.mutate()}
-            disabled={mutation.isPending || !isFormValid}
-          >
-            {mutation.isPending ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <>
-                Choose how to pay
-                <ChevronRight className="w-5 h-5" />
-              </>
-            )}
-          </Button>
-        </div>
-      }
+      primaryCta={{
+        label: (
+          <>
+            Choose how to pay
+            <ChevronRight className="w-5 h-5" />
+          </>
+        ),
+        onClick: () => mutation.mutate(),
+        disabled: mutation.isPending || !isFormValid,
+        isLoading: mutation.isPending,
+      }}
     >
       <div className="flex flex-col gap-6">
         <div className="bg-card rounded-xl border border-border overflow-hidden">

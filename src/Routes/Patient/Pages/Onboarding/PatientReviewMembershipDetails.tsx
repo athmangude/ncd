@@ -1,7 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { DetailsNotSet } from "../../components/DetailsNotSet"
-import { Button } from "@/components/Button"
 import { SectionTitle } from "@/components/SectionTitle"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
@@ -102,8 +101,25 @@ export default function PatientReviewMembershipDetails() {
       : null
 
   return (
-    <PatientPageWrapper title="Review & Submit">
+    <PatientPageWrapper
+      title="Review & Submit"
+      dualCta={{
+        primary: {
+          label: plan === "JIREH_PLUS" ? "Pay" : "Submit",
+          type: "submit",
+          form: "review-membership-form",
+          disabled: mutation.isPending || mutation.isSuccess,
+          isLoading: mutation.isPending,
+        },
+        secondary: {
+          label: "Back",
+          onClick: () => navigate(-1),
+          disabled: mutation.isPending || mutation.isSuccess,
+        },
+      }}
+    >
       <form
+        id="review-membership-form"
         className="flex flex-col gap-5 w-full"
         onSubmit={handleSubmit(() => {
           mutation.mutate(state)
@@ -164,26 +180,6 @@ export default function PatientReviewMembershipDetails() {
         )}
 
         {plan === "JIREH_PLUS" && <BasicPlanInfo />}
-
-        <Button
-          disabled={mutation.isPending || mutation.isSuccess}
-          className="w-full"
-          isLoading={mutation.isPending}
-          type="submit"
-        >
-          {plan === "JIREH_PLUS" ? "Pay" : "Submit"}
-        </Button>
-        <Button
-          className="w-full "
-          variant="outline"
-          onClick={(e) => {
-            e.preventDefault()
-            navigate(-1)
-          }}
-          disabled={mutation.isPending || mutation.isSuccess}
-        >
-          Back
-        </Button>
       </form>
     </PatientPageWrapper>
   )

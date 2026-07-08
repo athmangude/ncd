@@ -262,14 +262,6 @@ export default function PatientWalletSelection() {
             // Only update if amount changed or doesn't exist
             // Also ensure we're not doubling the amount - use the amount directly from API response
             if (!existing || existing.amount !== discountAmt) {
-              // Debug: Log if we're updating an existing allocation with different amount
-              if (existing && existing.amount !== discountAmt) {
-                console.log("Updating discount allocation amount:", {
-                  oldAmount: existing.amount,
-                  newAmount: discountAmt,
-                  appliedDiscountAmount: appliedDiscount.discountAmount,
-                })
-              }
               return {
                 ...prev,
                 [discountWalletId]: {
@@ -364,7 +356,6 @@ export default function PatientWalletSelection() {
       (patientCircle.filledAccountableSlots ?? 0) >= 2 &&
       patientCircle.status !== "INACTIVE" &&
       patientCircle.isFrozen !== true
-    console.log("isCircleEligibleForLoan", isCircleEligibleForLoan)
     return !isCircleEligibleForLoan
   }, [user?.type, user?.hasActiveMembership, user?.patientCircle])
 
@@ -708,19 +699,16 @@ export default function PatientWalletSelection() {
       headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."
-      footer={
-        <div className="p-4 bg-card border-t border-border">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={() => handleProceed()}
-            disabled={Math.round(totalAllocated) !== originalBillAmount}
-          >
+      primaryCta={{
+        label: (
+          <>
             Proceed to pay
             <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-      }
+          </>
+        ),
+        onClick: () => handleProceed(),
+        disabled: Math.round(totalAllocated) !== originalBillAmount,
+      }}
     >
       <div className="flex flex-col gap-6">
         {/* Discount Code Input */}

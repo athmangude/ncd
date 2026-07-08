@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
 import axios from "axios"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { Button } from "@/components/Button"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -185,7 +184,31 @@ export default function PaymentDetails() {
   }
 
   return (
-    <PatientPageWrapper title="Payment Details">
+    <PatientPageWrapper
+      title="Payment Details"
+      primaryCta={{
+        label: (
+          <span className="flex items-center gap-1">
+            {isVerifying ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Verifying...
+              </>
+            ) : (
+              <>
+                Choose Payment Method <ChevronRight className="w-4 h-4" />
+              </>
+            )}
+          </span>
+        ),
+        onClick: handleContinue,
+        disabled:
+          !invoiceNumber.trim() ||
+          parsedAmount < MIN_BILL_AMOUNT ||
+          !selectedPatient ||
+          isVerifying,
+      }}
+    >
       <div className="flex flex-col gap-5 px-1 pb-8">
         <div className="flex flex-col items-center text-center gap-2 mt-2">
           <h2 className="text-foreground">
@@ -307,32 +330,6 @@ export default function PaymentDetails() {
             description={`With a bill of ${formatMoney(parsedAmount, "KES")}, you could earn up to ${formatMoney(parsedAmount * 0.05, "KES")} cashback!`}
           />
         )}
-
-        {/* Continue */}
-        <Button
-          className="w-full mt-2"
-          size="lg"
-          onClick={handleContinue}
-          disabled={
-            !invoiceNumber.trim() ||
-            parsedAmount < MIN_BILL_AMOUNT ||
-            !selectedPatient ||
-            isVerifying
-          }
-        >
-          <span className="flex items-center gap-1">
-            {isVerifying ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Verifying...
-              </>
-            ) : (
-              <>
-                Choose Payment Method <ChevronRight className="w-4 h-4" />
-              </>
-            )}
-          </span>
-        </Button>
       </div>
     </PatientPageWrapper>
   )

@@ -79,12 +79,44 @@ export default function PatientAddToCircle() {
     })
   }
 
+  const handleContinue = () =>
+    navigate(next, {
+      state: {
+        ...state,
+        circleMembers: allMembers,
+        tab: "circle",
+      },
+    })
+
+  const primaryCta = {
+    label: "Continue",
+    onClick: handleContinue,
+    disabled: allMembers.length === 0,
+  }
+
   return (
     <PatientPageWrapper
       title="Add people"
-      className="flex flex-col min-h-[calc(100vh-140px)] min-h-[calc(100dvh-140px)]"
+      className="flex flex-col"
+      {...(type === "ORG"
+        ? {
+            dualCta: {
+              primary: primaryCta,
+              secondary: {
+                label: "Skip for now",
+                onClick: () =>
+                  navigate(next, {
+                    state: {
+                      ...state,
+                      circleMembers: [],
+                    },
+                  }),
+              },
+            },
+          }
+        : { primaryCta })}
     >
-      <div className="flex-1 w-full flex flex-col gap-6">
+      <div className="w-full flex flex-col gap-6">
         <div className="bg-purple-50 rounded-xl p-6 flex flex-col items-center text-center border border-purple-100 shadow-sm">
           <div className="bg-card rounded-full p-3 mb-4 shadow-sm relative">
             <img
@@ -124,41 +156,6 @@ export default function PatientAddToCircle() {
               />
             ))}
           </div>
-        )}
-      </div>
-
-      <div className="mt-auto pt-4 space-y-3">
-        <Button
-          disabled={allMembers.length === 0}
-          className="w-full"
-          onClick={() =>
-            navigate(next, {
-              state: {
-                ...state,
-                circleMembers: allMembers,
-                tab: "circle",
-              },
-            })
-          }
-        >
-          Continue
-        </Button>
-
-        {type === "ORG" && (
-          <Button
-            className="w-full"
-            variant="ghost"
-            onClick={() =>
-              navigate(next, {
-                state: {
-                  ...state,
-                  circleMembers: [],
-                },
-              })
-            }
-          >
-            Skip for now
-          </Button>
         )}
       </div>
     </PatientPageWrapper>

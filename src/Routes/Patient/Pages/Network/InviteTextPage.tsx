@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { Button } from "@/components/Button"
 import { Textarea } from "@/components/Textarea"
 import PatientPageWrapper from "../PatientPageWrapper"
 import {
@@ -73,17 +72,11 @@ export default function InviteTextPage() {
     <PatientPageWrapper
       title="Invite by SMS"
       onBack={handleBack}
-      footer={
-        <div className="p-4 bg-card border-t border-border">
-          <Button
-            className="w-full"
-            onClick={handleContinue}
-            disabled={message.length === 0 || message.length > MAX_CHARS}
-          >
-            Preview your invite
-          </Button>
-        </div>
-      }
+      primaryCta={{
+        label: "Preview your invite",
+        onClick: handleContinue,
+        disabled: message.length === 0 || message.length > MAX_CHARS,
+      }}
     >
       <div className="flex flex-col">
         <div className="flex flex-col mb-8">

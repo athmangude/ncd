@@ -1,10 +1,16 @@
 import idVerficationFailed from "@/assets/icons/id-verification-failed.png"
-import { Button } from "@/components/Button"
 import PatientAuthWrapper from "../../components/PatientAuthWrapper"
 
 export default function PatientIdVerificationFailure() {
   return (
-    <PatientAuthWrapper>
+    <PatientAuthWrapper
+      primaryCta={{
+        label: "Contact Customer Support",
+        onClick: () => {
+          window.open("https://wa.me/254117118511", "_blank")
+        },
+      }}
+    >
       <div className="flex flex-col items-center gap-5 text-center">
         <img
           src={idVerficationFailed}
@@ -20,17 +26,6 @@ export default function PatientIdVerificationFailure() {
         </p>
 
         <p>If there was a mistake, please contact customer support for help.</p>
-
-        <a
-          href={`https://wa.me/254117118511`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-full"
-        >
-          <Button className="w-full" size="lg">
-            Contact Customer Support
-          </Button>
-        </a>
       </div>
     </PatientAuthWrapper>
   )

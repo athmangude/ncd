@@ -39,7 +39,8 @@ describe("FiltersPage (AppShell migration)", () => {
   it("renders the header and dual-action footer inside the shell", () => {
     render(wrap(<FiltersPage />))
     expect(screen.getByRole("main")).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Filters" })).toBeInTheDocument()
+    // Title now renders in the canonical BackTitleHeader chrome as a <p>, not an <h1>.
+    expect(screen.getByText("Filters")).toBeInTheDocument()
     expect(
       screen.getByRole("button", { name: "Apply filters" })
     ).toBeInTheDocument()

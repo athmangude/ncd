@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { ArrowLeft, Settings2 } from "lucide-react"
+import { Settings2 } from "lucide-react"
 import AppShell from "@/Routes/AppShell"
-import { Button } from "@/components/Button"
+import { BackTitleHeader } from "@/Routes/shell/headers"
+import { DualActionFooter } from "@/Routes/shell/footers"
 import { trackEvent, EVENTS } from "@/analytics"
 import { DISCOVERY_STORAGE_KEY } from "./useDiscovery"
 import { useServiceCategories } from "./api/useServiceCategories"
@@ -79,34 +80,13 @@ export default function FiltersPage() {
 
   const onCancel = () => navigate(-1)
 
-  const header = (
-    <div className="bg-card flex items-center gap-2 px-4 py-3 border-b border-border">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={onCancel}
-        aria-label="Back"
-      >
-        <ArrowLeft className="w-5 h-5" />
-      </Button>
-      <h1>Filters</h1>
-    </div>
-  )
+  const header = <BackTitleHeader title="Filters" onBack={onCancel} />
 
   const footer = (
-    <div className="bg-card border-t border-border p-4 flex items-center gap-3">
-      <Button
-        type="button"
-        variant="outline"
-        onClick={onCancel}
-        className="flex-1"
-      >
-        Cancel
-      </Button>
-      <Button type="button" onClick={onApply} className="flex-1">
-        Apply filters
-      </Button>
-    </div>
+    <DualActionFooter
+      secondary={{ label: "Cancel", onClick: onCancel }}
+      primary={{ label: "Apply filters", onClick: onApply }}
+    />
   )
 
   return (

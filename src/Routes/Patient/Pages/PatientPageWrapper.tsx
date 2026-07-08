@@ -2,12 +2,57 @@ import React from "react"
 import AppShell from "@/Routes/AppShell"
 import StepperHeader from "@/Routes/shell/StepperHeader"
 import { PageHeader } from "@/Routes/shell/PageHeader"
+import { PrimaryCTAFooter, DualActionFooter } from "@/Routes/shell/footers"
 import { Stepper } from "@/components/Stepper"
 import {
   useJourneyStepper,
   useJourneyStepMeta,
 } from "@/Routes/shell/useJourneyStepper"
 import { cn } from "@/lib/utils"
+
+/** Declarative single primary action → renders a PrimaryCTAFooter in the slot. */
+export type PrimaryCta = {
+  label: React.ReactNode
+  onClick?: () => void
+  type?: "submit" | "button" | "reset"
+  form?: string
+  disabled?: boolean
+  isLoading?: boolean
+}
+
+/** Declarative primary + secondary actions → renders a DualActionFooter. */
+export type DualCta = {
+  primary: PrimaryCta
+  secondary: {
+    label: React.ReactNode
+    onClick?: () => void
+    type?: "submit" | "button" | "reset"
+    form?: string
+    disabled?: boolean
+  }
+}
+
+/**
+ * Resolve the footer node from the (mutually exclusive) footer inputs. An
+ * explicit `footer` node always wins (escape hatch for bespoke bars); otherwise
+ * `dualCta` → DualActionFooter, `primaryCta` → PrimaryCTAFooter.
+ */
+function resolveFooter(
+  footer: React.ReactNode | undefined,
+  primaryCta: PrimaryCta | undefined,
+  dualCta: DualCta | undefined
+): React.ReactNode | undefined {
+  if (footer) return footer
+  if (dualCta)
+    return (
+      <DualActionFooter
+        primary={dualCta.primary}
+        secondary={dualCta.secondary}
+      />
+    )
+  if (primaryCta) return <PrimaryCTAFooter {...primaryCta} />
+  return undefined
+}
 
 export default function PatientPageWrapper({
   children,
@@ -19,6 +64,8 @@ export default function PatientPageWrapper({
   backIcon,
   rightAction,
   footer,
+  primaryCta,
+  dualCta,
   bodyPadding = "default",
   variant = "legacy",
   pageTitle,
@@ -47,6 +94,16 @@ export default function PatientPageWrapper({
    * later, per-screen step.
    */
   footer?: React.ReactNode
+  /**
+   * Declarative single primary CTA. Renders a `PrimaryCTAFooter` into the footer
+   * slot — prefer this over hand-passing `footer`. Ignored if `footer` is set.
+   */
+  primaryCta?: PrimaryCta
+  /**
+   * Declarative primary + secondary CTAs. Renders a `DualActionFooter`. Ignored
+   * if `footer` is set; takes precedence over `primaryCta`.
+   */
+  dualCta?: DualCta
   /**
    * Body padding. Defaults to "default" (the canonical p-4). Pass "none" for
    * full-bleed screens that manage their own edge spacing (e.g. an edge-to-edge
@@ -80,6 +137,8 @@ export default function PatientPageWrapper({
   /** Show the progress stepper for journey routes. Defaults to true. */
   showStepper?: boolean
 }) {
+  const resolvedFooter = resolveFooter(footer, primaryCta, dualCta)
+
   if (variant === "content") {
     return (
       <ContentVariant
@@ -90,7 +149,7 @@ export default function PatientPageWrapper({
         onBack={onBack}
         backIcon={backIcon}
         rightAction={rightAction}
-        footer={footer}
+        footer={resolvedFooter}
         bodyPadding={bodyPadding}
         pageTitle={pageTitle}
         description={description}
@@ -116,7 +175,7 @@ export default function PatientPageWrapper({
           rightAction={rightAction}
         />
       }
-      footer={footer}
+      footer={resolvedFooter}
       bodyPadding={bodyPadding}
     >
       <section className={cn("flex flex-col w-full gap-5", className)}>
