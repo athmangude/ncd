@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import { Skeleton } from "@/components/Skeleton"
 import { trackEvent, EVENTS } from "@/analytics"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -41,13 +41,9 @@ export default function PatientCircleMemberDetails() {
   }, [variant])
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Circle member details"
-          onBack={() => navigate(-1)}
-        />
-      }
+    <PatientPageWrapper
+      title="Circle member details"
+      onBack={() => navigate(-1)}
       footer={null}
     >
       {isLoading && (
@@ -92,6 +88,6 @@ export default function PatientCircleMemberDetails() {
           )}
         </>
       )}
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

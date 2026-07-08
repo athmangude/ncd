@@ -1,10 +1,8 @@
 import { useNavigate } from "react-router-dom"
 import { Check, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import careProfileSetup from "@/assets/icons/care-profile-setup.png"
 import {
@@ -19,8 +17,9 @@ export default function CareProfileSetupIndicator() {
   const firstIncompleteRoute = getFirstIncompleteCareProfileStep(user)
 
   return (
-    <MobileWrapper
-      header={<BackTitleHeader title="" onBack={() => navigate(-1)} />}
+    <PatientPageWrapper
+      title=""
+      onBack={() => navigate(-1)}
       footer={
         <PrimaryCTAFooter
           label="Continue"
@@ -103,6 +102,6 @@ export default function CareProfileSetupIndicator() {
           </div>
         </div>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

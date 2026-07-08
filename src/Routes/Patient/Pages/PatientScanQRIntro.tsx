@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { useToast } from "@/hooks/useToast"
 import LoadingPage from "@/Routes/LoadingPage"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "./PatientPageWrapper"
 import { useNavigate } from "react-router-dom"
 import { HeartHandshake, Dumbbell, FileCheck2 } from "lucide-react"
 
@@ -48,13 +48,9 @@ export default function PatientScanQRIntro() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Invite by QR code"
-          onBack={() => navigate(-1)}
-        />
-      }
+    <PatientPageWrapper
+      title="Invite by QR code"
+      onBack={() => navigate(-1)}
       footer={null}
       className="flex flex-col items-center"
     >
@@ -109,7 +105,7 @@ export default function PatientScanQRIntro() {
           </div>
         </div>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }
 

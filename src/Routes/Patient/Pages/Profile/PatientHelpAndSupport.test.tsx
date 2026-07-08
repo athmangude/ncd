@@ -14,9 +14,9 @@ vi.mock("react-router-dom", async () => {
   }
 })
 
-// MobileWrapper drags in the shell; stub it (and its named slot exports) to a
-// passthrough so this test stays focused on the support-option wiring.
-vi.mock("@/Routes/MobileWrapper", () => ({
+// PatientPageWrapper drags in the shell; stub it to a passthrough so this test
+// stays focused on the support-option wiring.
+vi.mock("@/Routes/Patient/Pages/PatientPageWrapper", () => ({
   default: ({
     children,
     footer,
@@ -29,8 +29,11 @@ vi.mock("@/Routes/MobileWrapper", () => ({
       {footer}
     </div>
   ),
-  BackTitleHeader: () => null,
+}))
+
+vi.mock("@/Routes/shell/footers", () => ({
   PrimaryCTAFooter: () => null,
+  DualActionFooter: () => null,
 }))
 
 vi.mock("@/analytics", () => ({

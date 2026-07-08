@@ -1,8 +1,6 @@
 import { useState } from "react"
-import MobileWrapper, {
-  BackTitleHeader,
-  DualActionFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { DualActionFooter } from "@/Routes/shell/footers"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/InputOtp"
 import { useMutation } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
@@ -160,8 +158,9 @@ export default function PatientChangePin() {
     }[step] ?? null
 
   return (
-    <MobileWrapper
-      header={<BackTitleHeader title="Change PIN" onBack={handleHeaderBack} />}
+    <PatientPageWrapper
+      title="Change PIN"
+      onBack={handleHeaderBack}
       footer={
         footerConfig ? (
           <DualActionFooter
@@ -276,6 +275,6 @@ export default function PatientChangePin() {
           </>
         )}
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

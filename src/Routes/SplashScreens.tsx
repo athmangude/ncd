@@ -5,7 +5,8 @@ import cashbackImage from "@/assets/images/splashscreens/cashback.png"
 import networkImage from "@/assets/images/splashscreens/network.png"
 import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons"
 import SplashScreenProgressBar from "./SplashScreenProgressBar"
-import MobileWrapper, { LogoHeader } from "./MobileWrapper"
+import AppShell from "./AppShell"
+import { LogoHeader } from "./shell/headers"
 
 const screens: {
   title: React.ReactNode
@@ -93,7 +94,7 @@ export default function SplashScreens() {
   }
 
   return (
-    <MobileWrapper
+    <AppShell
       header={<LogoHeader showIcons={false} className="flex justify-center" />}
       footer={
         <div className="border-t bg-white dark:bg-neutral-950 flex flex-col gap-4 p-4 pb-6">
@@ -157,7 +158,7 @@ export default function SplashScreens() {
           className="h-full mx-auto transition-all duration-500 ease-in-out opacity-100 animate-in fade-in zoom-in-95 slide-in-from-bottom-8 px-2 select-none object-contain"
         />
       </div>
-    </MobileWrapper>
+    </AppShell>
   )
 }
 

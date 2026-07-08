@@ -1,5 +1,5 @@
 import { usePatientNetwork } from "@/hooks/usePatientNetwork"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { ReceivedInviteItem } from "./components/ReceivedInviteItem"
@@ -28,13 +28,9 @@ export default function PatientInvitationsReceived() {
   const { receivedInvites = [] } = data || {}
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title={`Invitations Received (${receivedInvites.length})`}
-          onBack={() => navigate("/patients", { state: { tab: "circle" } })}
-        />
-      }
+    <PatientPageWrapper
+      title={`Invitations Received (${receivedInvites.length})`}
+      onBack={() => navigate("/patients", { state: { tab: "circle" } })}
       footer={null}
     >
       <div className="flex flex-col gap-3 mt-4">
@@ -51,6 +47,6 @@ export default function PatientInvitationsReceived() {
           ))
         )}
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

@@ -1,5 +1,5 @@
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import { PaymentCard } from "@/components/YourPayments"
 import { LoanCard } from "../../components/YourTreatments"
 import { useState } from "react"
@@ -88,14 +88,10 @@ export default function PatientPaymentHistory() {
   ] as const
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Payment History"
-          onBack={() => navigate("/patients", { state: { tab: "profile" } })}
-          rightSlot={<Search className="w-5 h-5 text-muted-foreground" />}
-        />
-      }
+    <PatientPageWrapper
+      title="Payment History"
+      onBack={() => navigate("/patients", { state: { tab: "profile" } })}
+      rightAction={<Search className="w-5 h-5 text-muted-foreground" />}
       footer={null}
     >
       <div className="flex flex-col gap-5">
@@ -197,7 +193,7 @@ export default function PatientPaymentHistory() {
             ))}
         </div>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }
 

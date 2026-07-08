@@ -15,10 +15,8 @@ import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import useNextOnboardingStep from "../hooks/useNextOnboardingStep"
 import { useWebOTP } from "../hooks/useWebOTP"
 import { trackEvent, EVENTS } from "@/analytics"
-import MobileWrapper, {
-  LogoHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientAuthWrapper from "./PatientAuthWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 
 export default function VerifyOTPForm() {
   const navigate = useNavigate()
@@ -174,8 +172,7 @@ export default function VerifyOTPForm() {
   })
 
   return (
-    <MobileWrapper
-      header={<LogoHeader showIcons={false} className="flex justify-center" />}
+    <PatientAuthWrapper
       footer={
         <PrimaryCTAFooter
           label="Submit OTP"
@@ -185,7 +182,7 @@ export default function VerifyOTPForm() {
           isLoading={verifyMutation.isPending}
         />
       }
-      className="flex flex-col items-center gap-6"
+      className="items-center gap-6"
     >
       <div className="text-center space-y-2">
         <h1>Enter your One-Time-PIN</h1>
@@ -267,6 +264,6 @@ export default function VerifyOTPForm() {
         <ErrorMessage message={resendMutation.error.message} />
       )}
       {resendMutation.data && <SuccessMessage message={resendMutation.data} />}
-    </MobileWrapper>
+    </PatientAuthWrapper>
   )
 }

@@ -16,8 +16,8 @@ import { trackEvent, EVENTS, maskPhoneNumber } from "@/analytics"
 export default function PatientLogIn() {
   const [showOtpPage, setShowOtpPage] = useState(false)
 
-  // Both branches self-shell (LogInForm via PatientAuthWrapper, VerifyOTPForm via
-  // its own MobileWrapper), so this is a pure switch — wrapping either here would
+  // Both branches self-shell (LogInForm and VerifyOTPForm each via
+  // PatientAuthWrapper), so this is a pure switch — wrapping either here would
   // nest a second AppShell.
   return !showOtpPage ? (
     <LogInForm setShowOtpPage={setShowOtpPage} />

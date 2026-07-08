@@ -1,9 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import MobileWrapper, {
-  BackTitleHeader,
-  DualActionFooter,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { DualActionFooter, PrimaryCTAFooter } from "@/Routes/shell/footers"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useNavigate, useSearchParams } from "react-router-dom"
@@ -57,10 +54,9 @@ export default function PatientAcceptShareLink() {
 function NoInviteFound() {
   const navigate = useNavigate()
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader title="Accept Invite" onBack={() => navigate(-1)} />
-      }
+    <PatientPageWrapper
+      title="Accept Invite"
+      onBack={() => navigate(-1)}
       footer={
         <PrimaryCTAFooter
           label="Return to Dashboard"
@@ -70,7 +66,7 @@ function NoInviteFound() {
     >
       <h2 className="text-center">No invite found</h2>
       <p>We could not find the invite you are looking for.</p>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }
 
@@ -177,10 +173,9 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader title="Accept Invite" onBack={() => navigate(-1)} />
-      }
+    <PatientPageWrapper
+      title="Accept Invite"
+      onBack={() => navigate(-1)}
       footer={
         <DualActionFooter
           primary={{
@@ -234,7 +229,7 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
           />
         </div>
       </form>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }
 
@@ -247,10 +242,9 @@ function IsAlreadyConnected({
 }) {
   const navigate = useNavigate()
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader title="Accept Invite" onBack={() => navigate(-1)} />
-      }
+    <PatientPageWrapper
+      title="Accept Invite"
+      onBack={() => navigate(-1)}
       footer={
         <DualActionFooter
           primary={{
@@ -283,6 +277,6 @@ function IsAlreadyConnected({
         <span className="capitalize">{firstName.toLocaleLowerCase()}</span>{" "}
         <span className="capitalize">{lastName.toLocaleLowerCase()}</span>
       </h1>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

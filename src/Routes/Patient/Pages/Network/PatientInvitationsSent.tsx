@@ -1,5 +1,5 @@
 import { usePatientNetwork } from "@/hooks/usePatientNetwork"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { NetworkItem } from "./components/NetworkItem"
@@ -28,13 +28,9 @@ export default function PatientInvitationsSent() {
   const { invites = [] } = data || {}
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title={`Invitations Sent (${invites.length})`}
-          onBack={() => navigate("/patients", { state: { tab: "circle" } })}
-        />
-      }
+    <PatientPageWrapper
+      title={`Invitations Sent (${invites.length})`}
+      onBack={() => navigate("/patients", { state: { tab: "circle" } })}
       footer={null}
     >
       <div className="flex flex-col gap-3 mt-4">
@@ -56,6 +52,6 @@ export default function PatientInvitationsSent() {
           ))
         )}
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

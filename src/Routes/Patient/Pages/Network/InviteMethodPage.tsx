@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import { ChevronRight, Plus } from "lucide-react"
 import {
   Item,
@@ -44,10 +44,9 @@ export default function InviteMethodPage() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader title="Send invite" onBack={() => navigate(-1)} />
-      }
+    <PatientPageWrapper
+      title="Send invite"
+      onBack={() => navigate(-1)}
       footer={null}
     >
       {/* Drawer-style header */}
@@ -142,6 +141,6 @@ export default function InviteMethodPage() {
           </button>
         </Item>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }
