@@ -61,7 +61,10 @@ export function PatientIdVerificationOnboarding() {
 
   return (
     <PatientPageWrapper
-      title=""
+      variant="content"
+      barTitle="ID verification"
+      pageTitle="Enter your National ID number"
+      description="Verify your identity and keep your account secure"
       className="items-center"
       footer={
         <DualActionFooter
@@ -80,13 +83,6 @@ export function PatientIdVerificationOnboarding() {
       }
     >
       <div className="w-full flex flex-col gap-8">
-        <div className="text-center">
-          <h1>Enter your National ID number</h1>
-          <p className="text-muted-foreground">
-            Verify your identity and keep your account secure{" "}
-          </p>
-        </div>
-
         <form
           id="id-verification-onboarding-form"
           className="flex flex-col gap-5"

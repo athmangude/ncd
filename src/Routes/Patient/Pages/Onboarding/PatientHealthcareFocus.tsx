@@ -83,7 +83,10 @@ export default function PatientHealthcareFocus() {
 
   return (
     <PatientPageWrapper
-      title=""
+      variant="content"
+      headerAlign="start"
+      pageTitle="Select the areas of health coverage that are most important to you."
+      description="Add as many as you like"
       footer={
         <DualActionFooter
           secondary={{
@@ -100,11 +103,6 @@ export default function PatientHealthcareFocus() {
         />
       }
     >
-      <h1>
-        Select the areas of health coverage that are most important to you.
-      </h1>
-      <p className="text-muted-foreground">Add as many as you like</p>
-
       <section className="flex flex-col gap-3 ">
         {healthcareFocusAreas.map((area) => (
           <CheckboxItem

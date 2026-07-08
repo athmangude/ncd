@@ -192,7 +192,8 @@ export default function PreviewInvitePage() {
 
     return (
       <PatientPageWrapper
-        title="Invite sent!"
+        variant="content"
+        barTitle="Invite sent!"
         showHelp={false}
         className="min-h-full items-center justify-center"
         footer={
@@ -277,7 +278,11 @@ export default function PreviewInvitePage() {
 
   return (
     <PatientPageWrapper
-      title="Preview invite"
+      variant="content"
+      barTitle="Preview invite"
+      headerAlign="start"
+      pageTitle={`This is what ${inviteeName} will see`}
+      description="Check it looks right before you send."
       showHelp={false}
       footer={
         <div className="p-4 bg-card border-t border-border">
@@ -307,15 +312,6 @@ export default function PreviewInvitePage() {
       }
     >
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-foreground leading-snug">
-            This is what {inviteeName} will see
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Check it looks right before you send.
-          </p>
-        </div>
-
         <div className="flex justify-center">
           <InvitePreviewCard
             senderName={senderName}

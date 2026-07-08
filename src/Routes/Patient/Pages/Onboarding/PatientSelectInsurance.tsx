@@ -101,7 +101,9 @@ export default function PatientSelectInsurance() {
 
   return (
     <PatientPageWrapper
-      title=""
+      variant="content"
+      barTitle="Your insurance"
+      headerAlign="start"
       footer={
         <DualActionFooter
           secondary={{

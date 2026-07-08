@@ -70,7 +70,11 @@ export default function InviteTextPage() {
 
   return (
     <PatientPageWrapper
-      title="Invite by SMS"
+      variant="content"
+      barTitle="Invite by SMS"
+      headerAlign="start"
+      pageTitle="Write up to 140 characters"
+      description={"e.g. “This is for managing Mom’s care”."}
       onBack={handleBack}
       primaryCta={{
         label: "Preview your invite",
@@ -79,13 +83,6 @@ export default function InviteTextPage() {
       }}
     >
       <div className="flex flex-col">
-        <div className="flex flex-col mb-8">
-          <h2 className="text-foreground mb-1">Write up to 140 characters</h2>
-          <p className="text-muted-foreground text-sm">
-            e.g. &ldquo;This is for managing Mom&apos;s care&rdquo;.
-          </p>
-        </div>
-
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium text-foreground">
             Text Message
