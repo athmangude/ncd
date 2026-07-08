@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Settings2 } from "lucide-react"
-import AppShell from "@/Routes/AppShell"
-import { BackTitleHeader } from "@/Routes/shell/headers"
+import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { DualActionFooter } from "@/Routes/shell/footers"
 import { trackEvent, EVENTS } from "@/analytics"
 import { DISCOVERY_STORAGE_KEY } from "./useDiscovery"
@@ -80,8 +79,6 @@ export default function FiltersPage() {
 
   const onCancel = () => navigate(-1)
 
-  const header = <BackTitleHeader title="Filters" onBack={onCancel} />
-
   const footer = (
     <DualActionFooter
       secondary={{ label: "Cancel", onClick: onCancel }}
@@ -90,7 +87,12 @@ export default function FiltersPage() {
   )
 
   return (
-    <AppShell header={header} footer={footer} className="flex flex-col gap-6">
+    <PatientPageWrapper
+      title="Filters"
+      onBack={onCancel}
+      footer={footer}
+      className="gap-6"
+    >
       <JirehPartnersToggle
         checked={draftJirehOnly}
         onChange={setDraftJirehOnly}
@@ -110,6 +112,6 @@ export default function FiltersPage() {
           onRetry={() => categoriesQuery.refetch()}
         />
       </div>
-    </AppShell>
+    </PatientPageWrapper>
   )
 }

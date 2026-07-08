@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
-import AppShell from "@/Routes/AppShell"
+import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { Button } from "@/components/Button"
-import { BackTitleHeader } from "@/Routes/shell/headers"
 import facilityIcon from "@/assets/icons/hospital.png"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/Tabs"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -163,27 +162,27 @@ export default function FacilityDetailsPage() {
 
   if (isOffline) {
     return (
-      <AppShell header={null} footer={null}>
+      <PatientPageWrapper hideHeader footer={null}>
         <OfflinePlaceholder message="Connect to the internet to view facility details." />
-      </AppShell>
+      </PatientPageWrapper>
     )
   }
 
   if (isLoading) {
     return (
-      <AppShell header={null} footer={null} bodyPadding="none">
+      <PatientPageWrapper hideHeader footer={null} bodyPadding="none">
         <Skeleton />
-      </AppShell>
+      </PatientPageWrapper>
     )
   }
 
   if (isError || !facility) {
     return (
-      <AppShell header={null} footer={null} bodyPadding="none">
+      <PatientPageWrapper hideHeader footer={null} bodyPadding="none">
         <NotFoundState
           onBack={() => navigate("/patients", { state: { tab: "explore" } })}
         />
-      </AppShell>
+      </PatientPageWrapper>
     )
   }
 
@@ -193,10 +192,6 @@ export default function FacilityDetailsPage() {
       ? `${driveMinutes} mins`
       : "—"
   const showRating = !!reviewAggregate && reviewAggregate.reviewCount > 0
-
-  const header = (
-    <BackTitleHeader title="Facility details" onBack={() => navigate(-1)} />
-  )
 
   const footer = (
     <div className="bg-card border-t border-border px-4 py-3 flex gap-3 w-full">
@@ -238,7 +233,13 @@ export default function FacilityDetailsPage() {
   )
 
   return (
-    <AppShell header={header} footer={footer} bodyPadding="none">
+    <PatientPageWrapper
+      title="Facility details"
+      onBack={() => navigate(-1)}
+      footer={footer}
+      bodyPadding="none"
+      className="gap-0"
+    >
       <section className="bg-card px-4 pt-6 pb-4 border-b border-border flex flex-col items-center text-center">
         <img
           src={facilityIcon}
@@ -314,7 +315,7 @@ export default function FacilityDetailsPage() {
           <MyActivityTab facilityId={facility.id} />
         </TabsContent>
       </Tabs>
-    </AppShell>
+    </PatientPageWrapper>
   )
 }
 

@@ -43,8 +43,13 @@ vi.mock("./facility-details/reviews/ReviewGateHelperText", () => ({
 vi.mock("@/Routes/Patient/stores/patientAuthStore", () => ({
   usePatientAuthStore: () => ({}),
 }))
+// The screen now renders the real PatientPageWrapper, whose journey stepper
+// reads ONBOARDING_STEP_CONFIG from this hook — so the mock must provide it
+// (empty config = no stepper match) alongside the getFirstIncompleteStep stub.
 vi.mock("@/Routes/Patient/hooks/useNextOnboardingStep", () => ({
   getFirstIncompleteStep: () => null,
+  ONBOARDING_STEP_CONFIG: [],
+  ONBOARDING_STEPS: [],
 }))
 vi.mock("@/hooks/useOffline", () => ({ useOffline: () => false }))
 vi.mock("@/analytics", () => ({

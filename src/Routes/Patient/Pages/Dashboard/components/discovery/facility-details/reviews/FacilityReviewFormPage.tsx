@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import AppShell from "@/Routes/AppShell"
+import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { Button } from "@/components/Button"
-import { BackTitleHeader } from "@/Routes/shell/headers"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import FormGroupTextarea from "@/components/form/FormGroupTextarea"
 import { useToast } from "@/hooks/useToast"
@@ -181,39 +180,35 @@ export default function FacilityReviewFormPage() {
 
   if (isOffline) {
     return (
-      <AppShell header={null} footer={null}>
+      <PatientPageWrapper hideHeader footer={null}>
         <OfflinePlaceholder message="Connect to the internet to leave a review." />
-      </AppShell>
+      </PatientPageWrapper>
     )
   }
 
   if (facilityLoading || eligibilityLoading) {
     return (
-      <AppShell header={null} footer={null} bodyPadding="none">
+      <PatientPageWrapper hideHeader footer={null} bodyPadding="none">
         <div className="flex flex-col gap-4 p-6">
           <Skeleton className="h-5 w-40 bg-muted rounded" />
           <Skeleton className="h-32 w-full bg-muted rounded" />
         </div>
-      </AppShell>
+      </PatientPageWrapper>
     )
   }
 
   if (isError || !facility) {
     return (
-      <AppShell header={null} footer={null} bodyPadding="none">
+      <PatientPageWrapper hideHeader footer={null} bodyPadding="none">
         <div className="flex flex-col items-center justify-center min-h-full p-6 gap-4">
           <p className="text-sm text-muted-foreground">
             Facility details are not available.
           </p>
           <Button onClick={() => navigate(-1)}>Back</Button>
         </div>
-      </AppShell>
+      </PatientPageWrapper>
     )
   }
-
-  const header = (
-    <BackTitleHeader title="Add a review" onBack={() => navigate(-1)} />
-  )
 
   const footer = (
     <PrimaryCTAFooter
@@ -225,7 +220,12 @@ export default function FacilityReviewFormPage() {
   )
 
   return (
-    <AppShell header={header} footer={footer} bodyPadding="none">
+    <PatientPageWrapper
+      title="Add a review"
+      onBack={() => navigate(-1)}
+      footer={footer}
+      bodyPadding="none"
+    >
       <form
         id="facility-review-form"
         onSubmit={handleSubmit(onSubmit)}
@@ -296,6 +296,6 @@ export default function FacilityReviewFormPage() {
           )}
         </section>
       </form>
-    </AppShell>
+    </PatientPageWrapper>
   )
 }

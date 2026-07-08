@@ -1,7 +1,7 @@
 import { useRouteError, isRouteErrorResponse } from "react-router-dom"
 import { Button } from "@/components/Button"
 import { PageMessageWrapper } from "@/components/PageMessageWrapper"
-import AppShell from "@/Routes/AppShell"
+import StatusPageWrapper from "@/Routes/shell/StatusPageWrapper"
 
 export default function ErrorPage() {
   const error = useRouteError() as any
@@ -21,7 +21,7 @@ export default function ErrorPage() {
   }
 
   return (
-    <AppShell header={null} footer={null} bodyPadding="none">
+    <StatusPageWrapper bodyPadding="none">
       <PageMessageWrapper
         variant="error"
         title="Something went wrong"
@@ -37,6 +37,6 @@ export default function ErrorPage() {
           Reload Page
         </Button>
       </PageMessageWrapper>
-    </AppShell>
+    </StatusPageWrapper>
   )
 }

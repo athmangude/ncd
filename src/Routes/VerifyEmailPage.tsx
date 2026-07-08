@@ -8,7 +8,7 @@ import LoadingPage from "./LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
 import CheckEmail from "@/components/auth/CheckEmail"
-import AppShell from "@/Routes/AppShell"
+import StatusPageWrapper from "@/Routes/shell/StatusPageWrapper"
 import axios from "axios"
 
 const tenantIdRoutes: Record<string, { auth: string; home: string }> = {
@@ -83,7 +83,7 @@ export default function VerifyEmailPage() {
   }
 
   return (
-    <AppShell header={null} footer={null}>
+    <StatusPageWrapper>
       <div className="flex flex-col gap-5 text-center items-center">
         {showCheckEmail ? (
           <CheckEmail />
@@ -108,6 +108,6 @@ export default function VerifyEmailPage() {
           </>
         )}
       </div>
-    </AppShell>
+    </StatusPageWrapper>
   )
 }
