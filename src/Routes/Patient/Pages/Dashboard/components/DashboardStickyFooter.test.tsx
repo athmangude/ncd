@@ -31,6 +31,10 @@ describe("DashboardStickyFooter", () => {
     expect(bar?.className).toContain("max-w-md")
     expect(bar?.className).not.toContain("max-w-[450px]")
     expect(bar?.className).toContain("border-t")
+    // The bar sits flush on top of the tab bar via the shared --tabbar-h
+    // token, not a hand-guessed magic offset like bottom-[64px].
+    expect(bar?.className).toContain("bottom-[var(--tabbar-h)]")
+    expect(bar?.className).not.toContain("bottom-[64px]")
   })
 
   it("renders the upgrade bar aligned to the tab bar width (max-w-md)", () => {
