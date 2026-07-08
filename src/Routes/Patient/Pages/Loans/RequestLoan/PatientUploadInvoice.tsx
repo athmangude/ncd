@@ -391,6 +391,7 @@ export default function PatientUploadInvoice() {
     return (
       <PatientPageWrapper
         variant="content"
+        barTitle="Upload invoice"
         showHelp
         headerIcon={
           <img src={invoiceInvalid} alt="" className={HERO_ILLUSTRATION} />
@@ -544,6 +545,7 @@ export default function PatientUploadInvoice() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Upload invoice"
       showHelp
       pageTitle="Upload a photo of your invoice."
       description="Add single or multiple files (PDF, PNG, JPG, HEIC) up to 10MB each."

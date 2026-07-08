@@ -49,6 +49,8 @@ export function PatientMembershipSuccess() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Membership"
+      isRoot
       headerIcon={
         <img src={successImage} alt="" className={HERO_ILLUSTRATION} />
       }

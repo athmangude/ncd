@@ -74,6 +74,7 @@ export default function PatientPageWrapper({
   headerIcon,
   headerAlign = "center",
   showStepper = true,
+  barTitle,
 }: {
   /**
    * Page body. Optional for content-variant screens whose entire payload is the
@@ -136,6 +137,15 @@ export default function PatientPageWrapper({
   headerAlign?: "center" | "start"
   /** Show the progress stepper for journey routes. Defaults to true. */
   showStepper?: boolean
+  /**
+   * Short title for the app bar itself (variant="content"). The content bar is
+   * bordered/sticky canonical chrome like every other screen, so it carries a
+   * terse page/step name here — distinct from the descriptive in-body
+   * `pageTitle` hero. Falls back to the current journey step's terse label
+   * (`useJourneyStepMeta`) when omitted; pass explicit copy for non-journey
+   * screens. Legacy variant uses `title` for its bar as before.
+   */
+  barTitle?: string
 }) {
   const resolvedFooter = resolveFooter(footer, primaryCta, dualCta)
 
@@ -157,6 +167,7 @@ export default function PatientPageWrapper({
         headerIcon={headerIcon}
         headerAlign={headerAlign}
         showStepper={showStepper}
+        barTitle={barTitle}
       >
         {children}
       </ContentVariant>
@@ -208,6 +219,7 @@ function ContentVariant({
   headerIcon,
   headerAlign,
   showStepper,
+  barTitle,
 }: {
   children?: React.ReactNode
   title?: string
@@ -225,23 +237,30 @@ function ContentVariant({
   headerIcon?: React.ReactNode
   headerAlign: "center" | "start"
   showStepper: boolean
+  barTitle?: string
 }) {
   const stepper = useJourneyStepper()
   const meta = useJourneyStepMeta()
 
   const resolvedTitle = pageTitle ?? title ?? meta.title
   const resolvedDescription = description ?? meta.description
+  // The app bar carries a terse title (explicit barTitle, else the journey
+  // step's short label). The bar is bordered canonical chrome like every other
+  // screen; the descriptive `resolvedTitle` stays as the in-body PageHeader
+  // hero, so the two never collide. The in-bar stepper stays off — progress is
+  // shown in the PageHeader for the content layout.
+  const resolvedBarTitle = barTitle ?? meta.title
 
   return (
     <AppShell
       header={
         <StepperHeader
+          title={resolvedBarTitle}
           isRoot={isRoot}
           showHelp={showHelp}
           onBack={onBack}
           backIcon={backIcon}
           rightAction={rightAction}
-          border={false}
           showStepper={false}
         />
       }

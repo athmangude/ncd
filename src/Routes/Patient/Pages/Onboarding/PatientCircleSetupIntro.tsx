@@ -33,6 +33,7 @@ export default function PatientCircleSetupIntro() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Your Circle"
       onBack={handleBack}
       showStepper={false}
     >

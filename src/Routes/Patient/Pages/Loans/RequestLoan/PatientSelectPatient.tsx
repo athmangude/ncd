@@ -80,6 +80,7 @@ export default function PatientSelectPatient() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Select patient"
       headerIcon={<img src={patientIcon} alt="" className={HEADER_ICON} />}
       pageTitle="Who is the patient today?"
       primaryCta={{

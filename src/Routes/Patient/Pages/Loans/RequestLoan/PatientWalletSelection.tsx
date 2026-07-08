@@ -695,6 +695,7 @@ export default function PatientWalletSelection() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Select wallet"
       showHelp
       headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"

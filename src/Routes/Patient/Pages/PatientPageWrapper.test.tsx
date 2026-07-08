@@ -4,10 +4,21 @@ import PatientPageWrapper from "./PatientPageWrapper"
 
 // Stub the route-driven header so this suite focuses on how PatientPageWrapper
 // composes the AppShell (header/footer/body). StepperHeader has its own tests.
+// `border` is surfaced so the content-variant tests can assert the bar is now
+// canonical (bordered) rather than the old borderless "form header".
 vi.mock("@/Routes/shell/StepperHeader", () => ({
-  default: ({ title }: { title?: string }) => (
-    <div data-testid="stepper-header">{title}</div>
+  default: ({ title, border }: { title?: string; border?: boolean }) => (
+    <div data-testid="stepper-header" data-border={String(border !== false)}>
+      {title}
+    </div>
   ),
+}))
+
+// The content variant reads the current journey step; stub the hooks so the
+// suite doesn't need a Router. meta.title backs the bar-title fallback.
+vi.mock("@/Routes/shell/useJourneyStepper", () => ({
+  useJourneyStepper: () => null,
+  useJourneyStepMeta: () => ({ title: "Step Label" }),
 }))
 
 describe("PatientPageWrapper", () => {
@@ -118,5 +129,49 @@ describe("PatientPageWrapper", () => {
     expect(
       screen.queryByRole("button", { name: "Continue" })
     ).not.toBeInTheDocument()
+  })
+
+  describe('variant="content"', () => {
+    it("gives the content app bar the canonical bottom border (not borderless)", () => {
+      render(
+        <PatientPageWrapper variant="content" pageTitle="Hero title">
+          x
+        </PatientPageWrapper>
+      )
+      // The bar must be bordered like every other screen — the old content
+      // layout passed border={false}, which this asserts against.
+      expect(screen.getByTestId("stepper-header")).toHaveAttribute(
+        "data-border",
+        "true"
+      )
+    })
+
+    it("puts an explicit barTitle in the app bar, not the hero pageTitle", () => {
+      render(
+        <PatientPageWrapper
+          variant="content"
+          barTitle="Pay a bill"
+          pageTitle="Pay to over 14,000 licensed health facilities"
+        >
+          x
+        </PatientPageWrapper>
+      )
+      // Bar shows the terse barTitle; the descriptive pageTitle stays in the
+      // in-body PageHeader hero (rendered separately, not in the bar stub).
+      expect(screen.getByTestId("stepper-header")).toHaveTextContent(
+        "Pay a bill"
+      )
+    })
+
+    it("falls back to the journey step label when no barTitle is given", () => {
+      render(
+        <PatientPageWrapper variant="content" pageTitle="Hero">
+          x
+        </PatientPageWrapper>
+      )
+      expect(screen.getByTestId("stepper-header")).toHaveTextContent(
+        "Step Label"
+      )
+    })
   })
 })

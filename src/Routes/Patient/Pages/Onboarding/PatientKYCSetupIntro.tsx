@@ -127,6 +127,7 @@ export default function PatientKYCSetupIntro() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Jireh Plus"
       pageTitle={"Upgrade to Jireh Plus\n& unlock loans"}
       description="Access interest-free loans to pay medical bills instantly with flexible terms."
       headerIcon={

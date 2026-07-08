@@ -12,6 +12,8 @@ export default function PatientCareFundSuccess() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Care Fund"
+      isRoot
       headerIcon={
         <img src={successDiscIcon} alt="" className={HERO_ILLUSTRATION} />
       }

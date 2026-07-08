@@ -54,6 +54,7 @@ export default function PatientTreatmentDetails() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Treatment details"
       headerIcon={<img src={careProviderIcon} alt="" className={HEADER_ICON} />}
       pageTitle="Where are you receiving treatment?"
     >
