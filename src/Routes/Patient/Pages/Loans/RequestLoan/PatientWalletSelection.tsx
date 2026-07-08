@@ -699,19 +699,16 @@ export default function PatientWalletSelection() {
       headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."
-      footer={
-        <div className="p-4 bg-card border-t border-border">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={() => handleProceed()}
-            disabled={Math.round(totalAllocated) !== originalBillAmount}
-          >
+      primaryCta={{
+        label: (
+          <>
             Proceed to pay
             <ChevronRight className="w-5 h-5" />
-          </Button>
-        </div>
-      }
+          </>
+        ),
+        onClick: () => handleProceed(),
+        disabled: Math.round(totalAllocated) !== originalBillAmount,
+      }}
     >
       <div className="flex flex-col gap-6">
         {/* Discount Code Input */}

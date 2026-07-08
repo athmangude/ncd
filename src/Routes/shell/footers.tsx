@@ -38,6 +38,7 @@ export function PrimaryCTAFooter({
         type={type}
         form={form}
         disabled={disabled ?? isLoading}
+        isLoading={isLoading}
       >
         {label}
       </Button>
@@ -92,6 +93,7 @@ export function DualActionFooter({
         type={primary.type ?? "button"}
         form={primary.form}
         disabled={primary.disabled ?? primary.isLoading}
+        isLoading={primary.isLoading}
       >
         {primary.label}
       </Button>

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react"
 import { Check, Settings, Loader2, Bell } from "lucide-react"
-import { Button } from "@/components/Button"
 import { usePushNotifications } from "@/hooks/usePushNotifications"
 import { NotificationHelpDialog } from "@/components/EnableNotificationsCard"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
@@ -74,77 +73,53 @@ export default function EnableNotificationsPage() {
   const isDenied = notificationPermission === "denied"
   const isGranted = notificationPermission === "granted"
 
-  const footer = (
-    <div className="border-t bg-card p-4">
-      {!isDenied && !isGranted && (
-        <div className="flex gap-4">
-          <Button
-            className="w-1/3 "
-            variant="secondary"
-            type="button"
-            onClick={handleSkip}
-          >
-            Skip
-          </Button>
-          <Button
-            className="w-2/3"
-            size="lg"
-            onClick={handleEnable}
-            disabled={isRequesting}
-          >
-            {isRequesting ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Enabling...
-              </>
-            ) : (
-              <>
-                {" "}
-                <Bell className="w-4 h-4 mr-2" /> Enable updates
-              </>
-            )}
-          </Button>
-        </div>
-      )}
-
-      {isGranted && (
-        <Button className="w-full" onClick={handleNext}>
-          Continue
-        </Button>
-      )}
-
-      {isDenied && (
-        <div className="flex gap-4">
-          <Button
-            className="w-1/3 "
-            variant="secondary"
-            type="button"
-            onClick={handleSkip}
-          >
-            Skip
-          </Button>
-          <Button
-            className="w-2/3"
-            size="lg"
-            onClick={() => {
-              trackEvent(EVENTS.NOTIFICATIONS.HELP_DIALOG_OPEN)
-              setShowNotificationHelp(true)
-            }}
-          >
-            <Settings className="mr-2 w-4 h-4" />
-            How to unblock
-          </Button>
-        </div>
-      )}
-    </div>
-  )
+  // Footer is state-driven: granted → single Continue; otherwise a canonical
+  // dual footer (Skip + the primary action for that state).
+  const footerProps = isGranted
+    ? { primaryCta: { label: "Continue", onClick: handleNext } }
+    : {
+        dualCta: {
+          secondary: {
+            label: "Skip",
+            type: "button" as const,
+            onClick: handleSkip,
+          },
+          primary: isDenied
+            ? {
+                label: (
+                  <>
+                    <Settings className="mr-2 w-4 h-4" />
+                    How to unblock
+                  </>
+                ),
+                onClick: () => {
+                  trackEvent(EVENTS.NOTIFICATIONS.HELP_DIALOG_OPEN)
+                  setShowNotificationHelp(true)
+                },
+              }
+            : {
+                label: isRequesting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Enabling...
+                  </>
+                ) : (
+                  <>
+                    <Bell className="w-4 h-4 mr-2" /> Enable updates
+                  </>
+                ),
+                onClick: handleEnable,
+                disabled: isRequesting,
+              },
+        },
+      }
 
   return (
     <PatientPageWrapper
       variant="content"
       pageTitle="Stay in the loop"
       description="Turn on notifications to get instant alerts for payments, loan approvals, and important care reminders."
-      footer={footer}
+      {...footerProps}
     >
       <div className="w-full text-left">
         <p className="text-muted-foreground text-sm mb-4">Why?</p>
