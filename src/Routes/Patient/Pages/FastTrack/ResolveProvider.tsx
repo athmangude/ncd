@@ -10,7 +10,6 @@ import {
   InputOTPSlot,
 } from "@/components/InputOtp"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { Button } from "@/components/Button"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
 import { resolveProvider } from "./api"
@@ -82,7 +81,21 @@ export default function ResolveProvider() {
   }
 
   return (
-    <PatientPageWrapper title="Payment Details">
+    <PatientPageWrapper
+      title="Payment Details"
+      primaryCta={
+        providerData
+          ? {
+              label: (
+                <span className="flex items-center gap-1">
+                  Proceed to pay here <ChevronRight className="w-4 h-4" />
+                </span>
+              ),
+              onClick: () => handleContinue(providerData),
+            }
+          : undefined
+      }
+    >
       <div className="flex flex-col gap-6 px-4 sm:px-6">
         <div className="flex flex-col items-center text-center gap-2 mt-2">
           {/* Hero illustration placeholder */}
@@ -193,16 +206,6 @@ export default function ResolveProvider() {
                 </div>
               </div>
             </div>
-
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={() => handleContinue(providerData)}
-            >
-              <span className="flex items-center gap-1">
-                Proceed to pay here <ChevronRight className="w-4 h-4" />
-              </span>
-            </Button>
           </div>
         )}
         {!providerData && (

@@ -1,18 +1,18 @@
 import { Button } from "@/components/Button"
 import { useLocation, useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "../stores/patientAuthStore"
-import whatsApp from "@/assets/icons/whatsapp.svg"
 import { useOnboardingChecklist } from "../hooks/useOnboardingChecklist"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import IncompleteSignUp from "../components/IncompleteSignUp"
 import AppShell from "@/Routes/AppShell"
+import { LogoHeader } from "@/Routes/shell/headers"
 import { useEffect, useState } from "react"
 import axios from "axios"
 import PatientDashboardTabs from "./Dashboard/PatientDashboardTabs"
 import { usePatientLoginDetails } from "@/hooks/usePatientLoginDetails"
 import { useSetAmplitudeUserProperties } from "@/hooks/useSetAmplitudeUserId"
-import { CloudOff, Bell } from "lucide-react"
+import { CloudOff } from "lucide-react"
 import { SetPinCTA } from "../components/CallToActions"
 import {
   Drawer,
@@ -25,7 +25,6 @@ import {
 import { Lock, Percent, Phone } from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import pinProtectErrorIcon from "@/assets/icons/pin-protect-error.svg"
-import logoIcon from "@/assets/icons/long-logo.png"
 import { useQuery } from "@tanstack/react-query"
 
 export default function PatientDashboard() {
@@ -47,7 +46,6 @@ export default function PatientDashboard() {
 
     if (isOffline && hasCachedUserData) {
       // User is offline but has cached data - show dashboard with cached data
-      console.log("[Dashboard] Offline mode: Using cached user data")
       return <Dashboard data={user} />
     }
 
@@ -155,47 +153,11 @@ function Dashboard({ data }: { data: any }) {
   // (framer-motion measured) and the tab content reserves space for it via its
   // own pb-* padding.
   const header = (
-    <div className="flex justify-between items-center px-5 py-3 w-full bg-white/95 backdrop-blur-sm shadow-sm border-b border-border">
-      <div className=" scale-90 sm:scale-100 origin-top-right">
-        <img src={logoIcon} alt="Jireh Logo" width="150" className="h-auto" />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="WhatsApp"
-          className="relative"
-        >
-          <a
-            href="https://wa.me/254117118511"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <img
-              src={whatsApp}
-              alt="Chat with Us on WhatsApp"
-              className="w-6 h-6"
-            />
-          </a>
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="Notifications"
-          className="relative"
-          onClick={() => navigate("/patients/notifications")}
-        >
-          <Bell className="w-6 h-6 text-muted-foreground" />
-          {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-purple-500 text-[10px] text-white ring-2 ring-white">
-              {unreadCount > 9 ? "9+" : unreadCount}
-            </span>
-          )}
-        </Button>
-      </div>
-    </div>
+    <LogoHeader
+      messageHref="https://wa.me/254117118511"
+      onBellClick={() => navigate("/patients/notifications")}
+      unreadCount={unreadCount}
+    />
   )
 
   return (

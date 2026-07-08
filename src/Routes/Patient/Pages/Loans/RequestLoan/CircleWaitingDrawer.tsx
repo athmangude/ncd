@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { ArrowLeft } from "lucide-react"
+import { ChevronLeft } from "lucide-react"
 import { Button } from "@/components/Button"
 import { usePatientNetwork, type SentInvite } from "@/hooks/usePatientNetwork"
 import { CircleAvatarRow } from "../../Dashboard/components/CircleAvatarRow"
@@ -120,12 +120,12 @@ export function CircleWaitingDrawer({
         <div className="px-4 pt-4 shrink-0">
           <Button
             type="button"
-            variant="outline"
+            variant="ghost"
             size="icon"
             onClick={onClose}
             aria-label="Go back"
           >
-            <ArrowLeft className="w-6 h-6 text-muted-foreground" />
+            <ChevronLeft size={24} />
           </Button>
         </div>
 

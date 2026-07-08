@@ -1,9 +1,10 @@
 import { useEffect, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { ArrowLeft } from "lucide-react"
 import AppShell from "@/Routes/AppShell"
 import { Button } from "@/components/Button"
+import { BackTitleHeader } from "@/Routes/shell/headers"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import FormGroupTextarea from "@/components/form/FormGroupTextarea"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -211,30 +212,16 @@ export default function FacilityReviewFormPage() {
   }
 
   const header = (
-    <header className="flex w-full items-center gap-2 bg-card p-2">
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => navigate(-1)}
-        aria-label="Back"
-      >
-        <ArrowLeft className="w-6 h-6" />
-      </Button>
-      <h1>Add a review</h1>
-    </header>
+    <BackTitleHeader title="Add a review" onBack={() => navigate(-1)} />
   )
 
   const footer = (
-    <div className="bg-card border-t border-border px-4 py-3 w-full">
-      <Button
-        type="submit"
-        form="facility-review-form"
-        className="w-full"
-        disabled={!canSubmit}
-      >
-        {submit.isPending ? "Submitting…" : "Add a review"}
-      </Button>
-    </div>
+    <PrimaryCTAFooter
+      type="submit"
+      form="facility-review-form"
+      disabled={!canSubmit}
+      label={submit.isPending ? "Submitting…" : "Add a review"}
+    />
   )
 
   return (

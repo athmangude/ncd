@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
 import laurelImage from "@/assets/images/laurel.png"
 import { Tabs, TabsList, TabsContent, TabsTrigger } from "@/components/Tabs"
-import { Button } from "@/components/Button"
 import useNextMembershipSetupStep from "../../hooks/useNextMembershipSetupStep"
 import { InfoCard } from "../../components/PatientInfoCard"
 
@@ -10,13 +9,9 @@ export default function PatientPlansHowItWorks() {
   const location = useLocation()
   const state = location.state
 
-  return (
-    <PatientPageWrapper title="How it works">
-      {/* Direct visits/refreshes arrive without router state — show the FREE
-          plan rather than crashing on state.plan. */}
-      {resolveComponent(state?.plan ?? "FREE")}
-    </PatientPageWrapper>
-  )
+  // Direct visits/refreshes arrive without router state — show the FREE
+  // plan rather than crashing on state.plan.
+  return resolveComponent(state?.plan ?? "FREE")
 }
 
 function resolveComponent(plan: "FREE" | "JIREH_PLUS") {
@@ -42,7 +37,11 @@ function resolveComponent(plan: "FREE" | "JIREH_PLUS") {
         />
       )
     default:
-      return <div>Free</div>
+      return (
+        <PatientPageWrapper title="How it works">
+          <div>Free</div>
+        </PatientPageWrapper>
+      )
   }
 }
 
@@ -167,7 +166,17 @@ function PlanTemplate({
   const state = location.state
 
   return (
-    <>
+    <PatientPageWrapper
+      title="How it works"
+      primaryCta={{
+        label: "Complete your profile",
+        onClick: () => {
+          navigate(next, {
+            state,
+          })
+        },
+      }}
+    >
       <PlanHeader price={price} />
 
       <Tabs defaultValue={tabs[0].tabName}>
@@ -205,20 +214,7 @@ function PlanTemplate({
           </TabsContent>
         ))}
       </Tabs>
-
-      <Button
-        role="link"
-        className="w-full"
-        size="lg"
-        onClick={() => {
-          navigate(next, {
-            state,
-          })
-        }}
-      >
-        Complete your profile
-      </Button>
-    </>
+    </PatientPageWrapper>
   )
 }
 

@@ -26,10 +26,12 @@ import FormGroupSelect from "@/components/form/FormGroupSelect"
 import { Globe } from "lucide-react"
 import ReactCountryFlag from "react-country-flag"
 import { X } from "lucide-react"
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 export const getGuarantorInformationQueryKey = "getGuarantorInformation"
 export default function PatientGuarantorInformation() {
+  const navigate = useNavigate()
+
   const query = useQuery({
     queryKey: [getGuarantorInformationQueryKey],
     queryFn: async () => {
@@ -62,7 +64,13 @@ export default function PatientGuarantorInformation() {
     localGuarantorInvites.length > 0 || internationalGuarantorInvites.length > 0
 
   return (
-    <PatientAuthWrapper>
+    <PatientAuthWrapper
+      primaryCta={{
+        label: "Next",
+        onClick: () => navigate("/patients/terms-and-conditions"),
+        disabled: !canProceed,
+      }}
+    >
       <PatientAuthHeadline text="Guarantor Information" />
       <p>Select and invite Guarantor's into your application process</p>
 
@@ -82,15 +90,6 @@ export default function PatientGuarantorInformation() {
         guarantorType="LOCAL"
         patientCountryCode={patientCountryCode}
       />
-
-      <Button disabled={!canProceed} className="w-full" role="link">
-        <Link
-          to="/patients/terms-and-conditions"
-          className="w-full no-underline text-white"
-        >
-          Next
-        </Link>
-      </Button>
     </PatientAuthWrapper>
   )
 }

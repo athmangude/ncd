@@ -1,5 +1,6 @@
 import { Button } from "@/components/Button"
 import AppShell from "@/Routes/AppShell"
+import { LogoHeader } from "@/Routes/shell/headers"
 import PatientAuthHeadline from "./PatientAuthHeadline"
 import { useNavigate } from "react-router-dom"
 import { Check, Clock } from "lucide-react"
@@ -7,7 +8,6 @@ import { cn } from "@/lib/utils"
 import createAccount from "@/assets/icons/create-account.png"
 import { isIdVerified } from "../enums/PatientIdVerificationStatus"
 import successIcon from "@/assets/icons/care-profile-setup.png"
-import fullLogo from "@/assets/icons/full-logo.svg"
 
 const STEPS = [
   {
@@ -88,11 +88,7 @@ export default function IncompleteSignUp({
   // batch 2) is dropped so the screen inherits the shell's single surface instead
   // of painting its own — this also permanently retires the footer-vs-card tint
   // disagreement the §0 pass patched (there is no tint left to disagree on).
-  const header = (
-    <header className="w-full max-w-[400px] mx-auto py-5 flex justify-center">
-      <img src={fullLogo} alt="Jireh Logo" className="w-1/2" />
-    </header>
-  )
+  const header = <LogoHeader showIcons={false} />
 
   const footer = (
     <div className="p-4">

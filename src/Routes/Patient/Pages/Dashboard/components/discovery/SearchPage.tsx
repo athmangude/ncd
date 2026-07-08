@@ -14,7 +14,7 @@ import {
   ItemActions,
 } from "@/components/Item"
 import {
-  ArrowLeft,
+  ChevronLeft,
   BadgeCheck,
   Building2,
   Clock,
@@ -248,14 +248,14 @@ function SearchHeader({
     <div className="bg-card flex flex-col gap-2 p-4 w-full border-b border-border">
       <div className="flex items-center gap-2 self-start">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={onBack}
-          aria-label="Back"
+          aria-label="Go back"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ChevronLeft size={24} />
         </Button>
-        <h1 className="capitalize">Search</h1>
+        <p className="text-base font-normal text-foreground">Search</p>
       </div>
 
       <div className="flex flex-col gap-1 items-center w-full text-center mt-4">

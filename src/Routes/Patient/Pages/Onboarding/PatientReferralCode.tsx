@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import PatientAuthHeadline from "../../components/PatientAuthHeadline"
 import PatientAuthWrapper from "../../components/PatientAuthWrapper"
-import { Button } from "@/components/Button"
 import { useForm } from "react-hook-form"
 import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
@@ -79,8 +78,28 @@ export default function PatientReferralCode() {
   })
 
   return (
-    <PatientAuthWrapper>
+    <PatientAuthWrapper
+      dualCta={{
+        primary: {
+          label: "Submit",
+          type: "submit",
+          form: "patient-referral-code-form",
+          isLoading: linkReferralMutation.isPending,
+          disabled:
+            linkReferralMutation.isPending || skipReferralMutation.isPending,
+        },
+        secondary: {
+          label: "Skip",
+          onClick: async () => {
+            await skipReferralMutation.mutateAsync()
+          },
+          disabled:
+            skipReferralMutation.isPending || linkReferralMutation.isPending,
+        },
+      }}
+    >
       <form
+        id="patient-referral-code-form"
         className="flex flex-col gap-7"
         onSubmit={handleSubmit(async (data) => {
           await linkReferralMutation.mutateAsync(data)
@@ -114,34 +133,6 @@ export default function PatientReferralCode() {
           })}
           error={errors.referralCode?.message}
         />
-
-        <div className="flex flex-col gap-3 mt-5">
-          <Button
-            className="w-full"
-            isLoading={linkReferralMutation.isPending}
-            disabled={
-              linkReferralMutation.isPending || skipReferralMutation.isPending
-            }
-          >
-            Submit
-          </Button>
-
-          <Button
-            type="button"
-            className="w-full"
-            onClick={async () => {
-              await skipReferralMutation.mutateAsync()
-            }}
-            variant="outline"
-            role="link"
-            isLoading={skipReferralMutation.isPending}
-            disabled={
-              skipReferralMutation.isPending || linkReferralMutation.isPending
-            }
-          >
-            Skip
-          </Button>
-        </div>
       </form>
     </PatientAuthWrapper>
   )

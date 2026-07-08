@@ -49,7 +49,7 @@ function InstructionsSection() {
             window.location.href =
               "intent://send?type=text/plain#Intent;scheme=mailto;package=com.google.android.gm;end"
           } catch {
-            console.log("Gmail intent failed, mailto should work")
+            // Gmail intent unavailable — the mailto fallback handles it
           }
         }, 1000)
       } else if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {

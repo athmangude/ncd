@@ -37,8 +37,8 @@ export default function PatientReferralAndEarn() {
     if (navigator.share) {
       try {
         await navigator.share(shareData)
-      } catch (error) {
-        console.log("Error sharing:", error)
+      } catch {
+        // user cancelled or share unsupported — no-op
       }
     } else {
       handleCopy()

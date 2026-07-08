@@ -5,7 +5,6 @@ import AddCircleMembers, {
   AddCircleMemberInput,
 } from "../../components/AddCircleMembers"
 import { formatMoney } from "@/utilities/currencyUtilities"
-import { Button } from "@/components/Button"
 
 export const STARTER_PRICE = 99
 export const GOLD_PRICE = 399
@@ -19,7 +18,20 @@ export default function PatientInsuranceAddBeneficiaries() {
   const state = location.state || {}
 
   return (
-    <PatientPageWrapper title="Add Beneficiaries">
+    <PatientPageWrapper
+      title="Add Beneficiaries"
+      primaryCta={{
+        label: "Continue",
+        onClick: () => {
+          navigate("/patients/insurance/pay-for-cover", {
+            state: {
+              ...state,
+              circleMembers,
+            },
+          })
+        },
+      }}
+    >
       <h1 className="text-center">
         Click to add your friends and family to your cover:
       </h1>
@@ -30,22 +42,6 @@ export default function PatientInsuranceAddBeneficiaries() {
       />
 
       <SummaryBlock members={circleMembers} />
-
-      <Button
-        className="w-full"
-        size="lg"
-        role="link"
-        onClick={() => {
-          navigate("/patients/insurance/pay-for-cover", {
-            state: {
-              ...state,
-              circleMembers,
-            },
-          })
-        }}
-      >
-        Continue
-      </Button>
     </PatientPageWrapper>
   )
 }

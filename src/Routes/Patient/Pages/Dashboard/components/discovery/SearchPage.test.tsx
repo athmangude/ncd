@@ -38,7 +38,8 @@ describe("SearchPage (AppShell migration)", () => {
   it("renders the search header inside the shell", () => {
     render(wrap(<SearchPage />))
     expect(screen.getByRole("main")).toBeInTheDocument()
-    expect(screen.getByRole("heading", { name: "Search" })).toBeInTheDocument()
+    // Bar title now renders in the canonical BackTitleHeader chrome as a <p>, not an <h1>.
+    expect(screen.getByText("Search")).toBeInTheDocument()
     // subtitle is now a SectionTitle (<h2>), not a bare styled node
     expect(
       screen.getByRole("heading", { level: 2, name: "Find care near you" })
