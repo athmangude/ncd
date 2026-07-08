@@ -18,6 +18,10 @@ export function DashboardTabBar({
   pathD,
 }: DashboardTabBarProps) {
   return (
+    // The visible curved bar is `h-20` (5rem). Its height + the `safe-pb`
+    // inset this section owns is mirrored by the `--tabbar-h` token in
+    // index.css, which the home-tab action bar (DashboardStickyFooter) uses to
+    // sit flush on top of this bar. Keep the two in sync if `h-20` changes.
     <section className="w-full flex justify-center fixed bottom-0 left-0 z-50 safe-pb">
       <div className="relative max-w-md w-full mt-5 h-20">
         <svg

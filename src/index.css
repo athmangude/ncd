@@ -75,6 +75,16 @@
     --safe-b: env(safe-area-inset-bottom, 0px);
     --safe-l: env(safe-area-inset-left, 0px);
     --safe-r: env(safe-area-inset-right, 0px);
+
+    /* Visible height of the fixed dashboard tab bar (the curved bottom nav).
+       Single source of truth so the home-tab action bar (DashboardStickyFooter)
+       can sit flush on top of the bar instead of guessing a magic
+       `bottom-[64px]` offset. The curved bar itself is `h-20` (5rem/80px) and
+       is anchored to the viewport bottom; its section owns the bottom
+       safe-area inset via `safe-pb`, so the bar's top edge sits at
+       `5rem + safe-b` from the viewport bottom. The `mt-5` above the bar is
+       transparent dead space and is intentionally excluded. */
+    --tabbar-h: calc(5rem + env(safe-area-inset-bottom, 0px));
   }
   .dark {
     --background: 222.2 84% 4.9%;

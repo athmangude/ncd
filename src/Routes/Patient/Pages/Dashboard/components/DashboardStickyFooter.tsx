@@ -10,6 +10,15 @@ interface DashboardStickyFooterProps {
   onPayMedicalBill: () => void
 }
 
+// Pinned home-tab action bar. It sits flush on top of the fixed curved tab
+// bar rather than guessing a magic `bottom-[64px]`: the offset is
+// `var(--tabbar-h)` (the tab bar's real visible height incl. safe-area),
+// declared once in index.css, so the two stay aligned if the tab bar changes.
+// The tab bar owns the bottom safe-area inset, so this bar needs none.
+const BAR_CLASS =
+  "fixed bottom-[var(--tabbar-h)] left-0 right-0 z-10 max-w-md mx-auto " +
+  "bg-card border-t border-border px-4 py-4"
+
 export function DashboardStickyFooter({
   hasActiveMembership,
   activeTab,
@@ -20,7 +29,7 @@ export function DashboardStickyFooter({
 
   if (hasActiveMembership) {
     return (
-      <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-card border-t border-border z-10 max-w-md mx-auto">
+      <div className={BAR_CLASS}>
         <Button
           size="lg"
           className="w-full"
@@ -35,7 +44,7 @@ export function DashboardStickyFooter({
 
   if (activeTab === "cashback" && !hasActiveMembership) {
     return (
-      <div className="fixed bottom-[64px] left-0 right-0 px-4 pt-4 pb-8 bg-card border-t border-border z-10 max-w-md mx-auto">
+      <div className={BAR_CLASS}>
         <div className="max-w-md mx-auto w-full flex flex-col gap-3">
           <div className="flex items-center gap-2">
             <div className="bg-purple-100 p-2 rounded-full">
