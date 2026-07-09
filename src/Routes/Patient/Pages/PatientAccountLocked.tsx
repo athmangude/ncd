@@ -8,6 +8,7 @@ export default function PatientAccountLocked() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Account locked"
       isRoot={true}
       headerIcon={
         <img

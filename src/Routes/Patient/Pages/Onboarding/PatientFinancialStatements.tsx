@@ -21,6 +21,7 @@ export default function PatientFinancialStatements() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="M-Pesa statement"
       headerAlign="start"
       pageTitle={
         <>

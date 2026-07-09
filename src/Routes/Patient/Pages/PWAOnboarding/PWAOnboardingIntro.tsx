@@ -27,6 +27,7 @@ export default function PWAOnboardingIntro() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Set up app"
       headerIcon={<img src={pwaSetup} alt="" className={HERO_ILLUSTRATION} />}
       pageTitle="Get the full experience"
       description="Install the app, enable notifications and location for a seamless experience."

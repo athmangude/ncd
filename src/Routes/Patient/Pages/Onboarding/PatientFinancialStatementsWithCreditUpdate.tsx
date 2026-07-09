@@ -23,6 +23,7 @@ export default function PatientFinancialStatementsWithCreditUpdate() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="M-Pesa statement"
       headerAlign="start"
       pageTitle={
         showSuccessScreen ? undefined : (

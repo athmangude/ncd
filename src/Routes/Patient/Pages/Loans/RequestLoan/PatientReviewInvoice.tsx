@@ -323,6 +323,7 @@ export default function PatientReviewInvoice() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Review invoice"
       showHelp
       headerIcon={<HeaderIcon />}
       pageTitle="Review and confirm your information"

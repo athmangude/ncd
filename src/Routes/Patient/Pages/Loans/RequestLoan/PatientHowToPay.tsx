@@ -12,6 +12,7 @@ export default function PatientHowToPay() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Pay a bill"
       headerAlign="start"
       headerIcon={<img src={careproviderIcon} alt="" className={HEADER_ICON} />}
       pageTitle="Pay to over 14,000 licensed health facilities in Kenya."

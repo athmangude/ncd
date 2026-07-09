@@ -18,6 +18,7 @@ export default function PatientOrgHowItWorks() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="How it works"
       pageTitle="How it works"
       footer={
         <div className="border-t bg-card p-4">

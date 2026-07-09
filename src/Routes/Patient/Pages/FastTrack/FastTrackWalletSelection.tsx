@@ -327,6 +327,7 @@ export default function FastTrackWalletSelection() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="Select wallet"
       headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."

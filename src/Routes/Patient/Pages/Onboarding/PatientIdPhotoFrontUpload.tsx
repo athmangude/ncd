@@ -44,6 +44,7 @@ export function PatientIdPhotoFrontUpload() {
   return (
     <PatientPageWrapper
       variant="content"
+      barTitle="ID photo"
       pageTitle="Add a photo of your National ID card"
       description="Please capture a clear photo of the front of your National ID card."
       className="items-center"

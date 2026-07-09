@@ -206,7 +206,11 @@ export default function PatientSetBillAmount() {
     state?.kmpdcFacility?.facility?.facilityVerificationStatus === "APPROVED"
 
   return (
-    <PatientPageWrapper variant="content" pageTitle="Set bill amount">
+    <PatientPageWrapper
+      variant="content"
+      barTitle="Bill amount"
+      pageTitle="Set bill amount"
+    >
       <form
         onSubmit={handleSubmit((data) => {
           const { totalBillAmount, careFundDiscountAmount } = data
