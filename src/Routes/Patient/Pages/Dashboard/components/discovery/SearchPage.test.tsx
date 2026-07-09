@@ -34,13 +34,14 @@ import SearchPage from "./SearchPage"
 
 const wrap = (ui: ReactNode) => createElement(MemoryRouter, null, ui)
 
-describe("SearchPage (AppShell migration)", () => {
-  it("renders the search header inside the shell", () => {
+describe("SearchPage (PatientPageWrapper)", () => {
+  it("renders the canonical bar title + in-body search controls inside the shell", () => {
     render(wrap(<SearchPage />))
     expect(screen.getByRole("main")).toBeInTheDocument()
-    // Bar title now renders in the canonical BackTitleHeader chrome as a <p>, not an <h1>.
+    // "Search" is now the canonical app-bar title (a <p> in StepperHeader),
+    // and the search controls (title/input/toggle/chips) moved into the body.
     expect(screen.getByText("Search")).toBeInTheDocument()
-    // subtitle is now a SectionTitle (<h2>), not a bare styled node
+    // The "Find care near you" SectionTitle (<h2>) is now a body element.
     expect(
       screen.getByRole("heading", { level: 2, name: "Find care near you" })
     ).toBeInTheDocument()

@@ -86,8 +86,7 @@ export default tseslint.config(
     // Files allowed to import AppShell directly: the shell primitives + archetype
     // wrappers (which compose it), and a small documented-bespoke set whose layout
     // the wrappers can't express — the fixed-tab-bar dashboard, the pre-portal
-    // splash, the facilitator portal, the brand-gradient subscription result, and
-    // the compound search bar (pending its own decoupling task).
+    // splash, the facilitator portal, and the brand-gradient subscription result.
     files: [
       "src/Routes/shell/**/*.{ts,tsx}",
       "src/Routes/AppShell.tsx",
@@ -97,7 +96,6 @@ export default tseslint.config(
       "src/Routes/SplashScreens.tsx",
       "src/Routes/Facilitator/FacilitatorPanel.tsx",
       "src/Routes/Patient/Pages/Subscriptions/PatientSubscriptionsTransactionResult.tsx",
-      "src/Routes/Patient/Pages/Dashboard/components/discovery/SearchPage.tsx",
       // Tests may import AppShell directly to exercise it.
       "**/*.test.{ts,tsx}",
     ],

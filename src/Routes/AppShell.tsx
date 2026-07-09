@@ -16,10 +16,9 @@ import { cn } from "@/lib/utils"
 //
 // A small documented-bespoke set is allowlisted to import AppShell directly
 // (see eslint.config.js): PatientDashboard (fixed tab-bar shell), SplashScreens
-// (pre-portal), FacilitatorPanel (facilitator portal),
-// PatientSubscriptionsTransactionResult (brand-gradient tint), and SearchPage
-// (compound search bar, pending decoupling). Change the bar/footer once in
-// shell/{headers,footers}.tsx and every screen inherits it.
+// (pre-portal), FacilitatorPanel (facilitator portal), and
+// PatientSubscriptionsTransactionResult (brand-gradient tint). Change the
+// bar/footer once in shell/{headers,footers}.tsx and every screen inherits it.
 
 export interface AppShellProps {
   children: React.ReactNode
