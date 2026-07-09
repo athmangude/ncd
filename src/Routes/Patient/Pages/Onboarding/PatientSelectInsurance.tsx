@@ -123,9 +123,7 @@ export default function PatientSelectInsurance() {
       <div className="flex flex-col gap-6 w-full">
         {/* Question 1 */}
         <div className="flex flex-col gap-3">
-          <h2 className="font-medium text-foreground">
-            Do you have an insurance cover?
-          </h2>
+          <h2 className="text-foreground">Do you have an insurance cover?</h2>
           <RadioGroup
             value={hasInsurance}
             onValueChange={(val) => {
@@ -179,7 +177,7 @@ export default function PatientSelectInsurance() {
         {hasInsurance === "yes" && (
           <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex flex-col">
-              <h2 className="font-medium text-foreground">
+              <h2 className="text-foreground">
                 Which insurance are you covered by?
               </h2>
               <p className="text-sm text-muted-foreground">

@@ -29,9 +29,7 @@ export default function PatientIdPhotoGuide() {
                 01
               </span>
               <div>
-                <h3 className="font-medium text-foreground mb-1">
-                  Ensure good lighting
-                </h3>
+                <h3 className="text-foreground mb-1">Ensure good lighting</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Make sure the ID is well-lit and in focus. Natural light works
                   best.
@@ -44,9 +42,7 @@ export default function PatientIdPhotoGuide() {
                 02
               </span>
               <div>
-                <h3 className="font-medium text-foreground mb-1">
-                  Include all corners
-                </h3>
+                <h3 className="text-foreground mb-1">Include all corners</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Capture the entire card including all four corners to ensure
                   all information is visible.
@@ -59,7 +55,7 @@ export default function PatientIdPhotoGuide() {
                 03
               </span>
               <div>
-                <h3 className="font-medium text-foreground mb-1">
+                <h3 className="text-foreground mb-1">
                   Avoid shadows and glare
                 </h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
@@ -74,9 +70,7 @@ export default function PatientIdPhotoGuide() {
                 04
               </span>
               <div>
-                <h3 className="font-medium text-foreground mb-1">
-                  Hold camera steady
-                </h3>
+                <h3 className="text-foreground mb-1">Hold camera steady</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   Keep your device steady or place the ID card on a flat surface
                   for a clear, non-blurry image.
