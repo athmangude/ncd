@@ -15,7 +15,7 @@ export function PatientTabTrigger({
     <TabsTrigger
       ref={setRef}
       value={value}
-      className="group flex flex-col data-[state=active]:bg-transparent data-[state=active]:text-brand-gradient-200 capitalize px-1 sm:px-3 text-xs sm:text-sm z-30 ring-offset-transparent focus-visible:ring-0
+      className="group flex flex-col data-[state=active]:bg-transparent data-[state=active]:text-primary capitalize px-1 sm:px-3 text-sm sm:text-sm z-30 ring-offset-transparent focus-visible:ring-0
       data-[state=active]:shadow-none 
       data-[state=active]:border-none"
     >
@@ -23,7 +23,7 @@ export function PatientTabTrigger({
         className="
               relative
               px-2 sm:px-3 py-1 rounded-full mb-1
-              transition-transform duration-1000 ease-[cubic-bezier(0.25,0.1,0.25,1.0)]
+              transition-transform duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1.0)]
               group-data-[state=active]:-translate-y-[10px]
               group-data-[state=active]:text-primary
               text-muted-foreground
