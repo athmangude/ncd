@@ -52,7 +52,7 @@ export function DiscoveryHomeView({
   return (
     <TabsContent
       value="explore"
-      className="flex flex-col w-full max-h-full overflow-y-auto no-scrollbar"
+      className="flex flex-col w-full max-h-full overflow-y-auto overflow-x-hidden no-scrollbar"
     >
       {/* Header — horizontal padding comes from the shell's p-4 like the other
           tabs; only vertical padding here. */}
