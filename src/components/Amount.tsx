@@ -11,7 +11,7 @@ const SIZE_CLASSES = {
 
 const WEIGHT_CLASSES = {
   regular: "font-normal",
-  bold: "font-bold",
+  bold: "font-medium",
 } as const
 
 interface AmountProps {

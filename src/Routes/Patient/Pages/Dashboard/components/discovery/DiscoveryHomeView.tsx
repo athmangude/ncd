@@ -54,10 +54,11 @@ export function DiscoveryHomeView({
       value="explore"
       className="flex flex-col w-full max-h-full overflow-y-auto no-scrollbar"
     >
-      {/* Header */}
-      <div className="bg-card flex flex-col gap-2 items-center p-4 mt-4 w-full shrink-0">
+      {/* Header — horizontal padding comes from the shell's p-4 like the other
+          tabs; only vertical padding here. */}
+      <div className="flex flex-col gap-2 items-center w-full shrink-0">
         <div className="flex flex-col gap-1 items-center w-full text-center">
-          <h2 className="text-foreground">Find care near you</h2>
+          <h1 className="text-foreground">Find care near you</h1>
           <p className="text-sm text-muted-foreground">
             Search by name, area, or service.
           </p>
@@ -107,8 +108,10 @@ export function DiscoveryHomeView({
         </div>
       </div>
 
-      {/* Scrollable main content */}
-      <div className="flex flex-col gap-6 p-4 w-full">
+      {/* Scrollable main content. Horizontal padding comes from the shell's
+          p-4 (like every other dashboard tab) — only add vertical spacing here,
+          so the content isn't double-inset. */}
+      <div className="flex flex-col gap-6 py-4 w-full">
         {/* Active discounts — patient-eligible discount codes */}
         {discountCodes.length > 0 && (
           <div className="flex flex-col w-full">

@@ -21,7 +21,11 @@ interface DashboardTabContentProps {
   children: React.ReactNode
 }
 
-export function DashboardTabContent({ pathname, direction, children }: DashboardTabContentProps) {
+export function DashboardTabContent({
+  pathname,
+  direction,
+  children,
+}: DashboardTabContentProps) {
   return (
     <div className="flex-1 relative overflow-hidden">
       <AnimatePresence mode="wait" custom={direction} initial={false}>
@@ -36,7 +40,7 @@ export function DashboardTabContent({ pathname, direction, children }: Dashboard
             duration: 0.15,
             ease: "easeOut",
           }}
-          className="h-full w-full overflow-y-auto pb-28"
+          className="h-full w-full overflow-y-auto pb-tabbar"
         >
           {children}
         </motion.div>

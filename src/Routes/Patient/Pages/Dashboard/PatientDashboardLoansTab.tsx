@@ -1,4 +1,5 @@
 import { TabsContent } from "@/components/Tabs"
+import { cn } from "@/lib/utils"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import { useState, useEffect, useMemo } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
@@ -82,10 +83,19 @@ export default function PatientDashboardLoansTab() {
     navigate(KYC_START_URL)
   }
 
+  // The DashboardStickyFooter (fixed just above the tab bar) shows in these
+  // states; when it does, reserve its height so content clears it. The tab-bar
+  // clearance itself is owned once by DashboardTabContent's `.pb-tabbar`.
+  const showsStickyFooter =
+    hasActiveMembership || (activeTab === "cashback" && !hasActiveMembership)
+
   return (
     <TabsContent
       value="home"
-      className="flex flex-col w-full gap-5  [&::-webkit-scrollbar]:hidden pb-52"
+      className={cn(
+        "flex flex-col w-full gap-2 [&::-webkit-scrollbar]:hidden",
+        showsStickyFooter && "pb-tabbar-cta"
+      )}
     >
       <DashboardSearch />
 
