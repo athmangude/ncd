@@ -82,7 +82,10 @@ export function PatientIdVerification() {
 
   return (
     <PatientPageWrapper
-      title=""
+      variant="content"
+      barTitle="National ID"
+      pageTitle="Enter your National ID number"
+      description="Verify your identity and keep your account secure"
       className="items-center"
       footer={
         <PrimaryCTAFooter
@@ -95,13 +98,6 @@ export function PatientIdVerification() {
       }
     >
       <div className="w-full flex flex-col gap-6">
-        <div className="text-center">
-          <h1>Enter your National ID number</h1>
-          <p className="text-muted-foreground">
-            Verify your identity and keep your account secure{" "}
-          </p>
-        </div>
-
         <form
           id="id-verification-form"
           className="flex flex-col gap-5"

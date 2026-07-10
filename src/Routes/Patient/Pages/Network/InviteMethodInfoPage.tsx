@@ -1,8 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { UserPlus } from "lucide-react"
 
 type LocationState = {
@@ -46,8 +44,9 @@ export default function InviteMethodInfoPage() {
   }
 
   return (
-    <MobileWrapper
-      header={<BackTitleHeader title={pageTitle} onBack={() => navigate(-1)} />}
+    <PatientPageWrapper
+      title={pageTitle}
+      onBack={() => navigate(-1)}
       footer={
         <PrimaryCTAFooter
           label="Continue"
@@ -55,6 +54,7 @@ export default function InviteMethodInfoPage() {
           className="bg-muted"
         />
       }
+      bodyPadding="none"
       className="p-0"
     >
       {/* Neutral background fills the scroll area */}
@@ -98,6 +98,6 @@ export default function InviteMethodInfoPage() {
           </div>
         </div>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

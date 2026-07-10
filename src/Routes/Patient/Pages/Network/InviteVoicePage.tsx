@@ -225,7 +225,11 @@ export default function InviteVoicePage() {
 
   return (
     <PatientPageWrapper
-      title="Invite by voice note"
+      variant="content"
+      barTitle="Invite by voice note"
+      headerAlign="start"
+      pageTitle={`Tap to start recording up to ${MAX_DURATION} seconds.`}
+      description={"e.g. “This is for managing Mom’s care”."}
       onBack={() => {
         if (location.state?.returnPath) {
           navigate(resolveReturnPath(location.state))
@@ -235,16 +239,6 @@ export default function InviteVoicePage() {
       }}
     >
       <div className="flex flex-col h-full">
-        {/* Step heading */}
-        <div className="flex flex-col px-4 pt-2 mb-6">
-          <h2 className="text-foreground mb-1">
-            Tap to start recording up to {MAX_DURATION} seconds.
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            e.g. &ldquo;This is for managing Mom&apos;s care&rdquo;.
-          </p>
-        </div>
-
         {/* Controls */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 gap-6">
           {recordingState === "idle" && (

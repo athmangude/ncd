@@ -1,9 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import inviteRejectedIcon from "@/assets/icons/invite-rejected.png"
-import MobileWrapper, {
-  LogoHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientAuthWrapper from "../../components/PatientAuthWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { PatientNetworkFAQ } from "./PatientNetworkFAQ"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
@@ -20,8 +18,7 @@ export default function PatientInviteRejected() {
   const nextOnboardingStep = useNextOnboardingStep()
 
   return (
-    <MobileWrapper
-      header={<LogoHeader showIcons={false} className="flex justify-center" />}
+    <PatientAuthWrapper
       footer={
         <PrimaryCTAFooter
           label={isNewUser ? "Sign Up" : "Back to Dashboard"}
@@ -30,7 +27,7 @@ export default function PatientInviteRejected() {
           }
         />
       }
-      className="flex flex-col gap-7 text-center items-center"
+      className="text-center items-center"
     >
       <img
         src={inviteRejectedIcon}
@@ -51,6 +48,6 @@ export default function PatientInviteRejected() {
       </p>
 
       <PatientNetworkFAQ />
-    </MobileWrapper>
+    </PatientAuthWrapper>
   )
 }

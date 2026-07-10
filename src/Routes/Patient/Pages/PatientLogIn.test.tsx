@@ -16,7 +16,7 @@ vi.mock("@/analytics", () => ({
   },
 }))
 
-// The OTP step self-shells via its own MobileWrapper; stub it so we can assert
+// The OTP step self-shells via its own page wrapper; stub it so we can assert
 // PatientLogIn renders it WITHOUT wrapping it in a second shell.
 vi.mock("../components/VerifyOTPForm", () => ({
   default: () => createElement("main", null, "otp-step"),

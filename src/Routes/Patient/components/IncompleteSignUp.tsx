@@ -1,6 +1,5 @@
 import { Button } from "@/components/Button"
-import AppShell from "@/Routes/AppShell"
-import { LogoHeader } from "@/Routes/shell/headers"
+import PatientAuthWrapper from "./PatientAuthWrapper"
 import PatientAuthHeadline from "./PatientAuthHeadline"
 import { useNavigate } from "react-router-dom"
 import { Check, Clock } from "lucide-react"
@@ -81,15 +80,13 @@ export default function IncompleteSignUp({
     }
   }
 
-  // Self-shells via AppShell (migrated in Phase 4 alongside the dashboard): the
+  // Self-shells via PatientAuthWrapper (canonical LogoHeader bar): the
   // routes that render it (the "/patients" incomplete state and
   // "/complete-profile") are now passthrough in PatientsHome's container, so the
   // canonical shell draws the frame here. The bespoke #FDF4FF canvas tint (Task 8
   // batch 2) is dropped so the screen inherits the shell's single surface instead
   // of painting its own — this also permanently retires the footer-vs-card tint
   // disagreement the §0 pass patched (there is no tint left to disagree on).
-  const header = <LogoHeader showIcons={false} />
-
   const footer = (
     <div className="p-4">
       <Button
@@ -114,101 +111,96 @@ export default function IncompleteSignUp({
   )
 
   return (
-    <AppShell header={header} footer={footer}>
-      <section className="max-w-[400px] rounded-sm w-full mx-auto flex flex-col gap-7">
-        <div className="flex flex-col items-center gap-2 mb-2">
-          <div className="flex flex-col items-center justify-center mb-6">
-            <img
-              src={
-                fromPayMedicalBill || isCompletingProfile
-                  ? successIcon
-                  : createAccount
-              }
-              alt="createAccount"
-              className="w-[50px] mb-3"
-              aria-hidden="true"
-            />
-            <PatientAuthHeadline
-              text={
-                fromPayMedicalBill || isCompletingProfile
-                  ? "Complete your profile"
-                  : "Create your account in 4 easy steps!"
-              }
-            />
-          </div>
-          <p className="text-muted-foreground text-center text-sm">
-            {fromPayMedicalBill || isCompletingProfile
-              ? "Unlock cashback when you pay with Jireh Health."
-              : "Secure your identity to unlock healthcare support."}
-          </p>
-          <div className="bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
-            <Clock size={14} />
-            Only takes 2mins!
-          </div>
+    <PatientAuthWrapper footer={footer}>
+      <div className="flex flex-col items-center gap-2 mb-2">
+        <div className="flex flex-col items-center justify-center mb-6">
+          <img
+            src={
+              fromPayMedicalBill || isCompletingProfile
+                ? successIcon
+                : createAccount
+            }
+            alt="createAccount"
+            className="w-[50px] mb-3"
+            aria-hidden="true"
+          />
+          <PatientAuthHeadline
+            text={
+              fromPayMedicalBill || isCompletingProfile
+                ? "Complete your profile"
+                : "Create your account in 4 easy steps!"
+            }
+          />
         </div>
+        <p className="text-muted-foreground text-center text-sm">
+          {fromPayMedicalBill || isCompletingProfile
+            ? "Unlock cashback when you pay with Jireh Health."
+            : "Secure your identity to unlock healthcare support."}
+        </p>
+        <div className="bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
+          <Clock size={14} />
+          Only takes 2mins!
+        </div>
+      </div>
 
-        <div className="flex flex-col gap-4 w-full">
-          <p className="text-muted-foreground text-sm font-medium">
-            Information being collected:
-          </p>
-          <div className="flex flex-col gap-3">
-            {STEPS.map((step, index) => {
-              // Use user data if available, fallback to sequential logic
-              const isCompleted = user
-                ? checkStepCompletion(step.id)
-                : index < currentStepIndex
+      <div className="flex flex-col gap-4 w-full">
+        <p className="text-muted-foreground text-sm font-medium">
+          Information being collected:
+        </p>
+        <div className="flex flex-col gap-3">
+          {STEPS.map((step, index) => {
+            // Use user data if available, fallback to sequential logic
+            const isCompleted = user
+              ? checkStepCompletion(step.id)
+              : index < currentStepIndex
 
-              const isCurrent = index === currentStepIndex
+            const isCurrent = index === currentStepIndex
 
-              return (
-                <div
-                  key={step.id}
-                  className={cn(
-                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                    isCompleted
-                      ? "bg-green-50 border-green-500"
-                      : "bg-card border-border"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={cn(
-                        "text-sm font-medium",
-                        isCompleted ? "text-green-700" : "text-muted-foreground"
-                      )}
-                    >
-                      {String(step.id).padStart(2, "0")}
-                    </span>
-                    <span
-                      className={cn(
-                        "font-medium text-sm",
-                        isCompleted ? "text-green-900" : "text-foreground"
-                      )}
-                    >
-                      {step.label}
-                    </span>
-                  </div>
-
-                  {isCompleted && (
-                    <div className="rounded-full border border-green-500 p-0.5">
-                      <Check
-                        className="text-green-500 w-3 h-3"
-                        strokeWidth={3}
-                      />
-                    </div>
-                  )}
-
-                  {isCurrent && !isCompleted && (
-                    <span className="text-sm text-muted-foreground font-medium">
-                      Next
-                    </span>
-                  )}
+            return (
+              <div
+                key={step.id}
+                className={cn(
+                  "flex items-center justify-between p-4 rounded-lg border transition-colors",
+                  isCompleted
+                    ? "bg-green-50 border-green-500"
+                    : "bg-card border-border"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <span
+                    className={cn(
+                      "text-sm font-medium",
+                      isCompleted ? "text-green-700" : "text-muted-foreground"
+                    )}
+                  >
+                    {String(step.id).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={cn(
+                      "font-medium text-sm",
+                      isCompleted ? "text-green-900" : "text-foreground"
+                    )}
+                  >
+                    {step.label}
+                  </span>
                 </div>
-              )
-            })}
-          </div>
+
+                {isCompleted && (
+                  <div className="rounded-full border border-green-500 p-0.5">
+                    <Check className="text-green-500 w-3 h-3" strokeWidth={3} />
+                  </div>
+                )}
+
+                {isCurrent && !isCompleted && (
+                  <span className="text-sm text-muted-foreground font-medium">
+                    Next
+                  </span>
+                )}
+              </div>
+            )
+          })}
         </div>
-      </section>
-    </AppShell>
+      </div>
+    </PatientAuthWrapper>
   )
 }

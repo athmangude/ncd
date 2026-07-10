@@ -21,10 +21,8 @@ import {
   getFromLocalStorage,
   setToLocalStorage,
 } from "@/utilities/localStorage"
-import MobileWrapper, {
-  LogoHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientAuthWrapper from "../../components/PatientAuthWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 
 export type Inputs = {
   phoneNumber: string
@@ -142,8 +140,7 @@ function SignUpForm() {
   }
 
   return (
-    <MobileWrapper
-      header={<LogoHeader showIcons={false} className="flex justify-center" />}
+    <PatientAuthWrapper
       footer={
         <PrimaryCTAFooter
           label="Send OTP"
@@ -153,7 +150,6 @@ function SignUpForm() {
           isLoading={mutation.isPending}
         />
       }
-      className="flex flex-col gap-7"
     >
       <form
         id="patient-signup-form"
@@ -249,6 +245,6 @@ function SignUpForm() {
           </div>
         </Card>
       </form>
-    </MobileWrapper>
+    </PatientAuthWrapper>
   )
 }

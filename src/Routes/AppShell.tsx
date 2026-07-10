@@ -1,6 +1,25 @@
 import React from "react"
 import { cn } from "@/lib/utils"
 
+// ─── Page-shell architecture ────────────────────────────────────────────────
+// AppShell is the PRIVATE page-shell primitive. Screens must NOT import it
+// directly (enforced by `no-restricted-imports` in eslint.config.js) — they go
+// through one of the archetype wrappers so page chrome lives in ONE place:
+//
+//   • PatientPageWrapper  — standard/journey screens: canonical back bar
+//       (StepperHeader) + optional in-body progress stepper + footer slot.
+//       `variant="content"` puts a terse title in the bar and the descriptive
+//       hero + stepper in the body. `hideHeader` suppresses the bar.
+//   • PatientAuthWrapper  — auth/onboarding screens: canonical LogoHeader bar.
+//   • StatusPageWrapper   — chrome-less status pages (loading / error /
+//       unauthorized / invalid-tenant / verify-email): both slots suppressed.
+//
+// A small documented-bespoke set is allowlisted to import AppShell directly
+// (see eslint.config.js): PatientDashboard (fixed tab-bar shell), SplashScreens
+// (pre-portal), FacilitatorPanel (facilitator portal), and
+// PatientSubscriptionsTransactionResult (brand-gradient tint). Change the
+// bar/footer once in shell/{headers,footers}.tsx and every screen inherits it.
+
 export interface AppShellProps {
   children: React.ReactNode
   /** Pinned top slot. Pass null to suppress entirely. */

@@ -1,10 +1,8 @@
 import inviteRejectedIcon from "@/assets/icons/invite-rejected.png"
 import { PatientNetworkFAQ } from "./PatientNetworkFAQ"
 import { useLocation, useNavigate } from "react-router-dom"
-import MobileWrapper, {
-  LogoHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientAuthWrapper from "../../components/PatientAuthWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 export function PatientInviteExpired() {
@@ -20,8 +18,7 @@ export function PatientInviteExpired() {
   const nextOnboardingStep = useNextOnboardingStep()
 
   return (
-    <MobileWrapper
-      header={<LogoHeader showIcons={false} className="flex justify-center" />}
+    <PatientAuthWrapper
       footer={
         <PrimaryCTAFooter
           label={isNewUser ? "Sign Up" : "Back to Dashboard"}
@@ -30,7 +27,7 @@ export function PatientInviteExpired() {
           }
         />
       }
-      className="flex flex-col gap-7 text-center items-center"
+      className="text-center items-center"
     >
       <img
         src={inviteRejectedIcon}
@@ -46,6 +43,6 @@ export function PatientInviteExpired() {
       </p>
 
       <PatientNetworkFAQ />
-    </MobileWrapper>
+    </PatientAuthWrapper>
   )
 }

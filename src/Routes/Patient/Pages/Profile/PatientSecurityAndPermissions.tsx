@@ -1,7 +1,7 @@
 import { Shield, ChevronRight, LayoutGrid, Bell, MapPin } from "lucide-react"
 import { Switch } from "@/components/Switch"
 import { SectionTitle } from "@/components/SectionTitle"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { useSessionContext } from "supertokens-auth-react/recipe/session"
@@ -70,13 +70,9 @@ export default function PatientSecurityAndPermissions() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Security & Permissions"
-          onBack={() => navigate("/patients", { state: { tab: "profile" } })}
-        />
-      }
+    <PatientPageWrapper
+      title="Security & Permissions"
+      onBack={() => navigate("/patients", { state: { tab: "profile" } })}
       footer={null}
     >
       <div className="flex flex-col gap-6">
@@ -196,6 +192,6 @@ export default function PatientSecurityAndPermissions() {
           isLoading={locationLoading}
         />
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

@@ -1,7 +1,5 @@
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useEffect } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
@@ -27,13 +25,9 @@ export default function PatientMyNetworkPage() {
     })
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="My Circle Members"
-          onBack={() => navigate("/patients", { state: { tab: "circle" } })}
-        />
-      }
+    <PatientPageWrapper
+      title="My Circle Members"
+      onBack={() => navigate("/patients", { state: { tab: "circle" } })}
       footer={
         <PrimaryCTAFooter
           label={isAllFull ? "Max circle size reached" : "Add New member"}
@@ -43,7 +37,7 @@ export default function PatientMyNetworkPage() {
       }
     >
       <PatientMyNetwork />
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }
 

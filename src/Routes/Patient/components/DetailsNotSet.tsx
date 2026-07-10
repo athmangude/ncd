@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import PatientAuthHeadline from "./PatientAuthHeadline"
-import AppShell from "@/Routes/AppShell"
-import { BackTitleHeader } from "@/Routes/shell/headers"
+import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 
 export function DetailsNotSet({ title }: { title: string }) {
@@ -12,11 +11,12 @@ export function DetailsNotSet({ title }: { title: string }) {
   }
 
   return (
-    <AppShell
-      header={<BackTitleHeader title="" onBack={goBack} />}
+    <PatientPageWrapper
+      title=""
+      onBack={goBack}
       footer={<PrimaryCTAFooter label="Back" onClick={goBack} />}
     >
       <PatientAuthHeadline text={title} />
-    </AppShell>
+    </PatientPageWrapper>
   )
 }

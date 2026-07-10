@@ -1,8 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { usePersistentForm } from "@/hooks/usePersistentForm"
 import FormGroupInput from "@/components/form/FormGroupInput"
 import FormGroupSelect from "@/components/form/FormGroupSelect"
@@ -231,13 +229,9 @@ export default function PatientAddConnection() {
     : undefined
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title={title}
-          onBack={handleBack ?? (() => navigate(-1))}
-        />
-      }
+    <PatientPageWrapper
+      title={title}
+      onBack={handleBack ?? (() => navigate(-1))}
       footer={
         <PrimaryCTAFooter
           label={isVoiceOrTextFlow(state) ? "Continue" : "Add Connection"}
@@ -394,6 +388,6 @@ export default function PatientAddConnection() {
           defaultValue={control._defaultValues["nickname"]?.toString()}
         />
       </form>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

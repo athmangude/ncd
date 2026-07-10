@@ -75,6 +75,9 @@ export default function PatientPageWrapper({
   headerAlign = "center",
   showStepper = true,
   barTitle,
+  hideHeader = false,
+  cardClassName,
+  scroll = true,
 }: {
   /**
    * Page body. Optional for content-variant screens whose entire payload is the
@@ -146,6 +149,17 @@ export default function PatientPageWrapper({
    * screens. Legacy variant uses `title` for its bar as before.
    */
   barTitle?: string
+  /**
+   * Suppress the app bar entirely (renders `header={null}`). For chrome-less
+   * states some screens have — a full-bleed landing, a loading/error state —
+   * that still want the canonical shell frame. Only honoured by the legacy
+   * variant.
+   */
+  hideHeader?: boolean
+  /** Escape hatch for a bespoke card-container tint (forwarded to AppShell). */
+  cardClassName?: string
+  /** Whether the body scrolls internally. Forwarded to AppShell. */
+  scroll?: boolean
 }) {
   const resolvedFooter = resolveFooter(footer, primaryCta, dualCta)
 
@@ -177,17 +191,21 @@ export default function PatientPageWrapper({
   return (
     <AppShell
       header={
-        <StepperHeader
-          title={title}
-          isRoot={isRoot}
-          showHelp={showHelp}
-          onBack={onBack}
-          backIcon={backIcon}
-          rightAction={rightAction}
-        />
+        hideHeader ? null : (
+          <StepperHeader
+            title={title}
+            isRoot={isRoot}
+            showHelp={showHelp}
+            onBack={onBack}
+            backIcon={backIcon}
+            rightAction={rightAction}
+          />
+        )
       }
       footer={resolvedFooter}
       bodyPadding={bodyPadding}
+      cardClassName={cardClassName}
+      scroll={scroll}
     >
       <section className={cn("flex flex-col w-full gap-5", className)}>
         {children}

@@ -3,12 +3,19 @@ import { render, screen, fireEvent } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import PatientHowCirclesWork from "./PatientHowCirclesWork"
 
-vi.mock("@/Routes/MobileWrapper", () => ({
-  default: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
+vi.mock("@/Routes/Patient/Pages/PatientPageWrapper", () => ({
+  default: ({
+    children,
+    footer,
+  }: {
+    children: React.ReactNode
+    footer?: React.ReactNode
+  }) => (
+    <div>
+      {children}
+      {footer}
+    </div>
   ),
-  BackTitleHeader: () => null,
-  PrimaryCTAFooter: () => null,
 }))
 
 vi.mock("@/analytics", () => ({

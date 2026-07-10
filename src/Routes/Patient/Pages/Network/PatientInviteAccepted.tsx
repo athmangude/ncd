@@ -2,10 +2,8 @@ import inviteAcceptedIcon from "@/assets/icons/invite-accepted.png"
 import { useLocation, useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
-import MobileWrapper, {
-  LogoHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientAuthWrapper from "../../components/PatientAuthWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { useEffect } from "react"
 
 export default function PatientInviteAccepted() {
@@ -30,8 +28,7 @@ export default function PatientInviteAccepted() {
   }, [])
 
   return (
-    <MobileWrapper
-      header={<LogoHeader showIcons={false} className="flex justify-center" />}
+    <PatientAuthWrapper
       footer={
         isNewUser ? null : (
           <PrimaryCTAFooter
@@ -40,7 +37,7 @@ export default function PatientInviteAccepted() {
           />
         )
       }
-      className="flex flex-col gap-7 text-center items-center"
+      className="text-center items-center"
     >
       <img
         src={inviteAcceptedIcon}
@@ -59,6 +56,6 @@ export default function PatientInviteAccepted() {
         </span>{" "}
         network
       </p>
-    </MobileWrapper>
+    </PatientAuthWrapper>
   )
 }

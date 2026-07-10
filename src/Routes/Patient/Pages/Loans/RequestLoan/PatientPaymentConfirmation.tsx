@@ -201,7 +201,7 @@ export default function PatientPaymentConfirmation() {
 
   if (!detailsPresent()) {
     return (
-      <PatientPageWrapper title="Confirm Payment">
+      <PatientPageWrapper variant="content" barTitle="Confirm payment">
         <DetailsNotSet title="It looks like your payment details have not been set" />
       </PatientPageWrapper>
     )
@@ -361,7 +361,7 @@ export default function PatientPaymentConfirmation() {
   }
 
   return (
-    <PatientPageWrapper title="Summary">
+    <PatientPageWrapper variant="content" barTitle="Summary">
       <div className="flex flex-col px-1 pb-8">
         {/* Top Icon & Title */}
         <div className="flex flex-col items-center justify-center mb-6">

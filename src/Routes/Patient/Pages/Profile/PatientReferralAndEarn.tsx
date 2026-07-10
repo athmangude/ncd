@@ -2,10 +2,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Share2, Copy, Check } from "lucide-react"
 import { Button } from "@/components/Button"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import { useToast } from "@/hooks/useToast"
 
@@ -46,13 +44,9 @@ export default function PatientReferralAndEarn() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Refer & Earn"
-          onBack={() => navigate("/patients", { state: { tab: "profile" } })}
-        />
-      }
+    <PatientPageWrapper
+      title="Refer & Earn"
+      onBack={() => navigate("/patients", { state: { tab: "profile" } })}
       footer={
         <PrimaryCTAFooter
           label={
@@ -108,6 +102,6 @@ export default function PatientReferralAndEarn() {
           user completes their first transaction.
         </p>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

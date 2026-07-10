@@ -242,18 +242,17 @@ export default function AddCircleMemberPage() {
     return option.value === "CHILD"
   })
 
-  const pageTitle =
+  const barTitle =
     inviteMethod === "voice" ? "Invite by voice note" : "Invite by SMS"
 
   return (
-    <PatientPageWrapper title={pageTitle}>
-      <div className="flex flex-col gap-2">
-        <h2 className="text-foreground">Add their contacts</h2>
-        <p className="text-sm text-muted-foreground">
-          Choose people who&apos;ll say yes
-        </p>
-      </div>
-
+    <PatientPageWrapper
+      variant="content"
+      barTitle={barTitle}
+      pageTitle="Add their contacts"
+      description="Choose people who'll say yes"
+      headerAlign="start"
+    >
       <Tabs
         value={activeTab}
         onValueChange={(v) => setActiveTab(v as "adult" | "child")}

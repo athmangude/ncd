@@ -19,7 +19,6 @@ import {
 } from "@/components/Accordion"
 import { Checkbox } from "@/components/Checkbox"
 import { cn } from "@/lib/utils"
-import AppShell from "@/Routes/AppShell"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import PatientPageWrapper from "../PatientPageWrapper"
 import {
@@ -94,7 +93,11 @@ export default function PatientAcceptInvite() {
 
 function NoInviteFound() {
   return (
-    <AppShell header={null} footer={null} className="grid place-items-center">
+    <PatientPageWrapper
+      hideHeader
+      footer={null}
+      className="grid place-items-center min-h-full"
+    >
       <div className="flex flex-col items-center text-center">
         <h2 className="mb-2">No invite found</h2>
         <p className="text-muted-foreground mb-6">
@@ -105,7 +108,7 @@ function NoInviteFound() {
           <Button className="w-full">Return to Dashboard</Button>
         </Link>
       </div>
-    </AppShell>
+    </PatientPageWrapper>
   )
 }
 
@@ -510,8 +513,8 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
   }
 
   return (
-    <AppShell
-      header={null}
+    <PatientPageWrapper
+      hideHeader
       footer={
         <PrimaryCTAFooter
           label="Read Terms & Accept invite"
@@ -616,7 +619,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
           </ul>
         </div>
       </div>
-    </AppShell>
+    </PatientPageWrapper>
   )
 }
 

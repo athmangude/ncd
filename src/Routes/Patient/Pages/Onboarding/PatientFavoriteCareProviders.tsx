@@ -54,7 +54,10 @@ export default function PatientFavoriteCareProviders() {
 
   return (
     <PatientPageWrapper
-      title=""
+      variant="content"
+      barTitle="Preferred hospitals"
+      headerAlign="start"
+      pageTitle="Add your preferred hospitals"
       footer={
         <DualActionFooter
           secondary={{
@@ -71,7 +74,6 @@ export default function PatientFavoriteCareProviders() {
         />
       }
     >
-      <h1>Add your preferred hospitals</h1>
       <form className="flex flex-col gap-5 w-full" onSubmit={onSubmit}>
         <FormGroupWrapper>
           <SearchField

@@ -30,7 +30,7 @@ export default function AccordionMenu({
         {icon}
 
         <div className="">
-          <h2 className="font-medium flex gap-3">
+          <h2 className="flex gap-3">
             {title}{" "}
             {isRequired && (
               <span className=" rounded-full bg-primary text-white py-1 px-2 text-xs">

@@ -135,9 +135,9 @@ export default function PatientsHome() {
   }
 
   // Every patient screen now renders its own canonical shell (via
-  // PatientPageWrapper / MobileWrapper / AppShell directly), so this component is
-  // a pure router — no layout container, no path allowlist. Adding any wrapper
-  // here would double-frame the self-shelled screens on desktop.
+  // PatientPageWrapper / PatientAuthWrapper), so this component is a pure router
+  // — no layout container, no path allowlist. Adding any wrapper here would
+  // double-frame the self-shelled screens on desktop.
   return (
     <SessionAuth requireAuth={true}>
       <Routes>

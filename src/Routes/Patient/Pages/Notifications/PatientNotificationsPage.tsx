@@ -2,10 +2,8 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Bell, Settings, Check, Copy } from "lucide-react"
 import { Button } from "@/components/Button"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { usePushNotifications } from "@/hooks/usePushNotifications"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { NotificationHelpDialog } from "@/components/EnableNotificationsCard"
@@ -169,10 +167,9 @@ export default function PatientNotificationsPage() {
   // State A: Permission not granted
   if (notificationPermission !== "granted") {
     return (
-      <MobileWrapper
-        header={
-          <BackTitleHeader title="Notifications" onBack={() => navigate(-1)} />
-        }
+      <PatientPageWrapper
+        title="Notifications"
+        onBack={() => navigate(-1)}
         footer={
           notificationPermission === "denied" ? (
             <PrimaryCTAFooter
@@ -198,7 +195,7 @@ export default function PatientNotificationsPage() {
             />
           )
         }
-        className="flex flex-col items-center justify-center text-center"
+        className="flex flex-col items-center justify-center text-center min-h-full"
       >
         <div className="mb-6 relative">
           <Bell className="w-16 h-16 text-muted-foreground stroke-1" />
@@ -233,7 +230,7 @@ export default function PatientNotificationsPage() {
         </div>
 
         <NotificationHelpDialog open={showHelp} onOpenChange={setShowHelp} />
-      </MobileWrapper>
+      </PatientPageWrapper>
     )
   }
 
@@ -243,29 +240,24 @@ export default function PatientNotificationsPage() {
 
   if (error) {
     return (
-      <MobileWrapper
-        header={
-          <BackTitleHeader title="Notifications" onBack={() => navigate(-1)} />
-        }
+      <PatientPageWrapper
+        title="Notifications"
+        onBack={() => navigate(-1)}
         footer={null}
       >
         <ErrorBlock message={error} />
-      </MobileWrapper>
+      </PatientPageWrapper>
     )
   }
 
   // State B: Empty State
   if (notifications.length === 0) {
     return (
-      <MobileWrapper
-        header={
-          <BackTitleHeader
-            title="Notifications (0)"
-            onBack={() => navigate(-1)}
-          />
-        }
+      <PatientPageWrapper
+        title="Notifications (0)"
+        onBack={() => navigate(-1)}
         footer={null}
-        className="flex flex-col items-center justify-center text-center"
+        className="flex flex-col items-center justify-center text-center min-h-full"
       >
         <div className="mb-6 relative">
           <Bell className="w-16 h-16 text-muted-foreground stroke-1" />
@@ -275,19 +267,15 @@ export default function PatientNotificationsPage() {
         <p className="text-muted-foreground">
           Notifications you get will appear here
         </p>
-      </MobileWrapper>
+      </PatientPageWrapper>
     )
   }
 
   // State C: List State
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title={`Notifications (${notifications.length})`}
-          onBack={() => navigate(-1)}
-        />
-      }
+    <PatientPageWrapper
+      title={`Notifications (${notifications.length})`}
+      onBack={() => navigate(-1)}
       footer={
         <div className="border-t bg-card dark:bg-neutral-950 flex items-center p-4">
           <Button
@@ -300,6 +288,7 @@ export default function PatientNotificationsPage() {
           </Button>
         </div>
       }
+      bodyPadding="none"
       className="p-0"
     >
       <div className="px-4 py-4 overflow-x-auto whitespace-nowrap scrollbar-hide border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -430,6 +419,6 @@ export default function PatientNotificationsPage() {
           })
         )}
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

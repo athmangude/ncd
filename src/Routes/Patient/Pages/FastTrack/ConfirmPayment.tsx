@@ -155,16 +155,13 @@ export default function ConfirmPayment() {
   }, [loanSplit])
 
   return (
-    <PatientPageWrapper title="Summary">
+    <PatientPageWrapper
+      variant="content"
+      barTitle="Summary"
+      pageTitle="Confirm Payment"
+      description="Review the details below before submitting"
+    >
       <div className="flex flex-col gap-5 px-1 pb-8">
-        {/* Header */}
-        <div className="flex flex-col items-center text-center gap-2">
-          <h2 className="text-foreground">Confirm Payment</h2>
-          <p className="text-sm text-muted-foreground">
-            Review the details below before submitting
-          </p>
-        </div>
-
         {/* Payment Details Card */}
         <div className="border border-border rounded-xl p-4 bg-card shadow-sm">
           <SectionTitle level={3} className="mb-4">

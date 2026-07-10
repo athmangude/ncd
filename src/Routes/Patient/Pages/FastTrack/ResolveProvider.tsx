@@ -82,7 +82,9 @@ export default function ResolveProvider() {
 
   return (
     <PatientPageWrapper
-      title="Payment Details"
+      variant="content"
+      barTitle="Payment details"
+      pageTitle="Enter the hospital's payment details"
       primaryCta={
         providerData
           ? {
@@ -106,9 +108,6 @@ export default function ResolveProvider() {
               <img src={resolveProviderIllustration} alt="Resolve Provider" />
             </div>
           </div>
-          <h2 className="text-foreground">
-            Enter the hospital's payment details
-          </h2>
         </div>
 
         <div className="flex flex-col items-center gap-4">

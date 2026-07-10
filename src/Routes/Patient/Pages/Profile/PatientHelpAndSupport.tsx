@@ -6,10 +6,8 @@ import {
   Facebook,
   ChevronRight,
 } from "lucide-react"
-import MobileWrapper, {
-  BackTitleHeader,
-  PrimaryCTAFooter,
-} from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
+import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import {
   Item,
   ItemMedia,
@@ -113,13 +111,9 @@ export default function PatientHelpAndSupport() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader
-          title="Help & Support"
-          onBack={() => navigate("/patients", { state: { tab: "profile" } })}
-        />
-      }
+    <PatientPageWrapper
+      title="Help & Support"
+      onBack={() => navigate("/patients", { state: { tab: "profile" } })}
       footer={
         <PrimaryCTAFooter
           label="Request a Call Back"
@@ -151,6 +145,6 @@ export default function PatientHelpAndSupport() {
           </Item>
         ))}
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

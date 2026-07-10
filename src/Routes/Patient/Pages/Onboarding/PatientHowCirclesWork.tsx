@@ -10,7 +10,7 @@ import {
   ItemActions,
 } from "@/components/Item"
 import { SectionTitle } from "@/components/SectionTitle"
-import MobileWrapper, { BackTitleHeader } from "@/Routes/MobileWrapper"
+import PatientPageWrapper from "../PatientPageWrapper"
 import { trackEvent, EVENTS } from "@/analytics"
 import giftBox from "@/assets/icons/gift-box.png"
 import cash from "@/assets/icons/cash.png"
@@ -175,10 +175,9 @@ export default function PatientHowCirclesWork() {
   }
 
   return (
-    <MobileWrapper
-      header={
-        <BackTitleHeader title="How Circles work" onBack={() => navigate(-1)} />
-      }
+    <PatientPageWrapper
+      title="How Circles work"
+      onBack={() => navigate(-1)}
       footer={
         <div className="flex w-full flex-col gap-2 border-t border-border bg-card px-4 pb-4 pt-3">
           <Button className="w-full" onClick={handleContinue}>
@@ -190,6 +189,7 @@ export default function PatientHowCirclesWork() {
           </p>
         </div>
       }
+      bodyPadding="none"
       className="p-0"
     >
       <div className="flex flex-col gap-6 px-4 py-4">
@@ -411,6 +411,6 @@ export default function PatientHowCirclesWork() {
           </Item>
         </section>
       </div>
-    </MobileWrapper>
+    </PatientPageWrapper>
   )
 }

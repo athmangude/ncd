@@ -146,6 +146,19 @@
     @apply text-primary font-medium underline;
   }
 
+  /* ── Heading ramp — the single source of truth for heading type ──────────
+     Every heading in the app is a semantic <h1>/<h2>/<h3> (usually rendered
+     via the <Title>/<SectionTitle> components or the page-header PageHeader);
+     none carry their own size/weight utilities, so these three rules ARE the
+     ramp. To restyle headings app-wide, edit here.
+       h1 — page / hero title      (PageHeader hero, screen headline)
+       h2 — section title          (<SectionTitle> default)
+       h3 — sub-section title      (<SectionTitle level={3}>)
+     NOTE: the pinned app-bar title is intentionally NOT a heading — it's a
+     <p class="text-base font-normal"> in shell/headers.tsx (a UI label, not a
+     document heading), so it stays out of this ramp.
+     A lint rule (no-restricted-syntax in eslint.config.js) bans text-size
+     utilities on <h1|h2|h3> so a screen can't fork the ramp locally. */
   h1 {
     @apply text-foreground font-medium text-xl tracking-tight;
   }
@@ -153,7 +166,7 @@
   h2 {
     @apply text-foreground font-medium text-lg tracking-tight;
   }
-  
+
   h3 {
     @apply text-foreground font-medium text-base;
   }

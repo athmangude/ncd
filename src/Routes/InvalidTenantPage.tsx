@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 import { useToast } from "@/hooks/useToast"
 import LoadingPage from "./LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
-import AppShell from "@/Routes/AppShell"
+import StatusPageWrapper from "@/Routes/shell/StatusPageWrapper"
 
 export const getTenantIdQueryKey = "getTenantIdQueryKey"
 
@@ -54,7 +54,7 @@ export default function InvalidTenantPage() {
   }
 
   return (
-    <AppShell header={null} footer={null}>
+    <StatusPageWrapper>
       <div className="flex flex-col max-w-[400px] mx-auto text-center gap-10">
         <h1>Invalid Tenant</h1>
 
@@ -75,7 +75,7 @@ export default function InvalidTenantPage() {
           Log Out
         </Button>
       </div>
-    </AppShell>
+    </StatusPageWrapper>
   )
 }
 

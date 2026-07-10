@@ -142,7 +142,11 @@ export default function CheckProfilePhotoPage() {
 
   return (
     <PatientPageWrapper
-      title="Preview invite"
+      variant="content"
+      barTitle="Preview invite"
+      headerAlign="start"
+      pageTitle={`Let ${inviteeName} know it's you`}
+      description="Add a photo so they recognise your invite straight away."
       onBack={handleBack}
       footer={
         <div className="p-4 bg-card border-t border-border">
@@ -177,15 +181,6 @@ export default function CheckProfilePhotoPage() {
       }
     >
       <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-foreground leading-snug">
-            Let {inviteeName} know it&apos;s you
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Add a photo so they recognise your invite straight away.
-          </p>
-        </div>
-
         <div className="flex justify-center">
           <InvitePreviewCard
             senderName={senderName}

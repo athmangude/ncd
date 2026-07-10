@@ -185,7 +185,10 @@ export default function PaymentDetails() {
 
   return (
     <PatientPageWrapper
-      title="Payment Details"
+      variant="content"
+      barTitle="Payment details"
+      pageTitle="Fill these details from your invoice."
+      description="You might need to ask the cashier for your invoice if one is not provided to you."
       primaryCta={{
         label: (
           <span className="flex items-center gap-1">
@@ -210,16 +213,6 @@ export default function PaymentDetails() {
       }}
     >
       <div className="flex flex-col gap-5 px-1 pb-8">
-        <div className="flex flex-col items-center text-center gap-2 mt-2">
-          <h2 className="text-foreground">
-            Fill these details from your invoice.
-          </h2>
-          <p className="text-sm text-muted-foreground max-w-xs">
-            You might need to ask the cashier for your invoice if one is not
-            provided to you.
-          </p>
-        </div>
-
         {/* Invoice Number */}
         <div className="flex flex-col gap-1.5">
           <label

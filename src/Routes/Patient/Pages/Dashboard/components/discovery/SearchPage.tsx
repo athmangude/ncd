@@ -1,7 +1,6 @@
 import { useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import AppShell from "@/Routes/AppShell"
-import { Button } from "@/components/Button"
+import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { Switch } from "@/components/Switch"
 import { Skeleton } from "@/components/Skeleton"
 import { SectionTitle } from "@/components/SectionTitle"
@@ -14,7 +13,6 @@ import {
   ItemActions,
 } from "@/components/Item"
 import {
-  ChevronLeft,
   BadgeCheck,
   Building2,
   Clock,
@@ -169,22 +167,26 @@ export default function SearchPage() {
 
   const hasActiveFilters = chips.length > 0
 
-  const header = (
-    <SearchHeader
-      searchQuery={searchQuery}
-      setSearchQuery={setSearchQuery}
-      verifiedOnly={verifiedOnly}
-      toggleVerified={() => setActiveTab(verifiedOnly ? "all" : "jireh")}
-      locationName={locationName}
-      onBack={() => navigate(-1)}
-      chips={chips}
-      hasActiveFilters={hasActiveFilters}
-      onFilterTap={() => navigate("/patients/search/filters")}
-    />
-  )
-
   return (
-    <AppShell header={header} footer={null} bodyPadding="none">
+    <PatientPageWrapper
+      title="Search"
+      onBack={() => navigate(-1)}
+      bodyPadding="none"
+    >
+      {/* Search controls live in the body (not the app bar) so the bar stays
+          canonical chrome. They stick to the top so the input + filters stay
+          reachable while results scroll beneath. */}
+      <SearchControls
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        verifiedOnly={verifiedOnly}
+        toggleVerified={() => setActiveTab(verifiedOnly ? "all" : "jireh")}
+        locationName={locationName}
+        chips={chips}
+        hasActiveFilters={hasActiveFilters}
+        onFilterTap={() => navigate("/patients/search/filters")}
+      />
+
       <div className="flex flex-col gap-6 p-4 w-full">
         {!isSearching && (
           <EmptyState
@@ -219,17 +221,16 @@ export default function SearchPage() {
           </div>
         )}
       </div>
-    </AppShell>
+    </PatientPageWrapper>
   )
 }
 
-function SearchHeader({
+function SearchControls({
   searchQuery,
   setSearchQuery,
   verifiedOnly,
   toggleVerified,
   locationName,
-  onBack,
   chips,
   hasActiveFilters,
   onFilterTap,
@@ -239,26 +240,13 @@ function SearchHeader({
   verifiedOnly: boolean
   toggleVerified: () => void
   locationName: string | null | undefined
-  onBack: () => void
   chips: Array<{ id: string; label: string; onRemove: () => void }>
   hasActiveFilters: boolean
   onFilterTap: () => void
 }) {
   return (
-    <div className="bg-card flex flex-col gap-2 p-4 w-full border-b border-border">
-      <div className="flex items-center gap-2 self-start">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onBack}
-          aria-label="Go back"
-        >
-          <ChevronLeft size={24} />
-        </Button>
-        <p className="text-base font-normal text-foreground">Search</p>
-      </div>
-
-      <div className="flex flex-col gap-1 items-center w-full text-center mt-4">
+    <div className="bg-card flex flex-col gap-2 p-4 w-full border-b border-border sticky top-0 z-10">
+      <div className="flex flex-col gap-1 items-center w-full text-center">
         <SectionTitle>Find care near you</SectionTitle>
         <p className="text-sm text-muted-foreground">
           Search by name, area, or service.
