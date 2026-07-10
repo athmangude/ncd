@@ -7,6 +7,8 @@ import { MEMBER_LOAN_ROLES } from "../../../constants/userTypes"
 import YourTreatments from "../../../components/YourTreatments"
 import { useNavigate } from "react-router-dom"
 import { trackEvent, EVENTS } from "@/analytics"
+import { DashboardStagger, DashboardSection } from "./DashboardStagger"
+import type { DashboardAnimationMode } from "./DashboardStagger"
 
 interface LoansTabContentProps {
   loans: any
@@ -16,6 +18,7 @@ interface LoansTabContentProps {
   onUpgrade: () => void
   type: string
   isLoading?: boolean
+  animationMode: DashboardAnimationMode
 }
 
 export function LoansTabContent({
@@ -26,21 +29,24 @@ export function LoansTabContent({
   onUpgrade,
   type,
   isLoading,
+  animationMode,
 }: LoansTabContentProps) {
   const navigate = useNavigate()
 
   return (
-    <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
-      <LoansCard
-        loans={loans}
-        loanStats={loanStats}
-        isLocked={!hasActiveMembership}
-        isFrozen={isFrozen}
-        onUpgrade={onUpgrade}
-        isLoading={isLoading}
-      />
+    <DashboardStagger mode={animationMode} className="flex flex-col gap-4">
+      <DashboardSection mode={animationMode}>
+        <LoansCard
+          loans={loans}
+          loanStats={loanStats}
+          isLocked={!hasActiveMembership}
+          isFrozen={isFrozen}
+          onUpgrade={onUpgrade}
+          isLoading={isLoading}
+        />
+      </DashboardSection>
 
-      <div className="grid grid-cols-2 gap-4">
+      <DashboardSection mode={animationMode} className="grid grid-cols-2 gap-4">
         {/* How to raise my limit button — gated to loan-eligible roles so
             non-members never land on the "not authorized" page. */}
         <ProtectedResource userRole={type} allowedRoles={MEMBER_LOAN_ROLES}>
@@ -69,70 +75,80 @@ export function LoansTabContent({
             }}
           />
         </ProtectedResource>
-      </div>
+      </DashboardSection>
 
       {!hasActiveMembership && (
-        <Button variant="secondary" className="w-full" onClick={onUpgrade}>
-          <Lock className="w-4 h-4 mr-2" />
-          Upgrade Now to Unlock
-        </Button>
+        <DashboardSection mode={animationMode}>
+          <Button variant="secondary" className="w-full" onClick={onUpgrade}>
+            <Lock className="w-4 h-4 mr-2" />
+            Upgrade Now to Unlock
+          </Button>
+        </DashboardSection>
       )}
       {!hasActiveMembership && (
-        <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
-          <h3 className="text-foreground mb-4">Unlock full financial limits</h3>
+        <DashboardSection mode={animationMode}>
+          <div className="bg-card rounded-2xl p-5 border border-border shadow-sm">
+            <h3 className="text-foreground mb-4">
+              Unlock full financial limits
+            </h3>
 
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-foreground">
-                  Unlock Higher Loan Limits
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Access to loans and financial utility.
-                </p>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-3 items-start">
+                <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-foreground">
+                    Unlock Higher Loan Limits
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Access to loans and financial utility.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-foreground">
-                  Pay hospital bills instantly
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Settle medical bills directly.
-                </p>
+              <div className="flex gap-3 items-start">
+                <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-foreground">
+                    Pay hospital bills instantly
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Settle medical bills directly.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="flex gap-3 items-start">
-              <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
-              <div>
-                <p className="font-medium text-foreground">
-                  Flexible, interest-free terms
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Repay comfortably with 0% interest.
-                </p>
+              <div className="flex gap-3 items-start">
+                <Check className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+                <div>
+                  <p className="font-medium text-foreground">
+                    Flexible, interest-free terms
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Repay comfortably with 0% interest.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </DashboardSection>
       )}
 
-      <div className="flex justify-between items-center mt-2">
-        <h3 className="text-foreground">Loan History</h3>
-      </div>
-
-      {loans?.length > 0 ? (
-        <YourTreatments showTitle={false} loans={loans} />
-      ) : (
-        <div className="text-center py-10 text-muted-foreground bg-muted rounded-2xl border border-dashed border-border">
-          <p className="font-medium">No loans yet</p>
-          <p className="text-sm mt-1">Your loans history will appear here</p>
+      <DashboardSection mode={animationMode}>
+        <div className="flex justify-between items-center mt-2">
+          <h3 className="text-foreground">Loan History</h3>
         </div>
-      )}
-    </div>
+      </DashboardSection>
+
+      <DashboardSection mode={animationMode}>
+        {loans?.length > 0 ? (
+          <YourTreatments showTitle={false} loans={loans} />
+        ) : (
+          <div className="text-center py-10 text-muted-foreground bg-muted rounded-2xl border border-dashed border-border">
+            <p className="font-medium">No loans yet</p>
+            <p className="text-sm mt-1">Your loans history will appear here</p>
+          </div>
+        )}
+      </DashboardSection>
+    </DashboardStagger>
   )
 }
