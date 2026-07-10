@@ -40,7 +40,7 @@ export function DashboardTabContent({
             duration: 0.15,
             ease: "easeOut",
           }}
-          className="h-full w-full overflow-y-auto pb-tabbar"
+          className="h-full w-full overflow-y-auto overflow-x-hidden pb-tabbar"
         >
           {children}
         </motion.div>
