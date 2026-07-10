@@ -1,6 +1,7 @@
 import ErrorBlock from "@/components/ErrorBlock"
 import RouteMetadata from "@/components/RouteMetadata"
 import LoadingPage from "@/Routes/LoadingPage"
+import { DashboardTabFallback } from "./Dashboard/components/DashboardTabFallback"
 import {
   Navigate,
   Route,
@@ -153,7 +154,7 @@ export default function PatientsHome() {
           <Route
             path="home"
             element={
-              <Suspense fallback={<LoadingPage />}>
+              <Suspense fallback={<DashboardTabFallback />}>
                 <PatientDashboardLoansTab />
               </Suspense>
             }
@@ -161,7 +162,7 @@ export default function PatientsHome() {
           <Route
             path="circle"
             element={
-              <Suspense fallback={<LoadingPage />}>
+              <Suspense fallback={<DashboardTabFallback />}>
                 <PatientDashboardCircleTab />
               </Suspense>
             }
@@ -169,7 +170,7 @@ export default function PatientsHome() {
           <Route
             path="explore"
             element={
-              <Suspense fallback={<LoadingPage />}>
+              <Suspense fallback={<DashboardTabFallback />}>
                 <PatientDashboardExploreTab isActive={true} />
               </Suspense>
             }
@@ -177,7 +178,7 @@ export default function PatientsHome() {
           <Route
             path="profile"
             element={
-              <Suspense fallback={<LoadingPage />}>
+              <Suspense fallback={<DashboardTabFallback />}>
                 <PatientDashboardProfileTab />
               </Suspense>
             }

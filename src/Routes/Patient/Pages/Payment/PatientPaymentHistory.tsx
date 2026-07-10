@@ -1,14 +1,16 @@
-import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { PaymentCard } from "@/components/YourPayments"
 import { LoanCard } from "../../components/YourTreatments"
+import { CashbackCard } from "@/components/CashbackCard"
+import {
+  TransactionHistoryList,
+  TransactionHistoryEmptyState,
+} from "@/components/TransactionHistoryList"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Check, Search } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
-import { formatMoney } from "@/utilities/currencyUtilities"
-import { formatDateLong, formatTime } from "@/utilities/dateUtilities"
 import { usePaymentHistory } from "../../hooks/usePaymentHistory"
 
 export default function PatientPaymentHistory() {
@@ -21,23 +23,7 @@ export default function PatientPaymentHistory() {
     "payments"
   )
 
-  // --- Payments Data ---
-  const sortedPayments = payments
-    ? [...payments].sort(
-        (a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-    : []
-
-  // --- Loans Data ---
-  const sortedLoans = loans
-    ? [...loans].sort(
-        (a: any, b: any) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-    : []
-
-  // --- Cashback Data (Copied from CareFundTransactions) ---
+  // Cashback / care-fund transactions — same source as CareFundTransactions.
   const { data: cashbackData, isLoading: isLoadingCashback } = useQuery({
     queryKey: ["careFundTransactions"],
     queryFn: async () => {
@@ -51,36 +37,9 @@ export default function PatientPaymentHistory() {
         throw err
       }
     },
-    // Always fetch so data is ready when tab is clicked
   })
-
   const cashbackTransactions = cashbackData?.data || []
-  const sortedCashback = [...cashbackTransactions].sort(
-    (a: any, b: any) =>
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  )
 
-  // --- Grouping Logic ---
-  const groupItemsByDate = (items: any[]) => {
-    const groups: { date: string; items: any[] }[] = []
-    items.forEach((item) => {
-      const groupKey = formatDateLong(item.createdAt)
-
-      const lastGroup = groups[groups.length - 1]
-      if (lastGroup && lastGroup.date === groupKey) {
-        lastGroup.items.push(item)
-      } else {
-        groups.push({ date: groupKey, items: [item] })
-      }
-    })
-    return groups
-  }
-
-  const groupedPayments = groupItemsByDate(sortedPayments)
-  const groupedLoans = groupItemsByDate(sortedLoans)
-  const groupedCashback = groupItemsByDate(sortedCashback)
-
-  // --- Tabs Configuration ---
   const tabs = [
     { id: "payments", label: "All Payments" },
     { id: "loans", label: "Loans" },
@@ -113,135 +72,60 @@ export default function PatientPaymentHistory() {
           ))}
         </div>
 
-        {/* Content */}
-        <div className="flex flex-col gap-6 pb-10">
-          {/* Payments Tab */}
-          {activeTab === "payments" &&
-            (groupedPayments.length > 0 ? (
-              groupedPayments.map((group) => (
-                <div key={group.date} className="flex flex-col gap-3">
-                  <p className="text-sm text-muted-foreground font-medium ml-1">
-                    {group.date}
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    {group.items.map((payment: any) => (
-                      <PaymentCard key={payment.id} payment={payment} />
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <EmptyState message="No payment history found." />
-            ))}
+        {/* Content — one shared list layout per tab, only the row differs. */}
+        {activeTab === "payments" && (
+          <TransactionHistoryList
+            items={payments}
+            getKey={(payment: any) => payment.id}
+            getDate={(payment: any) => payment.createdAt}
+            renderItem={(payment: any) => <PaymentCard payment={payment} />}
+            emptyState={
+              <TransactionHistoryEmptyState message="No payment history found." />
+            }
+          />
+        )}
 
-          {/* Loans Tab */}
-          {activeTab === "loans" &&
-            (groupedLoans.length > 0 ? (
-              groupedLoans.map((group) => (
-                <div key={group.date} className="flex flex-col gap-3">
-                  <p className="text-sm text-muted-foreground font-medium ml-1">
-                    {group.date}
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    {group.items.map((loan: any) => (
-                      <LoanCard
-                        key={loan.id}
-                        loanId={loan.id}
-                        status={loan.status}
-                        hospitalName={
-                          loan?.patientMedicalInfoRequest?.facility?.name ||
-                          "Unknown Provider"
-                        }
-                        createdAt={loan.createdAt}
-                        outStandingAmount={loan.outstandingAmount}
-                        currency={loan.currency.code}
-                        amount={loan.amount}
-                        dueDate={loan.loanDueDate}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <EmptyState message="No loan history found." />
-            ))}
+        {activeTab === "loans" && (
+          <TransactionHistoryList
+            items={loans}
+            getKey={(loan: any) => loan.id}
+            getDate={(loan: any) => loan.createdAt}
+            renderItem={(loan: any) => (
+              <LoanCard
+                loanId={loan.id}
+                status={loan.status}
+                hospitalName={
+                  loan?.patientMedicalInfoRequest?.facility?.name ||
+                  "Unknown Provider"
+                }
+                createdAt={loan.createdAt}
+                outStandingAmount={loan.outstandingAmount}
+                currency={loan.currency.code}
+                amount={loan.amount}
+                dueDate={loan.loanDueDate}
+              />
+            )}
+            emptyState={
+              <TransactionHistoryEmptyState message="No loan history found." />
+            }
+          />
+        )}
 
-          {/* Cashback Tab */}
-          {activeTab === "cashback" &&
-            (isLoadingCashback ? (
-              <div className="text-center py-10 text-muted-foreground">
-                Loading transactions...
-              </div>
-            ) : groupedCashback.length > 0 ? (
-              groupedCashback.map((group) => (
-                <div key={group.date} className="flex flex-col gap-3">
-                  <p className="text-sm text-muted-foreground font-medium ml-1">
-                    {group.date}
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    {group.items.map((transaction: any) => (
-                      <CashbackCard
-                        key={transaction.id}
-                        transaction={transaction}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <EmptyState message="No cashback history found." />
-            ))}
-        </div>
+        {activeTab === "cashback" && (
+          <TransactionHistoryList
+            items={cashbackTransactions}
+            isLoading={isLoadingCashback}
+            getKey={(transaction: any) => transaction.id}
+            getDate={(transaction: any) => transaction.createdAt}
+            renderItem={(transaction: any) => (
+              <CashbackCard transaction={transaction} />
+            )}
+            emptyState={
+              <TransactionHistoryEmptyState message="No cashback history found." />
+            }
+          />
+        )}
       </div>
     </PatientPageWrapper>
-  )
-}
-
-function EmptyState({ message }: { message: string }) {
-  return (
-    <div className="text-center text-muted-foreground py-10 bg-muted rounded-xl border border-dashed border-border">
-      {message}
-    </div>
-  )
-}
-
-function CashbackCard({ transaction }: { transaction: any }) {
-  const user = usePatientAuthStore((state: any) => state.user)
-
-  const isReceiver = transaction.receiver?.accountOwner?.id === user?.id
-  const isSender = transaction.sender?.accountOwner?.id === user?.id
-
-  let label = transaction.type.toLowerCase()
-
-  if (transaction.type === "TRANSFER") {
-    if (isReceiver) {
-      label = `Received from ${transaction.sender?.accountOwner?.firstName || "Unknown"}`
-    } else if (isSender) {
-      label = `Sent to ${transaction.receiver?.accountOwner?.firstName || "Unknown"}`
-    }
-  } else if (transaction.type === "SPENT") {
-    label = (transaction.description || "Spent").toLowerCase()
-  } else if (transaction.type === "EARNED") {
-    label = "Cashback earned"
-  }
-
-  return (
-    <div className="bg-card p-4 rounded-xl border border-border shadow-sm flex justify-between items-center">
-      <div>
-        <p className="text-base text-foreground capitalize mb-1">{label}</p>
-        <p className="text-sm text-muted-foreground flex items-center gap-2">
-          <span>
-            {formatMoney(
-              transaction.transactionAmount,
-              transaction.currency.code
-            )}
-          </span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground"></span>
-          <span>{formatTime(transaction.createdAt)}</span>
-        </p>
-      </div>
-      {/* <ChevronRight className="w-5 h-5 text-neutral-400" /> */}
-      {/* Image shows specific icon for cashback, but we can use generic or none for now */}
-    </div>
   )
 }

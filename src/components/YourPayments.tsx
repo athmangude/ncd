@@ -1,10 +1,16 @@
 import { usePaymentHistory } from "@/Routes/Patient/hooks/usePaymentHistory"
 import PatientDashboardSection from "@/Routes/Patient/components/PatientDashboardSection"
-import { formatMoney } from "@/utilities/currencyUtilities"
-import { Button } from "@/components/Button"
-import { ChevronRight, Clock, Link } from "lucide-react"
+import { TransactionHistoryList } from "@/components/TransactionHistoryList"
+import {
+  HistoryCard,
+  HistoryEntry,
+  AmountTime,
+  HistoryChevron,
+  CashbackEarnedEntry,
+  LoanEntry,
+} from "@/components/HistoryCard"
 import { useNavigate } from "react-router-dom"
-import { formatTime, formatDateLong } from "@/utilities/dateUtilities"
+import { formatDateLong } from "@/utilities/dateUtilities"
 import { useMemo } from "react"
 
 export default function YourPayments() {
@@ -14,47 +20,14 @@ export default function YourPayments() {
     [paymentHistory?.payments]
   )
 
-  const groupedPayments = useMemo(() => {
-    if (!payments) return []
-
-    // Sort by date descending
-    const sorted = [...payments].sort(
-      (a: any, b: any) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    )
-
-    const groups: { date: string; items: any[] }[] = []
-
-    sorted.forEach((payment: any) => {
-      // formatDateLong returns "DD Mon YYYY"
-      const groupKey = formatDateLong(payment.createdAt)
-
-      const lastGroup = groups[groups.length - 1]
-      if (lastGroup && lastGroup.date === groupKey) {
-        lastGroup.items.push(payment)
-      } else {
-        groups.push({ date: groupKey, items: [payment] })
-      }
-    })
-    return groups
-  }, [payments])
-
   return (
     <PatientDashboardSection title="Your Payments">
-      <div className="flex flex-col max-h-[400px] overflow-y-auto gap-6">
-        {groupedPayments.map((group) => (
-          <div key={group.date} className="flex flex-col gap-3">
-            <p className="text-sm text-muted-foreground font-medium ml-1">
-              {group.date}
-            </p>
-            <div className="flex flex-col gap-3">
-              {group.items.map((payment: any) => (
-                <PaymentCard key={payment.id} payment={payment} />
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <TransactionHistoryList
+        items={payments}
+        getKey={(payment: any) => payment.id}
+        getDate={(payment: any) => payment.createdAt}
+        renderItem={(payment: any) => <PaymentCard payment={payment} />}
+      />
     </PatientDashboardSection>
   )
 }
@@ -114,6 +87,17 @@ export function PaymentCard({
     facilityName = disbursementTransaction.description
   }
 
+  const title =
+    (facilityName ?? "").startsWith("Paid at") ||
+    (facilityName ?? "").startsWith("Payment at")
+      ? (facilityName ?? "")
+      : `Paid at ${(facilityName ?? "").toLocaleLowerCase()}`
+
+  const goToDetails = () =>
+    navigate(`/patients/payments/payment-details/${paymentId}`, {
+      state: navigationState,
+    })
+
   // Loan Logic
   // Find a split that has a loan
   const loanSplit = paymentSplits?.find((split: any) => split.loan)
@@ -142,105 +126,40 @@ export function PaymentCard({
   const hasCashback = totalCashback > 0
 
   return (
-    <div
-      className="p-4 flex flex-col gap-3 bg-card hover:bg-muted transition-colors cursor-pointer border rounded-xl"
-      onClick={() =>
-        navigate(`/patients/payments/payment-details/${paymentId}`, {
-          state: navigationState,
-        })
-      }
-    >
-      {/* Header Row */}
-      <div className="flex justify-between items-start">
-        <div className="flex-1 mr-2">
-          <p className="text-base text-foreground line-clamp-1 capitalize">
-            {(facilityName ?? "").startsWith("Paid at") ||
-            (facilityName ?? "").startsWith("Payment at")
-              ? (facilityName ?? "")
-              : `Paid at ${(facilityName ?? "").toLocaleLowerCase()}`}
-          </p>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            {formatMoney(Number(totalBillAmount), currencyCode)} •{" "}
-            {formatTime(createdAt)}
-          </p>
-        </div>
-        <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-      </div>
+    <HistoryCard onClick={goToDetails}>
+      {/* Header row — payment provider + amount·time. No leading icon. */}
+      <HistoryEntry
+        title={title}
+        subtitle={
+          <AmountTime
+            amount={Number(totalBillAmount)}
+            currency={currencyCode}
+            createdAt={createdAt}
+          />
+        }
+        trailing={<HistoryChevron />}
+      />
 
-      {/* Cashback Row */}
+      {/* Cashback sub-entry (only when this payment earned cashback). */}
       {hasCashback && (
-        <div className="flex items-center gap-2">
-          <Link className="w-4 h-4 text-muted-foreground rotate-45" />
-          <div className="flex flex-col">
-            <p className="text-sm text-foreground">Cashback earned</p>
-            <p className="text-sm text-muted-foreground">
-              {formatMoney(totalCashback, currencyCode)}
-            </p>
-          </div>
-        </div>
+        <CashbackEarnedEntry amount={totalCashback} currency={currencyCode} />
       )}
 
-      {/* Loan Row */}
+      {/* Loan sub-entry (only when this payment carries a loan). */}
       {hasLoan && (
-        <div className="flex flex-col gap-3 mt-1">
-          {outstandingAmount > 0 ? (
-            <>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <p className="text-sm text-foreground">Loan repayment due:</p>
-                </div>
-                {dueDate && daysRemaining > 0 ? (
-                  <div className="bg-orange-100 text-orange-700 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap">
-                    {daysRemaining < 10 ? "0" : ""}
-                    {daysRemaining} days
-                  </div>
-                ) : (
-                  <div className="bg-red-100 text-red-700 text-xs font-medium px-2 py-0.5 rounded-full whitespace-nowrap">
-                    Overdue
-                  </div>
-                )}
-              </div>
-
-              <div className="pl-6">
-                <p className="text-sm text-muted-foreground">
-                  {formatMoney(Number(outstandingAmount), currencyCode)} due by{" "}
-                  {formattedDueDate}
-                </p>
-              </div>
-
-              <Button
-                variant="secondary"
-                className="w-full mt-1"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  // Add specific payment logic here if needed, otherwise it bubbles to card click
-                  navigate(`/patients/payments/payment-details/${paymentId}`, {
-                    state: navigationState,
-                  })
-                }}
-              >
-                Pay now
-              </Button>
-            </>
-          ) : (
-            <>
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-muted-foreground" />
-                  <p className="text-sm text-foreground">Loan repaid</p>
-                </div>
-              </div>
-
-              <div className="pl-6">
-                <p className="text-sm text-muted-foreground">
-                  {formatMoney(Number(loan.totalPaid), currencyCode)}
-                </p>
-              </div>
-            </>
-          )}
-        </div>
+        <LoanEntry
+          outstandingAmount={outstandingAmount}
+          amount={loan.totalPaid}
+          currency={currencyCode}
+          dueDate={dueDate}
+          formattedDueDate={formattedDueDate}
+          daysRemaining={daysRemaining}
+          onPay={(e) => {
+            e.stopPropagation()
+            goToDetails()
+          }}
+        />
       )}
-    </div>
+    </HistoryCard>
   )
 }

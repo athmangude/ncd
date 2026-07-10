@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import { useState, useEffect, useMemo } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { getFirstIncompleteStep } from "../../hooks/useNextOnboardingStep"
 import { KYC_START_URL } from "../../hooks/useNextKYCStep"
 import { AlertCard } from "../../components/CallToActions"
@@ -13,8 +14,14 @@ import { PaymentsTabContent } from "./components/PaymentsTabContent"
 import { LoansTabContent } from "./components/LoansTabContent"
 import { CashbackTabContent } from "./components/CashbackTabContent"
 import { DashboardStickyFooter } from "./components/DashboardStickyFooter"
+import { DashboardSkeleton } from "./components/DashboardSkeleton"
 import { usePatientDashboardData } from "./hooks/usePatientDashboardData"
+import { useDashboardFirstLoad } from "./hooks/useDashboardFirstLoad"
 import { useFastTrackStore } from "../FastTrack/useFastTrackStore"
+import {
+  tabContentSwitchVariants,
+  tabContentSwitchTransition,
+} from "./animation"
 
 export default function PatientDashboardLoansTab() {
   const user = usePatientAuthStore((state: any) => state.user) || {}
@@ -61,6 +68,11 @@ export default function PatientDashboardLoansTab() {
     [payments]
   )
 
+  const { showSkeleton, mode: animationMode } = useDashboardFirstLoad(
+    !!isLoading,
+    loanStats != null
+  )
+
   const handlePayMedicalBill = () => {
     const nextIncompleteStep = getFirstIncompleteStep(user)
 
@@ -103,33 +115,43 @@ export default function PatientDashboardLoansTab() {
 
       <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === "payments" && (
-        <PaymentsTabContent
-          loanStats={loanStats}
-          hasActiveMembership={hasActiveMembership}
-          isFrozen={isFrozen}
-          onUpgrade={handleUpgrade}
-          onPayMedicalBill={handlePayMedicalBill}
-          paymentRequests={paymentRequests}
-          sortedPayments={sortedPayments}
-          discounts={discounts}
-          isLoading={isLoading}
-        />
-      )}
+      {showSkeleton ? (
+        <DashboardSkeleton showHeader={false} sections={4} />
+      ) : (
+        <SubTabSwitch activeTab={activeTab}>
+          {activeTab === "payments" && (
+            <PaymentsTabContent
+              loanStats={loanStats}
+              hasActiveMembership={hasActiveMembership}
+              isFrozen={isFrozen}
+              onUpgrade={handleUpgrade}
+              onPayMedicalBill={handlePayMedicalBill}
+              paymentRequests={paymentRequests}
+              sortedPayments={sortedPayments}
+              discounts={discounts}
+              isLoading={isLoading}
+              animationMode={animationMode}
+            />
+          )}
 
-      {activeTab === "loans" && (
-        <LoansTabContent
-          loans={loans}
-          loanStats={loanStats}
-          hasActiveMembership={hasActiveMembership}
-          isFrozen={isFrozen}
-          onUpgrade={handleUpgrade}
-          type={type}
-          isLoading={isLoading}
-        />
-      )}
+          {activeTab === "loans" && (
+            <LoansTabContent
+              loans={loans}
+              loanStats={loanStats}
+              hasActiveMembership={hasActiveMembership}
+              isFrozen={isFrozen}
+              onUpgrade={handleUpgrade}
+              type={type}
+              isLoading={isLoading}
+              animationMode={animationMode}
+            />
+          )}
 
-      {activeTab === "cashback" && <CashbackTabContent />}
+          {activeTab === "cashback" && (
+            <CashbackTabContent animationMode={animationMode} />
+          )}
+        </SubTabSwitch>
+      )}
 
       <DashboardStickyFooter
         hasActiveMembership={hasActiveMembership}
@@ -138,5 +160,39 @@ export default function PatientDashboardLoansTab() {
         onPayMedicalBill={handlePayMedicalBill}
       />
     </TabsContent>
+  )
+}
+
+/**
+ * Animates the payments/loans/cashback sub-tab switch with the same snappy
+ * transition DashboardTabContent uses for the top-level dashboard tabs, so
+ * every tab switch in the app — top-level or nested — feels identical.
+ */
+function SubTabSwitch({
+  activeTab,
+  children,
+}: {
+  activeTab: string
+  children: React.ReactNode
+}) {
+  const reduceMotion = useReducedMotion()
+
+  if (reduceMotion) {
+    return <>{children}</>
+  }
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={activeTab}
+        variants={tabContentSwitchVariants}
+        initial="enter"
+        animate="center"
+        exit="exit"
+        transition={tabContentSwitchTransition}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
   )
 }

@@ -5,6 +5,8 @@ import { DiscountsSection, DiscountCode } from "./DiscountsSection"
 import { PaymentRequestsSection } from "./PaymentRequestsSection"
 import { SortedPayments } from "./SortedPayments"
 import { CircleStatusSection } from "./CircleStatusSection"
+import { DashboardStagger, DashboardSection } from "./DashboardStagger"
+import type { DashboardAnimationMode } from "./DashboardStagger"
 
 interface PaymentsTabContentProps {
   loanStats: any
@@ -16,6 +18,7 @@ interface PaymentsTabContentProps {
   sortedPayments: any[]
   discounts?: DiscountCode[]
   isLoading?: boolean
+  animationMode: DashboardAnimationMode
 }
 
 export function PaymentsTabContent({
@@ -28,39 +31,54 @@ export function PaymentsTabContent({
   sortedPayments,
   discounts = [],
   isLoading,
+  animationMode,
 }: PaymentsTabContentProps) {
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
-      <BalanceCard
-        loanStats={loanStats}
-        isLocked={!hasActiveMembership}
-        isFrozen={isFrozen}
-        onUpgrade={onUpgrade}
-        isLoading={isLoading}
-      />
+    <DashboardStagger mode={animationMode} className="flex flex-col gap-6">
+      <DashboardSection mode={animationMode}>
+        <BalanceCard
+          loanStats={loanStats}
+          isLocked={!hasActiveMembership}
+          isFrozen={isFrozen}
+          onUpgrade={onUpgrade}
+          isLoading={isLoading}
+        />
+      </DashboardSection>
 
       {!hasActiveMembership && (
-        <Button variant="secondary" className="w-full" onClick={onUpgrade}>
-          <Lock className="w-4 h-4 mr-2" />
-          Upgrade Now to Unlock
-        </Button>
+        <DashboardSection mode={animationMode}>
+          <Button variant="secondary" className="w-full" onClick={onUpgrade}>
+            <Lock className="w-4 h-4 mr-2" />
+            Upgrade Now to Unlock
+          </Button>
+        </DashboardSection>
       )}
       {!hasActiveMembership && (
-        <Button className="w-full  " onClick={onPayMedicalBill}>
-          Pay Medical Bill
-        </Button>
+        <DashboardSection mode={animationMode}>
+          <Button className="w-full" onClick={onPayMedicalBill}>
+            Pay Medical Bill
+          </Button>
+        </DashboardSection>
       )}
 
-      <DiscountsSection discounts={discounts} />
+      <DashboardSection mode={animationMode}>
+        <DiscountsSection discounts={discounts} />
+      </DashboardSection>
 
-      <PaymentRequestsSection
-        requests={paymentRequests}
-        isLoading={isLoading}
-      />
+      <DashboardSection mode={animationMode}>
+        <PaymentRequestsSection
+          requests={paymentRequests}
+          isLoading={isLoading}
+        />
+      </DashboardSection>
 
-      <CircleStatusSection />
+      <DashboardSection mode={animationMode}>
+        <CircleStatusSection />
+      </DashboardSection>
 
-      <SortedPayments sortedPayments={sortedPayments} isLoading={isLoading} />
-    </div>
+      <DashboardSection mode={animationMode}>
+        <SortedPayments sortedPayments={sortedPayments} isLoading={isLoading} />
+      </DashboardSection>
+    </DashboardStagger>
   )
 }

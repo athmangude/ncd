@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react"
 import { useMotionValue, useTransform, animate } from "framer-motion"
+import { TABBAR_TRANSITION } from "../animation"
 
 const BAR_HEIGHT = 80
 const CURVE_RADIUS = 38
@@ -62,10 +63,7 @@ export function useTabBarAnimation(currentTab: string) {
       const rect = activeEl.getBoundingClientRect()
       const targetX = rect.left - listRect.left + rect.width / 2
 
-      const controls = animate(cx, targetX, {
-        duration: 1,
-        ease: [0.25, 0.1, 0.25, 1.0],
-      })
+      const controls = animate(cx, targetX, TABBAR_TRANSITION)
 
       return () => controls.stop()
     }
