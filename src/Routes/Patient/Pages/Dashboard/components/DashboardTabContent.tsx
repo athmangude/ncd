@@ -1,19 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion"
-
-const variants = {
-  enter: {
-    opacity: 0,
-    x: 4,
-  },
-  center: {
-    opacity: 1,
-    x: 0,
-  },
-  exit: {
-    opacity: 0,
-    x: -4,
-  },
-}
+import {
+  tabContentSwitchVariants,
+  tabContentSwitchTransition,
+} from "../animation"
 
 interface DashboardTabContentProps {
   pathname: string
@@ -32,15 +21,12 @@ export function DashboardTabContent({
         <motion.div
           key={pathname}
           custom={direction}
-          variants={variants}
+          variants={tabContentSwitchVariants}
           initial="enter"
           animate="center"
           exit="exit"
-          transition={{
-            duration: 0.15,
-            ease: "easeOut",
-          }}
-          className="h-full w-full overflow-y-auto pb-tabbar"
+          transition={tabContentSwitchTransition}
+          className="h-full w-full overflow-y-auto overflow-x-hidden pb-tabbar"
         >
           {children}
         </motion.div>

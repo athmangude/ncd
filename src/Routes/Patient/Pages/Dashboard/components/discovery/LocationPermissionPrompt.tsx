@@ -1,10 +1,11 @@
 import { Button } from "@/components/Button"
 import { Alert, AlertTitle, AlertDescription } from "@/components/Alert"
-import { Loader2, MapPin, Check, CircleAlert } from "lucide-react"
+import { MapPin, Check, CircleAlert } from "lucide-react"
 import locationMapIllustration from "@/assets/images/location-map-illustration.svg"
 import { TabsContent } from "@/components/Tabs"
 import { useEffect } from "react"
 import { trackEvent, EVENTS } from "@/analytics"
+import { DashboardSkeleton } from "../DashboardSkeleton"
 
 interface LocationPermissionPromptProps {
   onRequestLocation: () => void
@@ -38,20 +39,13 @@ export function LocationPermissionPrompt({
     />
   )
 
+  // Same shared skeleton the data-fetch phase uses, so requesting location
+  // permission and loading facilities read as one continuous loading state
+  // instead of two visually different loaders back to back.
   if (loading) {
     return (
-      <TabsContent
-        value="explore"
-        className="flex flex-col w-full h-[calc(100vh-100px)] h-[calc(100dvh-100px)] overflow-y-auto"
-      >
-        <div className="flex flex-col items-center gap-2 text-center w-full p-4">
-          {illustration}
-          <h1>Finding facilities near you...</h1>
-          <div className="flex items-center gap-2 px-2 py-1.5">
-            <Loader2 className="h-4 w-4 text-foreground animate-spin" />
-            <span className="text-sm text-foreground">Loading...</span>
-          </div>
-        </div>
+      <TabsContent value="explore" className="w-full h-full p-4">
+        <DashboardSkeleton sections={2} />
       </TabsContent>
     )
   }
