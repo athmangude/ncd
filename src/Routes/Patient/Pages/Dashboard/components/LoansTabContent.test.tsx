@@ -19,6 +19,7 @@ const baseProps = {
   hasActiveMembership: true,
   onUpgrade: vi.fn(),
   isLoading: false,
+  animationMode: "switch" as const,
 }
 
 // ── Tests ──────────────────────────────────────────────────────────────────

@@ -6,9 +6,10 @@ import { OfflinePlaceholder } from "@/components/OfflinePlaceholder"
 import { useDiscovery } from "./components/discovery/useDiscovery"
 import { LocationPermissionPrompt } from "./components/discovery/LocationPermissionPrompt"
 import { DiscoveryHomeView } from "./components/discovery/DiscoveryHomeView"
-import { DiscoveryHomeSkeleton } from "./components/discovery/DiscoveryHomeSkeleton"
+import { DashboardSkeleton } from "./components/DashboardSkeleton"
 import { Facility } from "./components/discovery/types"
 import { useEligibleDiscountCodes } from "./hooks/useEligibleDiscountCodes"
+import { useDashboardFirstLoad } from "./hooks/useDashboardFirstLoad"
 import { trackEvent, EVENTS } from "@/analytics"
 
 /** Distance in km between two points (Haversine). */
@@ -69,7 +70,7 @@ export default function PatientDashboardExploreTab({
   // Patient-eligible discount codes — same source as the Payments tab so the
   // two surfaces stay in sync. React Query dedupes via the shared queryKey.
   const { data: discountCodes = [] } = useEligibleDiscountCodes(
-    isActive && !isOffline,
+    isActive && !isOffline
   )
 
   useEffect(() => {
@@ -85,6 +86,11 @@ export default function PatientDashboardExploreTab({
     })
     return byId
   }, [filteredFacilities, userLocation])
+
+  const { showSkeleton, mode: animationMode } = useDashboardFirstLoad(
+    loading,
+    filteredFacilities.length > 0
+  )
 
   if (isOffline) {
     return (
@@ -104,8 +110,12 @@ export default function PatientDashboardExploreTab({
     )
   }
 
-  if (loading && filteredFacilities.length === 0) {
-    return <DiscoveryHomeSkeleton />
+  if (showSkeleton) {
+    return (
+      <TabsContent value="explore" className="w-full h-full p-4">
+        <DashboardSkeleton sections={2} />
+      </TabsContent>
+    )
   }
 
   return (
@@ -124,6 +134,7 @@ export default function PatientDashboardExploreTab({
       }}
       distanceByFacilityId={distanceByFacilityId}
       locationName={locationName}
+      animationMode={animationMode}
     />
   )
 }

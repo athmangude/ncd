@@ -1,9 +1,15 @@
 import { PatientCareFund } from "../../PatientCareFund/PatientCareFund"
+import { DashboardSection } from "./DashboardStagger"
+import type { DashboardAnimationMode } from "./DashboardStagger"
 
-export function CashbackTabContent() {
+export function CashbackTabContent({
+  animationMode,
+}: {
+  animationMode: DashboardAnimationMode
+}) {
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 fill-mode-both">
+    <DashboardSection mode={animationMode}>
       <PatientCareFund />
-    </div>
+    </DashboardSection>
   )
 }

@@ -23,6 +23,8 @@ import {
 import { SectionTitle } from "@/components/SectionTitle"
 import { Facility } from "./types"
 import { DiscountCode } from "../DiscountsSection"
+import { DashboardStagger, DashboardSection } from "../DashboardStagger"
+import type { DashboardAnimationMode } from "../DashboardStagger"
 
 interface DiscoveryHomeViewProps {
   facilities: Facility[]
@@ -32,6 +34,7 @@ interface DiscoveryHomeViewProps {
   onFacilitySelect: (facility: Facility) => void
   distanceByFacilityId: Map<string, number>
   locationName?: string | null
+  animationMode: DashboardAnimationMode
 }
 
 export function DiscoveryHomeView({
@@ -42,6 +45,7 @@ export function DiscoveryHomeView({
   onFacilitySelect,
   distanceByFacilityId,
   locationName,
+  animationMode,
 }: DiscoveryHomeViewProps) {
   const navigate = useNavigate()
   const verifiedOnly = activeTab === "jireh"
@@ -111,10 +115,16 @@ export function DiscoveryHomeView({
       {/* Scrollable main content. Horizontal padding comes from the shell's
           p-4 (like every other dashboard tab) — only add vertical spacing here,
           so the content isn't double-inset. */}
-      <div className="flex flex-col gap-6 py-4 w-full">
+      <DashboardStagger
+        mode={animationMode}
+        className="flex flex-col gap-6 py-4 w-full"
+      >
         {/* Active discounts — patient-eligible discount codes */}
         {discountCodes.length > 0 && (
-          <div className="flex flex-col w-full">
+          <DashboardSection
+            mode={animationMode}
+            className="flex flex-col w-full"
+          >
             <SectionHeader
               icon={<Percent className="h-4 w-4" />}
               title="Active discounts"
@@ -150,12 +160,15 @@ export function DiscoveryHomeView({
                 )
               })}
             </div>
-          </div>
+          </DashboardSection>
         )}
 
         {/* Verified partners */}
         {verifiedFacilities.length > 0 && (
-          <div className="flex flex-col w-full">
+          <DashboardSection
+            mode={animationMode}
+            className="flex flex-col w-full"
+          >
             <SectionHeader
               icon={<BadgeCheck className="h-4 w-4" />}
               title="Verified partners"
@@ -171,12 +184,15 @@ export function DiscoveryHomeView({
                 />
               ))}
             </div>
-          </div>
+          </DashboardSection>
         )}
 
         {/* All/filtered facilities when no special sections apply */}
         {verifiedFacilities.length === 0 && facilities.length > 0 && (
-          <div className="flex flex-col w-full gap-1">
+          <DashboardSection
+            mode={animationMode}
+            className="flex flex-col w-full gap-1"
+          >
             {facilities.slice(0, 10).map((f) => (
               <Item key={f.id} asChild size="sm" className="bg-card text-left">
                 <button type="button" onClick={() => onFacilitySelect(f)}>
@@ -196,9 +212,9 @@ export function DiscoveryHomeView({
                 </button>
               </Item>
             ))}
-          </div>
+          </DashboardSection>
         )}
-      </div>
+      </DashboardStagger>
     </TabsContent>
   )
 }

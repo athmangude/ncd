@@ -39,10 +39,19 @@ import {
   DrawerClose,
 } from "@/components/Drawer"
 
-import { Skeleton } from "@/components/Skeleton"
+import {
+  DashboardStagger,
+  DashboardSection,
+} from "@/Routes/Patient/Pages/Dashboard/components/DashboardStagger"
+import { DashboardSkeleton } from "@/Routes/Patient/Pages/Dashboard/components/DashboardSkeleton"
+import { useDashboardFirstLoad } from "@/Routes/Patient/Pages/Dashboard/hooks/useDashboardFirstLoad"
 
 export default function PatientProfile() {
   const { data: user, isLoading, error, refetch } = usePatientLoginDetails()
+  const { showSkeleton, mode: animationMode } = useDashboardFirstLoad(
+    isLoading,
+    user != null
+  )
   const [uploadedPhoto, setUploadedPhoto] = useState<string | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isSignOutOpen, setIsSignOutOpen] = useState(false)
@@ -199,37 +208,19 @@ export default function PatientProfile() {
     },
   ]
 
-  if (isLoading && !user) {
-    return (
-      <div className="flex flex-col gap-5">
-        {/* User Info Skeleton */}
-        <div className="flex flex-row items-center gap-4 py-2">
-          <Skeleton className="h-20 w-20 rounded-full" />
-          <div className="flex flex-col gap-2">
-            <Skeleton className="h-6 w-40" />
-            <Skeleton className="h-4 w-32" />
-          </div>
-        </div>
-
-        {/* Menu Options Skeleton */}
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3, 4].map((i) => (
-            <Skeleton key={i} className="h-20 w-full rounded-xl" />
-          ))}
-        </div>
-
-        {/* Sign Out Skeleton */}
-        <Skeleton className="h-12 w-full rounded-xl mt-2" />
-      </div>
-    )
+  if (showSkeleton) {
+    return <DashboardSkeleton showHeader={false} sections={3} />
   }
   if (error) return <ErrorBlock message="Failed to load profile" />
   // If no user but not loading/error, theoretically shouldn't happen if auth is required, but handle it
   if (!user) return <LoadingPage />
   return (
-    <div className="flex flex-col gap-5">
+    <DashboardStagger mode={animationMode} className="flex flex-col gap-5">
       {/* User Info */}
-      <div className="flex flex-row items-center gap-4 py-2">
+      <DashboardSection
+        mode={animationMode}
+        className="flex flex-row items-center gap-4 py-2"
+      >
         <div
           className="relative cursor-pointer group"
           onClick={() => setIsDrawerOpen(true)}
@@ -268,7 +259,7 @@ export default function PatientProfile() {
             {maskPhoneNumber(user.phoneNumber)}
           </p>
         </div>
-      </div>
+      </DashboardSection>
 
       {/* Drawer for Profile Photo Upload */}
       <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
@@ -339,7 +330,7 @@ export default function PatientProfile() {
         </div> */}
 
       {/* Menu Options */}
-      <div className="flex flex-col gap-3">
+      <DashboardSection mode={animationMode} className="flex flex-col gap-3">
         {menuOptions.map((option, index) => (
           <Item key={index} asChild variant="outline">
             <button type="button" onClick={option.onClick}>
@@ -356,16 +347,18 @@ export default function PatientProfile() {
             </button>
           </Item>
         ))}
-      </div>
+      </DashboardSection>
 
       {/* Sign Out — confirms first, then wipes this participant's data. */}
-      <Button
-        variant="outline"
-        className="w-full mt-2"
-        onClick={() => setIsSignOutOpen(true)}
-      >
-        Sign Out
-      </Button>
+      <DashboardSection mode={animationMode}>
+        <Button
+          variant="outline"
+          className="w-full mt-2"
+          onClick={() => setIsSignOutOpen(true)}
+        >
+          Sign Out
+        </Button>
+      </DashboardSection>
 
       {/* Sign-out confirmation */}
       <Drawer open={isSignOutOpen} onOpenChange={setIsSignOutOpen}>
@@ -392,7 +385,9 @@ export default function PatientProfile() {
         </DrawerContent>
       </Drawer>
 
-      <p className="text-center text-xs text-muted-foreground">v{version}</p>
-    </div>
+      <DashboardSection mode={animationMode}>
+        <p className="text-center text-xs text-muted-foreground">v{version}</p>
+      </DashboardSection>
+    </DashboardStagger>
   )
 }
