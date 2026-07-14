@@ -23,6 +23,13 @@ const Command = React.forwardRef<
 ))
 Command.displayName = CommandPrimitive.displayName
 
+/**
+ * @deprecated Exported, never used anywhere in this repo (the rest of this
+ * file — `Command`, `CommandInput`, etc. — is actively used elsewhere via
+ * `Popover`+`Command` combobox patterns; only this export is dead). Scheduled
+ * for deletion or documented adoption (see
+ * `~/.claude/plans/modal-drawer-sheet-audit-and-standardization.md`, §2 D6).
+ */
 const CommandDialog = ({ children, ...props }: DialogProps) => {
   return (
     <Dialog {...props}>

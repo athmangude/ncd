@@ -2,8 +2,10 @@ import { useNavigate } from "react-router-dom"
 import { Input } from "@/components/Input"
 import { Label } from "@/components/Label"
 import {
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   Drawer,
@@ -141,35 +143,35 @@ export default function PaymentPortal({
       }}
     >
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm space-y-3 pb-5 px-5">
-          <DrawerHeader className="sr-only">
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription>{description}</DrawerDescription>
-          </DrawerHeader>
+        <DrawerHeader className="sr-only">
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription>{description}</DrawerDescription>
+        </DrawerHeader>
 
-          <div className="flex flex-col gap-5 ">
-            <img
-              src={cashIcon}
-              alt="cash"
-              className="w-full max-w-[70px] mx-auto"
-              aria-hidden="true"
-            />
-            <p className="flex text-muted-foreground text-sm justify-between">
-              Amount to repay:
-              <span>{formatMoney(initialPaymentAmount, "KES")}</span>
-            </p>
-            <Label htmlFor="paymentAmount">Amount</Label>
-            <Input
-              id="paymentAmount"
-              type="text"
-              placeholder="Enter payment amount"
-              className="w-full"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              readOnly={!amountIsChangeable}
-            />
-          </div>
+        <div className="flex flex-col gap-5">
+          <img
+            src={cashIcon}
+            alt="cash"
+            className="w-full max-w-[70px] mx-auto"
+            aria-hidden="true"
+          />
+          <p className="flex text-muted-foreground text-sm justify-between">
+            Amount to repay:
+            <span>{formatMoney(initialPaymentAmount, "KES")}</span>
+          </p>
+          <Label htmlFor="paymentAmount">Amount</Label>
+          <Input
+            id="paymentAmount"
+            type="text"
+            placeholder="Enter payment amount"
+            className="w-full"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            readOnly={!amountIsChangeable}
+          />
+        </div>
 
+        <DrawerFooter>
           <Button
             onClick={(e) => {
               e.preventDefault()
@@ -181,7 +183,12 @@ export default function PaymentPortal({
           >
             Pay
           </Button>
-        </div>
+          <DrawerClose asChild>
+            <Button variant="outline" className="w-full">
+              Cancel
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
       </DrawerContent>
 
       <DrawerTrigger asChild>{children}</DrawerTrigger>

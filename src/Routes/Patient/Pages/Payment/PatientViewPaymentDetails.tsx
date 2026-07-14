@@ -25,7 +25,7 @@ import { useEffect, useRef } from "react"
 import { Button } from "@/components/Button"
 // import { formatEnum } from "@/utilities/textUtilities"
 import PaymentPortal from "./PatientPaymentPortal"
-import { DialogTrigger } from "@/components/Dialog"
+import { DrawerTrigger } from "@/components/Drawer"
 import { useDownloadReceipt } from "../../hooks/useDownloadReceipt"
 import { useReviewEligibility } from "@/Routes/Patient/Pages/Dashboard/components/discovery/facility-details/reviews/useReviewEligibility"
 
@@ -438,12 +438,12 @@ export default function PatientViewPaymentDetails() {
               description={`Payment for treatment`}
               isTransactionFeePayment={false}
             >
-              <DialogTrigger className="w-full" asChild>
+              <DrawerTrigger className="w-full" asChild>
                 <Button className="w-full ">
                   Make a repayment{" "}
                   {formatMoney(outstandingAmount, currencyCode)}
                 </Button>
-              </DialogTrigger>
+              </DrawerTrigger>
             </PaymentPortal>
           </div>
         )}

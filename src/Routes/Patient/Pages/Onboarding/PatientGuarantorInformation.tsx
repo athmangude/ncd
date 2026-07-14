@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/Dialog"
+import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { Button } from "@/components/Button"
 import { useToast } from "@/hooks/useToast"
 import { Controller, useForm } from "react-hook-form"
@@ -185,12 +186,7 @@ function PatientGuarantorInfoForm({
   })
 
   return (
-    <Dialog
-      open={dialogOpen}
-      onOpenChange={() => {
-        setDialogOpen((state) => !state)
-      }}
-    >
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <AccordionMenu
         title={title}
         description={description}
@@ -212,14 +208,16 @@ function PatientGuarantorInfoForm({
         <GuarantorList guarantors={guarantors} />
         {active && (
           <div className="mt-5 flex flex-col gap-5">
-            <DialogTrigger className="border px-2 py-1 rounded-md border-black">
-              Add Guarantor
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                Add Guarantor
+              </Button>
             </DialogTrigger>
           </div>
         )}
       </AccordionMenu>
 
-      <DialogContent className="sm:max-w-[400px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Add {title}</DialogTitle>
           <DialogDescription>
@@ -385,13 +383,7 @@ function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
   })
 
   return (
-    <Dialog
-      open={dialogOpen}
-      onOpenChange={() => {
-        setDialogOpen((state) => !state)
-        setActiveGuarantorId("")
-      }}
-    >
+    <>
       {guarantors.length > 0 && (
         <ul className="flex flex-col gap-1 mt-3">
           {guarantors.map((g) => (
@@ -416,7 +408,9 @@ function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
                 <p className="text-xs">{g.email}</p>
               </div>
 
-              <button
+              <Button
+                variant="ghost"
+                size="icon"
                 aria-label="Remove guarantor"
                 className="ml-auto"
                 onClick={() => {
@@ -425,56 +419,24 @@ function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
                 }}
               >
                 <X className="w-5 h-5 text-muted-foreground" />
-              </button>
+              </Button>
             </li>
           ))}
         </ul>
       )}
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>
-            Are you sure you want to remove this guarantor?
-          </DialogTitle>
-          <DialogDescription>
-            Removing a guarantor will rescind their invitation
-          </DialogDescription>
-        </DialogHeader>
-
-        <DialogFooter>
-          <div className="flex flex-col gap-3 mt-5">
-            <Button
-              className="w-full"
-              size="lg"
-              role="link"
-              type="button"
-              disabled={mutation.isPending}
-              isLoading={mutation.isPending}
-              variant="destructive"
-              onClick={async (e) => {
-                e.preventDefault()
-                await mutation.mutate({
-                  inviteId: activeGuarantorId,
-                })
-              }}
-            >
-              Remove
-            </Button>
-            <Button
-              className="w-full"
-              size="lg"
-              type="button"
-              variant="outline"
-              disabled={mutation.isPending}
-              onClick={() => {
-                setDialogOpen(false)
-                setActiveGuarantorId("")
-              }}
-            >
-              Cancel
-            </Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      <ConfirmDialog
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open)
+          if (!open) setActiveGuarantorId("")
+        }}
+        onConfirm={() => mutation.mutate({ inviteId: activeGuarantorId })}
+        title="Are you sure you want to remove this guarantor?"
+        description="Removing a guarantor will rescind their invitation"
+        confirmLabel="Remove"
+        variant="destructive"
+        isLoading={mutation.isPending}
+      />
+    </>
   )
 }

@@ -46,7 +46,7 @@ export default function PasscodeDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent>
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Enter the passcode for this statement</DialogTitle>
           <DialogDescription>
@@ -61,8 +61,9 @@ export default function PasscodeDialog({
                 id="requiresPasscode"
                 defaultChecked={requiresPasscode}
                 checked={requiresPasscode}
-                onCheckedChange={(checked: boolean) => setRequiresPasscode(checked)}
-
+                onCheckedChange={(checked: boolean) =>
+                  setRequiresPasscode(checked)
+                }
                 className="h-4 w-4 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white dark:data-[state=checked]:border-primary dark:data-[state=checked]:bg-primary"
               />
               <label htmlFor="requiresPasscode" className="text-sm">
@@ -88,9 +89,7 @@ export default function PasscodeDialog({
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit">
-              Submit
-            </Button>
+            <Button type="submit">Submit</Button>
           </DialogFooter>
         </form>
       </DialogContent>

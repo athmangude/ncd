@@ -23,7 +23,11 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate }
 })
 
+// vaul reads matchMedia + pointer-capture APIs that jsdom doesn't implement.
 beforeAll(() => {
+  Element.prototype.setPointerCapture ??= vi.fn()
+  Element.prototype.releasePointerCapture ??= vi.fn()
+  Element.prototype.hasPointerCapture ??= vi.fn(() => false)
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query: string) => ({
@@ -74,6 +78,19 @@ function wrap(ui: ReactNode) {
 }
 
 describe("CircleWaitingDrawer", () => {
+  it("renders as a real dialog surface (vaul Drawer), not a bare fixed div", () => {
+    render(
+      wrap(
+        createElement(CircleWaitingDrawer, {
+          isOpen: true,
+          onClose: vi.fn(),
+          user: baseUser,
+        })
+      )
+    )
+    expect(screen.getByRole("dialog")).toBeInTheDocument()
+  })
+
   it("renders title when open", () => {
     render(
       wrap(

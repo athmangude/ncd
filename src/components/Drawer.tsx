@@ -47,7 +47,11 @@ const DrawerContent = React.forwardRef<
       className={cn(
         // Constrain height to the viewport and let inner content scroll if needed,
         // so footers/buttons are not pushed below the visible area (even with toasts or browser chrome).
-        "fixed inset-x-0 bottom-0 z-50 flex max-h-[calc(100vh-var(--safe-t)-1rem)] max-h-[calc(100dvh-var(--safe-t)-1rem)] flex-col overflow-y-auto rounded-t-[10px] border bg-background",
+        // px composes --safe-l/--safe-r so the sheet keeps breathing room from
+        // both screen edges on narrow phones. max-w-md + mx-auto is the
+        // primitive's own width convention (matches DialogContent) — call
+        // sites must not add their own max-w-* wrapper div around children.
+        "fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[calc(100vh-var(--safe-t)-1rem)] max-h-[calc(100dvh-var(--safe-t)-1rem)] w-full max-w-md flex-col overflow-y-auto rounded-t-[10px] border bg-background pl-[max(1rem,var(--safe-l))] pr-[max(1rem,var(--safe-r))]",
         className
       )}
       {...props}
@@ -64,7 +68,9 @@ const DrawerHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
+    // Horizontal gutter comes from DrawerContent's own safe-area padding —
+    // px-0 here avoids doubling it.
+    className={cn("grid gap-1.5 px-0 py-4 text-center sm:text-left", className)}
     {...props}
   />
 )
@@ -76,8 +82,9 @@ const DrawerFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      // pb uses safe-area inset so primary actions are never hidden behind system chrome
-      "mt-auto flex flex-col gap-2 p-4 pb-[calc(1rem+var(--safe-b))]",
+      // pb uses safe-area inset so primary actions are never hidden behind system chrome.
+      // px-0: horizontal gutter comes from DrawerContent, not doubled here.
+      "mt-auto flex flex-col gap-2 px-0 py-4 pb-[calc(1rem+var(--safe-b))]",
       className
     )}
     {...props}

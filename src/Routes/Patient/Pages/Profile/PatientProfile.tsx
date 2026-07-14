@@ -37,7 +37,9 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerClose,
+  DrawerFooter,
 } from "@/components/Drawer"
+import { ConfirmDialog } from "@/components/ConfirmDialog"
 
 import {
   DashboardStagger,
@@ -270,7 +272,7 @@ export default function PatientProfile() {
               Choose a new photo to update your profile picture.
             </DrawerDescription>
           </DrawerHeader>
-          <div className="p-4 flex flex-col gap-4">
+          <div className="py-4">
             <div className="flex justify-center py-4">
               <div className="relative">
                 {uploadPhotoMutation.isPending && (
@@ -295,7 +297,9 @@ export default function PatientProfile() {
               onChange={handleFileChange}
               disabled={uploadPhotoMutation.isPending}
             />
+          </div>
 
+          <DrawerFooter className="gap-3">
             <Button
               onClick={() => fileInputRef.current?.click()}
               className="w-full gap-2"
@@ -313,7 +317,7 @@ export default function PatientProfile() {
                 Cancel
               </Button>
             </DrawerClose>
-          </div>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
 
@@ -361,29 +365,15 @@ export default function PatientProfile() {
       </DashboardSection>
 
       {/* Sign-out confirmation */}
-      <Drawer open={isSignOutOpen} onOpenChange={setIsSignOutOpen}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Sign out & clear this session?</DrawerTitle>
-            <DrawerDescription>
-              Signing out erases all data from this session and returns to the
-              phone-number entry. This is how you start fresh for the next
-              participant. To keep your progress, just close this and reload —
-              nothing is lost on reload.
-            </DrawerDescription>
-          </DrawerHeader>
-          <div className="p-4 flex flex-col gap-3">
-            <Button variant="destructive" onClick={handleSignOut}>
-              Sign out & clear data
-            </Button>
-            <DrawerClose asChild>
-              <Button variant="outline" className="w-full">
-                Cancel
-              </Button>
-            </DrawerClose>
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <ConfirmDialog
+        open={isSignOutOpen}
+        onOpenChange={setIsSignOutOpen}
+        onConfirm={handleSignOut}
+        title="Sign out & clear this session?"
+        description="Signing out erases all data from this session and returns to the phone-number entry. This is how you start fresh for the next participant. To keep your progress, just close this and reload — nothing is lost on reload."
+        confirmLabel="Sign out & clear data"
+        variant="destructive"
+      />
 
       <DashboardSection mode={animationMode}>
         <p className="text-center text-xs text-muted-foreground">v{version}</p>

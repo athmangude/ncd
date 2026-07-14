@@ -16,6 +16,7 @@ import { AlertCircle, Info } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { CashbackBanner } from "@/components/CashbackBanner"
+import FormGroupInput from "@/components/form/FormGroupInput"
 import { RepaymentPeriodInput } from "./PatientLoanTerms"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/Popover"
 import { Allocations, ExtendedUser, WalletItem, getWalletName } from "./types"
@@ -248,15 +249,10 @@ export function WalletDrawer({
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="w-full max-w-lg mx-auto"
-        >
+        <form onSubmit={handleSubmit(onSubmit)}>
           <DrawerHeader>
             <div className="flex flex-col items-center gap-4">
-              <DrawerTitle className="text-center capitalize text-xl  px-4">
-                {getDrawerTitle()}
-              </DrawerTitle>
+              <DrawerTitle>{getDrawerTitle()}</DrawerTitle>
               <DrawerDescription className="sr-only">
                 Adjust the amount you want to pay using this wallet
               </DrawerDescription>
@@ -266,12 +262,103 @@ export function WalletDrawer({
             </div>
           </DrawerHeader>
 
-          <div className="p-6 flex flex-col gap-6">
+          <div className="py-6 flex flex-col gap-6">
             {/* Amount Input */}
             <div className="flex flex-col gap-2">
-              {wallet.type === "LOAN" && (
+              <FormGroupInput
+                id="amount"
+                label="Amount"
+                type="number"
+                prefix="KES"
+                className={cn(
+                  showCreditLimitTooltip &&
+                    wallet.type === "LOAN" &&
+                    "[&_[data-slot=input-group]]:border-warning"
+                )}
+                placeholder="000,000"
+                register={register("amount", {
+                  required: "Amount is required",
+                  min: { value: 0, message: "Amount cannot be negative" },
+                  max: {
+                    value: maxAmount,
+                    message: `Cannot exceed ${formatMoney(maxAmount, wallet.type === "CASHBACK" ? careFundCurrency : "KES", wallet.type === "CASHBACK")}`,
+                  },
+                  onChange: (e) => {
+                    const value = Number(e.target.value)
+                    if (
+                      wallet.type === "LOAN" &&
+                      value > maxAmount &&
+                      !hasUploadedMpesaStatement
+                    ) {
+                      setShowCreditLimitTooltip(true)
+                    } else if (value <= maxAmount) {
+                      setShowCreditLimitTooltip(false)
+                    }
+                  },
+                })}
+                error={errors.amount?.message}
+              />
+              {showCreditLimitTooltip &&
+                wallet.type === "LOAN" &&
+                !errors.amount && (
+                  <p className="text-sm text-warning-solid flex items-center gap-1">
+                    <Info className="h-3 w-3" />
+                    Amount capped at {formatMoney(maxAmount, "KES")}. Upload
+                    M-Pesa statement to increase limit.
+                  </p>
+                )}
+            </div>
+
+            {/* UPDATED: MPESA Phone Number Input */}
+            {wallet.type === "MPESA" && (
+              <div className="flex flex-col gap-4">
+                <FormGroupInput
+                  id="mpesaPhoneNumber"
+                  label="M-Pesa Phone Number"
+                  type="tel"
+                  inputMode="tel"
+                  placeholder="07XX XXX XXX"
+                  register={register("phoneNumber", {
+                    required: "Phone number is required for M-Pesa",
+                    pattern: {
+                      value:
+                        /^(?:254|\+254|0)?((?:7|1)(?:(?:[0-9][0-9])|(?:[0-9][0-9]))[0-9]{6})$/,
+                      message: "Please enter a valid Kenyan phone number",
+                    },
+                  })}
+                  error={errors.phoneNumber?.message}
+                  sensitive
+                />
+                {/* Cashback Banner for MPESA */}
+                <CashbackBanner
+                  visible={isNetworkFacility}
+                  title="Pay via Jireh and earn cashback!"
+                  description={`You will earn ${formatMoney(Number(watchAmount || 0) * 0.05, "KES")} cashback when you make this payment!`}
+                />
+              </div>
+            )}
+
+            {wallet.type === "CASHBACK" && (
+              <p className="text-muted-foreground text-sm">
+                {balanceLabel}:{" "}
+                {formatMoney(balanceAmount, careFundCurrency, true)}
+              </p>
+            )}
+
+            {wallet.type === "LOAN" && (
+              <>
                 <div className="flex items-center gap-2">
-                  <p className="font-medium text-foreground">Loan amount</p>
+                  <p className="text-muted-foreground text-sm">
+                    {balanceLabel}: {formatMoney(balanceAmount, "KES")}
+                  </p>
+                  {/*
+                   * The "raise your limit" upsell intentionally lives only in
+                   * this compact (i) popover beside the balance line — the
+                   * large amber card used to push the repayment input and
+                   * Save/Cancel CTAs off-screen on short viewports (e.g.
+                   * 320×640). The popover keeps the same Upload M-Pesa
+                   * Statement path without the height.
+                   */}
                   {!hasUploadedMpesaStatement && (
                     <Popover
                       open={showCreditLimitTooltip && hasExceededLimit}
@@ -289,7 +376,7 @@ export function WalletDrawer({
                           className={cn(
                             "inline-flex items-center justify-center focus:outline-none transition-colors",
                             hasExceededLimit
-                              ? "text-amber-500 hover:text-amber-600"
+                              ? "text-warning-solid hover:text-warning-solid/80"
                               : "text-muted-foreground hover:text-foreground"
                           )}
                           aria-label="Credit limit information"
@@ -298,7 +385,7 @@ export function WalletDrawer({
                         </button>
                       </PopoverTrigger>
                       <PopoverContent
-                        className="max-w-sm p-4 text-sm text-foreground bg-card border border-amber-200 shadow-lg leading-relaxed z-50"
+                        className="max-w-sm text-sm border-warning leading-relaxed"
                         side="top"
                         align="start"
                         sideOffset={5}
@@ -349,116 +436,6 @@ export function WalletDrawer({
                     </Popover>
                   )}
                 </div>
-              )}
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">
-                  KES
-                </span>
-                <input
-                  id="amount"
-                  type="number"
-                  className={cn(
-                    "w-full pl-14 pr-4 py-4 text-lg font-semibold border rounded-xl outline-none focus:ring-2 focus:ring-primary transition-all",
-                    errors.amount ||
-                      (showCreditLimitTooltip && wallet.type === "LOAN")
-                      ? "border-amber-500"
-                      : "border-border"
-                  )}
-                  placeholder="000,000"
-                  {...register("amount", {
-                    required: "Amount is required",
-                    min: { value: 0, message: "Amount cannot be negative" },
-                    max: {
-                      value: maxAmount,
-                      message: `Cannot exceed ${formatMoney(maxAmount, wallet.type === "CASHBACK" ? careFundCurrency : "KES", wallet.type === "CASHBACK")}`,
-                    },
-                    onChange: (e) => {
-                      const value = Number(e.target.value)
-                      if (
-                        wallet.type === "LOAN" &&
-                        value > maxAmount &&
-                        !hasUploadedMpesaStatement
-                      ) {
-                        setShowCreditLimitTooltip(true)
-                      } else if (value <= maxAmount) {
-                        setShowCreditLimitTooltip(false)
-                      }
-                    },
-                  })}
-                />
-              </div>
-              {errors.amount && (
-                <p className="text-sm text-red-500">{errors.amount.message}</p>
-              )}
-              {showCreditLimitTooltip &&
-                wallet.type === "LOAN" &&
-                !errors.amount && (
-                  <p className="text-sm text-amber-600 flex items-center gap-1">
-                    <Info className="h-3 w-3" />
-                    Amount capped at {formatMoney(maxAmount, "KES")}. Upload
-                    M-Pesa statement to increase limit.
-                  </p>
-                )}
-            </div>
-
-            {/* UPDATED: MPESA Phone Number Input */}
-            {wallet.type === "MPESA" && (
-              <div className="flex flex-col gap-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground mb-2">
-                    M-Pesa Phone Number
-                  </p>
-                  <input
-                    type="text"
-                    placeholder="07XX XXX XXX"
-                    className={cn(
-                      "w-full px-4 py-4 text-lg font-medium border rounded-xl outline-none focus:ring-2 focus:ring-primary transition-all",
-                      errors.phoneNumber ? "border-red-500" : "border-border"
-                    )}
-                    {...register("phoneNumber", {
-                      required: "Phone number is required for M-Pesa",
-                      pattern: {
-                        value:
-                          /^(?:254|\+254|0)?((?:7|1)(?:(?:[0-9][0-9])|(?:[0-9][0-9]))[0-9]{6})$/,
-                        message: "Please enter a valid Kenyan phone number",
-                      },
-                    })}
-                  />
-                  {errors.phoneNumber && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.phoneNumber.message}
-                    </p>
-                  )}
-                </div>
-                {/* Cashback Banner for MPESA */}
-                <CashbackBanner
-                  visible={isNetworkFacility}
-                  title="Pay via Jireh and earn cashback!"
-                  description={`You will earn ${formatMoney(Number(watchAmount || 0) * 0.05, "KES")} cashback when you make this payment!`}
-                />
-              </div>
-            )}
-
-            {wallet.type === "CASHBACK" && (
-              <p className="text-muted-foreground text-sm">
-                {balanceLabel}:{" "}
-                {formatMoney(balanceAmount, careFundCurrency, true)}
-              </p>
-            )}
-
-            {wallet.type === "LOAN" && (
-              <>
-                <p className="text-muted-foreground text-sm">
-                  {balanceLabel}: {formatMoney(balanceAmount, "KES")}
-                </p>
-
-                {/*
-                 * The "raise your limit" upsell intentionally lives only in the
-                 * compact (i) popover beside the "Loan amount" label — the large
-                 * amber card used to push the repayment input and Save/Cancel
-                 * CTAs off-screen on short viewports (e.g. 320×640). The popover
-                 * keeps the same Upload M-Pesa Statement path without the height.
-                 */}
 
                 <CashbackBanner
                   visible={isNetworkFacility}
@@ -489,14 +466,14 @@ export function WalletDrawer({
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription className="text-xs leading-relaxed">
                     If your loan payment is delayed, there will be a penalty fee
-                    of KES {formatMoney(Number(watchAmount || 0) * 0.1, "KES")}
+                    of {formatMoney(Number(watchAmount || 0) * 0.1, "KES")}
                   </AlertDescription>
                 </Alert>
               </>
             )}
           </div>
 
-          <DrawerFooter className="gap-3 pb-8 sticky bottom-0 bg-background border-t border-border">
+          <DrawerFooter className="gap-3 sticky bottom-0 bg-background border-t border-border">
             <Button type="submit" disabled={!isValid} className="w-full">
               Save
             </Button>

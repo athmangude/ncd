@@ -1,17 +1,24 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { format } from "date-fns"
 import { useNavigate } from "react-router-dom"
-import { Percent, ChevronRight, Loader2 } from "lucide-react"
+import { Percent, Loader2 } from "lucide-react"
+import percentTile from "@/assets/icons/percent-tile.png"
 import PatientPageWrapper from "./PatientPageWrapper"
 import { useEligibleDiscountCodes } from "./Dashboard/hooks/useEligibleDiscountCodes"
 import { useOffline } from "@/hooks/useOffline"
 import { trackEvent, EVENTS } from "@/analytics"
+import { DiscountDetailsDrawer } from "../components/DiscountDetailsDrawer"
+import type { DiscountCode } from "./Dashboard/components/DiscountsSection"
 
 export default function PatientDiscountsList() {
   const navigate = useNavigate()
   const isOffline = useOffline()
   const { data: discounts = [], isLoading } =
     useEligibleDiscountCodes(!isOffline)
+  const [selectedDiscount, setSelectedDiscount] = useState<DiscountCode | null>(
+    null
+  )
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
 
   useEffect(() => {
     if (isLoading) return
@@ -41,7 +48,7 @@ export default function PatientDiscountsList() {
           </p>
         </div>
       ) : (
-        <div className="flex flex-col gap-2 py-2">
+        <div className="flex flex-col gap-3 py-2">
           {discounts.map((d) => {
             const headline =
               d.discountType === "PERCENTAGE"
@@ -53,31 +60,45 @@ export default function PatientDiscountsList() {
               <button
                 key={d.id}
                 type="button"
-                onClick={() => navigate(`/patients/discounts/${d.id}`)}
-                className="flex items-center gap-3 w-full text-left bg-card border border-border rounded-xl p-4"
+                onClick={() => {
+                  setSelectedDiscount(d)
+                  setIsDrawerOpen(true)
+                }}
+                className="border border-border rounded-xl p-3 w-full text-left flex items-center gap-3"
               >
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 text-primary shrink-0">
-                  <Percent className="h-5 w-5" />
-                </div>
+                <img
+                  src={percentTile}
+                  alt=""
+                  aria-hidden="true"
+                  className="w-10 h-10 shrink-0"
+                />
                 <div className="flex-1 min-w-0">
-                  <p className="text-base font-medium text-foreground line-clamp-2">
+                  <p className="text-sm text-foreground line-clamp-2">
                     {d.description ?? headline}
                   </p>
-                  <p className="text-sm text-muted-foreground truncate">
-                    {d.code}
-                  </p>
-                  {d.validUntil && (
+                  {d.maximumDiscountAmount && (
+                    <p className="text-xs text-muted-foreground">
+                      up to {d.currency?.symbol ?? ""}{" "}
+                      {parseFloat(d.maximumDiscountAmount).toLocaleString()}
+                    </p>
+                  )}
+                  {!d.maximumDiscountAmount && d.validUntil && (
                     <p className="text-xs text-muted-foreground">
                       Valid until {format(new Date(d.validUntil), "d MMM")}
                     </p>
                   )}
                 </div>
-                <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </button>
             )
           })}
         </div>
       )}
+
+      <DiscountDetailsDrawer
+        discount={selectedDiscount}
+        open={isDrawerOpen}
+        onOpenChange={setIsDrawerOpen}
+      />
     </PatientPageWrapper>
   )
 }

@@ -17,6 +17,8 @@ export default {
       "3xl": ["1.875rem", { lineHeight: "1.15", letterSpacing: "-0.02em" }],
       "4xl": ["2.25rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
       "5xl": ["3rem", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+      "6xl": ["3.75rem", { lineHeight: "1", letterSpacing: "-0.02em" }],
+      "7xl": ["4.5rem", { lineHeight: "1", letterSpacing: "-0.02em" }],
     },
     extend: {
       spacing: {
@@ -29,6 +31,9 @@ export default {
       },
       zIndex: {
         max: "9999",
+        // Above Dialog/Drawer/Popover's z-50 (so a Select opened inside any
+        // of them isn't hidden behind it), below Toast's z-max.
+        overlay: "60",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -41,6 +46,10 @@ export default {
         "brand-gradient": {
           "100": "hsl(var(--brand-gradient-light))",
           "200": "hsl(var(--brand-gradient))",
+        },
+        "discount-gradient": {
+          "100": "hsl(var(--discount-gradient-light))",
+          "200": "hsl(var(--discount-gradient))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",

@@ -112,72 +112,68 @@ export function NotificationPermissionDrawer({
     return (
       <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
         <DrawerContent>
-          <div className="w-full max-w-lg mx-auto">
-            <DrawerHeader>
-              <DrawerTitle className="text-center text-xl">
-                Notifications are blocked
-              </DrawerTitle>
-              <DrawerDescription className="text-center text-muted-foreground">
-                We couldn't enable notifications. This might be because you are
-                in Incognito mode or have blocked notifications.
-              </DrawerDescription>
-            </DrawerHeader>
+          <DrawerHeader>
+            <DrawerTitle>Notifications are blocked</DrawerTitle>
+            <DrawerDescription>
+              We couldn't enable notifications. This might be because you are in
+              Incognito mode or have blocked notifications.
+            </DrawerDescription>
+          </DrawerHeader>
 
-            <div className="p-6">
-              <div className="space-y-4 text-sm">
-                <p className="font-medium text-foreground">
-                  To enable notifications:
-                </p>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <div className="rounded-full bg-primary/10 p-2 shrink-0">
-                      <Settings className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-foreground">
-                        Open browser settings
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Go to Settings {">"} Site settings {">"} Notifications
-                      </p>
-                    </div>
+          <div className="py-6">
+            <div className="space-y-4 text-sm">
+              <p className="font-medium text-foreground">
+                To enable notifications:
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-full bg-primary/10 p-2 shrink-0">
+                    <Settings className="w-5 h-5 text-primary" />
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="rounded-full bg-primary/10 p-2 shrink-0">
-                      <Bell className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-foreground">
-                        Allow notifications for Jireh
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Find Jireh and change permission to "Allow"
-                      </p>
-                    </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-foreground">
+                      Open browser settings
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Go to Settings {">"} Site settings {">"} Notifications
+                    </p>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <div className="rounded-full bg-primary/10 p-2 shrink-0">
-                      <Clock2 className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm text-foreground">
-                        Refresh the page
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Reload this page to apply changes
-                      </p>
-                    </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="rounded-full bg-primary/10 p-2 shrink-0">
+                    <Bell className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-foreground">
+                      Allow notifications for Jireh
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Find Jireh and change permission to "Allow"
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="rounded-full bg-primary/10 p-2 shrink-0">
+                    <Clock2 className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm text-foreground">
+                      Refresh the page
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Reload this page to apply changes
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
-
-            <DrawerFooter className="gap-3 pb-8">
-              <Button variant="outline" className="w-full" onClick={onSkip}>
-                Continue without notifications
-              </Button>
-            </DrawerFooter>
           </div>
+
+          <DrawerFooter className="gap-3">
+            <Button variant="outline" className="w-full" onClick={onSkip}>
+              Continue without notifications
+            </Button>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     )
@@ -186,65 +182,61 @@ export function NotificationPermissionDrawer({
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent>
-        <div className="w-full max-w-lg mx-auto">
-          <DrawerHeader>
-            <DrawerTitle className="text-left text-lg">
-              Stay in the loop
-            </DrawerTitle>
-            <DrawerDescription className="text-left text-muted-foreground">
-              Turn on notifications to get instant alerts for payments, loan
-              approvals, and important care reminders.
-            </DrawerDescription>
-          </DrawerHeader>
+        <DrawerHeader>
+          <DrawerTitle>Stay in the loop</DrawerTitle>
+          <DrawerDescription>
+            Turn on notifications to get instant alerts for payments, loan
+            approvals, and important care reminders.
+          </DrawerDescription>
+        </DrawerHeader>
 
-          <div className="p-6">
-            <div className="space-y-3">
-              <div className="flex items-center gap-3 ">
-                <Check className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground font-medium text-sm">
-                  Keep SMS for urgent alerts
-                </span>
-              </div>
-              <div className="flex items-center gap-3 ">
-                <Check className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground font-medium text-sm">
-                  Keep track of every transaction
-                </span>
-              </div>
-              <div className="flex items-center gap-3 ">
-                <Check className="w-4 h-4 text-muted-foreground" />
-                <span className="text-foreground font-medium text-sm">
-                  Get progress reminders and reports
-                </span>
-              </div>
+        <div className="py-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 ">
+              <Check className="w-4 h-4 text-muted-foreground" />
+              <span className="text-foreground font-medium text-sm">
+                Keep SMS for urgent alerts
+              </span>
+            </div>
+            <div className="flex items-center gap-3 ">
+              <Check className="w-4 h-4 text-muted-foreground" />
+              <span className="text-foreground font-medium text-sm">
+                Keep track of every transaction
+              </span>
+            </div>
+            <div className="flex items-center gap-3 ">
+              <Check className="w-4 h-4 text-muted-foreground" />
+              <span className="text-foreground font-medium text-sm">
+                Get progress reminders and reports
+              </span>
             </div>
           </div>
-
-          <DrawerFooter className="gap-3 pb-8">
-            <div className="flex gap-4 w-full">
-              <Button variant="secondary" onClick={onSkip}>
-                Skip
-              </Button>
-              <Button
-                className="w-full "
-                onClick={onEnable}
-                disabled={isRequesting}
-              >
-                {isRequesting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Enabling...
-                  </>
-                ) : (
-                  <>
-                    {" "}
-                    <Bell className="w-4 h-4 mr-2" /> Enable updates
-                  </>
-                )}
-              </Button>
-            </div>
-          </DrawerFooter>
         </div>
+
+        <DrawerFooter className="gap-3">
+          <div className="flex gap-4 w-full">
+            <Button variant="secondary" onClick={onSkip}>
+              Skip
+            </Button>
+            <Button
+              className="w-full "
+              onClick={onEnable}
+              disabled={isRequesting}
+            >
+              {isRequesting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Enabling...
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <Bell className="w-4 h-4 mr-2" /> Enable updates
+                </>
+              )}
+            </Button>
+          </div>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

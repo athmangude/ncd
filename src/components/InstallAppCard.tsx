@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "./Dialog"
 
@@ -193,11 +194,12 @@ const InstallAppCard = () => {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">
-              Install Jireh App
-            </DialogTitle>
+            <DialogTitle>Install Jireh App</DialogTitle>
+            <DialogDescription className="sr-only">
+              Steps to install the Jireh Health app on your device.
+            </DialogDescription>
           </DialogHeader>
 
           {isIOS ? (

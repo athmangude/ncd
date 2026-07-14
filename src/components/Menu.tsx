@@ -1,15 +1,24 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import * as MenuPrimitive from "@radix-ui/react-popover";
+import * as React from "react"
+import * as MenuPrimitive from "@radix-ui/react-popover"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-const Menu = MenuPrimitive.Root;
+/**
+ * @deprecated Near-duplicate of `Popover` (same Radix Popover underneath,
+ * differs only in default width). Its one remaining caller (`PushSettings.tsx`)
+ * is scheduled to migrate to `Popover` directly. Do not adopt this in new
+ * code — use `Popover`/`PopoverContent`/`PopoverTrigger` from
+ * `@/components/Popover`. Scheduled for deletion once that migration lands
+ * (see `~/.claude/plans/modal-drawer-sheet-audit-and-standardization.md`,
+ * §3.1 / §4 Phase 8).
+ */
+const Menu = MenuPrimitive.Root
 
-const MenuTrigger = MenuPrimitive.Trigger;
+const MenuTrigger = MenuPrimitive.Trigger
 
-const MenuClose = MenuPrimitive.Close;
+const MenuClose = MenuPrimitive.Close
 
 const MenuContent = React.forwardRef<
   React.ElementRef<typeof MenuPrimitive.Content>,
@@ -27,7 +36,7 @@ const MenuContent = React.forwardRef<
       {...props}
     />
   </MenuPrimitive.Portal>
-));
-MenuContent.displayName = MenuPrimitive.Content.displayName;
+))
+MenuContent.displayName = MenuPrimitive.Content.displayName
 
-export { Menu, MenuTrigger, MenuContent, MenuClose };
+export { Menu, MenuTrigger, MenuContent, MenuClose }

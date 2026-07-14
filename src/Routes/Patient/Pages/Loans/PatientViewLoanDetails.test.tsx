@@ -97,6 +97,37 @@ describe("ViewLoanDetails crash guards", () => {
     // so at least one rendered amount carries its font-mono class.
     expect(amounts.some((el) => el.className.includes("font-mono"))).toBe(true)
   })
+
+  // Regression for a real crash: the "Make a repayment" trigger wrapped its
+  // button in Dialog's <DialogTrigger>, but PaymentPortal (what it opens) is
+  // Drawer-based — DialogTrigger throws with no <Dialog> ancestor. Only a
+  // non-ADVANCE, non-PAID loan renders this button, which the ADVANCE-only
+  // test above never exercised (design-system audit, modal/drawer/sheet doc).
+  it("renders the repayment button for a non-ADVANCE, unpaid loan without crashing", async () => {
+    vi.mocked(axios.get).mockResolvedValue({
+      data: {
+        amount: 5000,
+        totalBillAmount: 5000,
+        outstandingAmount: 5000,
+        loanType: "MEMBERSHIP",
+        status: "ACTIVE",
+        createdAt: "2026-01-01T10:00:00Z",
+        loanDueDate: "2026-02-01T10:00:00Z",
+        transactions: [],
+        patientMedicalInfoRequest: {
+          patientName: "Amina",
+          facility: { name: "Aga Khan Hospital" },
+        },
+        currency: { code: "KES" },
+      },
+    })
+
+    render(wrap(<ViewLoanDetails />))
+
+    expect(
+      await screen.findByRole("button", { name: /make a repayment/i })
+    ).toBeInTheDocument()
+  })
 })
 
 // MedicalRequestDetails previously always rendered a status <Tag>; with an

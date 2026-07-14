@@ -661,7 +661,7 @@ function ConfirmCareProviderDetailsDrawer({
           </DrawerDescription>
         </DrawerHeader>
 
-        <div className="p-4  flex flex-col gap-1">
+        <div className="py-4  flex flex-col gap-1">
           <AmountContainer leftText="Name:" rightText={careProviderName} />
           {facilityLocation && (
             <AmountContainer

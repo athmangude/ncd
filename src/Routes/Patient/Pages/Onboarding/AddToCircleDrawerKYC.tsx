@@ -6,8 +6,10 @@ import parsePhoneNumberFromString from "libphonenumber-js"
 import { relationshipOptions } from "../Network/PatientAddConnection"
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
+  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
 } from "@/components/Drawer"
@@ -47,151 +49,147 @@ export function AddToCircleDrawerKYC({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <div className="w-full max-w-lg mx-auto">
-          <DrawerHeader>
-            <div className="flex flex-col items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <DrawerTitle className="text-center">
-                Add member details
-              </DrawerTitle>
-              <DrawerDescription className="text-center">
-                Add 2 adult members to access loans.
-              </DrawerDescription>
+        <DrawerHeader>
+          <div className="flex flex-col items-center gap-4 mb-4">
+            <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+              <Users className="w-8 h-8 text-white" />
             </div>
-          </DrawerHeader>
-          <form
-            className="flex flex-col gap-5 p-4"
-            onSubmit={handleSubmit((data) => {
-              const existingMember = circleMembers.find(
-                (member) =>
-                  member.firstName === data.firstName &&
-                  member.lastName === data.lastName
-              )
+            <DrawerTitle>Add member details</DrawerTitle>
+            <DrawerDescription>
+              Add 2 adult members to access loans.
+            </DrawerDescription>
+          </div>
+        </DrawerHeader>
+        <form
+          className="flex flex-col gap-5 py-4"
+          onSubmit={handleSubmit((data) => {
+            const existingMember = circleMembers.find(
+              (member) =>
+                member.firstName === data.firstName &&
+                member.lastName === data.lastName
+            )
 
-              if (!existingMember) {
-                try {
-                  trackEvent(EVENTS.KYC.ADD_CIRCLE_MEMBERS_ADD, {
-                    relationship: data.relationship,
-                  })
-                } catch {
-                  // Silent fail
-                }
-                setCircleMembers((prev) => [...prev, data])
+            if (!existingMember) {
+              try {
+                trackEvent(EVENTS.KYC.ADD_CIRCLE_MEMBERS_ADD, {
+                  relationship: data.relationship,
+                })
+              } catch {
+                // Silent fail
               }
+              setCircleMembers((prev) => [...prev, data])
+            }
 
-              reset()
-              control._reset()
-              setOpen(false)
-            })}
-          >
-            <div className="grid grid-cols-2 gap-2">
-              <FormGroupInput
-                id="firstName"
-                label="First name"
-                type="text"
-                placeholder="Firstname"
-                register={register("firstName", {
-                  required: {
-                    value: true,
-                    message: "Please enter the first name",
-                  },
-                  minLength: {
-                    value: 2,
-                    message: "First name must be at least 2 characters",
-                  },
-                })}
-                error={errors.firstName?.message}
-                defaultValue={control._defaultValues["firstName"]?.toString()}
-              />
-
-              <FormGroupInput
-                id="lastName"
-                label="Last name"
-                type="text"
-                placeholder="Lastname"
-                register={register("lastName", {
-                  required: {
-                    value: true,
-                    message: "Please enter the last name",
-                  },
-                  minLength: {
-                    value: 2,
-                    message: "Last name must be at least 2 characters",
-                  },
-                })}
-                error={errors.lastName?.message}
-                defaultValue={control._defaultValues["lastName"]?.toString()}
-              />
-            </div>
-
+            reset()
+            control._reset()
+            setOpen(false)
+          })}
+        >
+          <div className="grid grid-cols-2 gap-2">
             <FormGroupInput
-              id="phoneNumber"
-              label="Phone number"
-              type="phone"
-              placeholder="254"
-              register={register("phoneNumber", {
+              id="firstName"
+              label="First name"
+              type="text"
+              placeholder="Firstname"
+              register={register("firstName", {
                 required: {
                   value: true,
-                  message: "Please enter your phone number",
+                  message: "Please enter the first name",
                 },
-                validate: (value) => {
-                  if (
-                    !validatePhoneNumber({
-                      countryCode: "KE",
-                      phoneNumber: value || "",
-                    })
-                  ) {
-                    return "Please enter a valid phone number"
-                  }
-
-                  //parse the phone number to ensure it is a valid number
-                  const parsed = parsePhoneNumberFromString(value || "", "KE")
-
-                  if (parsed?.number === user.phoneNumber) {
-                    return "You cannot add yourself to your circle. Use a different phone number."
-                  }
-
-                  return true
+                minLength: {
+                  value: 2,
+                  message: "First name must be at least 2 characters",
                 },
               })}
-              error={errors.phoneNumber?.message}
-              defaultValue={
-                control._defaultValues["phoneNumber"]?.toString() || "254"
-              }
-            />
-
-            <Controller
-              name="relationship"
-              control={control}
-              rules={{ required: "Relationship is required" }}
-              render={({ field }) => (
-                <FormGroupSelect
-                  id="relationship"
-                  label="Relationship to you"
-                  placeholder="Select an item"
-                  field={field}
-                  error={errors.relationship?.message}
-                  options={relationshipOptions.filter(
-                    (opt) => opt.value !== "CHILD"
-                  )}
-                />
-              )}
+              error={errors.firstName?.message}
+              defaultValue={control._defaultValues["firstName"]?.toString()}
             />
 
             <FormGroupInput
-              id="nickname"
-              label="Nickname (optional)"
+              id="lastName"
+              label="Last name"
               type="text"
-              placeholder="e.g. Msee wa mayai"
-              register={register("nickname" as any)}
-              error={(errors as any).nickname?.message}
-              defaultValue={(
-                control._defaultValues as any
-              )?.nickname?.toString()}
+              placeholder="Lastname"
+              register={register("lastName", {
+                required: {
+                  value: true,
+                  message: "Please enter the last name",
+                },
+                minLength: {
+                  value: 2,
+                  message: "Last name must be at least 2 characters",
+                },
+              })}
+              error={errors.lastName?.message}
+              defaultValue={control._defaultValues["lastName"]?.toString()}
             />
+          </div>
 
+          <FormGroupInput
+            id="phoneNumber"
+            label="Phone number"
+            type="phone"
+            placeholder="254"
+            register={register("phoneNumber", {
+              required: {
+                value: true,
+                message: "Please enter your phone number",
+              },
+              validate: (value) => {
+                if (
+                  !validatePhoneNumber({
+                    countryCode: "KE",
+                    phoneNumber: value || "",
+                  })
+                ) {
+                  return "Please enter a valid phone number"
+                }
+
+                //parse the phone number to ensure it is a valid number
+                const parsed = parsePhoneNumberFromString(value || "", "KE")
+
+                if (parsed?.number === user.phoneNumber) {
+                  return "You cannot add yourself to your circle. Use a different phone number."
+                }
+
+                return true
+              },
+            })}
+            error={errors.phoneNumber?.message}
+            defaultValue={
+              control._defaultValues["phoneNumber"]?.toString() || "254"
+            }
+          />
+
+          <Controller
+            name="relationship"
+            control={control}
+            rules={{ required: "Relationship is required" }}
+            render={({ field }) => (
+              <FormGroupSelect
+                id="relationship"
+                label="Relationship to you"
+                placeholder="Select an item"
+                field={field}
+                error={errors.relationship?.message}
+                options={relationshipOptions.filter(
+                  (opt) => opt.value !== "CHILD"
+                )}
+              />
+            )}
+          />
+
+          <FormGroupInput
+            id="nickname"
+            label="Nickname (optional)"
+            type="text"
+            placeholder="e.g. Msee wa mayai"
+            register={register("nickname" as any)}
+            error={(errors as any).nickname?.message}
+            defaultValue={(control._defaultValues as any)?.nickname?.toString()}
+          />
+
+          <DrawerFooter className="gap-3">
             <Button
               className={cn(
                 "w-full",
@@ -212,8 +210,13 @@ export function AddToCircleDrawerKYC({
             >
               Save
             </Button>
-          </form>
-        </div>
+            <DrawerClose asChild>
+              <Button type="button" variant="outline" className="w-full">
+                Cancel
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
+        </form>
       </DrawerContent>
     </Drawer>
   )

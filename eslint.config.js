@@ -82,6 +82,19 @@ export default tseslint.config(
           message:
             "Don't set text size/weight on a heading — it comes from the ramp (h1/h2/h3 in index.css). Change the ramp there, or use a <p> if this isn't a heading.",
         },
+        {
+          // Modal/Drawer/Sheet standardization: don't fork a shared overlay
+          // primitive's layout/spacing/typography at the call site (this is
+          // how pb-8, max-w-md, and "text-center capitalize text-xl" drifted
+          // across a dozen call sites in the first place). Change the
+          // primitive's own default in Dialog.tsx/Sheet.tsx/Drawer.tsx
+          // instead. See
+          // ~/.claude/plans/modal-drawer-sheet-audit-and-standardization.md.
+          selector:
+            "JSXOpeningElement[name.name=/^(DialogContent|SheetContent|DrawerContent|DrawerFooter|DrawerTitle|DialogTitle|SheetTitle)$/] JSXAttribute[name.name='className'] Literal[value=/(p[by]-\\d|max-w-(?!lg\\b)\\S*|capitalize|text-(left|right|center)\\b|text-(xs|sm|base|lg|xl|[2-9]xl)\\b)/]",
+          message:
+            "Don't override this shared modal/drawer/sheet primitive's layout, spacing, or type size at the call site — change the primitive's own default in its component file instead. See the modal/drawer/sheet standardization roadmap.",
+        },
       ],
     },
   },

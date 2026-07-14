@@ -431,98 +431,93 @@ function LoanTermsForm({
       <Drawer open={isOpen} onOpenChange={setIsOpen} autoFocus={true}>
         <Button disabled={buttonDisabled}>Continue</Button>
         <DrawerContent>
-          <div className="mx-auto w-full max-w-sm">
-            <img
-              src={cash}
-              alt="cash"
-              className="w-full max-w-[70px] mx-auto my-3"
-              aria-hidden="true"
+          <img
+            src={cash}
+            alt="cash"
+            className="w-full max-w-[70px] mx-auto my-3"
+            aria-hidden="true"
+          />
+          <DrawerHeader className="sr-only">
+            <DrawerTitle>Bill Summary</DrawerTitle>
+            <DrawerDescription>
+              A breakdown of your total costs
+            </DrawerDescription>
+          </DrawerHeader>
+          <div className="py-4 flex flex-col gap-2">
+            <AmountContainer
+              leftText="Care Provider:"
+              rightText={careProviderName}
             />
-            <DrawerHeader className="sr-only">
-              <DrawerTitle>Bill Summary</DrawerTitle>
-              <DrawerDescription>
-                A breakdown of your total costs
-              </DrawerDescription>
-            </DrawerHeader>
-            <div className="p-4  flex flex-col gap-2">
+            <AmountContainer leftText="Patient Name:" rightText={patientName} />
+
+            {careFundDiscountAmount > 0 ? (
               <AmountContainer
-                leftText="Care Provider:"
-                rightText={careProviderName}
+                leftText="Discounted Bill:"
+                rightText={formatMoney(newBillAmount, "KES")}
+                strikethoughText={formatMoney(totalBillAmount, "KES")}
               />
+            ) : (
               <AmountContainer
-                leftText="Patient Name:"
-                rightText={patientName}
+                leftText="Total Bill:"
+                rightText={formatMoney(totalBillAmount, "KES")}
               />
+            )}
 
-              {careFundDiscountAmount > 0 ? (
-                <AmountContainer
-                  leftText="Discounted Bill:"
-                  rightText={formatMoney(newBillAmount, "KES")}
-                  strikethoughText={formatMoney(totalBillAmount, "KES")}
-                />
-              ) : (
-                <AmountContainer
-                  leftText="Total Bill:"
-                  rightText={formatMoney(totalBillAmount, "KES")}
-                />
-              )}
+            <AmountContainer
+              leftText="Total Due Later:"
+              rightText={formatMoney(dueLaterAmount, "KES")}
+            />
 
+            <ProtectedResource
+              userRole={user.type}
+              allowedRoles={MEMBER_LOAN_ROLES}
+            >
               <AmountContainer
-                leftText="Total Due Later:"
-                rightText={formatMoney(dueLaterAmount, "KES")}
+                leftText="Transaction Fee:"
+                rightText={formatMoney(transactionFee, "KES")}
               />
+            </ProtectedResource>
 
-              <ProtectedResource
-                userRole={user.type}
-                allowedRoles={MEMBER_LOAN_ROLES}
-              >
-                <AmountContainer
-                  leftText="Transaction Fee:"
-                  rightText={formatMoney(transactionFee, "KES")}
-                />
-              </ProtectedResource>
+            {youPayTodayAmount > 0 && (
+              <AmountContainer
+                leftText="You Pay Today:"
+                rightText={formatMoney(youPayTodayAmount, "KES")}
+              />
+            )}
 
-              {youPayTodayAmount > 0 && (
-                <AmountContainer
-                  leftText="You Pay Today:"
-                  rightText={formatMoney(youPayTodayAmount, "KES")}
-                />
-              )}
-
-              <ProtectedResource
-                userRole={user.type}
-                allowedRoles={MEMBER_LOAN_ROLES}
-              >
-                <>
-                  <p className="flex text-red-500 mt-3 items-center gap-2 text-xs text-center">
-                    If your loan payment is delayed, there will be a penalty fee
-                    of {formatMoney(lateFee, "KES")}
-                  </p>
-                </>
-              </ProtectedResource>
-            </div>
-
-            <DrawerFooter>
-              <Button
-                type="button"
-                onClick={() => mutation.mutateAsync()}
-                disabled={mutation.isPending || mutation.isSuccess}
-                isLoading={mutation.isPending}
-              >
-                {resolveSubmitButtonText(youPayTodayAmount, "KES")}
-              </Button>
-
-              <DrawerClose asChild>
-                <Button
-                  variant="outline"
-                  onClick={() => mutation.reset()}
-                  disabled={mutation.isPending}
-                >
-                  Cancel
-                </Button>
-              </DrawerClose>
-            </DrawerFooter>
+            <ProtectedResource
+              userRole={user.type}
+              allowedRoles={MEMBER_LOAN_ROLES}
+            >
+              <>
+                <p className="flex text-destructive mt-3 items-center gap-2 text-xs text-center">
+                  If your loan payment is delayed, there will be a penalty fee
+                  of {formatMoney(lateFee, "KES")}
+                </p>
+              </>
+            </ProtectedResource>
           </div>
+
+          <DrawerFooter>
+            <Button
+              type="button"
+              onClick={() => mutation.mutateAsync()}
+              disabled={mutation.isPending || mutation.isSuccess}
+              isLoading={mutation.isPending}
+            >
+              {resolveSubmitButtonText(youPayTodayAmount, "KES")}
+            </Button>
+
+            <DrawerClose asChild>
+              <Button
+                variant="outline"
+                onClick={() => mutation.reset()}
+                disabled={mutation.isPending}
+              >
+                Cancel
+              </Button>
+            </DrawerClose>
+          </DrawerFooter>
         </DrawerContent>
       </Drawer>
     </form>

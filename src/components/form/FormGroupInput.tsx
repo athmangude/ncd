@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from "react"
+import { HTMLInputTypeAttribute, type ReactNode } from "react"
 import { Input } from "../Input"
 import { Label } from "../Label"
 import { UseFormRegisterReturn } from "react-hook-form"
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { HelpCircle } from "lucide-react"
 import { Button } from "../Button"
 import { Popover, PopoverContent, PopoverTrigger } from "../Popover"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "../InputGroup"
 import { CountryCode } from "libphonenumber-js"
 
 type FormGroupProps = {
@@ -35,6 +36,14 @@ type FormGroupProps = {
   countryCode?: CountryCode
   onCountryCodeChange?: (code: CountryCode) => void
   isDevMode?: boolean
+  /**
+   * Content rendered as a leading adornment inside the input (e.g. a
+   * currency code like "KES"). Composes shadcn's InputGroup. The
+   * phone-number field's own country-flag adornment is a separate,
+   * unrelated built-in special case (kept as-is) — this prop is for any
+   * other field that needs a prefix.
+   */
+  prefix?: ReactNode
   /**
    * Mark this input as rendering PII (name, national ID, phone, PIN, etc.).
    * Adds the `.sensitive-data` class so Amplitude session replay masks the
@@ -66,8 +75,11 @@ export default function FormGroupInput({
   countryCode = "KE",
   onCountryCodeChange,
   isDevMode = false,
+  prefix,
   sensitive = false,
 }: FormGroupProps) {
+  const isPhoneNumberField = id === "phoneNumber"
+
   const handleFlagClick = () => {
     if (isDevMode && onCountryCodeChange) {
       // Cycle between KE, GB, and NG in dev mode
@@ -96,7 +108,7 @@ export default function FormGroupInput({
               </Button>
             </PopoverTrigger>
             <PopoverContent
-              className="max-w-sm p-4 text-sm text-foreground bg-card border border-border shadow-lg leading-relaxed"
+              className="max-w-sm text-sm leading-relaxed"
               side="top"
               align="start"
               sideOffset={5}
@@ -107,7 +119,7 @@ export default function FormGroupInput({
           </Popover>
         )}
       </div>
-      {id === "phoneNumber" && (
+      {isPhoneNumberField && (
         <button
           type="button"
           onClick={handleFlagClick}
@@ -134,24 +146,45 @@ export default function FormGroupInput({
           />
         </button>
       )}
-      <Input
-        id={id}
-        type={type}
-        {...(type === "file" && { multiple })}
-        placeholder={placeholder}
-        inputMode={inputMode}
-        defaultValue={defaultValue}
-        {...register}
-        aria-invalid={!!error}
-        readOnly={readonly}
-        className={cn(
-          "[&#phoneNumber]:pl-9",
-          error
-            ? "border-destructive focus-visible:ring-destructive"
-            : "focus-visible:ring-ring",
-          sensitive && "sensitive-data"
-        )}
-      />
+      {prefix ? (
+        // Error-state ring/border comes from InputGroup's own
+        // aria-invalid-driven styles on the outer pill — no need to
+        // re-apply border-destructive/ring-destructive here too.
+        <InputGroup>
+          <InputGroupAddon>{prefix}</InputGroupAddon>
+          <InputGroupInput
+            id={id}
+            type={type}
+            {...(type === "file" && { multiple })}
+            placeholder={placeholder}
+            inputMode={inputMode}
+            defaultValue={defaultValue}
+            {...register}
+            aria-invalid={!!error}
+            readOnly={readonly}
+            className={cn(sensitive && "sensitive-data")}
+          />
+        </InputGroup>
+      ) : (
+        <Input
+          id={id}
+          type={type}
+          {...(type === "file" && { multiple })}
+          placeholder={placeholder}
+          inputMode={inputMode}
+          defaultValue={defaultValue}
+          {...register}
+          aria-invalid={!!error}
+          readOnly={readonly}
+          className={cn(
+            isPhoneNumberField && "pl-9",
+            error
+              ? "border-destructive focus-visible:ring-destructive"
+              : "focus-visible:ring-ring",
+            sensitive && "sensitive-data"
+          )}
+        />
+      )}
       {error && <ErrorMessage message={error} />}
 
       {description && (

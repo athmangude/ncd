@@ -16,6 +16,7 @@ import { CloudOff } from "lucide-react"
 import { SetPinCTA } from "../components/CallToActions"
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -197,59 +198,65 @@ function AccountLockedDrawer() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-md flex flex-col gap-3 pb-5 px-5 ">
-          <DrawerHeader className="space-y-5">
-            <img
-              src={pinProtectErrorIcon}
-              alt="Pin protect error icon"
-              className="w-32 h-32 mx-auto"
-            />
-            <DrawerTitle className="text-3xl font-medium mt-5 text-center">
-              Internal funds are blocked.
-            </DrawerTitle>
-            <DrawerDescription className="text-muted-foreground max-w-[35ch] mx-auto text-base">
-              You are unable to use your Care Fund and Medical Loan limit due to
-              failed security attempts.
-            </DrawerDescription>
-          </DrawerHeader>
+        <DrawerHeader className="space-y-5">
+          <img
+            src={pinProtectErrorIcon}
+            alt="Pin protect error icon"
+            className="w-32 h-32 mx-auto"
+          />
+          <DrawerTitle>Internal funds are blocked.</DrawerTitle>
+          <DrawerDescription>
+            You are unable to use your Care Fund and Medical Loan limit due to
+            failed security attempts.
+          </DrawerDescription>
+        </DrawerHeader>
 
-          <div className="space-y-5 p-5">
-            <div className="flex gap-5  items-center bg-card px-3 py-2 rounded-lg">
-              <Percent className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="">Your Jireh Care Fund</p>
-                <p className="text-muted-foreground">
-                  Balance:{" "}
-                  {formatMoney(careFundAccount?.careFundBalance || 0, "KES")}
-                </p>
-              </div>
-
-              <Lock className="h-5 w-5 text-red-500 ml-auto " />
+        <div className="space-y-5 py-5">
+          <div className="flex gap-5  items-center bg-card px-3 py-2 rounded-lg">
+            <Percent className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <p className="">Your Jireh Care Fund</p>
+              <p className="text-muted-foreground">
+                Balance:{" "}
+                {formatMoney(careFundAccount?.careFundBalance || 0, "KES")}
+              </p>
             </div>
 
-            <div className="flex gap-5  items-center bg-card px-3 py-2 rounded-2xl">
-              <Percent className="h-5 w-5 text-muted-foreground" />
-              <div>
-                <p className="">Jireh Medical Loan</p>
-                <p className="text-muted-foreground">
-                  Limit:{" "}
-                  {formatMoney(displayedRemainingCreditLimitAmout || 0, "KES")}
-                </p>
-              </div>
-
-              <Lock className="h-5 w-5 text-red-500 ml-auto " />
-            </div>
+            <Lock className="h-5 w-5 text-destructive ml-auto " />
           </div>
 
-          <DrawerFooter>
-            <a href="tel:+254117118511" className="no-underline w-full">
-              <Button type="button" role="link" size="lg" className="w-full">
-                <Phone className="w-5 h-5 mr-2" />
-                Call Jireh Support
-              </Button>
-            </a>
-          </DrawerFooter>
+          <div className="flex gap-5  items-center bg-card px-3 py-2 rounded-2xl">
+            <Percent className="h-5 w-5 text-muted-foreground" />
+            <div>
+              <p className="">Jireh Medical Loan</p>
+              <p className="text-muted-foreground">
+                Limit:{" "}
+                {formatMoney(displayedRemainingCreditLimitAmout || 0, "KES")}
+              </p>
+            </div>
+
+            <Lock className="h-5 w-5 text-destructive ml-auto " />
+          </div>
         </div>
+
+        <DrawerFooter className="gap-3">
+          <a href="tel:+254117118511" className="no-underline w-full">
+            <Button type="button" role="link" size="lg" className="w-full">
+              <Phone className="w-5 h-5 mr-2" />
+              Call Jireh Support
+            </Button>
+          </a>
+          <DrawerClose asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-full"
+            >
+              Close
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

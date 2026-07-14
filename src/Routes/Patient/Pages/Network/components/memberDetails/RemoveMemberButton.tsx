@@ -1,14 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/Button"
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/Drawer"
+import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
 import {
@@ -87,43 +80,26 @@ export function RemoveMemberButton({
       >
         Remove from your Circle
       </Button>
-      <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerContent>
-          <div className="mx-auto w-full max-w-md">
-            <DrawerHeader>
-              <DrawerTitle>
-                {kind === "invite"
-                  ? `Delete invite to ${name}?`
-                  : `Remove ${name} from your circle?`}
-              </DrawerTitle>
-              <DrawerDescription>
-                {kind === "invite"
-                  ? "Their slot will reopen so you can invite someone else."
-                  : "This action cannot be undone."}
-              </DrawerDescription>
-            </DrawerHeader>
-            <DrawerFooter className="flex flex-col gap-2">
-              <Button
-                variant="destructive"
-                className="w-full"
-                onClick={onConfirm}
-                isLoading={isPending}
-                disabled={isPending}
-              >
-                {kind === "invite" ? "Cancel Invite" : "Remove from my circle"}
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setOpen(false)}
-                disabled={isPending}
-              >
-                Cancel
-              </Button>
-            </DrawerFooter>
-          </div>
-        </DrawerContent>
-      </Drawer>
+      <ConfirmDialog
+        open={open}
+        onOpenChange={setOpen}
+        onConfirm={onConfirm}
+        title={
+          kind === "invite"
+            ? `Delete invite to ${name}?`
+            : `Remove ${name} from your circle?`
+        }
+        description={
+          kind === "invite"
+            ? "Their slot will reopen so you can invite someone else."
+            : "This action cannot be undone."
+        }
+        confirmLabel={
+          kind === "invite" ? "Cancel Invite" : "Remove from my circle"
+        }
+        variant="destructive"
+        isLoading={isPending}
+      />
     </>
   )
 }

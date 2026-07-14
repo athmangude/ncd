@@ -1,5 +1,14 @@
 import { DialogTrigger } from "@radix-ui/react-dialog"
 
+/**
+ * @deprecated Zero call sites anywhere in this repo, and it imports
+ * `DialogTrigger` directly from `@radix-ui/react-dialog` rather than the
+ * shared `@/components/Dialog` wrapper. Use `DialogTrigger` from
+ * `@/components/Dialog` plus the shared `Button` component instead. Scheduled
+ * for deletion (see
+ * `~/.claude/plans/modal-drawer-sheet-audit-and-standardization.md`,
+ * §3.1 / §4 Phase 8).
+ */
 export default function DialogTriggerButton({
   children,
   onClick,

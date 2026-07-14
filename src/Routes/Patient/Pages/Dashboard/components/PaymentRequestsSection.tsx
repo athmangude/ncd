@@ -11,14 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { useToast } from "@/hooks/useToast"
 import { Trash2 } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/Dialog"
+import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { Button } from "@/components/Button"
 import { Badge } from "@/components/Badge"
 import { SectionTitle } from "@/components/SectionTitle"
@@ -229,36 +222,16 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
         </div>
       </div>
 
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Delete Payment Request</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this payment request for{" "}
-              {careProviderName}? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsDeleteDialogOpen(false)}
-              disabled={deleteMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleConfirmDelete}
-              isLoading={deleteMutation.isPending}
-              disabled={deleteMutation.isPending}
-            >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleConfirmDelete}
+        title="Delete Payment Request"
+        description={`Are you sure you want to delete this payment request for ${careProviderName}? This action cannot be undone.`}
+        confirmLabel="Delete"
+        variant="destructive"
+        isLoading={deleteMutation.isPending}
+      />
     </>
   )
 }

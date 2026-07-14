@@ -1,3 +1,4 @@
+import { useState } from "react"
 import {
   Search,
   MapPin,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { format } from "date-fns"
+import percentTile from "@/assets/icons/percent-tile.png"
 import { TabsContent } from "@/components/Tabs"
 import { Switch } from "@/components/Switch"
 import { Button } from "@/components/Button"
@@ -21,6 +23,7 @@ import {
   ItemActions,
 } from "@/components/Item"
 import { SectionTitle } from "@/components/SectionTitle"
+import { DiscountDetailsDrawer } from "@/Routes/Patient/components/DiscountDetailsDrawer"
 import { Facility } from "./types"
 import { DiscountCode } from "../DiscountsSection"
 import { DashboardStagger, DashboardSection } from "../DashboardStagger"
@@ -52,6 +55,10 @@ export function DiscoveryHomeView({
   const verifiedFacilities = facilities.filter(
     (f) => f.verificationStatus === "APPROVED"
   )
+  const [selectedDiscount, setSelectedDiscount] = useState<DiscountCode | null>(
+    null
+  )
+  const [isDiscountDrawerOpen, setIsDiscountDrawerOpen] = useState(false)
 
   return (
     <TabsContent
@@ -142,20 +149,38 @@ export function DiscoveryHomeView({
                   <button
                     key={d.id}
                     type="button"
-                    onClick={() => navigate(`/patients/discounts/${d.id}`)}
-                    className="bg-primary text-white rounded-[14px] p-4 flex flex-col justify-between shrink-0 w-[220px] h-[160px] text-left border-2 border-dashed border-white/30"
+                    onClick={() => {
+                      setSelectedDiscount(d)
+                      setIsDiscountDrawerOpen(true)
+                    }}
+                    className={`border border-border rounded-xl p-3 text-left flex items-center gap-3 ${
+                      discountCodes.length === 1
+                        ? "w-full"
+                        : "shrink-0 w-[220px]"
+                    }`}
                   >
-                    <div className="flex flex-col gap-1">
-                      <p className="text-base font-bold leading-tight line-clamp-3">
+                    <img
+                      src={percentTile}
+                      alt=""
+                      aria-hidden="true"
+                      className="w-10 h-10 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-foreground line-clamp-2">
                         {d.description ?? headline}
                       </p>
-                      <p className="text-sm opacity-80 truncate">{d.code}</p>
+                      {d.maximumDiscountAmount && (
+                        <p className="text-xs text-muted-foreground">
+                          up to {d.currency?.symbol ?? ""}{" "}
+                          {parseFloat(d.maximumDiscountAmount).toLocaleString()}
+                        </p>
+                      )}
+                      {!d.maximumDiscountAmount && d.validUntil && (
+                        <p className="text-xs text-muted-foreground">
+                          Valid until {format(new Date(d.validUntil), "d MMM")}
+                        </p>
+                      )}
                     </div>
-                    {d.validUntil && (
-                      <p className="text-sm opacity-75">
-                        Valid until {format(new Date(d.validUntil), "d MMM")}
-                      </p>
-                    )}
                   </button>
                 )
               })}
@@ -215,6 +240,12 @@ export function DiscoveryHomeView({
           </DashboardSection>
         )}
       </DashboardStagger>
+
+      <DiscountDetailsDrawer
+        discount={selectedDiscount}
+        open={isDiscountDrawerOpen}
+        onOpenChange={setIsDiscountDrawerOpen}
+      />
     </TabsContent>
   )
 }
@@ -298,10 +329,10 @@ function PartnerCard({
   return (
     <Item
       asChild
-      className="bg-secondary border-purple-200 rounded-2xl flex-col items-start gap-3 w-full text-left"
+      className="rounded-xl flex-col items-start gap-2 w-full text-left"
     >
       <button type="button" onClick={onClick}>
-        <p className="text-sm text-foreground truncate w-full leading-tight">
+        <p className="text-base text-foreground truncate w-full">
           {facility.name}
         </p>
 
@@ -321,7 +352,7 @@ function PartnerCard({
             {visibleCategories.map((cat) => (
               <span
                 key={cat}
-                className="bg-purple-200/70 text-purple-700 text-sm font-medium px-3 py-1 rounded-md truncate max-w-[96px]"
+                className="bg-secondary text-secondary-foreground text-sm font-medium px-3 py-1 rounded-md truncate max-w-[96px]"
               >
                 {formatServiceCategory(cat)}
               </span>

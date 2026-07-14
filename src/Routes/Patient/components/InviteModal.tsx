@@ -16,7 +16,7 @@ export default function InviteModal() {
           Send invite →
         </span>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[400px]">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Refer a friend</DialogTitle>
           <DialogDescription>
