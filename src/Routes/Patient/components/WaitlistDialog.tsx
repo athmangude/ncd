@@ -1,5 +1,6 @@
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -8,7 +9,6 @@ import {
 } from "@/components/Dialog"
 import { Button } from "@/components/Button"
 import confettiIcon from "@/assets/icons/confetti.png"
-import { DialogClose } from "@radix-ui/react-dialog"
 import { useToast } from "@/hooks/useToast"
 import { useState } from "react"
 import axios from "axios"
@@ -80,7 +80,7 @@ export function WaitlistDialog({
         <Button>{dialog.triggerLabel}</Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md py-10">
+      <DialogContent>
         <DialogHeader className="sr-only">
           <DialogTitle>{dialog.title}</DialogTitle>
           <DialogDescription>{dialog.description}</DialogDescription>

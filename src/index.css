@@ -26,6 +26,8 @@
     --primary-foreground: 0 0% 100%;
     --brand-gradient: 286.2 100% 70.2%;
     --brand-gradient-light: 285.7 100% 90.2%;
+    --discount-gradient: 178 40% 60%;
+    --discount-gradient-light: 176 51% 88%;
     --secondary: 285.7 100% 95%;
     --secondary-foreground: 286.2 100% 32%;
     --muted: 210 40% 96.1%;
@@ -70,7 +72,11 @@
     --fluid-corner-icon: clamp(2rem, 1.85rem + 0.75vw, 2.75rem);
 
     /* Safe-area insets as custom properties, for the calc()/min()-combined
-       expressions the .safe-* utility classes can't express inline. */
+       expressions the .safe-* utility classes can't express inline.
+       --safe-l/--safe-r are consumed directly by DialogContent/DrawerContent
+       (src/components/Dialog.tsx, Drawer.tsx) for the modal/drawer horizontal
+       gutter fix — keep them defined even if a future refactor removes other
+       consumers. */
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
     --safe-l: env(safe-area-inset-left, 0px);

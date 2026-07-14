@@ -60,7 +60,7 @@ export default function FormGroupSelect({
         <SelectTrigger className="w-full" id={id}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
-        <SelectContent className="z-max">
+        <SelectContent>
           <SelectGroup className="text-center">
             {showSearch && (
               <div className="sticky top-0 bg-background z-10">

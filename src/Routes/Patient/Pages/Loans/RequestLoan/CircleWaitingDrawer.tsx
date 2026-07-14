@@ -1,6 +1,14 @@
 import { useNavigate } from "react-router-dom"
-import { ChevronLeft } from "lucide-react"
 import { Button } from "@/components/Button"
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/Drawer"
 import { usePatientNetwork, type SentInvite } from "@/hooks/usePatientNetwork"
 import { CircleAvatarRow } from "../../Dashboard/components/CircleAvatarRow"
 import type { BannerState } from "../../Dashboard/hooks/useCircleStatus"
@@ -82,8 +90,6 @@ export function CircleWaitingDrawer({
   const navigate = useNavigate()
   const { data: networkData } = usePatientNetwork()
 
-  if (!isOpen) return null
-
   const filledSlots = user?.patientCircle?.filledAccountableSlots ?? 0
 
   const adultPendingInvites: SentInvite[] = (networkData?.invites ?? []).filter(
@@ -114,35 +120,20 @@ export function CircleWaitingDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-card flex flex-col overflow-y-auto">
-      <div className="flex flex-col flex-1 w-full max-w-lg mx-auto">
-        {/* back button */}
-        <div className="px-4 pt-4 shrink-0">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            aria-label="Go back"
-          >
-            <ChevronLeft size={24} />
-          </Button>
-        </div>
+    <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent>
+        <DrawerHeader>
+          <div className="flex flex-col items-center gap-2 text-center">
+            <CreditScoreGauge />
+            <DrawerTitle>Waiting on your Circle members</DrawerTitle>
+            <DrawerDescription>
+              Your invites were sent. Once they confirm, you can pay the KES 499
+              and start borrowing.
+            </DrawerDescription>
+          </div>
+        </DrawerHeader>
 
-        {/* header */}
-        <div className="flex flex-col items-center gap-2 px-4 pt-6 pb-4 text-center shrink-0">
-          <CreditScoreGauge />
-          <h1 className="text-foreground leading-[1.25]">
-            Waiting on your Circle members
-          </h1>
-          <p className="text-sm text-muted-foreground leading-5">
-            Your invites were sent. Once they confirm, you can pay the KES 499
-            and start borrowing.
-          </p>
-        </div>
-
-        {/* avatar row */}
-        <div className="px-4 py-4 shrink-0">
+        <div className="py-4">
           <CircleAvatarRow
             currentUser={currentUser}
             members={[]}
@@ -155,16 +146,15 @@ export function CircleWaitingDrawer({
           />
           {adultPendingInvites.length > 0 && (
             <div className="mt-2 ml-1">
-              <span className="bg-orange-100 text-orange-700 text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
+              <span className="bg-warning text-warning-foreground text-[11px] font-semibold px-2 py-0.5 rounded-md whitespace-nowrap">
                 Waiting...
               </span>
             </div>
           )}
         </div>
 
-        {/* footer */}
-        <div className="mt-auto px-4 pb-10 pt-2 shrink-0">
-          <div className="flex flex-col gap-3 items-center">
+        <DrawerFooter>
+          <div className="flex flex-col gap-3 items-center w-full">
             <Button
               className="w-full"
               onClick={() => {
@@ -184,8 +174,13 @@ export function CircleWaitingDrawer({
               </span>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+          <DrawerClose asChild>
+            <Button variant="ghost" size="sm" className="mt-1">
+              Close
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   )
 }

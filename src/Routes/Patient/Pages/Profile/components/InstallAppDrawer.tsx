@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/Button"
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -67,70 +68,73 @@ export function InstallAppDrawer({
   return (
     <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DrawerContent>
-        <div className="w-full max-w-lg mx-auto">
-          <DrawerHeader>
-            <DrawerTitle className="text-left text-lg">
-              Install the app
-            </DrawerTitle>
-            <DrawerDescription className="text-left text-muted-foreground">
-              Add Jireh to your home screen for faster access and offline
-              reliability—no download required.
-            </DrawerDescription>
-          </DrawerHeader>
+        <DrawerHeader>
+          <DrawerTitle>Install the app</DrawerTitle>
+          <DrawerDescription>
+            Add Jireh to your home screen for faster access and offline
+            reliability—no download required.
+          </DrawerDescription>
+        </DrawerHeader>
 
-          <div className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-foreground">Use Jireh offline</p>
-                </div>
+        <div className="py-6">
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <Check className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-foreground">Use Jireh offline</p>
               </div>
-              <div className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-foreground">
-                    Use less data when online
-                  </p>
-                </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Check className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-foreground">
+                  Use less data when online
+                </p>
               </div>
-              <div className="flex items-start gap-3">
-                <Check className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="text-sm text-foreground">
-                    Access your account 24/7
-                  </p>
-                </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <Check className="h-5 w-5 text-muted-foreground" />
+              <div>
+                <p className="text-sm text-foreground">
+                  Access your account 24/7
+                </p>
               </div>
             </div>
           </div>
-
-          <DrawerFooter className="gap-3 pb-8">
-            {isIOS && (
-              <p className="text-xs text-center text-muted-foreground mb-2">
-                Tap the share button <span className="font-bold">Share</span>{" "}
-                then "Add to Home Screen"
-              </p>
-            )}
-            <Button
-              className="w-full"
-              onClick={handleInstall}
-              disabled={isInstalling}
-            >
-              {isInstalling ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Installing...
-                </>
-              ) : (
-                <>
-                  {isIOS ? <Download className="mr-2 h-4 w-4" /> : " "}
-                  {isIOS ? "I understand" : "Install"}
-                </>
-              )}
-            </Button>
-          </DrawerFooter>
         </div>
+
+        <DrawerFooter className="gap-3">
+          {isIOS && (
+            <p className="text-xs text-center text-muted-foreground mb-2">
+              Tap the share button <span className="font-bold">Share</span> then
+              "Add to Home Screen"
+            </p>
+          )}
+          <Button
+            className="w-full"
+            onClick={handleInstall}
+            disabled={isInstalling}
+          >
+            {isInstalling ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Installing...
+              </>
+            ) : (
+              <>
+                {isIOS ? <Download className="mr-2 h-4 w-4" /> : " "}
+                {isIOS ? "I understand" : "Install"}
+              </>
+            )}
+          </Button>
+          {!isIOS && (
+            <DrawerClose asChild>
+              <Button variant="outline" className="w-full">
+                Not now
+              </Button>
+            </DrawerClose>
+          )}
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

@@ -1,6 +1,6 @@
 import PatientPageWrapper from "../PatientPageWrapper"
 import Tag from "@/components/Tag"
-import { DialogTrigger } from "@/components/Dialog"
+import { DrawerTrigger } from "@/components/Drawer"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Amount } from "@/components/Amount"
 import { formatTime, formatDateLong } from "@/utilities/dateUtilities"
@@ -311,7 +311,7 @@ export default function ViewLoanDetails() {
                   description={`Payment for treatment`}
                   isTransactionFeePayment={false}
                 >
-                  <DialogTrigger asChild>
+                  <DrawerTrigger asChild>
                     <Button
                       size="lg"
                       className="w-full"
@@ -329,7 +329,7 @@ export default function ViewLoanDetails() {
                     >
                       Make a repayment
                     </Button>
-                  </DialogTrigger>
+                  </DrawerTrigger>
                 </PaymentPortal>
               )}
             </div>

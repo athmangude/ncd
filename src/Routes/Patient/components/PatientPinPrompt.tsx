@@ -141,18 +141,16 @@ export default function PatientPinPrompt({
           e.preventDefault()
           setTimeout(() => pinInputRef.current?.focus(), 0)
         }}
-        className="flex w-[min(100%,calc(100vw-1rem))] max-w-md flex-col gap-0 overflow-hidden bg-card p-0 max-h-[min(90dvh,calc(100dvh-var(--safe-t)-var(--safe-b)-1rem))] sm:rounded-lg"
+        className="flex flex-col gap-0 overflow-hidden p-0 max-h-[min(90dvh,calc(100dvh-var(--safe-t)-var(--safe-b)-1rem))] sm:rounded-lg"
       >
-        <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col pl-[max(1rem,var(--safe-l))] pr-[max(1rem,var(--safe-r))]">
+        <div className="mx-auto flex min-h-0 w-full flex-1 flex-col pl-[max(1rem,var(--safe-l))] pr-[max(1rem,var(--safe-r))]">
           <div className="no-scrollbar flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain py-3 sm:gap-3 sm:py-5">
             <img
               src={pinProtectIcon}
               alt="Pin protect icon"
               className="mx-auto h-24 w-24 shrink-0 sm:h-32 sm:w-32"
             />
-            <DialogTitle className="shrink-0 px-1 text-center text-xl font-bold sm:text-2xl">
-              {drawer.title}
-            </DialogTitle>
+            <DialogTitle className="shrink-0 px-1">{drawer.title}</DialogTitle>
             <DialogDescription className="shrink-0 px-2 text-center text-sm text-muted-foreground sm:px-1 sm:text-base">
               {drawer.description}
             </DialogDescription>

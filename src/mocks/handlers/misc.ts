@@ -153,8 +153,11 @@ export const miscHandlers = [
   }),
 
   // === Discount codes ======================================================
-  // PatientDiscountDetails reads `response.data?.data` (note the wrapper) and
-  // expects extra fields (`status`, `facility`) beyond the eligible-list shape.
+  // Fetches the full DiscountCode shape for a single discount by id — used by
+  // AvailablePromosSection to resolve a facility-scoped promo (which only has
+  // a partial shape) into the full shape the shared DiscountDetailsDrawer
+  // needs. Response reads `response.data?.data` (note the wrapper) and
+  // includes extra fields (`status`, `facility`) beyond the eligible-list shape.
   http.get("/discount-codes/:id", ({ params }) => {
     const found = (discountCodesSeed as DiscountCode[]).find(
       (code) => String(code.id) === String(params.id)

@@ -35,6 +35,14 @@ const stepCounterVariants = cva(
   }
 )
 
+/**
+ * @deprecated Zero call sites anywhere in this repo. Renders a bare
+ * `DialogTrigger` with no `<Dialog>` root anywhere in this file — it only
+ * works if some future consumer happens to wrap it in `<Dialog>`, which
+ * isn't documented anywhere. Fix the missing `Dialog` context or remove this
+ * file before reaching for it (see
+ * `~/.claude/plans/modal-drawer-sheet-audit-and-standardization.md`, §2 D4).
+ */
 export function BannerItem({
   title,
   ctaText,

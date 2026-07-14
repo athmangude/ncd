@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
+import { AlertDialog } from "radix-ui"
 import {
   Download,
   Loader2,
@@ -16,8 +17,10 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/Dialog"
+import { ConfirmDialogContent } from "@/components/ConfirmDialog"
 import { useNavigate } from "react-router-dom"
 import useNextPWAOnboardingStep from "../../hooks/useNextPWAOnboardingStep"
 import PatientPageWrapper from "../PatientPageWrapper"
@@ -266,11 +269,12 @@ export default function InstallAppPage() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold">
-              Install Jireh App
-            </DialogTitle>
+            <DialogTitle>Install Jireh App</DialogTitle>
+            <DialogDescription className="sr-only">
+              Steps to install the Jireh Health app on your device.
+            </DialogDescription>
           </DialogHeader>
 
           {isIOS ? (
@@ -376,11 +380,27 @@ export default function InstallAppPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isSkipDialogOpen} onOpenChange={setIsSkipDialogOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Skip Installation?</DialogTitle>
-          </DialogHeader>
+      {/*
+       * Not a ConfirmDialog: this is a real 2-choice decision ("remind
+       * later" vs "don't ask again"), neither of which is a "cancel" — so it
+       * doesn't fit ConfirmDialog's fixed Confirm/Cancel API. Built directly
+       * on the same AlertDialog primitive (via the exported
+       * ConfirmDialogContent) so it keeps both real actions while no longer
+       * being silently dismissible via outside-click/Escape with neither
+       * choice recorded.
+       */}
+      <AlertDialog.Root
+        open={isSkipDialogOpen}
+        onOpenChange={setIsSkipDialogOpen}
+      >
+        <ConfirmDialogContent>
+          <AlertDialog.Title className="text-2xl font-semibold leading-none tracking-tight">
+            Skip Installation?
+          </AlertDialog.Title>
+          <AlertDialog.Description className="sr-only">
+            Choose whether to be reminded later or not asked again about
+            installing the app.
+          </AlertDialog.Description>
           <div className="py-4 space-y-3">
             <Button
               className="w-full justify-start"
@@ -396,8 +416,8 @@ export default function InstallAppPage() {
               Don&apos;t ask again
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
+        </ConfirmDialogContent>
+      </AlertDialog.Root>
     </PatientPageWrapper>
   )
 }

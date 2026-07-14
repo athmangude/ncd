@@ -410,6 +410,7 @@ export default function PatientNotificationsPage() {
                     className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={(e) => handleCopyLink(e, url)}
                     title="Copy link"
+                    aria-label="Copy link"
                   >
                     <Copy className="w-4 h-4 text-muted-foreground" />
                   </Button>

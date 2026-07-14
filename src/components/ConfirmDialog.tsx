@@ -6,7 +6,7 @@ import { AlertDialog } from "radix-ui"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/Button"
 
-const ConfirmDialogOverlay = React.forwardRef<
+export const ConfirmDialogOverlay = React.forwardRef<
   React.ElementRef<typeof AlertDialog.Overlay>,
   React.ComponentPropsWithoutRef<typeof AlertDialog.Overlay>
 >(({ className, ...props }, ref) => (
@@ -21,7 +21,15 @@ const ConfirmDialogOverlay = React.forwardRef<
 ))
 ConfirmDialogOverlay.displayName = AlertDialog.Overlay.displayName
 
-const ConfirmDialogContent = React.forwardRef<
+/**
+ * Exported alongside `ConfirmDialogOverlay` so call sites whose action set
+ * doesn't fit ConfirmDialog's fixed Confirm/Cancel API (e.g. a real 2-choice
+ * decision, neither option being "cancel") can still get the same
+ * non-dismissible AlertDialog behavior/styling without duplicating these
+ * class strings. See `PWAOnboarding/InstallAppPage.tsx`'s "Skip
+ * Installation?" dialog for the reference usage.
+ */
+export const ConfirmDialogContent = React.forwardRef<
   React.ElementRef<typeof AlertDialog.Content>,
   React.ComponentPropsWithoutRef<typeof AlertDialog.Content>
 >(({ className, children, ...props }, ref) => (
@@ -30,7 +38,12 @@ const ConfirmDialogContent = React.forwardRef<
     <AlertDialog.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+        // max-w-md matches DialogContent's own convention (see Dialog.tsx) —
+        // ConfirmDialog itself always overrides via sm:max-w-[425px], but any
+        // direct ConfirmDialogContent consumer (the escape hatch for
+        // non-Confirm/Cancel shapes, e.g. InstallAppPage.tsx's "Skip
+        // Installation?") should still match the app-wide default width.
+        "fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-max(2rem,var(--safe-l))-max(2rem,var(--safe-r)))] max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
         className
       )}
       {...props}

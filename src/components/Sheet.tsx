@@ -7,6 +7,15 @@ import { X } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+/**
+ * @deprecated Zero call sites anywhere in this repo — `Drawer` (vaul-based)
+ * is the codebase's actual mobile bottom-sheet primitive, and `Dialog` covers
+ * the centered-modal case. Do not adopt this in new code. Scheduled for
+ * deletion once the modal/drawer/sheet standardization roadmap's later
+ * phases confirm it's still unused (see
+ * `~/.claude/plans/modal-drawer-sheet-audit-and-standardization.md`,
+ * §3.1 / §4 Phase 8).
+ */
 const Sheet = SheetPrimitive.Root
 
 const SheetTrigger = SheetPrimitive.Trigger

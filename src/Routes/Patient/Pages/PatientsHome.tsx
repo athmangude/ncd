@@ -46,7 +46,6 @@ import PatientNCDStatus from "./Onboarding/PatientNCDStatus"
 import PatientFinancialStatementsWithCreditUpdate from "./Onboarding/PatientFinancialStatementsWithCreditUpdate"
 import PatientCareFundRoutes from "./PatientCareFund/PatientCareFundWrapper"
 import PatientDiscoverHospitals from "./PatientDiscoverHospitals"
-import PatientDiscountDetails from "./PatientDiscountDetails"
 import PatientDiscountsList from "./PatientDiscountsList"
 import PatientAddWhatsAppNumber from "./Onboarding/PatientAddWhatsAppNumber"
 import PatientChooseHealthcarePlan from "./Onboarding/PatientChooseHealthcarePlan"
@@ -776,15 +775,6 @@ export default function PatientsHome() {
           element={
             <RouteMetadata title="Active discounts">
               <PatientDiscountsList />
-            </RouteMetadata>
-          }
-        />
-
-        <Route
-          path="/discounts/:id"
-          element={
-            <RouteMetadata title="Discount details">
-              <PatientDiscountDetails />
             </RouteMetadata>
           }
         />

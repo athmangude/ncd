@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "./Dialog"
 
@@ -171,11 +172,13 @@ const NotificationBenefitsDialog = ({
 }: any) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
-            Stay Updated with Jireh
-          </DialogTitle>
+          <DialogTitle>Stay Updated with Jireh</DialogTitle>
+          <DialogDescription className="sr-only">
+            Enable notifications to get updates on rewards, transactions, and
+            account activity.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
@@ -245,17 +248,15 @@ const NotificationBenefitsDialog = ({
 export const NotificationHelpDialog = ({ open, onOpenChange }: any) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold">
-            How to enable notifications
-          </DialogTitle>
+          <DialogTitle>How to enable notifications</DialogTitle>
+          <DialogDescription>
+            Your browser blocked notifications. Follow these steps to turn them
+            back on.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4 text-sm">
-          <p className="text-xs font-medium tracking-wide text-muted-foreground">
-            Your browser blocked notifications. Follow these steps to turn them
-            back on:
-          </p>
           <div className="space-y-3">
             {/* Step 1 */}
             <div className="flex items-start gap-3">
