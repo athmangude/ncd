@@ -69,7 +69,7 @@ export const getWalletName = (type: WalletType) => {
     case "CARD":
       return "Credit or debit card"
     case "CASHBACK":
-      return "Jireh Care Fund"
+      return "Jireh Cashback earned"
     case "LOAN":
       return "Jireh Medical Loan"
     default:
@@ -77,4 +77,3 @@ export const getWalletName = (type: WalletType) => {
       return type === "DISCOUNT" ? "" : type
   }
 }
-

@@ -151,6 +151,8 @@ export default function PatientSetPin() {
       <div className="w-full flex flex-col items-center gap-8 m-8">
         <div className="flex flex-col gap-2 items-center w-full">
           <InputOTP
+            key={step}
+            autoFocus
             maxLength={4}
             value={step === 1 ? pin : confirmPin}
             onChange={step === 1 ? handlePinComplete : handleConfirmPinComplete}

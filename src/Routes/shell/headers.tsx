@@ -38,10 +38,14 @@ export function LogoHeader({
   rightSlot,
   className,
 }: LogoHeaderProps) {
+  // With no icons and no right-side slot, there's nothing to balance the logo
+  // against `justify-between`, so it reads as left-aligned — center it instead.
+  const hasRightContent = showIcons || rightSlot != null
   return (
     <header
       className={cn(
-        "flex items-center justify-between p-2 border-b bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md z-10 sticky top-0",
+        "flex items-center p-2 border-b bg-white/80 dark:bg-neutral-950/80 backdrop-blur-md z-10 sticky top-0",
+        hasRightContent ? "justify-between" : "justify-center",
         className
       )}
     >

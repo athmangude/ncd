@@ -8,6 +8,16 @@ import LoadingPage from "@/Routes/LoadingPage"
 import PatientPageWrapper from "./PatientPageWrapper"
 import { useNavigate } from "react-router-dom"
 import { HeartHandshake, Dumbbell, FileCheck2 } from "lucide-react"
+import {
+  Item,
+  ItemGroup,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+} from "@/components/Item"
+
+const QR_ILLUSTRATION_CLASS = "object-contain w-[124px] h-[84px]"
 
 export default function PatientScanQRIntro() {
   const { toast } = useToast()
@@ -49,27 +59,18 @@ export default function PatientScanQRIntro() {
 
   return (
     <PatientPageWrapper
-      title="Invite by QR code"
+      variant="content"
+      barTitle="Invite by QR code"
       onBack={() => navigate(-1)}
       footer={null}
+      showStepper={false}
+      headerIcon={
+        <img src={qrIllustration} alt="" className={QR_ILLUSTRATION_CLASS} />
+      }
+      pageTitle={`Scan this QR code\nto join ${firstName}'s Circle`}
       className="flex flex-col items-center"
     >
       <div className="flex flex-col items-center gap-6 w-full">
-        {/* Header: illustration + title */}
-        <div className="flex flex-col items-center gap-2 w-full">
-          <img
-            src={qrIllustration}
-            alt=""
-            className="object-contain"
-            style={{ width: 124, height: 84 }}
-          />
-          <h1 className="leading-[1.25] text-center">
-            Scan this QR code
-            <br />
-            to join {firstName}&apos;s Circle
-          </h1>
-        </div>
-
         {/* QR code frame */}
         <div className="relative size-[200px] rounded-2xl bg-muted overflow-hidden">
           <img
@@ -80,13 +81,11 @@ export default function PatientScanQRIntro() {
         </div>
 
         {/* Benefits */}
-        <div className="flex flex-col w-full">
-          <div className="px-2 py-1.5">
-            <p className="text-xs font-medium text-muted-foreground">
-              Benefits:
-            </p>
-          </div>
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2 w-full">
+          <p className="px-2 text-xs font-medium text-muted-foreground">
+            Benefits:
+          </p>
+          <ItemGroup className="gap-1">
             <BenefitItem
               icon={<HeartHandshake className="w-4 h-4 text-foreground" />}
               title="Share your cashback"
@@ -102,7 +101,7 @@ export default function PatientScanQRIntro() {
               title="Borrow when you need it"
               body="A confirmed Circle unlocks your loan."
             />
-          </div>
+          </ItemGroup>
         </div>
       </div>
     </PatientPageWrapper>
@@ -119,14 +118,12 @@ function BenefitItem({
   body: string
 }) {
   return (
-    <div className="flex items-start gap-2 px-2 py-1.5 rounded-md">
-      <div className="flex items-center justify-center shrink-0 size-5">
-        {icon}
-      </div>
-      <div className="flex flex-col flex-1 min-w-0 leading-5">
-        <p className="text-sm text-foreground">{title}</p>
-        <p className="text-sm text-muted-foreground">{body}</p>
-      </div>
-    </div>
+    <Item size="sm">
+      <ItemMedia>{icon}</ItemMedia>
+      <ItemContent>
+        <ItemTitle>{title}</ItemTitle>
+        <ItemDescription>{body}</ItemDescription>
+      </ItemContent>
+    </Item>
   )
 }

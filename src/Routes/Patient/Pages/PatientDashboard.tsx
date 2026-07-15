@@ -1,5 +1,5 @@
 import { Button } from "@/components/Button"
-import { useLocation, useNavigate } from "react-router-dom"
+import { Navigate, useLocation, useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "../stores/patientAuthStore"
 import { useOnboardingChecklist } from "../hooks/useOnboardingChecklist"
 import LoadingPage from "@/Routes/LoadingPage"
@@ -138,12 +138,29 @@ function Dashboard({ data }: { data: any }) {
 
   const onboardingRedirectLink = stateRedirectLink || dataRedirectLink
 
+  // The first two onboarding steps (name, PIN) are the fresh-signup gap right
+  // after OTP verification — there's no account to show a checklist against
+  // yet, so send the user straight into the step instead of an intro screen.
+  // Any later gap (ID verification, membership, etc.) means the account
+  // already exists and something was skipped, so it shows the checklist with
+  // a back arrow the user can retreat from.
+  const isFreshSignupGap =
+    onboardingRedirectLink === "/patients/personal-details" ||
+    onboardingRedirectLink === "/patients/set-pin"
+
+  if (onboardingRedirectLink && isFreshSignupGap) {
+    return (
+      <Navigate to={onboardingRedirectLink} replace state={location.state} />
+    )
+  }
+
   if (onboardingRedirectLink) {
     return (
       <IncompleteSignUp
         onboardingRedirectLink={onboardingRedirectLink}
         user={user}
         fromPayMedicalBill={fromPayMedicalBill}
+        showBack
       />
     )
   }

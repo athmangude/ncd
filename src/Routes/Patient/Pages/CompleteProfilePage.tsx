@@ -9,17 +9,17 @@ export default function CompleteProfilePage() {
   const location = useLocation()
   const user = usePatientAuthStore((state: any) => state.user)
   const query = useOnboardingChecklist()
-  
+
   // Prefer state from navigation, fallback to query data
-  let onboardingRedirectLink = 
-    location.state?.onboardingRedirectLink || 
-    query.data?.onboardingRedirectLink || 
+  let onboardingRedirectLink =
+    location.state?.onboardingRedirectLink ||
+    query.data?.onboardingRedirectLink ||
     ""
 
   if (!onboardingRedirectLink && !isIdVerified(user?.idVerificationStatus)) {
     onboardingRedirectLink = "/patients/id-verification-onboarding"
   }
-    
+
   const fromPayMedicalBill = location.state?.fromPayMedicalBill || false
 
   if (query.isLoading) {
@@ -27,11 +27,12 @@ export default function CompleteProfilePage() {
   }
 
   return (
-    <IncompleteSignUp 
-      onboardingRedirectLink={onboardingRedirectLink} 
-      user={user} 
-      fromPayMedicalBill={fromPayMedicalBill} 
+    <IncompleteSignUp
+      onboardingRedirectLink={onboardingRedirectLink}
+      user={user}
+      fromPayMedicalBill={fromPayMedicalBill}
       isCompletingProfile={true}
+      showBack
     />
   )
 }

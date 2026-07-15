@@ -11,7 +11,7 @@ export default function CareProfileSuccess() {
   return (
     <PatientPageWrapper
       variant="content"
-      barTitle="Profile complete"
+      logoHeader
       isRoot={true}
       headerIcon={
         <img src={careProfileSetup} alt="" className={HERO_ILLUSTRATION} />

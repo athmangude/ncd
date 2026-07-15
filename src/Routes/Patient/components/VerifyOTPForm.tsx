@@ -204,6 +204,7 @@ export default function VerifyOTPForm() {
       </div>
 
       <InputOTP
+        autoFocus
         maxLength={6}
         id="patientOTP"
         value={otp}

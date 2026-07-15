@@ -1,4 +1,10 @@
-import { HTMLInputTypeAttribute, type ReactNode } from "react"
+import {
+  ChangeEventHandler,
+  FocusEventHandler,
+  HTMLInputTypeAttribute,
+  KeyboardEventHandler,
+  type ReactNode,
+} from "react"
 import { Input } from "../Input"
 import { Label } from "../Label"
 import { UseFormRegisterReturn } from "react-hook-form"
@@ -18,13 +24,11 @@ type FormGroupProps = {
   id: string
   type: HTMLInputTypeAttribute
   placeholder?: string
-  register: UseFormRegisterReturn
   readonly?: boolean
   error: string | undefined
   defaultValue?: string | number
   description?: string
   helperText?: string
-  value?: string | number
   inputMode?:
     | "text"
     | "numeric"
@@ -38,7 +42,7 @@ type FormGroupProps = {
   isDevMode?: boolean
   /**
    * Content rendered as a leading adornment inside the input (e.g. a
-   * currency code like "KES"). Composes shadcn's InputGroup. The
+   * currency code like "KES", or an icon). Composes shadcn's InputGroup. The
    * phone-number field's own country-flag adornment is a separate,
    * unrelated built-in special case (kept as-is) — this prop is for any
    * other field that needs a prefix.
@@ -50,13 +54,35 @@ type FormGroupProps = {
    * value. Default false. See CLAUDE.md analytics guardrail.
    */
   sensitive?: boolean
+  /** Passthrough for callers that need to block specific keystrokes (e.g. "-"/"e" on a non-negative number field). */
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement>
 } & (
   | { type: "file"; multiple?: boolean }
   | {
       type: Exclude<HTMLInputTypeAttribute | "textarea", "file">
       multiple?: undefined
     }
-)
+) &
+  (
+    | {
+        /** React Hook Form's register() return — the default, documented pattern (see forms.md). */
+        register: UseFormRegisterReturn
+        value?: never
+        onChange?: never
+        onBlur?: never
+      }
+    | {
+        /**
+         * Controlled (non-RHF) usage — for pages that hold field state
+         * outside a react-hook-form instance (e.g. a Zustand-backed
+         * multi-step flow). Mutually exclusive with `register`.
+         */
+        register?: never
+        value: string | number
+        onChange: ChangeEventHandler<HTMLInputElement>
+        onBlur?: FocusEventHandler<HTMLInputElement>
+      }
+  )
 
 export default function FormGroupInput({
   id,
@@ -65,6 +91,10 @@ export default function FormGroupInput({
   multiple,
   placeholder,
   register,
+  value,
+  onChange,
+  onBlur,
+  onKeyDown,
   error,
   inputMode,
   className,
@@ -78,6 +108,7 @@ export default function FormGroupInput({
   prefix,
   sensitive = false,
 }: FormGroupProps) {
+  const controlledProps = register ?? { value, onChange, onBlur }
   const isPhoneNumberField = id === "phoneNumber"
 
   const handleFlagClick = () => {
@@ -159,7 +190,8 @@ export default function FormGroupInput({
             placeholder={placeholder}
             inputMode={inputMode}
             defaultValue={defaultValue}
-            {...register}
+            {...controlledProps}
+            onKeyDown={onKeyDown}
             aria-invalid={!!error}
             readOnly={readonly}
             className={cn(sensitive && "sensitive-data")}
@@ -173,7 +205,8 @@ export default function FormGroupInput({
           placeholder={placeholder}
           inputMode={inputMode}
           defaultValue={defaultValue}
-          {...register}
+          {...controlledProps}
+          onKeyDown={onKeyDown}
           aria-invalid={!!error}
           readOnly={readonly}
           className={cn(

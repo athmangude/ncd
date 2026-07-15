@@ -185,6 +185,7 @@ export default function PatientChangePin() {
 
             <div className="flex flex-col gap-2 items-center">
               <InputOTP
+                autoFocus
                 maxLength={4}
                 value={oldPin}
                 onChange={handleOldPinComplete}
@@ -224,6 +225,7 @@ export default function PatientChangePin() {
 
             <div className="flex flex-col gap-2 items-center">
               <InputOTP
+                autoFocus
                 maxLength={4}
                 value={newPin}
                 onChange={handleNewPinComplete}
@@ -257,6 +259,7 @@ export default function PatientChangePin() {
 
             <div className="flex flex-col gap-2 items-center">
               <InputOTP
+                autoFocus
                 maxLength={4}
                 value={confirmPin}
                 onChange={handleConfirmPinComplete}

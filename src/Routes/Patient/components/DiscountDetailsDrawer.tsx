@@ -17,12 +17,20 @@ interface DiscountDetailsDrawerProps {
   discount: DiscountCode | null
   open: boolean
   onOpenChange: (open: boolean) => void
+  /**
+   * When provided, the primary CTA reads "Apply code" and calls this instead
+   * of copying the code to the clipboard. Used by flows that apply a code
+   * directly (e.g. Fast Track payment details) rather than surfacing it for
+   * the user to paste elsewhere. Share stays available either way.
+   */
+  onApply?: () => void
 }
 
 export function DiscountDetailsDrawer({
   discount,
   open,
   onOpenChange,
+  onApply,
 }: DiscountDetailsDrawerProps) {
   const { toast } = useToast()
   const [copied, setCopied] = useState(false)
@@ -143,11 +151,19 @@ export function DiscountDetailsDrawer({
 
         <DrawerFooter>
           <Button
-            onClick={() => discount && copyToClipboard(discount.code)}
-            disabled={copied}
+            onClick={() => {
+              if (onApply) {
+                onApply()
+                return
+              }
+              if (discount) copyToClipboard(discount.code)
+            }}
+            disabled={!onApply && copied}
             className="w-full disabled:opacity-100"
           >
-            {copied ? (
+            {onApply ? (
+              <>Apply code &apos;{discount?.code}&apos;</>
+            ) : copied ? (
               <>
                 <Check className="h-4 w-4 mr-2" />
                 Copied

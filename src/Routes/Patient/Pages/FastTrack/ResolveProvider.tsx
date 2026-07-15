@@ -9,6 +9,15 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/InputOtp"
+import { Chip } from "@/components/Chip"
+import {
+  Item,
+  ItemContent,
+  ItemGroup,
+  ItemSeparator,
+  ItemTitle,
+  ItemDescription,
+} from "@/components/Item"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -16,7 +25,7 @@ import { resolveProvider } from "./api"
 import { useFastTrackStore } from "./useFastTrackStore"
 import type { FastTrackPaymentPoint } from "./types"
 import { formatPaymentNumber } from "./formatters"
-import { ChevronRight, AlertCircle, Loader2 } from "lucide-react"
+import { ChevronRight, Search, AlertCircle, Loader2 } from "lucide-react"
 import resolveProviderIllustration from "@/assets/images/resolve-provider-Illustration.png"
 export default function ResolveProvider() {
   const navigate = useNavigate()
@@ -85,6 +94,16 @@ export default function ResolveProvider() {
       variant="content"
       barTitle="Payment details"
       pageTitle="Enter the hospital's payment details"
+      headerAction={
+        <Chip
+          onClick={() =>
+            navigate("/patients/payment/request-payment/how-to-pay")
+          }
+        >
+          <Search className="w-4 h-4 shrink-0" />
+          <span>Search by hospital name and location</span>
+        </Chip>
+      }
       primaryCta={
         providerData
           ? {
@@ -98,10 +117,10 @@ export default function ResolveProvider() {
           : undefined
       }
     >
-      <div className="flex flex-col gap-6 px-4 sm:px-6">
-        <div className="flex flex-col items-center text-center gap-2 mt-2">
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col items-center text-center gap-2">
           {/* Hero illustration placeholder */}
-          <div className="w-full h-48 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-400 font-medium overflow-hidden">
+          <div className="w-full bg-purple-100 rounded-2xl flex items-center justify-center text-purple-400 font-medium overflow-hidden">
             {/* We use a placeholder since actual image paths depend on the bundler */}
             <div className="w-full h-full bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
               {/* Illustration Placeholder */}
@@ -113,15 +132,16 @@ export default function ResolveProvider() {
         <div className="flex flex-col items-center gap-4">
           <div className="flex items-center gap-1 sm:gap-2">
             <div className="flex items-center">
-              <div className="relative flex h-11 w-7 sm:h-12 sm:w-10 items-center justify-center border-y border-l border-r border-input text-sm sm:text-base font-semibold shadow-sm rounded-l-md bg-muted text-muted-foreground cursor-not-allowed select-none">
+              <div className="relative flex h-11 w-9 sm:h-12 sm:w-10 items-center justify-center border-y border-l border-r border-input text-xl sm:text-xl font-semibold shadow-sm rounded-l-md bg-muted text-muted-foreground cursor-not-allowed select-none">
                 J
               </div>
-              <div className="relative flex h-11 w-7 sm:h-12 sm:w-10 items-center justify-center border-y border-r border-input text-sm sm:text-base font-semibold shadow-sm rounded-r-md bg-muted text-muted-foreground cursor-not-allowed select-none">
+              <div className="relative flex h-11 w-9 sm:h-12 sm:w-10 items-center justify-center border-y border-r border-input text-xl sm:text-xl font-semibold shadow-sm rounded-r-md bg-muted text-muted-foreground cursor-not-allowed select-none">
                 H
               </div>
             </div>
             <InputOTPSeparator />
             <InputOTP
+              autoFocus
               maxLength={6}
               value={paymentNumber}
               onChange={handlePaymentNumberChange}
@@ -132,30 +152,30 @@ export default function ResolveProvider() {
               <InputOTPGroup>
                 <InputOTPSlot
                   index={0}
-                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                  className="h-11 w-9 sm:h-12 sm:w-10 text-xl sm:text-xl font-medium"
                 />
                 <InputOTPSlot
                   index={1}
-                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                  className="h-11 w-9 sm:h-12 sm:w-10 text-xl sm:text-xl font-medium"
                 />
                 <InputOTPSlot
                   index={2}
-                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                  className="h-11 w-9 sm:h-12 sm:w-10 text-xl sm:text-xl font-medium"
                 />
               </InputOTPGroup>
               <InputOTPSeparator />
               <InputOTPGroup>
                 <InputOTPSlot
                   index={3}
-                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                  className="h-11 w-9 sm:h-12 sm:w-10 text-xl sm:text-xl font-medium"
                 />
                 <InputOTPSlot
                   index={4}
-                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                  className="h-11 w-9 sm:h-12 sm:w-10 text-xl sm:text-xl font-medium"
                 />
                 <InputOTPSlot
                   index={5}
-                  className="h-11 w-7 sm:h-12 sm:w-10 text-sm sm:text-base font-semibold"
+                  className="h-11 w-9 sm:h-12 sm:w-10 text-xl sm:text-xl font-medium"
                 />
               </InputOTPGroup>
             </InputOTP>
@@ -180,49 +200,35 @@ export default function ResolveProvider() {
         </div>
 
         {providerData && (
-          <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <div className="border  rounded-xl p-4 shadow-sm">
-              <div className="flex flex-col gap-3">
-                <div className="flex justify-between items-center">
-                  <span>Facility :</span>
-                  <p className="text-base text-foreground text-right">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <ItemGroup className="border rounded-xl shadow-sm">
+              <Item size="sm">
+                <ItemContent>
+                  <ItemTitle>Facility</ItemTitle>
+                  <ItemDescription className="line-clamp-none text-foreground">
                     {providerData?.facility?.name}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span>Payment Station :</span>
-                  <p className="text-base text-foreground text-right">
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+              <ItemSeparator />
+              <Item size="sm">
+                <ItemContent>
+                  <ItemTitle>Payment Station</ItemTitle>
+                  <ItemDescription className="line-clamp-none text-foreground">
                     {providerData.name}
-                  </p>
-                </div>
-
-                <div className="flex justify-between items-center">
-                  <span>Payment Number :</span>
-                  <p className="text-base text-foreground text-right">
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+              <ItemSeparator />
+              <Item size="sm">
+                <ItemContent>
+                  <ItemTitle>Payment Number</ItemTitle>
+                  <ItemDescription className="line-clamp-none text-foreground">
                     {formatPaymentNumber(providerData.paymentNumber)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        {!providerData && (
-          <div className="mt-6 pt-6">
-            <div className="flex flex-col items-center text-muted-foreground">
-              <span>Don't have code ?</span>
-            </div>
-            <button
-              type="button"
-              onClick={() =>
-                navigate("/patients/payment/request-payment/how-to-pay")
-              }
-              className="w-full flex items-center justify-center gap-4 p-4 bg-card border border-border rounded-xl shadow-sm hover:border-border hover:shadow-md transition-all group"
-            >
-              <p className="text-sm text-muted-foreground mt-0.5 text-center">
-                Search by hospital name and location
-              </p>
-            </button>
+                  </ItemDescription>
+                </ItemContent>
+              </Item>
+            </ItemGroup>
           </div>
         )}
       </div>
