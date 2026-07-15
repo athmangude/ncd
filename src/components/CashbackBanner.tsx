@@ -19,7 +19,7 @@ export function CashbackBanner({
   return (
     <div
       className={cn(
-        "bg-green-50 rounded-xl p-4 flex items-start gap-3",
+        "bg-green-50 rounded-xl p-2 flex items-start gap-2",
         className
       )}
     >

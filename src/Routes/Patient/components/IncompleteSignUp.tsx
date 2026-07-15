@@ -1,9 +1,16 @@
 import { Button } from "@/components/Button"
-import PatientAuthWrapper from "./PatientAuthWrapper"
-import PatientAuthHeadline from "./PatientAuthHeadline"
+import PatientPageWrapper from "../Pages/PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { useNavigate } from "react-router-dom"
 import { Check, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemActions,
+} from "@/components/Item"
 import createAccount from "@/assets/icons/create-account.png"
 import { isIdVerified } from "../enums/PatientIdVerificationStatus"
 import successIcon from "@/assets/icons/care-profile-setup.png"
@@ -36,11 +43,21 @@ export default function IncompleteSignUp({
   user,
   fromPayMedicalBill = false,
   isCompletingProfile = false,
+  showBack = false,
 }: {
   onboardingRedirectLink: string
   user?: any
   fromPayMedicalBill?: boolean
   isCompletingProfile?: boolean
+  /**
+   * Whether the bar shows a back arrow. Only true for callers that reached
+   * this screen via a real navigation the user can reverse (e.g.
+   * CompleteProfilePage's `/complete-profile` route). PatientDashboard renders
+   * this in place of the dashboard itself at `/patients` whenever onboarding
+   * is incomplete — there's no dashboard underneath to go back to there, so it
+   * must never pass this.
+   */
+  showBack?: boolean
 }) {
   const navigate = useNavigate()
 
@@ -80,13 +97,12 @@ export default function IncompleteSignUp({
     }
   }
 
-  // Self-shells via PatientAuthWrapper (canonical LogoHeader bar): the
-  // routes that render it (the "/patients" incomplete state and
-  // "/complete-profile") are now passthrough in PatientsHome's container, so the
-  // canonical shell draws the frame here. The bespoke #FDF4FF canvas tint (Task 8
-  // batch 2) is dropped so the screen inherits the shell's single surface instead
-  // of painting its own — this also permanently retires the footer-vs-card tint
-  // disagreement the §0 pass patched (there is no tint left to disagree on).
+  // Self-shells via PatientPageWrapper's content variant (canonical slim app
+  // bar + PageHeader): the routes that render it (the "/patients" incomplete
+  // state and "/complete-profile") are passthrough in PatientsHome's
+  // container, so the canonical shell draws the frame here. The bespoke
+  // #FDF4FF canvas tint (Task 8 batch 2) is dropped so the screen inherits the
+  // shell's single surface instead of painting its own.
   const footer = (
     <div className="p-4">
       <Button
@@ -110,44 +126,47 @@ export default function IncompleteSignUp({
     </div>
   )
 
+  const headline =
+    fromPayMedicalBill || isCompletingProfile
+      ? "Complete your profile"
+      : "Create your account in 4 easy steps!"
+
   return (
-    <PatientAuthWrapper footer={footer}>
-      <div className="flex flex-col items-center gap-2 mb-2">
-        <div className="flex flex-col items-center justify-center mb-6">
-          <img
-            src={
-              fromPayMedicalBill || isCompletingProfile
-                ? successIcon
-                : createAccount
-            }
-            alt="createAccount"
-            className="w-[50px] mb-3"
-            aria-hidden="true"
-          />
-          <PatientAuthHeadline
-            text={
-              fromPayMedicalBill || isCompletingProfile
-                ? "Complete your profile"
-                : "Create your account in 4 easy steps!"
-            }
-          />
-        </div>
-        <p className="text-muted-foreground text-center text-sm">
-          {fromPayMedicalBill || isCompletingProfile
-            ? "Unlock cashback when you pay with Jireh Health."
-            : "Secure your identity to unlock healthcare support."}
-        </p>
-        <div className="bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
+    <PatientPageWrapper
+      variant="content"
+      isRoot={!showBack}
+      barTitle={headline}
+      showStepper={false}
+      headerIcon={
+        <img
+          src={
+            fromPayMedicalBill || isCompletingProfile
+              ? successIcon
+              : createAccount
+          }
+          alt=""
+          className={HEADER_ICON}
+        />
+      }
+      pageTitle={headline}
+      description={
+        fromPayMedicalBill || isCompletingProfile
+          ? "Unlock cashback when you pay with Jireh Health."
+          : "Secure your identity to unlock healthcare support."
+      }
+      headerAction={
+        <div className="bg-secondary text-secondary-foreground px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
           <Clock size={14} />
           Only takes 2mins!
         </div>
-      </div>
-
-      <div className="flex flex-col gap-4 w-full">
+      }
+      footer={footer}
+    >
+      <div className="flex flex-col gap-2 w-full">
         <p className="text-muted-foreground text-sm font-medium">
           Information being collected:
         </p>
-        <div className="flex flex-col gap-3">
+        <ItemGroup className="gap-1.5">
           {STEPS.map((step, index) => {
             // Use user data if available, fallback to sequential logic
             const isCompleted = user
@@ -157,50 +176,55 @@ export default function IncompleteSignUp({
             const isCurrent = index === currentStepIndex
 
             return (
-              <div
+              <Item
                 key={step.id}
-                className={cn(
-                  "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                  isCompleted
-                    ? "bg-green-50 border-green-500"
-                    : "bg-card border-border"
-                )}
+                size="sm"
+                variant="outline"
+                className={cn(isCompleted && "bg-success border-success-solid")}
               >
-                <div className="flex items-center gap-3">
+                <ItemContent className="flex-row items-center gap-3">
                   <span
                     className={cn(
                       "text-sm font-medium",
-                      isCompleted ? "text-green-700" : "text-muted-foreground"
+                      isCompleted
+                        ? "text-success-solid"
+                        : "text-muted-foreground"
                     )}
                   >
                     {String(step.id).padStart(2, "0")}
                   </span>
-                  <span
+                  <ItemTitle
                     className={cn(
-                      "font-medium text-sm",
-                      isCompleted ? "text-green-900" : "text-foreground"
+                      isCompleted ? "text-success-solid" : "text-foreground"
                     )}
                   >
                     {step.label}
-                  </span>
-                </div>
+                  </ItemTitle>
+                </ItemContent>
 
                 {isCompleted && (
-                  <div className="rounded-full border border-green-500 p-0.5">
-                    <Check className="text-green-500 w-3 h-3" strokeWidth={3} />
-                  </div>
+                  <ItemActions>
+                    <div className="rounded-full border border-success-solid p-0.5">
+                      <Check
+                        className="text-success-solid w-3 h-3"
+                        strokeWidth={3}
+                      />
+                    </div>
+                  </ItemActions>
                 )}
 
                 {isCurrent && !isCompleted && (
-                  <span className="text-sm text-muted-foreground font-medium">
-                    Next
-                  </span>
+                  <ItemActions>
+                    <span className="text-sm text-muted-foreground font-medium">
+                      Next
+                    </span>
+                  </ItemActions>
                 )}
-              </div>
+              </Item>
             )
           })}
-        </div>
+        </ItemGroup>
       </div>
-    </PatientAuthWrapper>
+    </PatientPageWrapper>
   )
 }

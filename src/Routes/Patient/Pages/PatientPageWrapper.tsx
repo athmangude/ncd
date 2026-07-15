@@ -1,6 +1,7 @@
 import React from "react"
 import AppShell from "@/Routes/AppShell"
 import StepperHeader from "@/Routes/shell/StepperHeader"
+import { LogoHeader } from "@/Routes/shell/headers"
 import { PageHeader } from "@/Routes/shell/PageHeader"
 import { PrimaryCTAFooter, DualActionFooter } from "@/Routes/shell/footers"
 import { Stepper } from "@/components/Stepper"
@@ -75,6 +76,7 @@ export default function PatientPageWrapper({
   headerAlign = "center",
   showStepper = true,
   barTitle,
+  logoHeader = false,
   hideHeader = false,
   cardClassName,
   scroll = true,
@@ -150,6 +152,14 @@ export default function PatientPageWrapper({
    */
   barTitle?: string
   /**
+   * Renders the canonical `LogoHeader` (centered logo, no icons) in the bar
+   * slot instead of `StepperHeader` — for terminal screens (success/locked/
+   * status) that have no back action and whose bar would otherwise carry only
+   * plain text. `variant="content"` only; `barTitle`/`onBack`/`showHelp`/
+   * `rightAction` are ignored when set.
+   */
+  logoHeader?: boolean
+  /**
    * Suppress the app bar entirely (renders `header={null}`). For chrome-less
    * states some screens have — a full-bleed landing, a loading/error state —
    * that still want the canonical shell frame. Only honoured by the legacy
@@ -182,6 +192,7 @@ export default function PatientPageWrapper({
         headerAlign={headerAlign}
         showStepper={showStepper}
         barTitle={barTitle}
+        logoHeader={logoHeader}
       >
         {children}
       </ContentVariant>
@@ -238,6 +249,7 @@ function ContentVariant({
   headerAlign,
   showStepper,
   barTitle,
+  logoHeader,
 }: {
   children?: React.ReactNode
   title?: string
@@ -256,6 +268,7 @@ function ContentVariant({
   headerAlign: "center" | "start"
   showStepper: boolean
   barTitle?: string
+  logoHeader?: boolean
 }) {
   const stepper = useJourneyStepper()
   const meta = useJourneyStepMeta()
@@ -272,15 +285,19 @@ function ContentVariant({
   return (
     <AppShell
       header={
-        <StepperHeader
-          title={resolvedBarTitle}
-          isRoot={isRoot}
-          showHelp={showHelp}
-          onBack={onBack}
-          backIcon={backIcon}
-          rightAction={rightAction}
-          showStepper={false}
-        />
+        logoHeader ? (
+          <LogoHeader showIcons={false} />
+        ) : (
+          <StepperHeader
+            title={resolvedBarTitle}
+            isRoot={isRoot}
+            showHelp={showHelp}
+            onBack={onBack}
+            backIcon={backIcon}
+            rightAction={rightAction}
+            showStepper={false}
+          />
+        )
       }
       footer={footer}
       bodyPadding={bodyPadding}

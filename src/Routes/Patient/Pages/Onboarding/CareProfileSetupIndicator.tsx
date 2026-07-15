@@ -2,7 +2,15 @@ import { useNavigate } from "react-router-dom"
 import { Check, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import PatientPageWrapper from "../PatientPageWrapper"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
+import {
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemActions,
+} from "@/components/Item"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import careProfileSetup from "@/assets/icons/care-profile-setup.png"
 import {
@@ -18,8 +26,25 @@ export default function CareProfileSetupIndicator() {
 
   return (
     <PatientPageWrapper
-      title=""
+      variant="content"
+      barTitle="Personalize your care"
       onBack={() => navigate(-1)}
+      pageTitle="Personalize your care"
+      description="Tell us about your health needs so we can connect you with the right providers and tailored offers."
+      headerIcon={
+        <img
+          src={careProfileSetup} // Using verified tile as it fits "Jireh profile"
+          alt="Jireh Profile"
+          className={HEADER_ICON}
+        />
+      }
+      headerAction={
+        <div className="bg-secondary text-secondary-foreground px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
+          <Clock size={14} />
+          Only takes 2mins!
+        </div>
+      }
+      showStepper={false}
       footer={
         <PrimaryCTAFooter
           label="Continue"
@@ -33,74 +58,44 @@ export default function CareProfileSetupIndicator() {
         />
       }
     >
-      <div>
-        <div className="flex flex-col items-center gap-2 mb-8 mt-4">
-          <div className="relative">
-            <img
-              src={careProfileSetup} // Using verified tile as it fits "Jireh profile"
-              alt="Jireh Profile"
-              className="w-16 h-16 mb-4"
-              aria-hidden="true"
-            />
-          </div>
+      <div className="flex flex-col gap-2 w-full">
+        <p className="text-muted-foreground text-sm font-medium">
+          Information being collected:
+        </p>
+        <ItemGroup className="gap-1.5">
+          {CARE_PROFILE_STEP_CONFIG.map((step) => {
+            const isCompleted = step.checkCompletion(user)
 
-          <h1 className="text-center text-foreground">Personalize your care</h1>
+            return (
+              <Item
+                key={step.id}
+                size="sm"
+                variant="outline"
+                className={cn(isCompleted && "bg-success border-success-solid")}
+              >
+                <ItemContent className="flex-row items-center gap-4">
+                  <span className="text-sm font-medium text-muted-foreground">
+                    {step.id}
+                  </span>
+                  <ItemTitle className="text-foreground">
+                    {step.label}
+                  </ItemTitle>
+                </ItemContent>
 
-          <p className="text-muted-foreground text-center text-sm px-4">
-            Tell us about your health needs so we can connect you with the right
-            providers and tailored offers.
-          </p>
-
-          <div className="bg-secondary text-secondary-foreground px-4 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 mt-2">
-            <Clock size={14} />
-            Only takes 2mins!
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4 w-full">
-          <p className="text-muted-foreground text-sm font-medium">
-            Information being collected:
-          </p>
-          <div className="flex flex-col gap-3">
-            {CARE_PROFILE_STEP_CONFIG.map((step) => {
-              const isCompleted = step.checkCompletion(user)
-
-              return (
-                <div
-                  key={step.id}
-                  className={cn(
-                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                    isCompleted
-                      ? "bg-success border-success-solid"
-                      : "bg-card border-border"
-                  )}
-                >
-                  <div className="flex items-center gap-4">
-                    <span
-                      className={cn(
-                        "text-sm font-medium text-muted-foreground"
-                      )}
-                    >
-                      {step.id}
-                    </span>
-                    <span className={cn("font-medium text-sm text-foreground")}>
-                      {step.label}
-                    </span>
-                  </div>
-
-                  {isCompleted && (
+                {isCompleted && (
+                  <ItemActions>
                     <div className="rounded-full border border-success-solid p-0.5">
                       <Check
                         className="text-success-solid w-3 h-3"
                         strokeWidth={3}
                       />
                     </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
+                  </ItemActions>
+                )}
+              </Item>
+            )
+          })}
+        </ItemGroup>
       </div>
     </PatientPageWrapper>
   )

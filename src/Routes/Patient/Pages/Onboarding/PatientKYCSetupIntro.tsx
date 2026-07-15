@@ -2,7 +2,15 @@ import { Button } from "@/components/Button"
 import { useNavigate, useLocation } from "react-router-dom"
 import { ArrowLeft, Lock, CheckCircle2 } from "lucide-react"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
+import {
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
 import { cn } from "@/lib/utils"
 import upgradeLogo from "@/assets/icons/upgrade-logo.png"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -134,7 +142,7 @@ export default function PatientKYCSetupIntro() {
         <img
           src={upgradeLogo}
           alt="Upgrade to Jireh Plus"
-          className={HERO_ILLUSTRATION}
+          className={HEADER_ICON}
         />
       }
       bodyPadding="none"
@@ -172,12 +180,12 @@ export default function PatientKYCSetupIntro() {
     >
       <div className="px-4 pt-6 pb-4">
         {/* Steps */}
-        <div className="flex flex-col gap-3 w-full">
+        <div className="flex flex-col gap-2 w-full">
           <p className="text-sm text-muted-foreground">
             Information being collected:
           </p>
 
-          <div className="flex flex-col gap-2">
+          <ItemGroup className="gap-1.5">
             {DISPLAY_STEPS.map((step, index) => {
               const isCompleted = step.checkCompletion(user)
               const isNext =
@@ -185,69 +193,62 @@ export default function PatientKYCSetupIntro() {
               const isLocked = !isCompleted && !isNext && step.isPayStep
 
               return (
-                <div
+                <Item
                   key={step.id}
+                  size="sm"
+                  variant="outline"
                   className={cn(
-                    "rounded-xl border p-4 transition-colors",
-                    isCompleted
-                      ? "bg-card border-green-400"
-                      : isLocked
-                        ? "bg-muted border-border"
-                        : "bg-card border-border"
+                    "items-start",
+                    isCompleted ? "border-green-400" : isLocked && "bg-muted"
                   )}
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-3 min-w-0">
-                      <span className="text-sm text-muted-foreground mt-0.5 shrink-0 w-5">
-                        {step.id}
-                      </span>
-                      <div className="min-w-0">
-                        <div
-                          className={cn(
-                            "text-sm font-medium",
-                            isCompleted
-                              ? "text-muted-foreground"
-                              : "text-foreground"
-                          )}
-                        >
-                          {step.label}
-                        </div>
-                        {step.description && (!step.isPayStep || isNext) && (
-                          <div className="text-xs text-muted-foreground mt-0.5">
-                            {step.description}
-                          </div>
+                  <span className="text-sm text-muted-foreground mt-0.5 shrink-0 w-5">
+                    {step.id}
+                  </span>
+                  <ItemContent className="min-w-0">
+                    <ItemTitle
+                      className={cn(
+                        isCompleted
+                          ? "text-muted-foreground"
+                          : "text-foreground"
+                      )}
+                    >
+                      {step.label}
+                    </ItemTitle>
+                    {step.description && (!step.isPayStep || isNext) && (
+                      <ItemDescription className="text-xs">
+                        {step.description}
+                      </ItemDescription>
+                    )}
+                    {isLocked && step.lockedDescription && (
+                      <>
+                        <ItemDescription className="text-xs mt-1">
+                          {step.lockedDescription}
+                        </ItemDescription>
+                        {step.lockedPill && (
+                          <span className="inline-flex items-center gap-1.5 mt-2 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-medium w-fit">
+                            {step.lockedPill}
+                          </span>
                         )}
-                        {isLocked && step.lockedDescription && (
-                          <>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {step.lockedDescription}
-                            </p>
-                            {step.lockedPill && (
-                              <span className="inline-flex items-center gap-1.5 mt-2 bg-secondary text-secondary-foreground px-3 py-1 rounded-full text-xs font-medium">
-                                {step.lockedPill}
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
+                      </>
+                    )}
+                  </ItemContent>
 
-                    <div className="shrink-0 mt-0.5">
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      ) : isNext ? (
-                        <span className="text-sm font-medium text-foreground">
-                          Next
-                        </span>
-                      ) : step.isPayStep ? (
-                        <Lock className="w-4 h-4 text-muted-foreground" />
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
+                  <ItemActions className="mt-0.5">
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    ) : isNext ? (
+                      <span className="text-sm font-medium text-foreground">
+                        Next
+                      </span>
+                    ) : step.isPayStep ? (
+                      <Lock className="w-4 h-4 text-muted-foreground" />
+                    ) : null}
+                  </ItemActions>
+                </Item>
               )
             })}
-          </div>
+          </ItemGroup>
         </div>
       </div>
     </PatientPageWrapper>

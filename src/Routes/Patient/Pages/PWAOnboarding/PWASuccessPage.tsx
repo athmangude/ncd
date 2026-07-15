@@ -16,7 +16,7 @@ export default function PWASuccessPage() {
   return (
     <PatientPageWrapper
       variant="content"
-      barTitle="All set"
+      logoHeader
       isRoot={true}
       headerIcon={<img src={pwaSetup} alt="" className={HERO_ILLUSTRATION} />}
       pageTitle="You're all set!"

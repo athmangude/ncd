@@ -3,7 +3,15 @@ import { useNavigate } from "react-router-dom"
 import { Check, Clock, ChevronRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
+import { HEADER_ICON } from "@/Routes/shell/PageHeader"
+import {
+  Item,
+  ItemGroup,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
 import {
   usePWAOnboardingStatus,
   PWA_STEP_CONFIG,
@@ -28,7 +36,7 @@ export default function PWAOnboardingIntro() {
     <PatientPageWrapper
       variant="content"
       barTitle="Set up app"
-      headerIcon={<img src={pwaSetup} alt="" className={HERO_ILLUSTRATION} />}
+      headerIcon={<img src={pwaSetup} alt="" className={HEADER_ICON} />}
       pageTitle="Get the full experience"
       description="Install the app, enable notifications and location for a seamless experience."
       headerAction={
@@ -62,60 +70,51 @@ export default function PWAOnboardingIntro() {
       }
     >
       <div>
-        <div className="flex flex-col gap-4 w-full">
+        <div className="flex flex-col gap-2 w-full">
           <p className="text-muted-foreground text-sm font-medium">
             Steps to complete:
           </p>
-          <div className="flex flex-col gap-3">
+          <ItemGroup className="gap-1.5">
             {PWA_STEP_CONFIG.map((step) => {
               const isCompleted = stepStatus[step.id]
 
               return (
-                <div
+                <Item
                   key={step.id}
+                  size="sm"
+                  variant="outline"
                   className={cn(
-                    "flex items-center justify-between p-4 rounded-lg border transition-colors",
-                    isCompleted
-                      ? "bg-success border-success-solid"
-                      : "bg-card border-border"
+                    isCompleted && "bg-success border-success-solid"
                   )}
                 >
-                  <div className="flex items-center gap-4">
-                    <span
-                      className={cn(
-                        "text-sm font-medium text-muted-foreground"
-                      )}
-                    >
-                      {step.id}
-                    </span>
-                    <div>
-                      <div
-                        className={cn("font-medium text-sm text-foreground ")}
-                      >
-                        {step.label}
-                      </div>
-                      {step.description && (
-                        <div
-                          className={cn("font-normal text-sm text-foreground")}
-                        >
-                          {step.description}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <span className="text-sm font-medium text-muted-foreground shrink-0">
+                    {step.id}
+                  </span>
+                  <ItemContent>
+                    <ItemTitle className="text-foreground">
+                      {step.label}
+                    </ItemTitle>
+                    {step.description && (
+                      <ItemDescription className="text-foreground">
+                        {step.description}
+                      </ItemDescription>
+                    )}
+                  </ItemContent>
 
                   {isCompleted && (
-                    <div className="rounded-full border border-success-solid p-0.5">
-                      <Check
-                        className="text-success-solid w-3 h-3"
-                        strokeWidth={3}
-                      />
-                    </div>
+                    <ItemActions>
+                      <div className="rounded-full border border-success-solid p-0.5">
+                        <Check
+                          className="text-success-solid w-3 h-3"
+                          strokeWidth={3}
+                        />
+                      </div>
+                    </ItemActions>
                   )}
-                </div>
+                </Item>
               )
             })}
-          </div>
+          </ItemGroup>
         </div>
       </div>
     </PatientPageWrapper>

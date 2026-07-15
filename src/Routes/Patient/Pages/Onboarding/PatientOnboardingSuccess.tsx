@@ -20,7 +20,7 @@ export default function PatientOnboardingSuccess() {
   return (
     <PatientPageWrapper
       variant="content"
-      barTitle="Welcome"
+      logoHeader
       isRoot={true}
       headerIcon={
         <img src={successIcon} alt="" className={HERO_ILLUSTRATION} />

@@ -47,7 +47,7 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex w-full flex-col gap-3",
+        "flex w-full flex-col gap-1",
         align === "center"
           ? "items-center text-center"
           : "items-start text-left",

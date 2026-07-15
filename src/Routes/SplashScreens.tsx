@@ -95,7 +95,7 @@ export default function SplashScreens() {
 
   return (
     <AppShell
-      header={<LogoHeader showIcons={false} className="flex justify-center" />}
+      header={<LogoHeader showIcons={false} />}
       footer={
         <div className="border-t bg-white dark:bg-neutral-950 flex flex-col gap-4 p-4 pb-6">
           <SplashScreenProgressBar

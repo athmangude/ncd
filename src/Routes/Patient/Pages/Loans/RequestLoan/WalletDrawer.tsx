@@ -11,11 +11,19 @@ import {
   DrawerTitle,
 } from "@/components/Drawer"
 import { Button } from "@/components/Button"
+import { Badge } from "@/components/Badge"
 import { Alert, AlertDescription } from "@/components/Alert"
-import { AlertCircle, Info } from "lucide-react"
+import { AlertCircle, Info, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { CashbackBanner } from "@/components/CashbackBanner"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+} from "@/components/Item"
 import FormGroupInput from "@/components/form/FormGroupInput"
 import { RepaymentPeriodInput } from "./PatientLoanTerms"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/Popover"
@@ -82,7 +90,6 @@ export function WalletDrawer({
 
   // Sync form with allocation only when drawer opens (or wallet changes), so user edits are not overwritten by parent re-renders
   const prevOpenRef = useRef(false)
-  const DEFAULT_LOAN_REPAYMENT_DAYS = 31
   useEffect(() => {
     if (isOpen && wallet) {
       const allocation = allocations[wallet.id]
@@ -90,22 +97,19 @@ export function WalletDrawer({
       prevOpenRef.current = true
       if (justOpened && allocation && allocation.type !== "DISCOUNT") {
         setValue("amount", allocation.amount ?? "")
-        setValue(
-          "repaymentPeriodDays",
-          allocation.repaymentPeriodDays ?? DEFAULT_LOAN_REPAYMENT_DAYS
-        )
+        // Only restore a repayment period the user previously chose — never
+        // silently default it, or the Save CTA would activate without the
+        // user ever having picked a repayment period (see RepaymentPeriodInput's
+        // `required` rule, which this would otherwise short-circuit).
+        if (allocation.repaymentPeriodDays != null) {
+          setValue("repaymentPeriodDays", allocation.repaymentPeriodDays)
+        }
         if (wallet.type === "MPESA") {
           setValue(
             "phoneNumber",
             allocation.phoneNumber || user.phoneNumber || ""
           )
         }
-      } else if (justOpened && wallet.type === "LOAN") {
-        // New LOAN allocation: set default repayment period so it is always sent in the payload
-        setValue(
-          "repaymentPeriodDays",
-          allocation?.repaymentPeriodDays ?? DEFAULT_LOAN_REPAYMENT_DAYS
-        )
       }
     } else {
       prevOpenRef.current = false
@@ -115,6 +119,8 @@ export function WalletDrawer({
   }, [isOpen, wallet?.id, allocations, setValue, user.phoneNumber])
 
   const watchAmount = watch("amount")
+  const hasEnteredAmount =
+    watchAmount !== undefined && watchAmount !== "" && Number(watchAmount) > 0
   const [showCreditLimitTooltip, setShowCreditLimitTooltip] = useState(false)
   const [hasExceededLimit, setHasExceededLimit] = useState(false)
 
@@ -256,13 +262,13 @@ export function WalletDrawer({
               <DrawerDescription className="sr-only">
                 Adjust the amount you want to pay using this wallet
               </DrawerDescription>
-              <div className="bg-muted px-4 py-2 rounded-full text-sm font-medium text-muted-foreground">
+              <Badge variant="secondary">
                 Remaining to allocate {formatMoney(remainingToAllocate, "KES")}
-              </div>
+              </Badge>
             </div>
           </DrawerHeader>
 
-          <div className="py-6 flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
             {/* Amount Input */}
             <div className="flex flex-col gap-2">
               <FormGroupInput
@@ -271,7 +277,7 @@ export function WalletDrawer({
                 type="number"
                 prefix="KES"
                 className={cn(
-                  showCreditLimitTooltip &&
+                  errors.amount &&
                     wallet.type === "LOAN" &&
                     "[&_[data-slot=input-group]]:border-warning"
                 )}
@@ -281,32 +287,21 @@ export function WalletDrawer({
                   min: { value: 0, message: "Amount cannot be negative" },
                   max: {
                     value: maxAmount,
-                    message: `Cannot exceed ${formatMoney(maxAmount, wallet.type === "CASHBACK" ? careFundCurrency : "KES", wallet.type === "CASHBACK")}`,
-                  },
-                  onChange: (e) => {
-                    const value = Number(e.target.value)
-                    if (
-                      wallet.type === "LOAN" &&
-                      value > maxAmount &&
-                      !hasUploadedMpesaStatement
-                    ) {
-                      setShowCreditLimitTooltip(true)
-                    } else if (value <= maxAmount) {
-                      setShowCreditLimitTooltip(false)
-                    }
+                    message:
+                      wallet.type === "LOAN" && !hasUploadedMpesaStatement
+                        ? `Amount capped at ${formatMoney(maxAmount, "KES")}. Upload M-Pesa statement to increase limit.`
+                        : `Cannot exceed ${formatMoney(maxAmount, wallet.type === "CASHBACK" ? careFundCurrency : "KES", wallet.type === "CASHBACK")}`,
                   },
                 })}
                 error={errors.amount?.message}
+                description={
+                  errors.amount
+                    ? undefined
+                    : wallet.type === "CASHBACK" || wallet.type === "LOAN"
+                      ? `${balanceLabel}: ${formatMoney(balanceAmount, wallet.type === "CASHBACK" ? careFundCurrency : "KES", wallet.type === "CASHBACK")}`
+                      : undefined
+                }
               />
-              {showCreditLimitTooltip &&
-                wallet.type === "LOAN" &&
-                !errors.amount && (
-                  <p className="text-sm text-warning-solid flex items-center gap-1">
-                    <Info className="h-3 w-3" />
-                    Amount capped at {formatMoney(maxAmount, "KES")}. Upload
-                    M-Pesa statement to increase limit.
-                  </p>
-                )}
             </div>
 
             {/* UPDATED: MPESA Phone Number Input */}
@@ -329,35 +324,37 @@ export function WalletDrawer({
                   error={errors.phoneNumber?.message}
                   sensitive
                 />
-                {/* Cashback Banner for MPESA */}
-                <CashbackBanner
-                  visible={isNetworkFacility}
-                  title="Pay via Jireh and earn cashback!"
-                  description={`You will earn ${formatMoney(Number(watchAmount || 0) * 0.05, "KES")} cashback when you make this payment!`}
-                />
+                {isNetworkFacility && hasEnteredAmount && (
+                  <Item variant="muted" className="bg-green-50 items-start">
+                    <ItemMedia className="mt-1">
+                      <Sparkles className="w-5 h-5 text-green-600 fill-green-600 shrink-0" />
+                    </ItemMedia>
+                    <ItemContent>
+                      <ItemTitle className="font-bold text-foreground">
+                        Pay via Jireh and earn cashback!
+                      </ItemTitle>
+                      <ItemDescription className="text-muted-foreground">
+                        You will earn{" "}
+                        {formatMoney(Number(watchAmount || 0) * 0.05, "KES")}{" "}
+                        cashback when you make this payment!
+                      </ItemDescription>
+                    </ItemContent>
+                  </Item>
+                )}
               </div>
-            )}
-
-            {wallet.type === "CASHBACK" && (
-              <p className="text-muted-foreground text-sm">
-                {balanceLabel}:{" "}
-                {formatMoney(balanceAmount, careFundCurrency, true)}
-              </p>
             )}
 
             {wallet.type === "LOAN" && (
               <>
-                <div className="flex items-center gap-2">
-                  <p className="text-muted-foreground text-sm">
-                    {balanceLabel}: {formatMoney(balanceAmount, "KES")}
-                  </p>
+                <div className="flex items-center justify-end -mt-1">
                   {/*
                    * The "raise your limit" upsell intentionally lives only in
-                   * this compact (i) popover beside the balance line — the
-                   * large amber card used to push the repayment input and
-                   * Save/Cancel CTAs off-screen on short viewports (e.g.
-                   * 320×640). The popover keeps the same Upload M-Pesa
-                   * Statement path without the height.
+                   * this compact (i) popover — the balance itself is now the
+                   * Amount field's description line (single line of helper
+                   * text at a time). The large amber card used to push the
+                   * repayment input and Save/Cancel CTAs off-screen on short
+                   * viewports (e.g. 320×640); the popover keeps the same
+                   * Upload M-Pesa Statement path without the height.
                    */}
                   {!hasUploadedMpesaStatement && (
                     <Popover
@@ -438,7 +435,7 @@ export function WalletDrawer({
                 </div>
 
                 <CashbackBanner
-                  visible={isNetworkFacility}
+                  visible={isNetworkFacility && hasEnteredAmount}
                   title=""
                   description={
                     <span className="text-foreground">
@@ -462,13 +459,16 @@ export function WalletDrawer({
                   />
                 </div>
 
-                <Alert variant="warning" className="rounded-xl">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-xs leading-relaxed">
-                    If your loan payment is delayed, there will be a penalty fee
-                    of {formatMoney(Number(watchAmount || 0) * 0.1, "KES")}
-                  </AlertDescription>
-                </Alert>
+                {isValid && (
+                  <Alert variant="warning">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      If your loan payment is delayed, there will be a penalty
+                      fee of{" "}
+                      {formatMoney(Number(watchAmount || 0) * 0.1, "KES")}
+                    </AlertDescription>
+                  </Alert>
+                )}
               </>
             )}
           </div>

@@ -1,12 +1,17 @@
 import { useEffect, useMemo, useState } from "react"
-import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
 import { useLocation, useNavigate } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
-import { HEADER_ICON } from "@/Routes/shell/PageHeader"
 import { Button } from "@/components/Button"
 import { Chip } from "@/components/Chip"
-import Tag from "@/components/Tag"
+import { Progress } from "@/components/Progress"
+import {
+  Item,
+  ItemMedia,
+  ItemContent,
+  ItemTitle,
+  ItemDescription,
+  ItemActions,
+} from "@/components/Item"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
@@ -31,22 +36,12 @@ import {
   Percent,
   Clock2,
   Lock,
-  Loader2,
-  Check,
-  Trash2,
 } from "lucide-react"
-import landline from "@/assets/icons/landline.png"
 
 const WALLET_TYPE_TO_SPLIT_MODE: Partial<Record<WalletType, SplitMode>> = {
   MPESA: "MPESA",
   LOAN: "LOAN",
   CASHBACK: "CAREFUND",
-}
-
-type DiscountCodeResponse = {
-  isValid: boolean
-  discountAmount: string
-  message?: string
 }
 
 export default function FastTrackWalletSelection() {
@@ -62,23 +57,9 @@ export default function FastTrackWalletSelection() {
   const provider = useFastTrackStore((s) => s.provider)
   const invoiceAmountStr = useFastTrackStore((s) => s.invoiceAmount)
   const discountAmountStr = useFastTrackStore((s) => s.discountAmount)
-  const setDiscountAmount = useFastTrackStore((s) => s.setDiscountAmount)
-  const discountCode = useFastTrackStore((s) => s.discountCode)
-  const setDiscountCode = useFastTrackStore((s) => s.setDiscountCode)
   const allocations = useFastTrackStore((s) => s.allocations)
   const setAllocations = useFastTrackStore((s) => s.setAllocations)
   const setSplits = useFastTrackStore((s) => s.setSplits)
-
-  const [appliedDiscount, setAppliedDiscount] =
-    useState<DiscountCodeResponse | null>(() => {
-      return discountAmountStr && discountCode
-        ? {
-            isValid: true,
-            discountAmount: discountAmountStr,
-            message: "Discount code applied",
-          }
-        : null
-    })
 
   const { data: paymentHistory } = usePaymentHistory()
   const { careFundAccount } = paymentHistory || {}
@@ -91,53 +72,6 @@ export default function FastTrackWalletSelection() {
   const totalBillAmount = parseFloat(invoiceAmountStr) || 0
   const discountAmount = parseFloat(discountAmountStr) || 0
   const netAmount = totalBillAmount - discountAmount
-
-  const validateDiscountCodeMutation = useMutation({
-    mutationFn: async (code: string) => {
-      const facilityId = provider?.facility?.id
-      const payload: Record<string, unknown> = {
-        code: code.toUpperCase().trim(),
-        orderAmount: totalBillAmount,
-        userId: user?.id,
-      }
-      if (facilityId != null) {
-        payload.healthcareFacilityId = facilityId
-      }
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/discount-codes/validate`,
-        payload,
-        { withCredentials: true }
-      )
-      return response.data.data || response.data
-    },
-    onSuccess: (data: DiscountCodeResponse) => {
-      setAppliedDiscount(data)
-      if (data.isValid) {
-        setDiscountAmount(data.discountAmount)
-        toast({
-          title: "Discount Applied",
-          description: data.message || "Discount code applied successfully",
-        })
-      } else {
-        setDiscountAmount("0")
-        toast({
-          title: "Invalid Code",
-          description: data.message || "This discount code is not valid",
-          variant: "destructive",
-        })
-      }
-    },
-    onError: (error: any) => {
-      setAppliedDiscount(null)
-      setDiscountAmount("0")
-      toast({
-        title: "Error",
-        description:
-          error.response?.data?.message || "Failed to validate discount code",
-        variant: "destructive",
-      })
-    },
-  })
 
   const [activeWalletId, setActiveWalletId] = useState<string | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
@@ -303,15 +237,28 @@ export default function FastTrackWalletSelection() {
     navigate("/patients/fast-track/confirm")
   }
 
-  const getWalletSubtitle = (wallet: WalletItem) => {
-    if (wallet.type === "CASHBACK") return "Cashback earned or received."
-    if (wallet.type === "LOAN") return "Borrow and repay at 0% interest rate."
+  const getWalletTitle = (wallet: WalletItem) => {
+    const name = getWalletName(wallet.type)
     if (wallet.type === "MPESA") {
-      const alloc = allocations[wallet.id]
-      if (alloc?.phoneNumber) return `Using ${alloc.phoneNumber}`
-      return "Your Safaricom MPESA"
+      const phoneNumber =
+        allocations[wallet.id]?.phoneNumber || user?.phoneNumber
+      return phoneNumber ? `${name} (${phoneNumber})` : name
     }
-    return ""
+    return name
+  }
+
+  const getWalletBalanceDescription = (wallet: WalletItem) => {
+    if (wallet.type === "CASHBACK") {
+      const balance = rawCareFundBalance ?? parseFloat(wallet.remainingBalance)
+      if (balance == null || Number.isNaN(balance)) return null
+      return `Balance: ${formatMoney(balance, careFundCurrency)}`
+    }
+    if (wallet.type === "LOAN") {
+      const available = Number(user?.creditLimit?.remainingAmount)
+      if (Number.isNaN(available)) return null
+      return `Available to borrow: ${formatMoney(available, "KES")}`
+    }
+    return null
   }
 
   const allocatedWallets = wallets.filter((w) => {
@@ -328,7 +275,6 @@ export default function FastTrackWalletSelection() {
     <PatientPageWrapper
       variant="content"
       barTitle="Select wallet"
-      headerIcon={<img src={landline} alt="" className={HEADER_ICON} />}
       pageTitle="Select how you want to pay"
       description="Add as many sources of funds as you want."
       primaryCta={{
@@ -342,86 +288,9 @@ export default function FastTrackWalletSelection() {
         disabled: totalAllocated !== netAmount,
       }}
     >
-      <div className="flex flex-col gap-6">
-        <div className="bg-card border border-border rounded-xl p-4 mx-1 space-y-3">
-          <label className="text-sm font-medium text-foreground">
-            Discount Code (Optional)
-          </label>
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={discountCode}
-                onChange={(e) => {
-                  const value = e.target.value.toUpperCase().trim()
-                  setDiscountCode(value)
-                  setAppliedDiscount(null)
-                  setDiscountAmount("0")
-                }}
-                placeholder="Enter discount code"
-                className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-              {validateDiscountCodeMutation.isPending && (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
-              )}
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (discountCode.trim()) {
-                  validateDiscountCodeMutation.mutate(discountCode)
-                }
-              }}
-              disabled={
-                !discountCode.trim() || validateDiscountCodeMutation.isPending
-              }
-            >
-              Apply
-            </Button>
-            {appliedDiscount && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setDiscountCode("")
-                  setAppliedDiscount(null)
-                  setDiscountAmount("0")
-                }}
-              >
-                <Trash2 className="h-4 w-4 text-red-600" />
-              </Button>
-            )}
-          </div>
-          {appliedDiscount && appliedDiscount.isValid && (
-            <div className="flex items-center gap-2 p-2 bg-green-50 rounded-md border border-green-200">
-              <Check className="h-4 w-4 text-green-600" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-green-900">
-                  {appliedDiscount.message || "Discount code applied"}
-                </p>
-                <p className="text-xs text-green-700">
-                  Discount: {formatMoney(discountAmount, "KES")}
-                </p>
-              </div>
-              <Tag className="bg-green-600 text-white text-xs">
-                {formatMoney(discountAmount, "KES")} OFF
-              </Tag>
-            </div>
-          )}
-          {appliedDiscount && !appliedDiscount.isValid && (
-            <p className="text-xs text-red-600">{appliedDiscount.message}</p>
-          )}
-        </div>
-
-        <div className="bg-muted rounded-xl p-5 flex flex-col gap-3 mx-1">
-          <div className="w-full bg-muted rounded-full h-2">
-            <div
-              className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
+      <div className="flex flex-col gap-4">
+        <div className="bg-muted rounded-xl p-3 flex flex-col gap-3">
+          <Progress value={progressPercentage} className="h-2" />
           <div className="flex justify-between items-center">
             <div>
               <p className="text-lg font-bold text-foreground">
@@ -459,53 +328,66 @@ export default function FastTrackWalletSelection() {
 
         {allocatedWallets.length > 0 && (
           <div className="flex flex-col gap-2">
-            <p className="text-muted-foreground font-medium px-1">
-              Source of funds
-            </p>
-            <div className="flex flex-col gap-3">
+            <h2>Source of funds</h2>
+            <div className="flex flex-col gap-2">
               {allocatedWallets.map((wallet) => {
                 const allocation = allocations[wallet.id]
                 if (!allocation) return null
                 const isAllocatedLoanDisabled =
                   wallet.type === "LOAN" && isLoanOptionDisabled
                 return (
-                  <div
+                  <Item
                     key={wallet.id}
-                    className={`border border-border rounded-xl p-4 flex items-center justify-between transition-colors ${
+                    asChild
+                    variant="outline"
+                    className={
                       isAllocatedLoanDisabled
                         ? "bg-muted cursor-not-allowed opacity-75"
                         : "bg-card cursor-pointer hover:border-primary"
-                    }`}
-                    onClick={() =>
-                      !isAllocatedLoanDisabled && handleWalletClick(wallet.id)
                     }
                   >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="p-2 rounded-lg bg-red-500 hover:opacity-80 transition-opacity"
+                    <div
+                      onClick={() =>
+                        !isAllocatedLoanDisabled && handleWalletClick(wallet.id)
+                      }
+                    >
+                      <ItemMedia
+                        className="rounded-lg bg-red-500 hover:opacity-80 transition-opacity"
                         onClick={(e) => handleRemoveWallet(e, wallet.id)}
                       >
                         <Minus className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-foreground">
+                      </ItemMedia>
+                      <ItemContent>
+                        <ItemTitle className="font-semibold text-foreground">
                           {getWalletName(wallet.type)}
-                        </p>
-                        <div className="flex flex-col">
-                          <p className="text-sm text-muted-foreground">
-                            {formatMoney(allocation.amount, "KES")}
-                          </p>
-                          {wallet.type === "MPESA" &&
-                            allocation.phoneNumber && (
-                              <p className="text-xs text-muted-foreground mt-0.5">
-                                {allocation.phoneNumber}
-                              </p>
-                            )}
-                        </div>
-                      </div>
+                        </ItemTitle>
+                        <ItemDescription className="text-muted-foreground">
+                          {formatMoney(allocation.amount, "KES")}
+                        </ItemDescription>
+                        {wallet.type === "MPESA" && allocation.phoneNumber && (
+                          <ItemDescription className="text-xs text-muted-foreground">
+                            {allocation.phoneNumber}
+                          </ItemDescription>
+                        )}
+                      </ItemContent>
+                      <ItemActions>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          aria-label={`Edit ${getWalletName(wallet.type)} amount`}
+                          disabled={isAllocatedLoanDisabled}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (!isAllocatedLoanDisabled)
+                              handleWalletClick(wallet.id)
+                          }}
+                        >
+                          <Pencil className="w-4 h-4 text-muted-foreground" />
+                        </Button>
+                      </ItemActions>
                     </div>
-                    <Pencil className="w-5 h-5 text-muted-foreground" />
-                  </div>
+                  </Item>
                 )
               })}
             </div>
@@ -513,10 +395,8 @@ export default function FastTrackWalletSelection() {
         )}
 
         <div className="flex flex-col gap-2">
-          <p className="text-muted-foreground font-medium px-1">
-            Add source of funds
-          </p>
-          <div className="flex flex-col gap-3">
+          <h2>Add source of funds</h2>
+          <div className="flex flex-col gap-2">
             {unallocatedWallets.map((wallet) => {
               const isLoanWallet = wallet.type === "LOAN"
               const isPlusAccount =
@@ -527,20 +407,23 @@ export default function FastTrackWalletSelection() {
                 isLoanWallet && isPlusAccount && isLoanOptionDisabled
 
               return (
-                <div
+                <Item
                   key={wallet.id}
-                  className={`border rounded-xl p-4 flex items-center justify-between gap-4 transition-colors ${
+                  asChild
+                  variant="outline"
+                  className={
                     isLoanDisabled
-                      ? "border-border bg-muted cursor-not-allowed"
-                      : "border-border bg-card cursor-pointer hover:border-primary"
-                  }`}
-                  onClick={() => {
-                    if (!isLoanDisabled) handleWalletClick(wallet.id)
-                  }}
+                      ? "bg-muted cursor-not-allowed"
+                      : "bg-card cursor-pointer hover:border-primary"
+                  }
                 >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div
-                      className={`p-2 rounded-lg bg-transparent shrink-0 ${isLoanDisabled ? "opacity-50" : ""}`}
+                  <div
+                    onClick={() => {
+                      if (!isLoanDisabled) handleWalletClick(wallet.id)
+                    }}
+                  >
+                    <ItemMedia
+                      className={`rounded-lg bg-transparent ${isLoanDisabled ? "opacity-50" : ""}`}
                     >
                       {wallet.type === "MPESA" && (
                         <Smartphone className="w-6 h-6 text-muted-foreground" />
@@ -549,30 +432,28 @@ export default function FastTrackWalletSelection() {
                         <Percent className="w-6 h-6 text-muted-foreground" />
                       )}
                       {wallet.type === "LOAN" && (
-                        <Clock2
-                          className={`w-6 h-6 ${isLoanDisabled ? "text-muted-foreground" : "text-muted-foreground"}`}
-                        />
+                        <Clock2 className="w-6 h-6 text-muted-foreground" />
                       )}
-                    </div>
-                    <div className="flex-1 min-w-0">
+                    </ItemMedia>
+                    <ItemContent>
                       <div className={isLoanDisabled ? "opacity-50" : ""}>
-                        <p
-                          className={`font-medium ${isLoanDisabled ? "text-muted-foreground" : "text-foreground"}`}
+                        <ItemTitle
+                          className={`text-sm font-medium ${isLoanDisabled ? "text-muted-foreground" : "text-foreground"}`}
                         >
-                          {getWalletName(wallet.type)}
-                        </p>
-                        <p
-                          className={`text-sm mt-0.5 ${isLoanDisabled ? "text-muted-foreground" : "text-muted-foreground"}`}
-                        >
-                          {getWalletSubtitle(wallet)}
-                        </p>
+                          {getWalletTitle(wallet)}
+                        </ItemTitle>
+                        {getWalletBalanceDescription(wallet) && (
+                          <ItemDescription className="text-sm text-muted-foreground">
+                            {getWalletBalanceDescription(wallet)}
+                          </ItemDescription>
+                        )}
                       </div>
                       {isLoanDisabled && (
                         <div className="mt-2 flex items-center gap-2 flex-wrap">
                           {isLoanDisabledByPlus ? (
                             <>
                               <Lock className="w-3 h-3 text-muted-foreground shrink-0" />
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-sm text-muted-foreground">
                                 Upgrade to Jireh Plus to unlock
                               </p>
                               <Chip
@@ -606,16 +487,28 @@ export default function FastTrackWalletSelection() {
                           )}
                         </div>
                       )}
-                    </div>
+                    </ItemContent>
+                    <ItemActions>
+                      {!isLoanDisabled ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          className="bg-purple-100 hover:bg-purple-200 shrink-0"
+                          aria-label={`Add ${getWalletName(wallet.type)} as a source of funds`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleWalletClick(wallet.id)
+                          }}
+                        >
+                          <Plus className="w-5 h-5 text-primary" />
+                        </Button>
+                      ) : isLoanDisabledByCircle ? (
+                        <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
+                      ) : null}
+                    </ItemActions>
                   </div>
-                  {!isLoanDisabled ? (
-                    <div className="bg-purple-100 p-1 rounded-md shrink-0">
-                      <Plus className="w-5 h-5 text-primary" />
-                    </div>
-                  ) : isLoanDisabledByCircle ? (
-                    <Lock className="w-4 h-4 text-muted-foreground shrink-0" />
-                  ) : null}
-                </div>
+                </Item>
               )
             })}
           </div>

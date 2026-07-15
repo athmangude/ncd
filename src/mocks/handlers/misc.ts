@@ -174,8 +174,10 @@ export const miscHandlers = [
     })
   }),
 
-  // PatientWalletSelection / FastTrackWalletSelection read isValid, discountAmount
-  // and message. We compute a discount from the order amount + matched code.
+  // PaymentDetails (Fast Track) / PatientWalletSelection read isValid,
+  // discountAmount and message. `discount` carries the full DiscountCode shape
+  // (mirrors GET /discount-codes/:id) so callers can render the shared
+  // DiscountsSection card + DiscountDetailsDrawer without a second fetch.
   http.post("/discount-codes/validate", async ({ request }) => {
     const body = (await request.json().catch(() => ({}))) as {
       code?: string
@@ -196,6 +198,16 @@ export const miscHandlers = [
     }
 
     const orderAmount = Number(body.orderAmount) || 0
+
+    const minimumOrderAmount = Number(code.minimumOrderAmount)
+    if (!Number.isNaN(minimumOrderAmount) && orderAmount < minimumOrderAmount) {
+      return HttpResponse.json({
+        isValid: false,
+        discountAmount: "0",
+        message: `This code requires a minimum order of KES ${minimumOrderAmount.toLocaleString()}`,
+      })
+    }
+
     let discount =
       code.discountType === "PERCENTAGE"
         ? (orderAmount * Number(code.discountValue)) / 100
@@ -210,6 +222,11 @@ export const miscHandlers = [
       isValid: true,
       discountAmount: String(Math.round(discount)),
       message: "Discount code applied",
+      discount: {
+        ...code,
+        status: code.isActive ? "ACTIVE" : "INACTIVE",
+        facility: null,
+      },
     })
   }),
 
