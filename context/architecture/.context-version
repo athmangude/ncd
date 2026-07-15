@@ -1,0 +1,25 @@
+{
+  "last_updated_commit": "1bd28205",
+  "last_updated_date": "2026-07-15",
+  "commit_message": "fix: bubblegum/jh-green tokens confirmed removed, replaced with accurate shadcn-style semantic palette (component-system.md); reconcile ~140 commits of AppShell layout migration (MobileWrapper deleted, PatientPageWrapper content-variant + logoHeader, StatusPageWrapper), Dialog/Drawer overlay standardization + DiscountDetailsDrawer consolidation, dashboard entrance animation system, derived circle-slot counts, and a fresh-signup-vs-established-user onboarding gate split into architectural-overview/component-system/routing/patient-onboarding-journey/kyc-verification/circle-and-network-journeys; rewrote testing-strategy.md (was claiming zero tests; 137+ test files now exist, CI does not run them); added scope notes to authentication/api-layer/pwa-and-offline/analytics/portal-isolation/routing/architectural-overview clarifying this repo (ux-prototype) is a Patient-portal-only, MSW-mocked, hash-routed prototype — no Organizations/Guarantor portal, no real SuperTokens/Sentry/Firebase/service-worker, trackEvent() is a no-op stub — those docs' multi-portal/production-service content describes the target jireh-core-client architecture, not this repo's current code",
+  "coverage": [
+    "architectural-overview",
+    "authentication",
+    "state-management",
+    "routing",
+    "component-system",
+    "api-layer",
+    "analytics",
+    "pwa-and-offline",
+    "forms",
+    "testing-strategy",
+    "loan-application-journey",
+    "patient-onboarding-journey",
+    "kyc-verification",
+    "fast-track-payment",
+    "care-fund-journey",
+    "circle-and-network-journeys",
+    "discovery-and-map",
+    "portal-isolation"
+  ]
+}
