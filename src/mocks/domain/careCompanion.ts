@@ -16,6 +16,7 @@ import type {
   CareCompanionProfile,
   CareCompanionHome,
   CostSummary,
+  CostCategoryBreakdown,
   RefillSchedule,
   EducationContentCard,
   EmergencyCard,
@@ -133,7 +134,7 @@ export function getMedicationTimeline(): TimelineEntry[] {
 }
 
 interface CostSummaryFixture extends CostSummary {
-  breakdown: { category: string; totalSpend: string; percentage: number; transactionCount: number }[]
+  breakdown: CostCategoryBreakdown[]
   monthlyTrend: { month: number; spend: string }[]
 }
 
@@ -236,7 +237,7 @@ export function getNextEducationCard(): EducationContentCard | null {
  * Returns the emergency card matching the patient's primary condition.
  * Falls back to GENERAL when no condition match.
  */
-export function getMatchedEmergencyCard(): EmergencyCard {
+export function getMatchedEmergencyCard(): EmergencyCard | undefined {
   const cards = getEmergencyCards()
   const profile = getCareCompanionProfile()
   const conditions: string[] = profile?.conditions?.type ?? []

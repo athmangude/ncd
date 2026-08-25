@@ -28,6 +28,10 @@ interface SendMessageResponse {
   }
 }
 
+interface MutationContext {
+  previousMessages: ChatMessage[]
+}
+
 export function useAssistantChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const activeAiSessionId = useCareCompanionStore(
@@ -37,7 +41,7 @@ export function useAssistantChat() {
     (state) => state.setActiveAiSessionId
   )
 
-  const sendMessage = useMutation({
+  const { mutate: sendMessageMutate, isPending, error } = useMutation({
     mutationFn: async (payload: SendMessagePayload) => {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/care-companion/assistant/chat`,
@@ -48,14 +52,16 @@ export function useAssistantChat() {
       )
       return response.data as SendMessageResponse
     },
-    onMutate: (variables) => {
+    onMutate: (variables): MutationContext => {
+      const previousMessages = [...messages]
       const userMessage: ChatMessage = {
-        id: `user-${Date.now()}`,
+        id: crypto.randomUUID(),
         role: "user",
         content: variables.message,
         timestamp: new Date().toISOString(),
       }
       setMessages((prev) => [...prev, userMessage])
+      return { previousMessages }
     },
     onSuccess: (data) => {
       if (data.sessionId) {
@@ -63,7 +69,7 @@ export function useAssistantChat() {
       }
 
       const assistantMessage: ChatMessage = {
-        id: `assistant-${Date.now()}`,
+        id: crypto.randomUUID(),
         role: "assistant",
         content: data.reply,
         timestamp: new Date().toISOString(),
@@ -71,16 +77,21 @@ export function useAssistantChat() {
       }
       setMessages((prev) => [...prev, assistantMessage])
     },
+    onError: (_error, _variables, context) => {
+      if (context?.previousMessages) {
+        setMessages(context.previousMessages)
+      }
+    },
   })
 
   const send = useCallback(
     (message: string) => {
-      sendMessage.mutate({
+      sendMessageMutate({
         message,
         sessionId: activeAiSessionId,
       })
     },
-    [sendMessage, activeAiSessionId]
+    [sendMessageMutate, activeAiSessionId]
   )
 
   const clearMessages = useCallback(() => {
@@ -92,7 +103,7 @@ export function useAssistantChat() {
     messages,
     send,
     clearMessages,
-    isSending: sendMessage.isPending,
-    error: sendMessage.error,
+    isSending: isPending,
+    error,
   }
 }

@@ -128,6 +128,9 @@ export const careCompanionHandlers = [
   // -------------------------------------------------------------------------
   http.get("/api/patients/:id/emergency-card", () => {
     const card = getMatchedEmergencyCard()
+    if (!card) {
+      return HttpResponse.json(null, { status: 404 })
+    }
     return HttpResponse.json(card)
   }),
 
@@ -297,7 +300,8 @@ export const careCompanionHandlers = [
       sessionId?: string
     }
 
-    const conversation = matchAssistantResponse(body.content)
+    const content = typeof body.content === "string" ? body.content : ""
+    const conversation = matchAssistantResponse(content)
     const assistantMsg = conversation.messages[0]
 
     return HttpResponse.json({
@@ -349,7 +353,10 @@ export const careCompanionHandlers = [
       return HttpResponse.json({
         productName: body.productName,
         interactions: matching.map((i) => ({
-          withMedication: i.medicationA,
+          withMedication:
+            i.medicationA.toLowerCase().includes(productLower)
+              ? (i.medicationB ?? i.herbName ?? "Unknown")
+              : i.medicationA,
           severity: i.severity,
           description: i.description,
           recommendation: i.recommendation,

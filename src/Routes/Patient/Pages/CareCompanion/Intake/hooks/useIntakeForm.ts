@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react"
-import { useMutation } from "@tanstack/react-query"
+import { useReducer, useCallback } from "react"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
+import { careCompanionProfileQueryKey } from "./useCareCompanionProfile"
 
 export interface IntakeStep0Data {
   conditions: string[]
@@ -66,9 +67,20 @@ export interface IntakeFormData {
   step6: IntakeStep6Data | null
 }
 
+/** Type-safe mapping from step index to its data type */
+export type StepDataMap = {
+  0: IntakeStep0Data
+  1: IntakeStep1Data
+  2: IntakeStep2Data
+  3: IntakeStep3Data
+  4: IntakeStep4Data
+  5: IntakeStep5Data
+  6: IntakeStep6Data
+}
+
 const TOTAL_STEPS = 7
 
-function getNextStepIndex(
+export function getNextStepIndex(
   currentStep: number,
   formData: IntakeFormData
 ): number {
@@ -92,7 +104,7 @@ function getNextStepIndex(
   return currentStep + 1
 }
 
-function getPreviousStepIndex(
+export function getPreviousStepIndex(
   currentStep: number,
   formData: IntakeFormData
 ): number {
@@ -115,9 +127,86 @@ function getPreviousStepIndex(
   return currentStep - 1
 }
 
-export function useIntakeForm() {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0)
-  const [formData, setFormData] = useState<IntakeFormData>({
+// ---------------------------------------------------------------------------
+// Reducer — keeps formData and currentStepIndex in a single atomic state so
+// that updateStepData + goForward can be dispatched together without stale
+// closure issues.
+// ---------------------------------------------------------------------------
+
+interface IntakeState {
+  currentStepIndex: number
+  formData: IntakeFormData
+}
+
+type IntakeAction =
+  | { type: "UPDATE_STEP_DATA"; stepIndex: number; data: IntakeStepData }
+  | { type: "GO_FORWARD" }
+  | { type: "GO_FORWARD_WITH_DATA"; stepIndex: number; data: IntakeStepData }
+  | { type: "GO_BACK" }
+  | { type: "GO_TO_STEP"; stepIndex: number }
+
+function intakeReducer(state: IntakeState, action: IntakeAction): IntakeState {
+  switch (action.type) {
+    case "UPDATE_STEP_DATA": {
+      return {
+        ...state,
+        formData: {
+          ...state.formData,
+          [`step${action.stepIndex}`]: action.data,
+        },
+      }
+    }
+    case "GO_FORWARD": {
+      const nextStep = getNextStepIndex(
+        state.currentStepIndex,
+        state.formData
+      )
+      if (nextStep < TOTAL_STEPS) {
+        return { ...state, currentStepIndex: nextStep }
+      }
+      return state
+    }
+    case "GO_FORWARD_WITH_DATA": {
+      const updatedFormData = {
+        ...state.formData,
+        [`step${action.stepIndex}`]: action.data,
+      }
+      const nextStep = getNextStepIndex(
+        state.currentStepIndex,
+        updatedFormData
+      )
+      if (nextStep < TOTAL_STEPS) {
+        return {
+          currentStepIndex: nextStep,
+          formData: updatedFormData,
+        }
+      }
+      return { ...state, formData: updatedFormData }
+    }
+    case "GO_BACK": {
+      const prevStep = getPreviousStepIndex(
+        state.currentStepIndex,
+        state.formData
+      )
+      if (prevStep >= 0) {
+        return { ...state, currentStepIndex: prevStep }
+      }
+      return state
+    }
+    case "GO_TO_STEP": {
+      if (action.stepIndex >= 0 && action.stepIndex < TOTAL_STEPS) {
+        return { ...state, currentStepIndex: action.stepIndex }
+      }
+      return state
+    }
+    default:
+      return state
+  }
+}
+
+const initialState: IntakeState = {
+  currentStepIndex: 0,
+  formData: {
     step0: null,
     step1: null,
     step2: null,
@@ -125,36 +214,41 @@ export function useIntakeForm() {
     step4: null,
     step5: null,
     step6: null,
-  })
+  },
+}
+
+export function useIntakeForm() {
+  const queryClient = useQueryClient()
+  const [state, dispatch] = useReducer(intakeReducer, initialState)
 
   const updateStepData = useCallback(
-    (stepIndex: number, data: IntakeStepData) => {
-      setFormData((prev) => ({
-        ...prev,
-        [`step${stepIndex}`]: data,
-      }))
+    <K extends keyof StepDataMap>(stepIndex: K, data: StepDataMap[K]) => {
+      dispatch({ type: "UPDATE_STEP_DATA", stepIndex, data })
     },
     []
   )
 
-  const goForward = useCallback(() => {
-    const nextStep = getNextStepIndex(currentStepIndex, formData)
-    if (nextStep < TOTAL_STEPS) {
-      setCurrentStepIndex(nextStep)
-    }
-  }, [currentStepIndex, formData])
+  const goForward = useCallback(
+    <K extends keyof StepDataMap>(stepData?: StepDataMap[K], stepIndex?: K) => {
+      if (stepData !== undefined && stepIndex !== undefined) {
+        dispatch({
+          type: "GO_FORWARD_WITH_DATA",
+          stepIndex,
+          data: stepData,
+        })
+      } else {
+        dispatch({ type: "GO_FORWARD" })
+      }
+    },
+    []
+  )
 
   const goBack = useCallback(() => {
-    const prevStep = getPreviousStepIndex(currentStepIndex, formData)
-    if (prevStep >= 0) {
-      setCurrentStepIndex(prevStep)
-    }
-  }, [currentStepIndex, formData])
+    dispatch({ type: "GO_BACK" })
+  }, [])
 
   const goToStep = useCallback((stepIndex: number) => {
-    if (stepIndex >= 0 && stepIndex < TOTAL_STEPS) {
-      setCurrentStepIndex(stepIndex)
-    }
+    dispatch({ type: "GO_TO_STEP", stepIndex })
   }, [])
 
   const skipIntake = useMutation({
@@ -165,27 +259,37 @@ export function useIntakeForm() {
       )
       return response.data
     },
-  })
-
-  const submitIntake = useMutation({
-    mutationFn: async () => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/intake`,
-        { formData }
-      )
-      return response.data
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [careCompanionProfileQueryKey],
+      })
     },
   })
 
-  const isFirstStep = currentStepIndex === 0
+  const submitIntake = useMutation({
+    mutationFn: async (data: IntakeFormData) => {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/care-companion/intake`,
+        { formData: data }
+      )
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [careCompanionProfileQueryKey],
+      })
+    },
+  })
+
+  const isFirstStep = state.currentStepIndex === 0
   const isLastStep = (() => {
-    const nextStep = getNextStepIndex(currentStepIndex, formData)
+    const nextStep = getNextStepIndex(state.currentStepIndex, state.formData)
     return nextStep >= TOTAL_STEPS
   })()
 
   return {
-    currentStepIndex,
-    formData,
+    currentStepIndex: state.currentStepIndex,
+    formData: state.formData,
     updateStepData,
     goForward,
     goBack,
@@ -193,9 +297,9 @@ export function useIntakeForm() {
     isFirstStep,
     isLastStep,
     totalSteps: TOTAL_STEPS,
-    skipIntake: skipIntake.mutate,
+    skipIntake: () => skipIntake.mutate(),
     isSkipping: skipIntake.isPending,
-    submitIntake: submitIntake.mutate,
+    submitIntake: () => submitIntake.mutate(state.formData),
     isSubmitting: submitIntake.isPending,
     submitError: submitIntake.error,
   }
