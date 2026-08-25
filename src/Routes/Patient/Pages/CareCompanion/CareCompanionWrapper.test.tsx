@@ -248,4 +248,137 @@ describe("CareCompanionWrapper", () => {
       expect(screen.getByTestId("care-companion-intake")).toBeInTheDocument()
     })
   })
+
+  describe("sub-route rendering", () => {
+    // All sub-route tests need a valid profile so the gate doesn't block
+    const withProfile = () => {
+      profileReturn.data = {
+        intakeCompletedAt: "2025-01-01T00:00:00Z",
+        skippedAt: null,
+      }
+    }
+
+    it("renders CostTrackerPage on /cost-tracker", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/cost-tracker")
+      expect(await screen.findByText("CostTracker")).toBeInTheDocument()
+    })
+
+    it("renders EmergencyCardPage on /emergency-card", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/emergency-card")
+      expect(await screen.findByText("EmergencyCard")).toBeInTheDocument()
+    })
+
+    it("renders MedicationTimelinePage on /medication-timeline", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/medication-timeline")
+      expect(await screen.findByText("MedicationTimeline")).toBeInTheDocument()
+    })
+
+    it("renders MedicationCardsPage on /medication-cards", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/medication-cards")
+      expect(await screen.findByText("MedicationCards")).toBeInTheDocument()
+    })
+
+    it("renders RefillSchedulePage on /refill-schedule", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/refill-schedule")
+      expect(await screen.findByText("RefillSchedule")).toBeInTheDocument()
+    })
+
+    it("renders EducationFeedPage on /education", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/education")
+      expect(await screen.findByText("EducationFeed")).toBeInTheDocument()
+    })
+
+    it("renders PharmacyStockFinderPage on /pharmacy-stock", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/pharmacy-stock")
+      expect(await screen.findByText("PharmacyStock")).toBeInTheDocument()
+    })
+
+    it("renders MedicationLoanPage on /medication-loan", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/medication-loan")
+      expect(await screen.findByText("MedicationLoan")).toBeInTheDocument()
+    })
+
+    it("renders AiAssistantPage on /assistant", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/assistant")
+      expect(await screen.findByText("AiAssistant")).toBeInTheDocument()
+    })
+  })
+
+  describe("loading state with existing profile confirmation", () => {
+    it("skips loading fallback when Zustand intakeCompleted is true even if API is loading", async () => {
+      profileReturn.isLoading = true
+      storeReturn = { intakeCompleted: true }
+      renderWrapper()
+      // hasProfile is true via store, so the loading guard is bypassed and
+      // routes render immediately (inside Suspense).
+      expect(
+        screen.queryByTestId("dashboard-tab-fallback")
+      ).not.toBeInTheDocument()
+      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+    })
+
+    it("skips loading fallback when profile data confirms completion even if isLoading is true", async () => {
+      profileReturn.isLoading = true
+      profileReturn.data = {
+        intakeCompletedAt: "2025-06-01T00:00:00Z",
+        skippedAt: null,
+      }
+      renderWrapper()
+      expect(
+        screen.queryByTestId("dashboard-tab-fallback")
+      ).not.toBeInTheDocument()
+      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+    })
+  })
+
+  describe("error state with cached profile", () => {
+    it("does NOT show error when API errors but profile data has intakeCompletedAt", async () => {
+      profileReturn.isError = true
+      profileReturn.data = {
+        intakeCompletedAt: "2025-03-15T00:00:00Z",
+        skippedAt: null,
+      }
+      renderWrapper()
+      expect(screen.queryByTestId("error-block")).not.toBeInTheDocument()
+      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+    })
+
+    it("does NOT show error when API errors but profile data has skippedAt", async () => {
+      profileReturn.isError = true
+      profileReturn.data = {
+        intakeCompletedAt: null,
+        skippedAt: "2025-03-15T00:00:00Z",
+      }
+      renderWrapper()
+      expect(screen.queryByTestId("error-block")).not.toBeInTheDocument()
+      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+    })
+  })
+
+  describe("redirect with profile confirmation", () => {
+    it("does NOT redirect when API returns no data but Zustand intakeCompleted is true", async () => {
+      storeReturn = { intakeCompleted: true }
+      renderWrapper()
+      // hasProfile is true from store, so no redirect
+      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+    })
+
+    it("does NOT redirect when skippedAt is set even though intakeCompletedAt is null", async () => {
+      profileReturn.data = {
+        intakeCompletedAt: null,
+        skippedAt: "2025-02-01T00:00:00Z",
+      }
+      renderWrapper()
+      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+    })
+  })
 })
