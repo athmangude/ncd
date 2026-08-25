@@ -1,11 +1,139 @@
+// ---------------------------------------------------------------------------
+// Enum const objects — runtime-iterable, with derived union types
+// ---------------------------------------------------------------------------
+
+export const MEDICATION_CATEGORY = {
+  MEDICATION: "MEDICATION",
+  LAB_TEST: "LAB_TEST",
+  CONSULTATION: "CONSULTATION",
+  SUPPLY: "SUPPLY",
+} as const
+
+export type MedicationCategory =
+  (typeof MEDICATION_CATEGORY)[keyof typeof MEDICATION_CATEGORY]
+
+export const INVOICE_SOURCE_TYPE = {
+  SUBMITTED_INVOICE: "SUBMITTED_INVOICE",
+  MEDICAL_INVOICE_ITEM: "MEDICAL_INVOICE_ITEM",
+} as const
+
+export type InvoiceSourceType =
+  (typeof INVOICE_SOURCE_TYPE)[keyof typeof INVOICE_SOURCE_TYPE]
+
+export const PARSE_METHOD = {
+  FUZZY_MATCH: "FUZZY_MATCH",
+  NLP: "NLP",
+  STRUCTURED_INPUT: "STRUCTURED_INPUT",
+  MANUAL: "MANUAL",
+} as const
+
+export type ParseMethod = (typeof PARSE_METHOD)[keyof typeof PARSE_METHOD]
+
+export const REVIEW_STATUS = {
+  PENDING_REVIEW: "PENDING_REVIEW",
+  AUTO_ACCEPTED: "AUTO_ACCEPTED",
+  CONFIRMED: "CONFIRMED",
+  REJECTED: "REJECTED",
+} as const
+
+export type ReviewStatus = (typeof REVIEW_STATUS)[keyof typeof REVIEW_STATUS]
+
+export const CONDITION_TYPE = {
+  HYPERTENSION: "HYPERTENSION",
+  DIABETES: "DIABETES",
+  GENERAL: "GENERAL",
+} as const
+
+export type ConditionType =
+  (typeof CONDITION_TYPE)[keyof typeof CONDITION_TYPE]
+
+export const CONTENT_LOCALE = {
+  EN: "EN",
+  SW: "SW",
+} as const
+
+export type ContentLocale =
+  (typeof CONTENT_LOCALE)[keyof typeof CONTENT_LOCALE]
+
+export const INTERACTION_SEVERITY = {
+  MILD: "MILD",
+  MODERATE: "MODERATE",
+  SEVERE: "SEVERE",
+  CONTRAINDICATED: "CONTRAINDICATED",
+} as const
+
+export type InteractionSeverity =
+  (typeof INTERACTION_SEVERITY)[keyof typeof INTERACTION_SEVERITY]
+
+export const REFILL_STATUS = {
+  UPCOMING: "UPCOMING",
+  DUE: "DUE",
+  OVERDUE: "OVERDUE",
+  REFILLED: "REFILLED",
+  CANCELLED: "CANCELLED",
+} as const
+
+export type RefillStatus = (typeof REFILL_STATUS)[keyof typeof REFILL_STATUS]
+
+export const EDUCATION_CONTENT_TYPE = {
+  DIETARY: "DIETARY",
+  EXERCISE: "EXERCISE",
+  MYTH_BUSTING: "MYTH_BUSTING",
+  EMOTIONAL: "EMOTIONAL",
+  SELF_MONITORING: "SELF_MONITORING",
+  MILESTONE: "MILESTONE",
+  ACCEPTANCE: "ACCEPTANCE",
+} as const
+
+export type EducationContentType =
+  (typeof EDUCATION_CONTENT_TYPE)[keyof typeof EDUCATION_CONTENT_TYPE]
+
+export const DELIVERY_CHANNEL = {
+  PUSH: "PUSH",
+  IN_APP: "IN_APP",
+  BOTH: "BOTH",
+} as const
+
+export type DeliveryChannel =
+  (typeof DELIVERY_CHANNEL)[keyof typeof DELIVERY_CHANNEL]
+
+export const STOCK_STATUS = {
+  IN_STOCK: "IN_STOCK",
+  LOW_STOCK: "LOW_STOCK",
+  OUT_OF_STOCK: "OUT_OF_STOCK",
+} as const
+
+export type StockStatus = (typeof STOCK_STATUS)[keyof typeof STOCK_STATUS]
+
+export const MEDICATION_LOAN_TRIGGER = {
+  PREDICTIVE: "PREDICTIVE",
+  OVERDUE_REFILL: "OVERDUE_REFILL",
+  PATIENT_REQUESTED: "PATIENT_REQUESTED",
+} as const
+
+export type MedicationLoanTrigger =
+  (typeof MEDICATION_LOAN_TRIGGER)[keyof typeof MEDICATION_LOAN_TRIGGER]
+
+export const MESSAGE_ROLE = {
+  USER: "USER",
+  ASSISTANT: "ASSISTANT",
+  SYSTEM: "SYSTEM",
+} as const
+
+export type MessageRole = (typeof MESSAGE_ROLE)[keyof typeof MESSAGE_ROLE]
+
+// ---------------------------------------------------------------------------
+// Interfaces
+// ---------------------------------------------------------------------------
+
 // Medication taxonomy (simplified from MedicationTaxonomyEntry)
 export interface Medication {
   id: string
   genericName: string
   brandNames: string[]
   strengths: string[]
-  category: "MEDICATION" | "LAB_TEST" | "CONSULTATION" | "SUPPLY"
-  conditionTags: ("HYPERTENSION" | "DIABETES" | "GENERAL")[]
+  category: MedicationCategory
+  conditionTags: ConditionType[]
 }
 
 // Patient's relationship with a medication (from PatientMedicationRecord)
@@ -45,7 +173,7 @@ export interface CostSummary {
 }
 
 export interface CostCategoryBreakdown {
-  category: "MEDICATION" | "LAB_TEST" | "CONSULTATION" | "SUPPLY"
+  category: MedicationCategory
   totalSpend: string
   percentage: number
   transactionCount: number
@@ -54,8 +182,8 @@ export interface CostCategoryBreakdown {
 // Emergency card
 export interface EmergencyCard {
   id: string
-  conditionType: "HYPERTENSION" | "DIABETES" | "GENERAL"
-  locale: "EN" | "SW"
+  conditionType: ConditionType
+  locale: ContentLocale
   title: string
   warningSymptoms: { symptom: string; severity: "warning" | "critical" }[]
   immediateActions: { step: number; action: string }[]
@@ -70,7 +198,7 @@ export interface EmergencyCard {
 export interface MedicationCard {
   id: string
   medication: Medication
-  locale: "EN" | "SW"
+  locale: ContentLocale
   description: string
   howItWorks: string | null
   commonSideEffects: { effect: string; frequency: string; advice: string }[]
@@ -84,7 +212,7 @@ export interface MedicationInteraction {
   medicationA: string
   medicationB: string | null
   herbName: string | null
-  severity: "MILD" | "MODERATE" | "SEVERE" | "CONTRAINDICATED"
+  severity: InteractionSeverity
   description: string
   clinicalEffect: string
   recommendation: string
@@ -95,27 +223,18 @@ export interface RefillSchedule {
   id: string
   medicationName: string
   expectedRefillDate: string
-  status: "UPCOMING" | "DUE" | "OVERDUE" | "REFILLED"
+  status: RefillStatus
   daysUntilRefill: number
   estimatedDaysSupply: number | null
   escalatedToLoanOffer: boolean
 }
 
 // Education content
-export type EducationContentType =
-  | "DIETARY"
-  | "EXERCISE"
-  | "MYTH_BUSTING"
-  | "EMOTIONAL"
-  | "SELF_MONITORING"
-  | "MILESTONE"
-  | "ACCEPTANCE"
-
 export interface EducationContentCard {
   id: string
-  conditionType: "HYPERTENSION" | "DIABETES" | "GENERAL"
+  conditionType: ConditionType
   contentType: EducationContentType
-  locale: "EN" | "SW"
+  locale: ContentLocale
   title: string
   body: string
   weekNumber: number
@@ -129,7 +248,7 @@ export interface PharmacyStock {
   facilityId: number
   facilityName: string
   medicationName: string
-  status: "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK"
+  status: StockStatus
   lastReportedAt: string
   distance: number | null
   lat: number
@@ -156,7 +275,7 @@ export interface EmergencyTransportCredit {
 // AI assistant
 export interface AssistantMessage {
   id: string
-  role: "USER" | "ASSISTANT" | "SYSTEM"
+  role: MessageRole
   content: string
   guardrailFlags: string[]
   suggestedActions: {
