@@ -108,6 +108,19 @@ export const DELIVERY_CHANNEL = {
 export type DeliveryChannel =
   (typeof DELIVERY_CHANNEL)[keyof typeof DELIVERY_CHANNEL]
 
+export const NOTIFICATION_TYPE = {
+  REFILL_REMINDER: "REFILL_REMINDER",
+  REFILL_OVERDUE: "REFILL_OVERDUE",
+  REFILL_LOAN_OFFER: "REFILL_LOAN_OFFER",
+  PREDICTIVE_CREDIT_OFFER: "PREDICTIVE_CREDIT_OFFER",
+  EDUCATION_WEEKLY: "EDUCATION_WEEKLY",
+  MEDICATION_CARD_AVAILABLE: "MEDICATION_CARD_AVAILABLE",
+  LAB_REMINDER: "LAB_REMINDER",
+} as const
+
+export type NotificationType =
+  (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE]
+
 export const STOCK_STATUS = {
   IN_STOCK: "IN_STOCK",
   LOW_STOCK: "LOW_STOCK",
@@ -678,6 +691,33 @@ export interface TimelineEntry {
   gapDaysFromPrevious: number | null
   /** True when gap exceeds 1.5x the average refill interval. */
   isGapAnomaly: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 17: CareCompanionNotification
+// ---------------------------------------------------------------------------
+
+/**
+ * Care companion notification delivered via push or in-app feed.
+ * Each notification type maps to a specific deep-link route within
+ * the care companion section.
+ *
+ * readAt is null for unread notifications. sentAt is null when the
+ * notification is scheduled but not yet delivered. metadata carries
+ * type-specific payload (e.g. medication name for refill reminders).
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 3
+ */
+export interface CareCompanionNotification {
+  id: string
+  type: NotificationType
+  title: string
+  body: string
+  deepLink: string
+  scheduledAt: string
+  sentAt: string | null
+  readAt: string | null
+  metadata: Record<string, string> | null
 }
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,106 @@
+[
+  {
+    "id": "notif-refill-reminder-001",
+    "type": "REFILL_REMINDER",
+    "title": "Metformin 500mg refill due soon",
+    "body": "Your Metformin 500mg supply is expected to run out in 3 days. Refill now to stay on track.",
+    "deepLink": "/patients/care-companion/refill-schedule",
+    "scheduledAt": "2026-08-25T06:00:00Z",
+    "sentAt": "2026-08-25T06:01:12Z",
+    "readAt": null,
+    "metadata": {
+      "medicationName": "Metformin 500mg",
+      "refillScheduleId": "refill-metformin-grace",
+      "daysUntilRefill": "3"
+    }
+  },
+  {
+    "id": "notif-refill-overdue-001",
+    "type": "REFILL_OVERDUE",
+    "title": "Aspirin 75mg refill overdue",
+    "body": "Your Aspirin 75mg refill is 5 days overdue. Missing doses can affect your blood pressure management.",
+    "deepLink": "/patients/care-companion/refill-schedule",
+    "scheduledAt": "2026-08-20T06:00:00Z",
+    "sentAt": "2026-08-20T06:00:45Z",
+    "readAt": "2026-08-20T08:15:00Z",
+    "metadata": {
+      "medicationName": "Aspirin 75mg",
+      "refillScheduleId": "refill-aspirin-grace",
+      "daysOverdue": "5"
+    }
+  },
+  {
+    "id": "notif-refill-loan-001",
+    "type": "REFILL_LOAN_OFFER",
+    "title": "Medication loan available for Aspirin 75mg",
+    "body": "Your Aspirin 75mg is overdue. You are pre-approved for a KES 450 medication loan to cover this refill.",
+    "deepLink": "/patients/care-companion/medication-loan",
+    "scheduledAt": "2026-08-21T09:00:00Z",
+    "sentAt": "2026-08-21T09:00:33Z",
+    "readAt": null,
+    "metadata": {
+      "medicationName": "Aspirin 75mg",
+      "loanAmount": "450",
+      "currency": "KES"
+    }
+  },
+  {
+    "id": "notif-predictive-credit-001",
+    "type": "PREDICTIVE_CREDIT_OFFER",
+    "title": "Pre-approved credit for upcoming refills",
+    "body": "Based on your medication schedule, you may need KES 1,850 for refills this month. A medication loan is ready for you.",
+    "deepLink": "/patients/care-companion/medication-loan",
+    "scheduledAt": "2026-08-18T08:00:00Z",
+    "sentAt": "2026-08-18T08:01:05Z",
+    "readAt": "2026-08-18T12:30:00Z",
+    "metadata": {
+      "preApprovedAmount": "1850",
+      "currency": "KES",
+      "medicationCount": "3"
+    }
+  },
+  {
+    "id": "notif-education-weekly-001",
+    "type": "EDUCATION_WEEKLY",
+    "title": "This week: Managing blood sugar with local foods",
+    "body": "Learn how everyday Kenyan foods like sukuma wiki and githeri can help keep your blood sugar stable.",
+    "deepLink": "/patients/care-companion/education",
+    "scheduledAt": "2026-08-25T07:00:00Z",
+    "sentAt": "2026-08-25T07:00:22Z",
+    "readAt": null,
+    "metadata": {
+      "educationCardId": "edu-diabetes-dietary-w34",
+      "contentType": "DIETARY",
+      "conditionType": "DIABETES"
+    }
+  },
+  {
+    "id": "notif-medication-card-001",
+    "type": "MEDICATION_CARD_AVAILABLE",
+    "title": "New medication card: Amlodipine 5mg",
+    "body": "A detailed guide for your Amlodipine 5mg is now available. Learn about side effects, storage, and what to avoid.",
+    "deepLink": "/patients/care-companion/medication-cards",
+    "scheduledAt": "2026-08-22T10:00:00Z",
+    "sentAt": "2026-08-22T10:00:18Z",
+    "readAt": "2026-08-22T14:45:00Z",
+    "metadata": {
+      "medicationCardId": "medcard-amlodipine-en",
+      "medicationName": "Amlodipine 5mg"
+    }
+  },
+  {
+    "id": "notif-lab-reminder-001",
+    "type": "LAB_REMINDER",
+    "title": "HbA1c test due this month",
+    "body": "Your last HbA1c test was 3 months ago. Regular monitoring helps you and your doctor manage your diabetes effectively.",
+    "deepLink": "/patients/care-companion",
+    "scheduledAt": "2026-08-24T07:00:00Z",
+    "sentAt": "2026-08-24T07:00:55Z",
+    "readAt": null,
+    "metadata": {
+      "labTestName": "HbA1c",
+      "lastTestDate": "2026-05-20",
+      "conditionType": "DIABETES"
+    }
+  }
+]
