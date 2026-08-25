@@ -24,6 +24,9 @@ const PharmacyStockFinderPage = lazy(
 )
 const MedicationLoanPage = lazy(() => import("./MedicationLoanPage"))
 const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
+const NotificationFeedPage = lazy(
+  () => import("./Notifications/NotificationFeedPage")
+)
 
 export default function CareCompanionWrapper() {
   const { intakeCompleted } = useCareCompanionStore()
@@ -148,6 +151,14 @@ export default function CareCompanionWrapper() {
           element={
             <RouteMetadata title="Medication Loan">
               <MedicationLoanPage />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
+            <RouteMetadata title="Notifications">
+              <NotificationFeedPage />
             </RouteMetadata>
           }
         />
