@@ -1,5 +1,4 @@
 import { Phone } from "lucide-react"
-import { cn } from "@/lib/utils"
 
 const EMERGENCY_NUMBERS = [
   { label: "Emergency (Kenya)", number: "999" },
@@ -18,9 +17,7 @@ export function EmergencyCardStaticFallback() {
     <div
       role="alert"
       aria-label="Emergency contacts"
-      className={cn(
-        "rounded-md border border-destructive/30 bg-destructive/5 p-4",
-      )}
+      className="rounded-md border border-destructive/30 bg-destructive/5 p-4"
     >
       <div className="mb-3 flex items-center gap-2">
         <Phone className="size-5 text-destructive" />
@@ -39,10 +36,7 @@ export function EmergencyCardStaticFallback() {
             <span className="text-sm text-muted-foreground">{label}</span>
             <a
               href={`tel:${number.replace(/\s/g, "")}`}
-              className={cn(
-                "font-mono text-sm font-medium text-destructive",
-                "underline underline-offset-2",
-              )}
+              className="font-mono text-sm font-medium text-destructive underline underline-offset-2"
             >
               {number}
             </a>

@@ -1,7 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from "react"
 import { AlertTriangle, RotateCcw } from "lucide-react"
 import { Button } from "@/components/Button"
-import { cn } from "@/lib/utils"
 
 interface SectionErrorBoundaryProps {
   sectionName: string
@@ -61,9 +60,7 @@ export class SectionErrorBoundary extends Component<
     return (
       <div
         role="alert"
-        className={cn(
-          "flex flex-col items-center gap-3 rounded-md bg-muted p-6 text-center",
-        )}
+        className="flex flex-col items-center gap-3 rounded-md bg-muted p-6 text-center"
       >
         <AlertTriangle className="size-6 text-muted-foreground" />
         <p className="text-sm font-medium text-muted-foreground">
