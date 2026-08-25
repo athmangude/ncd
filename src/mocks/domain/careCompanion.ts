@@ -65,6 +65,8 @@ const EDUCATION_CARDS_KEY = "care-companion-education-cards"
 const PHARMACY_STOCK_KEY = "care-companion-pharmacy-stock"
 const MEDICATION_LOAN_KEY = "care-companion-medication-loan"
 const EMERGENCY_TRANSPORT_KEY = "care-companion-emergency-transport"
+const MEDICATION_TAXONOMY_KEY = "care-companion-medication-taxonomy"
+const PATIENT_MEDICATION_RECORDS_KEY = "care-companion-patient-medication-records"
 
 // ---------------------------------------------------------------------------
 // Profile CRUD
@@ -202,6 +204,50 @@ export function getEmergencyTransportCredit(): EmergencyTransportCredit {
   return readObject<EmergencyTransportCredit>(
     EMERGENCY_TRANSPORT_KEY,
     emergencyTransportCreditSeed as unknown as EmergencyTransportCredit,
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Medication taxonomy and patient medication records (Phase 0)
+// ---------------------------------------------------------------------------
+
+/** Full medication taxonomy seeded from the reference fixture. */
+export function getMedicationTaxonomy(): MedicationTaxonomyEntry[] {
+  return readCollection<MedicationTaxonomyEntry>(
+    MEDICATION_TAXONOMY_KEY,
+    medicationTaxonomySeed as unknown as MedicationTaxonomyEntry[],
+  )
+}
+
+/**
+ * Search the medication taxonomy by freetext query. Matches against
+ * genericName, brandNames, and synonyms (case-insensitive substring).
+ * Returns all active entries when no query is provided.
+ */
+export function searchTaxonomy(query?: string): MedicationTaxonomyEntry[] {
+  const all = getMedicationTaxonomy()
+  if (!query || query.trim() === "") return all
+
+  const lower = query.toLowerCase()
+  return all.filter((entry) => {
+    if (entry.genericName.toLowerCase().includes(lower)) return true
+    if (entry.brandNames?.some((b) => b.toLowerCase().includes(lower)))
+      return true
+    if (entry.synonyms?.some((s) => s.toLowerCase().includes(lower)))
+      return true
+    return false
+  })
+}
+
+/**
+ * Patient medication records from the PatientMedicationRecord fixture.
+ * Uses the spec-aligned format with medicationId FK and denormalized
+ * medication subset (genericName, brandNames, category).
+ */
+export function getPatientMedicationRecords(): PatientMedicationRecord[] {
+  return readCollection<PatientMedicationRecord>(
+    PATIENT_MEDICATION_RECORDS_KEY,
+    patientMedicationRecordsSeed as unknown as PatientMedicationRecord[],
   )
 }
 

@@ -102,19 +102,95 @@ describe("GET /api/patients/:id/care-companion/home", () => {
 })
 
 // ---------------------------------------------------------------------------
-// 2. Patient medications
+// 2. Medication taxonomy search
 // ---------------------------------------------------------------------------
 
-describe("GET /api/patients/:id/medications", () => {
-  it("returns a medications array", async () => {
-    const data = await (await get("/medications")).json()
-    expect(Array.isArray(data.medications)).toBe(true)
-    expect(data.medications.length).toBe(3)
+describe("GET /api/medications/taxonomy", () => {
+  const getTaxonomy = async (params = "") =>
+    fetch(`${ORIGIN}/api/medications/taxonomy${params ? "?" + params : ""}`)
+
+  it("returns all entries when no query param is provided", async () => {
+    const data = await (await getTaxonomy()).json()
+    expect(Array.isArray(data)).toBe(true)
+    expect(data.length).toBeGreaterThanOrEqual(15)
+  })
+
+  it("filters by q param (case-insensitive substring match)", async () => {
+    const data = await (await getTaxonomy("q=metf")).json()
+    expect(data.length).toBe(1)
+    expect(data[0].genericName).toBe("Metformin")
+  })
+
+  it("matches brand names in search", async () => {
+    const data = await (await getTaxonomy("q=glucophage")).json()
+    expect(data.length).toBe(1)
+    expect(data[0].genericName).toBe("Metformin")
+  })
+
+  it("matches synonyms in search", async () => {
+    const data = await (await getTaxonomy("q=sugar+medicine")).json()
+    expect(data.length).toBeGreaterThanOrEqual(1)
+    expect(data[0].genericName).toBe("Metformin")
+  })
+
+  it("filters by category param", async () => {
+    const data = await (await getTaxonomy("category=LAB_TEST")).json()
+    expect(data.length).toBe(1)
+    expect(data[0].genericName).toBe("HbA1c Test")
+  })
+
+  it("combines q and category filters", async () => {
+    const data = await (
+      await getTaxonomy("q=met&category=MEDICATION")
+    ).json()
+    expect(data.length).toBeGreaterThanOrEqual(1)
+    for (const entry of data) {
+      expect(entry.category).toBe("MEDICATION")
+    }
+  })
+
+  it("respects limit param with default of 20", async () => {
+    const data = await (await getTaxonomy("limit=3")).json()
+    expect(data.length).toBeLessThanOrEqual(3)
+  })
+
+  it("returns empty array for non-matching query", async () => {
+    const data = await (await getTaxonomy("q=zzzznonexistent")).json()
+    expect(data).toEqual([])
   })
 })
 
 // ---------------------------------------------------------------------------
-// 3. Medication timeline (paginated)
+// 3. Patient medications (with taxonomy enrichment)
+// ---------------------------------------------------------------------------
+
+describe("GET /api/patients/:id/medications", () => {
+  it("returns a medications array from patient-medication-records", async () => {
+    const data = await (await get("/medications")).json()
+    expect(Array.isArray(data.medications)).toBe(true)
+    expect(data.medications.length).toBe(6)
+  })
+
+  it("enriches each record with taxonomy details", async () => {
+    const data = await (await get("/medications")).json()
+    for (const med of data.medications) {
+      expect(med.medication).toHaveProperty("genericName")
+      expect(med.medication).toHaveProperty("brandNames")
+      expect(med.medication).toHaveProperty("category")
+      expect(med.medication.genericName).toBeTruthy()
+    }
+  })
+
+  it("includes medicationId foreign key on each record", async () => {
+    const data = await (await get("/medications")).json()
+    for (const med of data.medications) {
+      expect(med.medicationId).toBeTruthy()
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 4. Medication timeline (paginated)
 // ---------------------------------------------------------------------------
 
 describe("GET /api/patients/:id/medication-timeline", () => {

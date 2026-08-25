@@ -6,6 +6,9 @@ import {
   saveCareCompanionProfile,
   patchCareCompanionProfile,
   getPatientMedications,
+  getPatientMedicationRecords,
+  getMedicationTaxonomy,
+  searchTaxonomy,
   getMedicationTimeline,
   getCostSummary,
   getMatchedEmergencyCard,
@@ -29,10 +32,11 @@ import type { CareCompanionProfile } from "@/types/care-companion"
 /**
  * Care Companion MSW handlers.
  *
- * 21 endpoints covering the full care companion feature set: BFF home,
- * medications, timeline, cost tracker, emergency card, medication intelligence,
- * refill schedule, education feed, pharmacy stock, medication loan,
- * AI assistant, interaction check, and profile (intake questionnaire).
+ * 23 endpoints covering the full care companion feature set: BFF home,
+ * medication taxonomy search, patient medications, timeline, cost tracker,
+ * emergency card, medication intelligence, refill schedule, education feed,
+ * pharmacy stock, medication loan, AI assistant, interaction check, and
+ * profile (intake questionnaire).
  *
  * All data is read from JSON fixtures via the domain module, with localStorage
  * persistence for user mutations (profile saves, education card views).
@@ -47,10 +51,45 @@ export const careCompanionHandlers = [
   }),
 
   // -------------------------------------------------------------------------
-  // 2. Patient medication list
+  // 2. Medication taxonomy search
+  // -------------------------------------------------------------------------
+  http.get("/api/medications/taxonomy", ({ request }) => {
+    const url = new URL(request.url)
+    const q = url.searchParams.get("q") ?? undefined
+    const category = url.searchParams.get("category") ?? undefined
+    const limit = Number(url.searchParams.get("limit")) || 20
+
+    let results = searchTaxonomy(q)
+
+    if (category) {
+      results = results.filter((entry) => entry.category === category)
+    }
+
+    return HttpResponse.json(results.slice(0, limit))
+  }),
+
+  // -------------------------------------------------------------------------
+  // 3. Patient medication list (with taxonomy enrichment)
   // -------------------------------------------------------------------------
   http.get("/api/patients/:id/medications", () => {
-    const medications = getPatientMedications()
+    const records = getPatientMedicationRecords()
+    const taxonomy = getMedicationTaxonomy()
+    const taxonomyById = new Map(taxonomy.map((t) => [t.id, t]))
+
+    const medications = records.map((record) => {
+      const entry = taxonomyById.get(record.medicationId)
+      return {
+        ...record,
+        medication: entry
+          ? {
+              genericName: entry.genericName,
+              brandNames: entry.brandNames ?? [],
+              category: entry.category,
+            }
+          : record.medication,
+      }
+    })
+
     return HttpResponse.json({ medications })
   }),
 
