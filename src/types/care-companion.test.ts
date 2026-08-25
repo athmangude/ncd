@@ -1,4 +1,19 @@
 import { describe, it, expect } from "vitest"
+import {
+  MEDICATION_CATEGORY,
+  INVOICE_SOURCE_TYPE,
+  PARSE_METHOD,
+  REVIEW_STATUS,
+  CONDITION_TYPE,
+  CONTENT_LOCALE,
+  INTERACTION_SEVERITY,
+  REFILL_STATUS,
+  EDUCATION_CONTENT_TYPE,
+  DELIVERY_CHANNEL,
+  STOCK_STATUS,
+  MEDICATION_LOAN_TRIGGER,
+  MESSAGE_ROLE,
+} from "./care-companion"
 import type {
   Medication,
   PatientMedication,
@@ -17,6 +32,18 @@ import type {
   AssistantMessage,
   CareCompanionHome,
   CareCompanionProfile,
+  MedicationCategory,
+  InvoiceSourceType,
+  ParseMethod,
+  ReviewStatus,
+  ConditionType,
+  ContentLocale,
+  InteractionSeverity,
+  RefillStatus,
+  DeliveryChannel,
+  StockStatus,
+  MedicationLoanTrigger,
+  MessageRole,
 } from "./care-companion"
 
 // ---------------------------------------------------------------------------
@@ -482,8 +509,9 @@ describe("care-companion types", () => {
         "DUE",
         "OVERDUE",
         "REFILLED",
+        "CANCELLED",
       ]
-      expect(statuses).toHaveLength(4)
+      expect(statuses).toHaveLength(5)
     })
 
     it("supports null for estimatedDaysSupply", () => {
@@ -911,6 +939,296 @@ describe("care-companion types", () => {
       }
       // EducationContentType is a type alias, verified via the card fixture
       expect(Object.keys(typeChecks)).toHaveLength(16)
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Enum const object tests
+// ---------------------------------------------------------------------------
+// These tests verify that each `as const` object:
+//   1. Is exported and importable at runtime (not just a type)
+//   2. Contains exactly the members defined in the spec
+//   3. Has key-value identity (each key maps to a string equal to itself)
+//   4. Is not accidentally mutated or extended
+// ---------------------------------------------------------------------------
+
+describe("care-companion enum const objects", () => {
+  /**
+   * Helper: given an enum const object and the expected set of string values,
+   * assert that the object has exactly those keys, each mapping to itself.
+   */
+  function assertEnumShape(
+    enumObj: Record<string, string>,
+    expectedValues: string[],
+  ) {
+    const keys = Object.keys(enumObj)
+    const values = Object.values(enumObj)
+
+    // Correct member count
+    expect(keys).toHaveLength(expectedValues.length)
+    expect(values).toHaveLength(expectedValues.length)
+
+    // Every expected value is present as both a key and a value
+    for (const val of expectedValues) {
+      expect(enumObj).toHaveProperty(val, val)
+    }
+
+    // No extra keys beyond the expected set
+    for (const key of keys) {
+      expect(expectedValues).toContain(key)
+    }
+
+    // Key-value identity: each key equals its own value
+    for (const key of keys) {
+      expect(enumObj[key]).toBe(key)
+    }
+  }
+
+  describe("MEDICATION_CATEGORY", () => {
+    it("contains exactly the 4 spec-defined members", () => {
+      assertEnumShape(MEDICATION_CATEGORY, [
+        "MEDICATION",
+        "LAB_TEST",
+        "CONSULTATION",
+        "SUPPLY",
+      ])
+    })
+
+    it("values are usable as MedicationCategory type", () => {
+      const val: MedicationCategory = MEDICATION_CATEGORY.MEDICATION
+      expect(val).toBe("MEDICATION")
+    })
+  })
+
+  describe("INVOICE_SOURCE_TYPE", () => {
+    it("contains exactly the 2 spec-defined members", () => {
+      assertEnumShape(INVOICE_SOURCE_TYPE, [
+        "SUBMITTED_INVOICE",
+        "MEDICAL_INVOICE_ITEM",
+      ])
+    })
+
+    it("values are usable as InvoiceSourceType type", () => {
+      const val: InvoiceSourceType = INVOICE_SOURCE_TYPE.SUBMITTED_INVOICE
+      expect(val).toBe("SUBMITTED_INVOICE")
+    })
+  })
+
+  describe("PARSE_METHOD", () => {
+    it("contains exactly the 4 spec-defined members", () => {
+      assertEnumShape(PARSE_METHOD, [
+        "FUZZY_MATCH",
+        "NLP",
+        "STRUCTURED_INPUT",
+        "MANUAL",
+      ])
+    })
+
+    it("values are usable as ParseMethod type", () => {
+      const val: ParseMethod = PARSE_METHOD.NLP
+      expect(val).toBe("NLP")
+    })
+  })
+
+  describe("REVIEW_STATUS", () => {
+    it("contains exactly the 4 spec-defined members", () => {
+      assertEnumShape(REVIEW_STATUS, [
+        "PENDING_REVIEW",
+        "AUTO_ACCEPTED",
+        "CONFIRMED",
+        "REJECTED",
+      ])
+    })
+
+    it("values are usable as ReviewStatus type", () => {
+      const val: ReviewStatus = REVIEW_STATUS.PENDING_REVIEW
+      expect(val).toBe("PENDING_REVIEW")
+    })
+  })
+
+  describe("CONDITION_TYPE", () => {
+    it("contains exactly the 3 spec-defined members", () => {
+      assertEnumShape(CONDITION_TYPE, [
+        "HYPERTENSION",
+        "DIABETES",
+        "GENERAL",
+      ])
+    })
+
+    it("values are usable as ConditionType type", () => {
+      const val: ConditionType = CONDITION_TYPE.DIABETES
+      expect(val).toBe("DIABETES")
+    })
+  })
+
+  describe("CONTENT_LOCALE", () => {
+    it("contains exactly the 2 spec-defined members", () => {
+      assertEnumShape(CONTENT_LOCALE, ["EN", "SW"])
+    })
+
+    it("values are usable as ContentLocale type", () => {
+      const val: ContentLocale = CONTENT_LOCALE.SW
+      expect(val).toBe("SW")
+    })
+  })
+
+  describe("INTERACTION_SEVERITY", () => {
+    it("contains exactly the 4 spec-defined members", () => {
+      assertEnumShape(INTERACTION_SEVERITY, [
+        "MILD",
+        "MODERATE",
+        "SEVERE",
+        "CONTRAINDICATED",
+      ])
+    })
+
+    it("values are usable as InteractionSeverity type", () => {
+      const val: InteractionSeverity = INTERACTION_SEVERITY.CONTRAINDICATED
+      expect(val).toBe("CONTRAINDICATED")
+    })
+  })
+
+  describe("REFILL_STATUS", () => {
+    it("contains exactly the 5 spec-defined members", () => {
+      assertEnumShape(REFILL_STATUS, [
+        "UPCOMING",
+        "DUE",
+        "OVERDUE",
+        "REFILLED",
+        "CANCELLED",
+      ])
+    })
+
+    it("values are usable as RefillStatus type", () => {
+      const val: RefillStatus = REFILL_STATUS.CANCELLED
+      expect(val).toBe("CANCELLED")
+    })
+  })
+
+  describe("EDUCATION_CONTENT_TYPE", () => {
+    it("contains all spec-defined members plus implementation additions", () => {
+      // Spec defines 5: DIETARY, MYTH_BUSTING, EMOTIONAL, SELF_MONITORING, MILESTONE
+      // Implementation adds EXERCISE and ACCEPTANCE (7 total)
+      assertEnumShape(EDUCATION_CONTENT_TYPE, [
+        "DIETARY",
+        "EXERCISE",
+        "MYTH_BUSTING",
+        "EMOTIONAL",
+        "SELF_MONITORING",
+        "MILESTONE",
+        "ACCEPTANCE",
+      ])
+    })
+
+    it("values are usable as EducationContentType type", () => {
+      const val: EducationContentType = EDUCATION_CONTENT_TYPE.DIETARY
+      expect(val).toBe("DIETARY")
+    })
+  })
+
+  describe("DELIVERY_CHANNEL", () => {
+    it("contains exactly the 3 spec-defined members", () => {
+      assertEnumShape(DELIVERY_CHANNEL, ["PUSH", "IN_APP", "BOTH"])
+    })
+
+    it("values are usable as DeliveryChannel type", () => {
+      const val: DeliveryChannel = DELIVERY_CHANNEL.BOTH
+      expect(val).toBe("BOTH")
+    })
+  })
+
+  describe("STOCK_STATUS", () => {
+    it("contains exactly the 3 spec-defined members", () => {
+      assertEnumShape(STOCK_STATUS, [
+        "IN_STOCK",
+        "LOW_STOCK",
+        "OUT_OF_STOCK",
+      ])
+    })
+
+    it("values are usable as StockStatus type", () => {
+      const val: StockStatus = STOCK_STATUS.OUT_OF_STOCK
+      expect(val).toBe("OUT_OF_STOCK")
+    })
+  })
+
+  describe("MEDICATION_LOAN_TRIGGER", () => {
+    it("contains exactly the 3 spec-defined members", () => {
+      assertEnumShape(MEDICATION_LOAN_TRIGGER, [
+        "PREDICTIVE",
+        "OVERDUE_REFILL",
+        "PATIENT_REQUESTED",
+      ])
+    })
+
+    it("values are usable as MedicationLoanTrigger type", () => {
+      const val: MedicationLoanTrigger =
+        MEDICATION_LOAN_TRIGGER.PATIENT_REQUESTED
+      expect(val).toBe("PATIENT_REQUESTED")
+    })
+  })
+
+  describe("MESSAGE_ROLE", () => {
+    it("contains exactly the 3 spec-defined members", () => {
+      assertEnumShape(MESSAGE_ROLE, ["USER", "ASSISTANT", "SYSTEM"])
+    })
+
+    it("values are usable as MessageRole type", () => {
+      const val: MessageRole = MESSAGE_ROLE.SYSTEM
+      expect(val).toBe("SYSTEM")
+    })
+  })
+
+  describe("cross-cutting enum guarantees", () => {
+    const allEnums: Record<string, Record<string, string>> = {
+      MEDICATION_CATEGORY,
+      INVOICE_SOURCE_TYPE,
+      PARSE_METHOD,
+      REVIEW_STATUS,
+      CONDITION_TYPE,
+      CONTENT_LOCALE,
+      INTERACTION_SEVERITY,
+      REFILL_STATUS,
+      EDUCATION_CONTENT_TYPE,
+      DELIVERY_CHANNEL,
+      STOCK_STATUS,
+      MEDICATION_LOAN_TRIGGER,
+      MESSAGE_ROLE,
+    }
+
+    it("all 13 enum objects are exported", () => {
+      expect(Object.keys(allEnums)).toHaveLength(13)
+      for (const enumObj of Object.values(allEnums)) {
+        expect(enumObj).toBeDefined()
+        expect(typeof enumObj).toBe("object")
+      }
+    })
+
+    it("no enum object is empty", () => {
+      for (const [name, enumObj] of Object.entries(allEnums)) {
+        expect(Object.keys(enumObj).length).toBeGreaterThan(
+          0,
+          // Template literal for diagnostic message if this ever fails
+        )
+      }
+    })
+
+    it("all values across all enums are uppercase strings", () => {
+      for (const [name, enumObj] of Object.entries(allEnums)) {
+        for (const [key, value] of Object.entries(enumObj)) {
+          expect(typeof value).toBe("string")
+          expect(value).toBe(value.toUpperCase())
+        }
+      }
+    })
+
+    it("key-value identity holds for every member of every enum", () => {
+      for (const enumObj of Object.values(allEnums)) {
+        for (const [key, value] of Object.entries(enumObj)) {
+          expect(key).toBe(value)
+        }
+      }
     })
   })
 })
