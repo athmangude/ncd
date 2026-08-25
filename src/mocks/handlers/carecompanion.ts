@@ -94,13 +94,15 @@ export const careCompanionHandlers = [
   }),
 
   // -------------------------------------------------------------------------
-  // 3. Medication timeline (paginated)
+  // 3. Medication timeline (paginated, with date range filtering)
   // -------------------------------------------------------------------------
   http.get("/api/patients/:id/medication-timeline", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 20
     const offset = Number(url.searchParams.get("offset")) || 0
     const medicationId = url.searchParams.get("medicationId")
+    const from = url.searchParams.get("from")
+    const to = url.searchParams.get("to")
 
     let entries = getMedicationTimeline()
 
@@ -113,10 +115,18 @@ export const careCompanionHandlers = [
       )
     }
 
+    // Optional date range filter (ISO date strings compared lexicographically)
+    if (from) {
+      entries = entries.filter((e) => e.date >= from)
+    }
+    if (to) {
+      entries = entries.filter((e) => e.date <= to)
+    }
+
     const total = entries.length
     const paged = entries.slice(offset, offset + limit)
 
-    // Compute summary
+    // Compute summary from the full filtered set (before pagination)
     const medNames = new Set(entries.map((e) => e.medicationName))
     const facilityNames = new Set(entries.map((e) => e.facilityName))
     const dates = entries.map((e) => e.date).sort()
@@ -133,6 +143,23 @@ export const careCompanionHandlers = [
       },
       pagination: { total, limit, offset },
     })
+  }),
+
+  // -------------------------------------------------------------------------
+  // 3a. Medication timeline export (PDF placeholder)
+  // -------------------------------------------------------------------------
+  http.get("/api/patients/:id/medication-timeline/export", () => {
+    return new HttpResponse(
+      "Medication timeline export — PDF generation is not available in the prototype. This placeholder confirms the endpoint is reachable.",
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition":
+            'attachment; filename="medication-timeline.pdf"',
+        },
+      },
+    )
   }),
 
   // -------------------------------------------------------------------------
