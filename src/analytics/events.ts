@@ -256,6 +256,11 @@ export const EVENTS = {
     HOME: {
       VIEW: "CARE_COMPANION:Home:view",
       CARD_TAP: "CARE_COMPANION:Home:card-tap",
+      EMERGENCY_CARD_TAP: "CARE_COMPANION:Home:emergency-card-tap",
+      REFILL_CARD_TAP: "CARE_COMPANION:Home:refill-card-tap",
+      COST_CARD_TAP: "CARE_COMPANION:Home:cost-card-tap",
+      EDUCATION_CARD_VIEW: "CARE_COMPANION:Home:education-card-view",
+      AI_ASSISTANT_OPEN: "CARE_COMPANION:Home:ai-assistant-open",
     },
     EMERGENCY_CARD: {
       VIEW: "CARE_COMPANION:EmergencyCard:view",
@@ -264,42 +269,61 @@ export const EVENTS = {
     COST_TRACKER: {
       VIEW: "CARE_COMPANION:CostTracker:view",
       SHARE_TAP: "CARE_COMPANION:CostTracker:share-tap",
+      CATEGORY_TAP: "CARE_COMPANION:CostTracker:category-tap",
+      TREND_SCROLL: "CARE_COMPANION:CostTracker:trend-scroll",
     },
     MEDICATION_TIMELINE: {
       VIEW: "CARE_COMPANION:MedicationTimeline:view",
       FILTER_CHANGE: "CARE_COMPANION:MedicationTimeline:filter-change",
       EXPORT_TAP: "CARE_COMPANION:MedicationTimeline:export-tap",
+      FILTER_DATE: "CARE_COMPANION:MedicationTimeline:filter-date",
+      EXPORT_SUCCESS: "CARE_COMPANION:MedicationTimeline:export-success",
     },
     MEDICATION_CARDS: {
       VIEW: "CARE_COMPANION:MedicationCards:view",
       CARD_EXPAND: "CARE_COMPANION:MedicationCards:card-expand",
       OVERLAY_DISMISS: "CARE_COMPANION:MedicationCards:overlay-dismiss",
       OVERLAY_VIEW_ALL: "CARE_COMPANION:MedicationCards:overlay-view-all",
+      CARD_SWIPE: "CARE_COMPANION:MedicationCards:card-swipe",
+      INTERACTION_WARNING_TAP: "CARE_COMPANION:MedicationCards:interaction-warning-tap",
     },
     REFILL_SCHEDULE: {
       VIEW: "CARE_COMPANION:RefillSchedule:view",
       FIND_PHARMACY_TAP: "CARE_COMPANION:RefillSchedule:find-pharmacy-tap",
       APPLY_CREDIT_TAP: "CARE_COMPANION:RefillSchedule:apply-credit-tap",
+      ITEM_TAP: "CARE_COMPANION:RefillSchedule:item-tap",
     },
     EDUCATION: {
       VIEW: "CARE_COMPANION:Education:view",
       CARD_VIEWED: "CARE_COMPANION:Education:card-viewed",
       PREVIOUS_CARDS_TAP: "CARE_COMPANION:Education:previous-cards-tap",
+      CARD_COMPLETE: "CARE_COMPANION:Education:card-complete",
     },
     PHARMACY_STOCK: {
       VIEW: "CARE_COMPANION:PharmacyStock:view",
       SEARCH: "CARE_COMPANION:PharmacyStock:search",
       MAP_TOGGLE: "CARE_COMPANION:PharmacyStock:map-toggle",
+      LOCATION_GRANTED: "CARE_COMPANION:PharmacyStock:location-granted",
+      LOCATION_DENIED: "CARE_COMPANION:PharmacyStock:location-denied",
+      MANUAL_LOCATION: "CARE_COMPANION:PharmacyStock:manual-location",
     },
     MEDICATION_LOAN: {
       VIEW: "CARE_COMPANION:MedicationLoan:view",
       ACCEPT_TAP: "CARE_COMPANION:MedicationLoan:accept-tap",
       DECLINE_TAP: "CARE_COMPANION:MedicationLoan:decline-tap",
+      PRE_APPROVAL_VIEW: "CARE_COMPANION:MedicationLoan:pre-approval-view",
     },
     AI_ASSISTANT: {
       VIEW: "CARE_COMPANION:AiAssistant:view",
       MESSAGE_SEND: "CARE_COMPANION:AiAssistant:message-send",
       SUGGESTED_ACTION_TAP: "CARE_COMPANION:AiAssistant:suggested-action-tap",
+      INTERACTION_CHECK: "CARE_COMPANION:AiAssistant:interaction-check",
+      GUARDRAIL_TRIGGERED: "CARE_COMPANION:AiAssistant:guardrail-triggered",
+      REPORT_INACCURATE: "CARE_COMPANION:AiAssistant:report-inaccurate",
+    },
+    ERROR: {
+      BOUNDARY_HIT: "CARE_COMPANION:Error:boundary-hit",
+      RETRY_TAP: "CARE_COMPANION:Error:retry-tap",
     },
   },
 } as const
