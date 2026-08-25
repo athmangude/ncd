@@ -1,6 +1,8 @@
 import { lazy, Suspense } from "react"
 import { Navigate, Route, Routes, useLocation } from "react-router-dom"
 import RouteMetadata from "@/components/RouteMetadata"
+import ErrorBlock from "@/components/ErrorBlock"
+import { Button } from "@/components/Button"
 import { DashboardTabFallback } from "@/Routes/Patient/Pages/Dashboard/components/DashboardTabFallback"
 import { useCareCompanionProfile } from "./Intake/hooks/useCareCompanionProfile"
 import { useCareCompanionStore } from "./store/careCompanionStore"
@@ -25,10 +27,14 @@ const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
 
 export default function CareCompanionWrapper() {
   const { intakeCompleted } = useCareCompanionStore()
-  const { data: profile, isLoading } = useCareCompanionProfile()
+  const { data: profile, isLoading, isError, refetch } =
+    useCareCompanionProfile()
   const location = useLocation()
 
-  const isIntakeRoute = location.pathname.includes("/care-companion/intake")
+  // Exact match on the intake route — intentionally does not match sub-paths
+  // like /care-companion/intake-review. If intake grows nested routes (e.g.
+  // /intake/step-2), widen the match or switch to startsWith.
+  const isIntakeRoute = location.pathname.endsWith("/care-companion/intake")
 
   // Profile is considered valid if intake was completed or explicitly skipped
   const hasProfile =
@@ -38,6 +44,23 @@ export default function CareCompanionWrapper() {
   // Show loading fallback while checking profile (unless already on intake)
   if (!hasProfile && isLoading && !isIntakeRoute) {
     return <DashboardTabFallback />
+  }
+
+  // When the profile API fails (network timeout, 5xx, etc.) and we have no
+  // cached confirmation of intake completion, show a retry prompt instead of
+  // silently redirecting the user back to intake. This is critical on 3G
+  // connections where transient failures are common.
+  if (!hasProfile && isError && !isIntakeRoute) {
+    return (
+      <ErrorBlock
+        message="We couldn't load your care profile. Check your connection and try again."
+        action={
+          <Button variant="outline" onClick={() => refetch()}>
+            Try again
+          </Button>
+        }
+      />
+    )
   }
 
   // Redirect to intake if no profile exists and not already on the intake route
