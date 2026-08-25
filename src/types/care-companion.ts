@@ -311,6 +311,7 @@ export interface ParsedInvoiceLineItem {
  */
 export interface PatientMedicationRecord {
   id: string
+  medicationId: string
   medication: {
     genericName: string
     brandNames: string[]

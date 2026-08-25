@@ -3,6 +3,7 @@ import type {
   Medication,
   MedicationTaxonomyEntry,
   PatientMedication,
+  PatientMedicationRecord,
   TimelineEntry,
   CostSummary,
   CostCategoryBreakdown,
@@ -32,6 +33,7 @@ import medicationLoanPreapproval from "./medication-loan-preapproval.json"
 import emergencyTransportCredit from "./emergency-transport-credit.json"
 import aiAssistantConversations from "./ai-assistant-conversations.json"
 import careCompanionProfile from "./care-companion-profile.json"
+import patientMedicationRecords from "./patient-medication-records.json"
 
 // ---------------------------------------------------------------------------
 // Helper: type-check assertion. If the fixture shape drifts from the
@@ -879,19 +881,20 @@ describe("medication-loan-preapproval.json", () => {
     assertType<MedicationLoanPreApproval>(loan)
   })
 
-  it("is pre-approved for KES 5,500", () => {
+  it("is pre-approved with preApprovalDetails containing KES 5,500", () => {
     expect(loan.isPreApproved).toBe(true)
-    expect(Number(loan.maxAmount)).toBe(5500)
+    expect(loan.preApprovalDetails).not.toBeNull()
+    expect(Number(loan.preApprovalDetails!.maxAmount)).toBe(5500)
   })
 
   it("maxAmount is a string representation of a number", () => {
-    expect(typeof loan.maxAmount).toBe("string")
-    expect(Number.isNaN(Number(loan.maxAmount))).toBe(false)
+    expect(typeof loan.preApprovalDetails!.maxAmount).toBe("string")
+    expect(Number.isNaN(Number(loan.preApprovalDetails!.maxAmount))).toBe(false)
   })
 
   it("lists Grace's 3 medications with estimated costs", () => {
-    expect(loan.medications).toHaveLength(3)
-    for (const med of loan.medications) {
+    expect(loan.preApprovalDetails!.medications).toHaveLength(3)
+    for (const med of loan.preApprovalDetails!.medications) {
       expect(med.name).toBeTruthy()
       expect(typeof med.estimatedCost).toBe("string")
       expect(Number(med.estimatedCost)).toBeGreaterThan(0)
@@ -899,25 +902,29 @@ describe("medication-loan-preapproval.json", () => {
   })
 
   it("medication estimated costs sum to at most the maxAmount", () => {
-    const totalCost = loan.medications.reduce(
+    const totalCost = loan.preApprovalDetails!.medications.reduce(
       (sum, m) => sum + Number(m.estimatedCost),
       0,
     )
-    expect(totalCost).toBeLessThanOrEqual(Number(loan.maxAmount))
+    expect(totalCost).toBeLessThanOrEqual(
+      Number(loan.preApprovalDetails!.maxAmount),
+    )
   })
 
   it("has a target pharmacy with numeric id and name", () => {
-    expect(typeof loan.targetPharmacy.id).toBe("number")
-    expect(loan.targetPharmacy.name).toBeTruthy()
+    expect(typeof loan.preApprovalDetails!.targetPharmacy.id).toBe("number")
+    expect(loan.preApprovalDetails!.targetPharmacy.name).toBeTruthy()
   })
 
   it("has a non-empty reason explaining the pre-approval", () => {
-    expect(loan.reason).toBeTruthy()
-    expect(loan.reason.length).toBeGreaterThan(10)
+    expect(loan.preApprovalDetails!.reason).toBeTruthy()
+    expect(loan.preApprovalDetails!.reason.length).toBeGreaterThan(10)
   })
 
   it("expiresAt is a valid future ISO date string", () => {
-    expect(new Date(loan.expiresAt).toString()).not.toBe("Invalid Date")
+    expect(
+      new Date(loan.preApprovalDetails!.expiresAt).toString(),
+    ).not.toBe("Invalid Date")
   })
 })
 
@@ -1159,6 +1166,150 @@ describe("care-companion-profile.json", () => {
 })
 
 // ---------------------------------------------------------------------------
+// 15. patient-medication-records.json
+// ---------------------------------------------------------------------------
+
+describe("patient-medication-records.json", () => {
+  const records = patientMedicationRecords as PatientMedicationRecord[]
+
+  it("contains exactly 6 entries", () => {
+    expect(records).toHaveLength(6)
+  })
+
+  it("every entry has the required PatientMedicationRecord fields", () => {
+    for (const record of records) {
+      expect(record.id).toBeTruthy()
+      expect(record.medicationId).toBeTruthy()
+      expect(record.medication).toBeDefined()
+      expect(record.medication.genericName).toBeTruthy()
+      expect(Array.isArray(record.medication.brandNames)).toBe(true)
+      expect(
+        ["MEDICATION", "LAB_TEST", "CONSULTATION", "SUPPLY"],
+      ).toContain(record.medication.category)
+      expect(record.firstPurchaseDate).toBeTruthy()
+      expect(record.lastPurchaseDate).toBeTruthy()
+      expect(typeof record.totalPurchaseCount).toBe("number")
+      expect(record.totalPurchaseCount).toBeGreaterThan(0)
+      expect(typeof record.isActive).toBe("boolean")
+      expect(Array.isArray(record.inferredConditions)).toBe(true)
+      expect(record.inferredConditions.length).toBeGreaterThan(0)
+    }
+  })
+
+  it("every entry conforms to the PatientMedicationRecord type", () => {
+    for (const record of records) {
+      assertType<PatientMedicationRecord>(record)
+    }
+  })
+
+  it("all medicationId values reference valid taxonomy UUIDs", () => {
+    const taxonomyIds = new Set(
+      (medicationTaxonomy as MedicationTaxonomyEntry[]).map((m) => m.id),
+    )
+    for (const record of records) {
+      expect(taxonomyIds).toContain(record.medicationId)
+    }
+  })
+
+  it("at least one record has isActive: false (Omeprazole)", () => {
+    const inactive = records.filter((r) => !r.isActive)
+    expect(inactive.length).toBeGreaterThanOrEqual(1)
+    const omeprazole = inactive.find(
+      (r) => r.medication.genericName === "Omeprazole",
+    )
+    expect(omeprazole).toBeDefined()
+  })
+
+  it("at least one record has averageRefillIntervalDays: null (HbA1c)", () => {
+    const nullInterval = records.filter(
+      (r) => r.averageRefillIntervalDays === null,
+    )
+    expect(nullInterval.length).toBeGreaterThanOrEqual(1)
+    const hba1c = nullInterval.find(
+      (r) => r.medication.genericName === "HbA1c Test",
+    )
+    expect(hba1c).toBeDefined()
+  })
+
+  it("inferredConditions are subsets of the corresponding taxonomy conditionTags", () => {
+    const taxonomyMap = new Map(
+      (medicationTaxonomy as MedicationTaxonomyEntry[]).map((m) => [
+        m.id,
+        new Set(m.conditionTags ?? []),
+      ]),
+    )
+    for (const record of records) {
+      const allowedTags = taxonomyMap.get(record.medicationId)
+      expect(allowedTags).toBeDefined()
+      for (const condition of record.inferredConditions) {
+        expect(allowedTags!).toContain(condition)
+      }
+    }
+  })
+
+  it("Metformin date range spans 7+ months (217 days)", () => {
+    const metformin = records.find(
+      (r) => r.medication.genericName === "Metformin",
+    )
+    expect(metformin).toBeDefined()
+    const first = new Date(metformin!.firstPurchaseDate).getTime()
+    const last = new Date(metformin!.lastPurchaseDate).getTime()
+    const daySpan = (last - first) / (1000 * 60 * 60 * 24)
+    expect(daySpan).toBeGreaterThanOrEqual(210) // 7 months ~= 213 days
+  })
+
+  it("dates are valid ISO date strings", () => {
+    for (const record of records) {
+      expect(new Date(record.firstPurchaseDate).toString()).not.toBe(
+        "Invalid Date",
+      )
+      expect(new Date(record.lastPurchaseDate).toString()).not.toBe(
+        "Invalid Date",
+      )
+    }
+  })
+
+  it("lastPurchaseDate is on or after firstPurchaseDate for every record", () => {
+    for (const record of records) {
+      const first = new Date(record.firstPurchaseDate).getTime()
+      const last = new Date(record.lastPurchaseDate).getTime()
+      expect(last).toBeGreaterThanOrEqual(first)
+    }
+  })
+
+  it("averageRefillIntervalDays is mathematically consistent with date range and purchase count", () => {
+    for (const record of records) {
+      if (
+        record.averageRefillIntervalDays === null ||
+        record.totalPurchaseCount <= 1
+      ) {
+        continue
+      }
+      const first = new Date(record.firstPurchaseDate).getTime()
+      const last = new Date(record.lastPurchaseDate).getTime()
+      const daySpan = (last - first) / (1000 * 60 * 60 * 24)
+      const intervals = record.totalPurchaseCount - 1
+      const computedAvg = Math.round(daySpan / intervals)
+      expect(record.averageRefillIntervalDays).toBe(computedAvg)
+    }
+  })
+
+  it("all IDs are unique", () => {
+    const ids = records.map((r) => r.id)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it("inferredConditions use valid ConditionType values", () => {
+    const valid = new Set(["HYPERTENSION", "DIABETES", "GENERAL"])
+    for (const record of records) {
+      for (const cond of record.inferredConditions) {
+        expect(valid).toContain(cond)
+      }
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Cross-fixture consistency checks
 // ---------------------------------------------------------------------------
 
@@ -1195,9 +1346,11 @@ describe("cross-fixture consistency", () => {
   })
 
   it("loan pre-approval medications match Grace's refill schedule medications", () => {
-    const loanMedNames = (
+    const loanDetails = (
       medicationLoanPreapproval as MedicationLoanPreApproval
-    ).medications.map((m) => m.name)
+    ).preApprovalDetails
+    expect(loanDetails).not.toBeNull()
+    const loanMedNames = loanDetails!.medications.map((m) => m.name)
     const refillMedNames = (refillSchedules as RefillSchedule[]).map(
       (r) => r.medicationName,
     )
@@ -1241,7 +1394,32 @@ describe("cross-fixture consistency", () => {
     expect(stockMedNames).toContain("Amlodipine 5mg")
   })
 
-  it("all 14 fixture files are importable without error", () => {
+  it("patient-medication-records medicationId values exist in medication-taxonomy", () => {
+    const taxonomyIds = new Set(
+      (medicationTaxonomy as MedicationTaxonomyEntry[]).map((m) => m.id),
+    )
+    for (const record of patientMedicationRecords as PatientMedicationRecord[]) {
+      expect(taxonomyIds).toContain(record.medicationId)
+    }
+  })
+
+  it("patient-medication-records inferredConditions align with taxonomy conditionTags", () => {
+    const taxonomyMap = new Map(
+      (medicationTaxonomy as MedicationTaxonomyEntry[]).map((m) => [
+        m.id,
+        new Set(m.conditionTags ?? []),
+      ]),
+    )
+    for (const record of patientMedicationRecords as PatientMedicationRecord[]) {
+      const allowedTags = taxonomyMap.get(record.medicationId)
+      expect(allowedTags).toBeDefined()
+      for (const cond of record.inferredConditions) {
+        expect(allowedTags!).toContain(cond)
+      }
+    }
+  })
+
+  it("all 15 fixture files are importable without error", () => {
     expect(medicationTaxonomy).toBeDefined()
     expect(patientMedications).toBeDefined()
     expect(medicationTimeline).toBeDefined()
@@ -1256,5 +1434,6 @@ describe("cross-fixture consistency", () => {
     expect(emergencyTransportCredit).toBeDefined()
     expect(aiAssistantConversations).toBeDefined()
     expect(careCompanionProfile).toBeDefined()
+    expect(patientMedicationRecords).toBeDefined()
   })
 })

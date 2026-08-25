@@ -10,7 +10,7 @@
     "firstPurchaseDate": "2026-01-05",
     "lastPurchaseDate": "2026-08-10",
     "totalPurchaseCount": 8,
-    "averageRefillIntervalDays": 28,
+    "averageRefillIntervalDays": 31,
     "isActive": true,
     "inferredConditions": ["DIABETES"]
   },
@@ -22,7 +22,7 @@
       "brandNames": ["Norvasc", "Amlopin"],
       "category": "MEDICATION"
     },
-    "firstPurchaseDate": "2026-02-14",
+    "firstPurchaseDate": "2026-03-11",
     "lastPurchaseDate": "2026-08-08",
     "totalPurchaseCount": 6,
     "averageRefillIntervalDays": 30,
@@ -37,7 +37,7 @@
       "brandNames": ["Cozaar", "Losacar"],
       "category": "MEDICATION"
     },
-    "firstPurchaseDate": "2026-03-05",
+    "firstPurchaseDate": "2026-04-03",
     "lastPurchaseDate": "2026-08-01",
     "totalPurchaseCount": 5,
     "averageRefillIntervalDays": 30,
@@ -52,7 +52,7 @@
       "brandNames": ["Lipitor", "Atorva"],
       "category": "MEDICATION"
     },
-    "firstPurchaseDate": "2026-04-02",
+    "firstPurchaseDate": "2026-05-01",
     "lastPurchaseDate": "2026-07-30",
     "totalPurchaseCount": 4,
     "averageRefillIntervalDays": 30,
