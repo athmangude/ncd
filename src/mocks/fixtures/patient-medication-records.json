@@ -1,12 +1,13 @@
 [
   {
     "id": "pmr-metformin-amina",
+    "medicationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     "medication": {
       "genericName": "Metformin",
       "brandNames": ["Glucophage", "Dianben"],
       "category": "MEDICATION"
     },
-    "firstPurchaseDate": "2026-01-18",
+    "firstPurchaseDate": "2026-01-05",
     "lastPurchaseDate": "2026-08-10",
     "totalPurchaseCount": 8,
     "averageRefillIntervalDays": 28,
@@ -15,6 +16,7 @@
   },
   {
     "id": "pmr-amlodipine-amina",
+    "medicationId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     "medication": {
       "genericName": "Amlodipine",
       "brandNames": ["Norvasc", "Amlopin"],
@@ -29,6 +31,7 @@
   },
   {
     "id": "pmr-losartan-amina",
+    "medicationId": "550e8400-e29b-41d4-a716-446655440001",
     "medication": {
       "genericName": "Losartan",
       "brandNames": ["Cozaar", "Losacar"],
@@ -42,10 +45,11 @@
     "inferredConditions": ["HYPERTENSION"]
   },
   {
-    "id": "pmr-simvastatin-amina",
+    "id": "pmr-atorvastatin-amina",
+    "medicationId": "550e8400-e29b-41d4-a716-446655440002",
     "medication": {
-      "genericName": "Simvastatin",
-      "brandNames": ["Zocor"],
+      "genericName": "Atorvastatin",
+      "brandNames": ["Lipitor", "Atorva"],
       "category": "MEDICATION"
     },
     "firstPurchaseDate": "2026-04-02",
@@ -57,6 +61,7 @@
   },
   {
     "id": "pmr-hba1c-amina",
+    "medicationId": "550e8400-e29b-41d4-a716-446655440100",
     "medication": {
       "genericName": "HbA1c Test",
       "brandNames": [],
@@ -70,10 +75,11 @@
     "inferredConditions": ["DIABETES"]
   },
   {
-    "id": "pmr-enalapril-amina",
+    "id": "pmr-omeprazole-amina",
+    "medicationId": "550e8400-e29b-41d4-a716-446655440012",
     "medication": {
-      "genericName": "Enalapril",
-      "brandNames": ["Vasotec", "Renitec"],
+      "genericName": "Omeprazole",
+      "brandNames": ["Losec", "Omez"],
       "category": "MEDICATION"
     },
     "firstPurchaseDate": "2026-04-28",
@@ -81,6 +87,6 @@
     "totalPurchaseCount": 2,
     "averageRefillIntervalDays": 29,
     "isActive": false,
-    "inferredConditions": ["HYPERTENSION"]
+    "inferredConditions": ["GENERAL"]
   }
 ]
