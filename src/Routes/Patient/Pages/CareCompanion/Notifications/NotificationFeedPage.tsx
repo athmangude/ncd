@@ -128,7 +128,6 @@ function NotificationCard({
       />
 
       <div className="flex flex-1 flex-col gap-1">
-        {isUnread && <span className="sr-only">Unread.</span>}
         <span
           className={cn(
             "text-sm leading-snug",

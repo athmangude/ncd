@@ -46,10 +46,9 @@ export function useMarkNotificationRead() {
         queryKey: [notificationsQueryKey],
       })
 
-      const previous = queryClient.getQueryData<CareCompanionNotification[]>([
-        notificationsQueryKey,
-        { unreadOnly: undefined },
-      ])
+      const previous = queryClient.getQueriesData<
+        CareCompanionNotification[]
+      >({ queryKey: [notificationsQueryKey] })
 
       queryClient.setQueriesData<CareCompanionNotification[]>(
         { queryKey: [notificationsQueryKey] },
@@ -63,10 +62,9 @@ export function useMarkNotificationRead() {
     },
     onError: (_err, _id, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(
-          [notificationsQueryKey, { unreadOnly: undefined }],
-          context.previous
-        )
+        context.previous.forEach(([key, data]) => {
+          queryClient.setQueryData(key, data)
+        })
       }
     },
     onSettled: () => {
