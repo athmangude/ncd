@@ -1,0 +1,86 @@
+[
+  {
+    "id": "pmr-metformin-amina",
+    "medication": {
+      "genericName": "Metformin",
+      "brandNames": ["Glucophage", "Dianben"],
+      "category": "MEDICATION"
+    },
+    "firstPurchaseDate": "2026-01-18",
+    "lastPurchaseDate": "2026-08-10",
+    "totalPurchaseCount": 8,
+    "averageRefillIntervalDays": 28,
+    "isActive": true,
+    "inferredConditions": ["DIABETES"]
+  },
+  {
+    "id": "pmr-amlodipine-amina",
+    "medication": {
+      "genericName": "Amlodipine",
+      "brandNames": ["Norvasc", "Amlopin"],
+      "category": "MEDICATION"
+    },
+    "firstPurchaseDate": "2026-02-14",
+    "lastPurchaseDate": "2026-08-08",
+    "totalPurchaseCount": 6,
+    "averageRefillIntervalDays": 30,
+    "isActive": true,
+    "inferredConditions": ["HYPERTENSION"]
+  },
+  {
+    "id": "pmr-losartan-amina",
+    "medication": {
+      "genericName": "Losartan",
+      "brandNames": ["Cozaar", "Losacar"],
+      "category": "MEDICATION"
+    },
+    "firstPurchaseDate": "2026-03-05",
+    "lastPurchaseDate": "2026-08-01",
+    "totalPurchaseCount": 5,
+    "averageRefillIntervalDays": 30,
+    "isActive": true,
+    "inferredConditions": ["HYPERTENSION"]
+  },
+  {
+    "id": "pmr-simvastatin-amina",
+    "medication": {
+      "genericName": "Simvastatin",
+      "brandNames": ["Zocor"],
+      "category": "MEDICATION"
+    },
+    "firstPurchaseDate": "2026-04-02",
+    "lastPurchaseDate": "2026-07-30",
+    "totalPurchaseCount": 4,
+    "averageRefillIntervalDays": 30,
+    "isActive": true,
+    "inferredConditions": ["GENERAL"]
+  },
+  {
+    "id": "pmr-hba1c-amina",
+    "medication": {
+      "genericName": "HbA1c Test",
+      "brandNames": [],
+      "category": "LAB_TEST"
+    },
+    "firstPurchaseDate": "2026-06-20",
+    "lastPurchaseDate": "2026-06-20",
+    "totalPurchaseCount": 1,
+    "averageRefillIntervalDays": null,
+    "isActive": true,
+    "inferredConditions": ["DIABETES"]
+  },
+  {
+    "id": "pmr-enalapril-amina",
+    "medication": {
+      "genericName": "Enalapril",
+      "brandNames": ["Vasotec", "Renitec"],
+      "category": "MEDICATION"
+    },
+    "firstPurchaseDate": "2026-04-28",
+    "lastPurchaseDate": "2026-05-27",
+    "totalPurchaseCount": 2,
+    "averageRefillIntervalDays": 29,
+    "isActive": false,
+    "inferredConditions": ["HYPERTENSION"]
+  }
+]
