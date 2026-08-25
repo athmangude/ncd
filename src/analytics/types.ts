@@ -41,4 +41,5 @@ export type JourneyName =
   | 'PROFILE'
   | 'DISCOVERY'
   | 'PWA_INSTALL'
-  | 'NOTIFICATIONS';
+  | 'NOTIFICATIONS'
+  | 'CARE_COMPANION';

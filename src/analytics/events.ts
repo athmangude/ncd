@@ -242,60 +242,64 @@ export const EVENTS = {
   },
 
   // CARE_COMPANION Journey
+  // Uses nested sub-objects (e.g. CARE_COMPANION.INTAKE.VIEW) instead of flat
+  // keys because this journey spans 11 distinct sub-areas. This is intentional
+  // for large journeys with many screens; prefer this pattern going forward
+  // when a journey exceeds ~10 events.
   CARE_COMPANION: {
     INTAKE: {
-      VIEW: "CARE-COMPANION:Intake:view",
-      STEP_COMPLETE: "CARE-COMPANION:Intake:step-complete",
-      SKIP: "CARE-COMPANION:Intake:skip",
-      COMPLETE: "CARE-COMPANION:Intake:complete",
+      VIEW: "CARE_COMPANION:Intake:view",
+      STEP_COMPLETE: "CARE_COMPANION:Intake:step-complete",
+      SKIP: "CARE_COMPANION:Intake:skip",
+      COMPLETE: "CARE_COMPANION:Intake:complete",
     },
     HOME: {
-      VIEW: "CARE-COMPANION:Home:view",
-      CARD_TAP: "CARE-COMPANION:Home:card-tap",
+      VIEW: "CARE_COMPANION:Home:view",
+      CARD_TAP: "CARE_COMPANION:Home:card-tap",
     },
     EMERGENCY_CARD: {
-      VIEW: "CARE-COMPANION:EmergencyCard:view",
-      TRANSPORT_CREDIT_TAP: "CARE-COMPANION:EmergencyCard:transport-credit-tap",
+      VIEW: "CARE_COMPANION:EmergencyCard:view",
+      TRANSPORT_CREDIT_TAP: "CARE_COMPANION:EmergencyCard:transport-credit-tap",
     },
     COST_TRACKER: {
-      VIEW: "CARE-COMPANION:CostTracker:view",
-      SHARE_TAP: "CARE-COMPANION:CostTracker:share-tap",
+      VIEW: "CARE_COMPANION:CostTracker:view",
+      SHARE_TAP: "CARE_COMPANION:CostTracker:share-tap",
     },
     MEDICATION_TIMELINE: {
-      VIEW: "CARE-COMPANION:MedicationTimeline:view",
-      FILTER_CHANGE: "CARE-COMPANION:MedicationTimeline:filter-change",
-      EXPORT_TAP: "CARE-COMPANION:MedicationTimeline:export-tap",
+      VIEW: "CARE_COMPANION:MedicationTimeline:view",
+      FILTER_CHANGE: "CARE_COMPANION:MedicationTimeline:filter-change",
+      EXPORT_TAP: "CARE_COMPANION:MedicationTimeline:export-tap",
     },
     MEDICATION_CARDS: {
-      VIEW: "CARE-COMPANION:MedicationCards:view",
-      CARD_EXPAND: "CARE-COMPANION:MedicationCards:card-expand",
-      OVERLAY_DISMISS: "CARE-COMPANION:MedicationCards:overlay-dismiss",
-      OVERLAY_VIEW_ALL: "CARE-COMPANION:MedicationCards:overlay-view-all",
+      VIEW: "CARE_COMPANION:MedicationCards:view",
+      CARD_EXPAND: "CARE_COMPANION:MedicationCards:card-expand",
+      OVERLAY_DISMISS: "CARE_COMPANION:MedicationCards:overlay-dismiss",
+      OVERLAY_VIEW_ALL: "CARE_COMPANION:MedicationCards:overlay-view-all",
     },
     REFILL_SCHEDULE: {
-      VIEW: "CARE-COMPANION:RefillSchedule:view",
-      FIND_PHARMACY_TAP: "CARE-COMPANION:RefillSchedule:find-pharmacy-tap",
-      APPLY_CREDIT_TAP: "CARE-COMPANION:RefillSchedule:apply-credit-tap",
+      VIEW: "CARE_COMPANION:RefillSchedule:view",
+      FIND_PHARMACY_TAP: "CARE_COMPANION:RefillSchedule:find-pharmacy-tap",
+      APPLY_CREDIT_TAP: "CARE_COMPANION:RefillSchedule:apply-credit-tap",
     },
     EDUCATION: {
-      VIEW: "CARE-COMPANION:Education:view",
-      CARD_VIEWED: "CARE-COMPANION:Education:card-viewed",
-      PREVIOUS_CARDS_TAP: "CARE-COMPANION:Education:previous-cards-tap",
+      VIEW: "CARE_COMPANION:Education:view",
+      CARD_VIEWED: "CARE_COMPANION:Education:card-viewed",
+      PREVIOUS_CARDS_TAP: "CARE_COMPANION:Education:previous-cards-tap",
     },
     PHARMACY_STOCK: {
-      VIEW: "CARE-COMPANION:PharmacyStock:view",
-      SEARCH: "CARE-COMPANION:PharmacyStock:search",
-      MAP_TOGGLE: "CARE-COMPANION:PharmacyStock:map-toggle",
+      VIEW: "CARE_COMPANION:PharmacyStock:view",
+      SEARCH: "CARE_COMPANION:PharmacyStock:search",
+      MAP_TOGGLE: "CARE_COMPANION:PharmacyStock:map-toggle",
     },
     MEDICATION_LOAN: {
-      VIEW: "CARE-COMPANION:MedicationLoan:view",
-      ACCEPT_TAP: "CARE-COMPANION:MedicationLoan:accept-tap",
-      DECLINE_TAP: "CARE-COMPANION:MedicationLoan:decline-tap",
+      VIEW: "CARE_COMPANION:MedicationLoan:view",
+      ACCEPT_TAP: "CARE_COMPANION:MedicationLoan:accept-tap",
+      DECLINE_TAP: "CARE_COMPANION:MedicationLoan:decline-tap",
     },
     AI_ASSISTANT: {
-      VIEW: "CARE-COMPANION:AiAssistant:view",
-      MESSAGE_SEND: "CARE-COMPANION:AiAssistant:message-send",
-      SUGGESTED_ACTION_TAP: "CARE-COMPANION:AiAssistant:suggested-action-tap",
+      VIEW: "CARE_COMPANION:AiAssistant:view",
+      MESSAGE_SEND: "CARE_COMPANION:AiAssistant:message-send",
+      SUGGESTED_ACTION_TAP: "CARE_COMPANION:AiAssistant:suggested-action-tap",
     },
   },
 } as const
