@@ -1,122 +1,333 @@
 [
   {
-    "id": "med-metformin",
+    "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     "genericName": "Metformin",
-    "brandNames": ["Glucophage", "Dianben"],
+    "brandNames": ["Glucophage", "Dianben", "Glycomin"],
+    "dosageForms": ["tablet", "extended-release tablet"],
     "strengths": ["500mg", "850mg", "1000mg"],
     "category": "MEDICATION",
-    "conditionTags": ["DIABETES"]
+    "atcCode": "A10BA02",
+    "synonyms": [
+      "metformine",
+      "metphormin",
+      "glucophage",
+      "glycomin",
+      "metfomin",
+      "sugar medicine"
+    ],
+    "conditionTags": ["DIABETES"],
+    "isActive": true
   },
   {
-    "id": "med-amlodipine",
+    "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     "genericName": "Amlodipine",
-    "brandNames": ["Norvasc", "Amlopin"],
+    "brandNames": ["Norvasc", "Amlopin", "Amloc"],
+    "dosageForms": ["tablet"],
     "strengths": ["5mg", "10mg"],
     "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
+    "atcCode": "C08CA01",
+    "synonyms": [
+      "amlodipin",
+      "amlodopine",
+      "norvasc",
+      "amlopin",
+      "amlodepine",
+      "pressure medicine"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
   },
   {
-    "id": "med-losartan",
+    "id": "550e8400-e29b-41d4-a716-446655440001",
     "genericName": "Losartan",
-    "brandNames": ["Cozaar", "Losacar"],
+    "brandNames": ["Cozaar", "Losacar", "Losar"],
+    "dosageForms": ["tablet"],
     "strengths": ["25mg", "50mg", "100mg"],
     "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
+    "atcCode": "C09CA01",
+    "synonyms": [
+      "loserton",
+      "lorsatan",
+      "cozaar",
+      "losartin",
+      "losatan"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
   },
   {
-    "id": "med-enalapril",
-    "genericName": "Enalapril",
-    "brandNames": ["Vasotec", "Renitec"],
-    "strengths": ["5mg", "10mg", "20mg"],
+    "id": "550e8400-e29b-41d4-a716-446655440002",
+    "genericName": "Atorvastatin",
+    "brandNames": ["Lipitor", "Atorva", "Lipvas"],
+    "dosageForms": ["tablet"],
+    "strengths": ["10mg", "20mg", "40mg", "80mg"],
     "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
+    "atcCode": "C10AA05",
+    "synonyms": [
+      "artovastatin",
+      "atorvastin",
+      "lipitor",
+      "atorvastain",
+      "cholesterol medicine"
+    ],
+    "conditionTags": ["GENERAL"],
+    "isActive": true
   },
   {
-    "id": "med-atenolol",
-    "genericName": "Atenolol",
-    "brandNames": ["Tenormin"],
-    "strengths": ["25mg", "50mg", "100mg"],
-    "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
-  },
-  {
-    "id": "med-hydrochlorothiazide",
-    "genericName": "Hydrochlorothiazide",
-    "brandNames": ["Hydrodiuril", "Microzide"],
-    "strengths": ["12.5mg", "25mg"],
-    "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
-  },
-  {
-    "id": "med-glibenclamide",
+    "id": "550e8400-e29b-41d4-a716-446655440003",
     "genericName": "Glibenclamide",
-    "brandNames": ["Daonil", "Glynase"],
+    "brandNames": ["Daonil", "Glynase", "Semi-Daonil"],
+    "dosageForms": ["tablet"],
     "strengths": ["2.5mg", "5mg"],
     "category": "MEDICATION",
-    "conditionTags": ["DIABETES"]
+    "atcCode": "A10BB01",
+    "synonyms": [
+      "glibenclamid",
+      "glyburide",
+      "glibenclemide",
+      "daonil",
+      "glibencamide"
+    ],
+    "conditionTags": ["DIABETES"],
+    "isActive": true
   },
   {
-    "id": "med-insulin-glargine",
-    "genericName": "Insulin Glargine",
-    "brandNames": ["Lantus", "Basaglar"],
-    "strengths": ["100 IU/mL"],
+    "id": "550e8400-e29b-41d4-a716-446655440004",
+    "genericName": "Hydrochlorothiazide",
+    "brandNames": ["Hydrodiuril", "Microzide", "Esidrex"],
+    "dosageForms": ["tablet"],
+    "strengths": ["12.5mg", "25mg"],
     "category": "MEDICATION",
-    "conditionTags": ["DIABETES"]
+    "atcCode": "C03AA03",
+    "synonyms": [
+      "hydrochlorothiazid",
+      "hydroclorothiazide",
+      "HCTZ",
+      "water pill",
+      "hydrochlorithiazide"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
   },
   {
-    "id": "med-simvastatin",
-    "genericName": "Simvastatin",
-    "brandNames": ["Zocor"],
-    "strengths": ["10mg", "20mg", "40mg"],
+    "id": "550e8400-e29b-41d4-a716-446655440005",
+    "genericName": "Enalapril",
+    "brandNames": ["Vasotec", "Renitec", "Enap"],
+    "dosageForms": ["tablet"],
+    "strengths": ["5mg", "10mg", "20mg"],
     "category": "MEDICATION",
-    "conditionTags": ["GENERAL"]
+    "atcCode": "C09AA02",
+    "synonyms": [
+      "enalipril",
+      "enalopril",
+      "vasotec",
+      "renitec",
+      "enaliprel"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
   },
   {
-    "id": "med-aspirin",
-    "genericName": "Aspirin",
-    "brandNames": ["Disprin", "Ecosprin"],
-    "strengths": ["75mg", "100mg", "300mg"],
-    "category": "MEDICATION",
-    "conditionTags": ["GENERAL"]
-  },
-  {
-    "id": "med-nifedipine",
+    "id": "550e8400-e29b-41d4-a716-446655440006",
     "genericName": "Nifedipine",
-    "brandNames": ["Adalat", "Procardia"],
+    "brandNames": ["Adalat", "Procardia", "Nifelat"],
+    "dosageForms": ["tablet", "extended-release tablet", "capsule"],
     "strengths": ["10mg", "20mg", "30mg"],
     "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
+    "atcCode": "C08CA05",
+    "synonyms": [
+      "nifedipene",
+      "nifedipin",
+      "adalat",
+      "procardia",
+      "nifedapine"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
   },
   {
-    "id": "med-carvedilol",
-    "genericName": "Carvedilol",
-    "brandNames": ["Coreg"],
-    "strengths": ["3.125mg", "6.25mg", "12.5mg", "25mg"],
+    "id": "550e8400-e29b-41d4-a716-446655440007",
+    "genericName": "Insulin Glargine",
+    "brandNames": ["Lantus", "Basaglar", "Toujeo"],
+    "dosageForms": ["injection (pen)", "injection (vial)"],
+    "strengths": ["100 IU/mL", "300 IU/mL"],
     "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
+    "atcCode": "A10AE04",
+    "synonyms": [
+      "insulin glargene",
+      "insuline glargine",
+      "lantus",
+      "basaglar",
+      "long-acting insulin",
+      "insulin glargin"
+    ],
+    "conditionTags": ["DIABETES"],
+    "isActive": true
   },
   {
-    "id": "med-gliclazide",
+    "id": "550e8400-e29b-41d4-a716-446655440008",
+    "genericName": "Aspirin",
+    "brandNames": ["Disprin", "Ecosprin", "Junior Aspirin"],
+    "dosageForms": ["tablet", "dispersible tablet", "enteric-coated tablet"],
+    "strengths": ["75mg", "100mg", "300mg"],
+    "category": "MEDICATION",
+    "atcCode": "B01AC06",
+    "synonyms": [
+      "asprin",
+      "asprine",
+      "disprin",
+      "ecosprin",
+      "blood thinner",
+      "acetylsalicylic acid"
+    ],
+    "conditionTags": ["GENERAL"],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440009",
+    "genericName": "Lisinopril",
+    "brandNames": ["Zestril", "Prinivil", "Lisipril"],
+    "dosageForms": ["tablet"],
+    "strengths": ["5mg", "10mg", "20mg"],
+    "category": "MEDICATION",
+    "atcCode": "C09AA03",
+    "synonyms": [
+      "lisinipril",
+      "lisonopril",
+      "zestril",
+      "prinivil",
+      "lisinapril"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440010",
+    "genericName": "Simvastatin",
+    "brandNames": ["Zocor", "Simvor", "Simvacor"],
+    "dosageForms": ["tablet"],
+    "strengths": ["10mg", "20mg", "40mg"],
+    "category": "MEDICATION",
+    "atcCode": "C10AA01",
+    "synonyms": [
+      "simvastin",
+      "simvistatin",
+      "zocor",
+      "simvor",
+      "cholesterol tablet"
+    ],
+    "conditionTags": ["GENERAL"],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440011",
+    "genericName": "Metoprolol",
+    "brandNames": ["Betaloc", "Lopressor", "Metolar"],
+    "dosageForms": ["tablet", "extended-release tablet"],
+    "strengths": ["25mg", "50mg", "100mg"],
+    "category": "MEDICATION",
+    "atcCode": "C07AB02",
+    "synonyms": [
+      "metoporol",
+      "metaprolol",
+      "betaloc",
+      "lopressor",
+      "metoprolal"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440012",
+    "genericName": "Omeprazole",
+    "brandNames": ["Losec", "Omez", "Risek"],
+    "dosageForms": ["capsule", "tablet"],
+    "strengths": ["10mg", "20mg", "40mg"],
+    "category": "MEDICATION",
+    "atcCode": "A02BC01",
+    "synonyms": [
+      "omeprazol",
+      "omeprezole",
+      "losec",
+      "omez",
+      "stomach medicine",
+      "omeperazole"
+    ],
+    "conditionTags": ["GENERAL"],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440013",
     "genericName": "Gliclazide",
-    "brandNames": ["Diamicron"],
+    "brandNames": ["Diamicron", "Glizid", "Reclide"],
+    "dosageForms": ["tablet", "modified-release tablet"],
     "strengths": ["30mg", "60mg", "80mg"],
     "category": "MEDICATION",
-    "conditionTags": ["DIABETES"]
+    "atcCode": "A10BB09",
+    "synonyms": [
+      "gliclazid",
+      "gliclezide",
+      "diamicron",
+      "gliclizide",
+      "glicazide"
+    ],
+    "conditionTags": ["DIABETES"],
+    "isActive": true
   },
   {
-    "id": "med-pioglitazone",
+    "id": "550e8400-e29b-41d4-a716-446655440014",
     "genericName": "Pioglitazone",
-    "brandNames": ["Actos"],
+    "brandNames": ["Actos", "Pioglar", "Piozone"],
+    "dosageForms": ["tablet"],
     "strengths": ["15mg", "30mg", "45mg"],
     "category": "MEDICATION",
-    "conditionTags": ["DIABETES"]
+    "atcCode": "A10BG03",
+    "synonyms": [
+      "pioglitazon",
+      "piogletazone",
+      "actos",
+      "pioglatazone",
+      "pioglitizone"
+    ],
+    "conditionTags": ["DIABETES"],
+    "isActive": true
   },
   {
-    "id": "med-furosemide",
+    "id": "550e8400-e29b-41d4-a716-446655440015",
     "genericName": "Furosemide",
-    "brandNames": ["Lasix"],
+    "brandNames": ["Lasix", "Frusid", "Salurin"],
+    "dosageForms": ["tablet", "injection"],
     "strengths": ["20mg", "40mg", "80mg"],
     "category": "MEDICATION",
-    "conditionTags": ["HYPERTENSION"]
+    "atcCode": "C03CA01",
+    "synonyms": [
+      "furosimide",
+      "frusemide",
+      "lasix",
+      "furosemid",
+      "water tablet"
+    ],
+    "conditionTags": ["HYPERTENSION"],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440100",
+    "genericName": "HbA1c Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "hba1c",
+      "hemoglobin a1c",
+      "glycated hemoglobin",
+      "hb1ac",
+      "a1c test",
+      "sugar test",
+      "glycated haemoglobin"
+    ],
+    "conditionTags": ["DIABETES"],
+    "isActive": true
   }
 ]

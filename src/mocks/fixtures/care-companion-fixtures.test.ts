@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import type {
   Medication,
+  MedicationTaxonomyEntry,
   PatientMedication,
   TimelineEntry,
   CostSummary,
@@ -46,63 +47,135 @@ function assertType<T>(_value: T): void {
 // ---------------------------------------------------------------------------
 
 describe("medication-taxonomy.json", () => {
-  const meds = medicationTaxonomy as Medication[]
+  const entries = medicationTaxonomy as MedicationTaxonomyEntry[]
 
-  it("contains exactly 15 common NCD drugs", () => {
-    expect(meds).toHaveLength(15)
+  it("contains 18 NCD medications and lab tests (within the 15-20 range)", () => {
+    expect(entries.length).toBeGreaterThanOrEqual(15)
+    expect(entries.length).toBeLessThanOrEqual(20)
+    expect(entries).toHaveLength(18)
   })
 
-  it("every entry has the required Medication fields", () => {
-    for (const med of meds) {
-      expect(med.id).toBeTruthy()
-      expect(med.genericName).toBeTruthy()
-      expect(Array.isArray(med.brandNames)).toBe(true)
-      expect(med.brandNames.length).toBeGreaterThan(0)
-      expect(Array.isArray(med.strengths)).toBe(true)
-      expect(med.strengths.length).toBeGreaterThan(0)
+  it("every entry has the required MedicationTaxonomyEntry fields", () => {
+    for (const entry of entries) {
+      expect(entry.id).toBeTruthy()
+      expect(entry.genericName).toBeTruthy()
       expect(["MEDICATION", "LAB_TEST", "CONSULTATION", "SUPPLY"]).toContain(
-        med.category,
+        entry.category,
       )
-      expect(Array.isArray(med.conditionTags)).toBe(true)
-      expect(med.conditionTags.length).toBeGreaterThan(0)
+      expect(typeof entry.isActive).toBe("boolean")
+      expect(entry.isActive).toBe(true)
+
+      if (entry.category === "MEDICATION") {
+        expect(Array.isArray(entry.brandNames)).toBe(true)
+        expect((entry.brandNames as string[]).length).toBeGreaterThan(0)
+        expect(Array.isArray(entry.dosageForms)).toBe(true)
+        expect((entry.dosageForms as string[]).length).toBeGreaterThan(0)
+        expect(Array.isArray(entry.strengths)).toBe(true)
+        expect((entry.strengths as string[]).length).toBeGreaterThan(0)
+        expect(entry.atcCode).toBeTruthy()
+      }
+
+      expect(Array.isArray(entry.conditionTags)).toBe(true)
+      expect((entry.conditionTags as string[]).length).toBeGreaterThan(0)
+      expect(Array.isArray(entry.synonyms)).toBe(true)
+      expect((entry.synonyms as string[]).length).toBeGreaterThanOrEqual(2)
+    }
+  })
+
+  it("every entry has a deterministic UUID", () => {
+    const uuidPattern =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+    for (const entry of entries) {
+      expect(entry.id).toMatch(uuidPattern)
     }
   })
 
   it("all entries have unique IDs", () => {
-    const ids = meds.map((m) => m.id)
+    const ids = entries.map((m) => m.id)
     expect(new Set(ids).size).toBe(ids.length)
   })
 
   it("all entries have unique generic names", () => {
-    const names = meds.map((m) => m.genericName)
+    const names = entries.map((m) => m.genericName)
     expect(new Set(names).size).toBe(names.length)
   })
 
   it("contains the three drugs Grace takes: Metformin, Amlodipine, Aspirin", () => {
-    const names = meds.map((m) => m.genericName)
+    const names = entries.map((m) => m.genericName)
     expect(names).toContain("Metformin")
     expect(names).toContain("Amlodipine")
     expect(names).toContain("Aspirin")
   })
 
-  it("includes drugs for both DIABETES and HYPERTENSION conditions", () => {
-    const tags = new Set(meds.flatMap((m) => m.conditionTags))
-    expect(tags).toContain("DIABETES")
-    expect(tags).toContain("HYPERTENSION")
+  it("includes at least 5 diabetes medications", () => {
+    const diabetesMeds = entries.filter(
+      (e) =>
+        e.category === "MEDICATION" &&
+        (e.conditionTags ?? []).includes("DIABETES"),
+    )
+    expect(diabetesMeds.length).toBeGreaterThanOrEqual(5)
+  })
+
+  it("includes at least 5 hypertension medications", () => {
+    const hypertensionMeds = entries.filter(
+      (e) =>
+        e.category === "MEDICATION" &&
+        (e.conditionTags ?? []).includes("HYPERTENSION"),
+    )
+    expect(hypertensionMeds.length).toBeGreaterThanOrEqual(5)
+  })
+
+  it("includes at least one LAB_TEST category entry (HbA1c)", () => {
+    const labTests = entries.filter((e) => e.category === "LAB_TEST")
+    expect(labTests.length).toBeGreaterThanOrEqual(1)
+    const hba1c = labTests.find((e) => e.genericName === "HbA1c Test")
+    expect(hba1c).toBeDefined()
+    expect(hba1c!.conditionTags).toContain("DIABETES")
   })
 
   it("conditionTags only use valid ConditionType values", () => {
     const valid = new Set(["HYPERTENSION", "DIABETES", "GENERAL"])
-    for (const med of meds) {
-      for (const tag of med.conditionTags) {
+    for (const entry of entries) {
+      for (const tag of entry.conditionTags ?? []) {
         expect(valid).toContain(tag)
       }
     }
   })
 
-  it("every category value is MEDICATION (all entries are drugs)", () => {
+  it("every medication entry has a real WHO ATC code", () => {
+    const meds = entries.filter((e) => e.category === "MEDICATION")
     for (const med of meds) {
-      expect(med.category).toBe("MEDICATION")
+      expect(med.atcCode).toBeTruthy()
+      expect(med.atcCode).toMatch(/^[A-Z]\d{2}[A-Z]{2}\d{2}$/)
+    }
+  })
+
+  it("synonyms include at least 2 common misspellings per medication", () => {
+    const meds = entries.filter((e) => e.category === "MEDICATION")
+    for (const med of meds) {
+      const synonyms = med.synonyms ?? []
+      const brandLower = (med.brandNames ?? []).map((b) => b.toLowerCase())
+      const descriptive = [
+        "sugar medicine",
+        "pressure medicine",
+        "blood thinner",
+        "cholesterol medicine",
+        "water pill",
+        "stomach medicine",
+        "long-acting insulin",
+        "acetylsalicylic acid",
+        "water tablet",
+        "cholesterol tablet",
+        "hctz",
+        "glyburide",
+      ]
+      const misspellings = synonyms.filter(
+        (s) =>
+          !brandLower.includes(s.toLowerCase()) &&
+          s.toLowerCase() !== med.genericName.toLowerCase() &&
+          !descriptive.includes(s.toLowerCase()),
+      )
+      expect(misspellings.length).toBeGreaterThanOrEqual(2)
     }
   })
 })
