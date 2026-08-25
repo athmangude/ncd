@@ -1,0 +1,62 @@
+{
+  "refillSchedule": {
+    "schedules": [
+      {
+        "id": "refill-metformin-001",
+        "medicationName": "Metformin 500mg",
+        "expectedRefillDate": "2026-08-22",
+        "status": "OVERDUE",
+        "daysUntilRefill": -3,
+        "estimatedDaysSupply": 30,
+        "escalatedToLoanOffer": true
+      },
+      {
+        "id": "refill-amlodipine-001",
+        "medicationName": "Amlodipine 5mg",
+        "expectedRefillDate": "2026-08-27",
+        "status": "DUE",
+        "daysUntilRefill": 2,
+        "estimatedDaysSupply": 30,
+        "escalatedToLoanOffer": false
+      },
+      {
+        "id": "refill-losartan-001",
+        "medicationName": "Losartan 50mg",
+        "expectedRefillDate": "2026-09-06",
+        "status": "UPCOMING",
+        "daysUntilRefill": 12,
+        "estimatedDaysSupply": 30,
+        "escalatedToLoanOffer": false
+      }
+    ],
+    "hasMore": true
+  },
+  "costSummary": {
+    "year": 2026,
+    "ytdSpend": "47200",
+    "monthlyAverage": "5900",
+    "cashbackEarned": "2360",
+    "netSpend": "44840",
+    "annualProjection": "70800",
+    "transactionCount": 24,
+    "currency": "KES"
+  },
+  "educationFeed": {
+    "id": "edu-content-diabetes-w1-dietary",
+    "conditionType": "DIABETES",
+    "contentType": "DIETARY",
+    "locale": "EN",
+    "title": "Balancing your plate for steady blood sugar",
+    "body": "Managing blood sugar starts with how you fill your plate, not with giving up the foods you love.\n\n## The plate method\n\nDivide your plate into three sections:\n\n- **Half the plate**: non-starchy vegetables like sukuma wiki, cabbage, spinach, or managu\n- **A quarter of the plate**: protein such as beans, lentils, fish, or a small piece of chicken\n- **A quarter of the plate**: starchy foods like a fist-sized portion of ugali, rice, or sweet potato\n\n## Why portions matter more than elimination\n\nYour body still needs carbohydrates for energy. The goal is to eat them in amounts your body can process without causing a sharp blood sugar spike. A fist-sized serving of ugali with a generous pile of sukuma wiki and beans is far better than a large ugali serving on its own.\n\n## Practical tips for this week\n\n1. At your next meal, try the plate method. No special ingredients needed.\n2. Eat your vegetables and protein **before** the starchy portion. This slows sugar absorption.\n3. If you feel hungry after eating, add more vegetables, not more ugali.\n\nSmall changes in portions make a real difference over time. You do not need to buy special food or follow a complicated diet.",
+    "weekNumber": 1,
+    "imageUrl": null,
+    "isPublished": true,
+    "householdCompatible": true,
+    "costNeutral": true
+  },
+  "emergencyCard": {
+    "conditionType": "DIABETES",
+    "title": "Diabetes Emergency Card",
+    "cardId": "ec-diabetes-en"
+  }
+}
