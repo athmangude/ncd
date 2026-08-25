@@ -13,7 +13,7 @@ function assertType<T>(_value: T): void {
   // compile-time only
 }
 
-const notifications = careCompanionNotifications as CareCompanionNotification[]
+const notifications = careCompanionNotifications as unknown as CareCompanionNotification[]
 
 const VALID_NOTIFICATION_TYPES = new Set<string>(
   Object.values(NOTIFICATION_TYPE),

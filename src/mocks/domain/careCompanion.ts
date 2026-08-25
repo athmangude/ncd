@@ -10,11 +10,19 @@
  * to localStorage via the db.ts helpers and survive page reloads.
  */
 
-import { readObject, writeObject, patchObject, readCollection } from "../db"
+import {
+  readObject,
+  writeObject,
+  patchObject,
+  readCollection,
+  writeCollection,
+  makeId,
+} from "../db"
 
 import type {
   CareCompanionProfile,
   CareCompanionHome,
+  CareCompanionNotification,
   CostSummary,
   CostCategoryBreakdown,
   CostBreakdownResponse,
@@ -27,6 +35,7 @@ import type {
   PatientMedication,
   PatientMedicationRecord,
   MedicationTaxonomyEntry,
+  NotificationType,
   TimelineEntry,
   MedicationCard,
   MedicationInteraction,
@@ -56,6 +65,7 @@ import medicationLoanPreapprovalSeed from "../fixtures/medication-loan-preapprov
 import emergencyTransportCreditSeed from "../fixtures/emergency-transport-credit.json"
 import aiConversationsSeed from "../fixtures/ai-assistant-conversations.json"
 import careCompanionProfileSeed from "../fixtures/care-companion-profile.json"
+import careCompanionNotificationsSeed from "../fixtures/care-companion-notifications.json"
 
 // ---------------------------------------------------------------------------
 // localStorage keys
@@ -574,6 +584,83 @@ export function buildCareCompanionHome(): CareCompanionHome {
  */
 export function getCareCompanionHome(): CareCompanionHome {
   return buildCareCompanionHome()
+}
+
+// ---------------------------------------------------------------------------
+// Care Companion Notifications
+// ---------------------------------------------------------------------------
+
+const CC_NOTIFICATIONS_KEY = "care-companion-notifications"
+
+/**
+ * Returns all care companion notifications sorted by scheduledAt descending.
+ * Optionally filters to unread-only (readAt === null).
+ */
+export function getCareCompanionNotifications(
+  unreadOnly = false,
+): CareCompanionNotification[] {
+  const all = readCollection<CareCompanionNotification>(
+    CC_NOTIFICATIONS_KEY,
+    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+  )
+
+  const filtered = unreadOnly ? all.filter((n) => n.readAt === null) : all
+
+  return [...filtered].sort(
+    (a, b) =>
+      new Date(b.scheduledAt).getTime() - new Date(a.scheduledAt).getTime(),
+  )
+}
+
+/**
+ * Mark a single care companion notification as read by setting readAt to the
+ * current ISO timestamp. Returns the updated notification, or undefined if
+ * the id was not found.
+ */
+export function markCareCompanionNotificationRead(
+  id: string,
+): CareCompanionNotification | undefined {
+  const all = readCollection<CareCompanionNotification>(
+    CC_NOTIFICATIONS_KEY,
+    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+  )
+
+  const index = all.findIndex((n) => n.id === id)
+  if (index === -1) return undefined
+
+  all[index] = { ...all[index], readAt: new Date().toISOString() }
+  writeCollection(CC_NOTIFICATIONS_KEY, all)
+  return all[index]
+}
+
+/**
+ * Create a new care companion notification of the given type (dev-only
+ * simulate endpoint). Returns the created notification.
+ */
+export function createCareCompanionNotification(
+  type: NotificationType,
+): CareCompanionNotification {
+  const now = new Date().toISOString()
+  const notification: CareCompanionNotification = {
+    id: makeId("notif"),
+    type,
+    title: `Simulated ${type.toLowerCase().replace(/_/g, " ")} notification`,
+    body: `This is a simulated ${type} notification created for testing.`,
+    deepLink: "/patients/care-companion",
+    scheduledAt: now,
+    sentAt: now,
+    readAt: null,
+    metadata: null,
+  }
+
+  const all = readCollection<CareCompanionNotification>(
+    CC_NOTIFICATIONS_KEY,
+    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+  )
+  all.push(notification)
+  writeCollection(CC_NOTIFICATIONS_KEY, all)
+
+  return notification
 }
 
 // ---------------------------------------------------------------------------
