@@ -8,6 +8,7 @@ import { careFundHandlers } from "./carefund"
 import { fastTrackHandlers } from "./fasttrack"
 import { notificationsHandlers } from "./notifications"
 import { miscHandlers } from "./misc"
+import { careCompanionHandlers } from "./carecompanion"
 
 /**
  * MSW request handlers for the standalone prototype. Each feature contributes
@@ -25,4 +26,5 @@ export const handlers: RequestHandler[] = [
   ...fastTrackHandlers,
   ...notificationsHandlers,
   ...miscHandlers,
+  ...careCompanionHandlers,
 ]

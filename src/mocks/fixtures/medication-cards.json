@@ -1,0 +1,147 @@
+[
+  {
+    "id": "mc-metformin",
+    "medication": {
+      "id": "med-metformin",
+      "genericName": "Metformin",
+      "brandNames": ["Glucophage", "Dianben"],
+      "strengths": ["500mg", "850mg", "1000mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["DIABETES"]
+    },
+    "locale": "EN",
+    "description": "Metformin is the most commonly prescribed medication for type 2 diabetes. It lowers the amount of sugar your liver releases into your blood and helps your body respond better to insulin.",
+    "howItWorks": "Metformin works in three ways: it reduces the amount of glucose produced by your liver, it slows the absorption of sugar from your intestines, and it helps your muscle cells use insulin more effectively. It does not cause your body to produce more insulin, which is why it rarely causes dangerously low blood sugar on its own.",
+    "commonSideEffects": [
+      { "effect": "Nausea or stomach upset", "frequency": "Common in the first 1-2 weeks", "advice": "Take with food. Symptoms usually improve as your body adjusts." },
+      { "effect": "Diarrhoea", "frequency": "Common when starting or increasing dose", "advice": "Start with a low dose and increase gradually. Drink plenty of water." },
+      { "effect": "Metallic taste in mouth", "frequency": "Occasional", "advice": "This is harmless and usually goes away on its own." },
+      { "effect": "Reduced appetite", "frequency": "Common", "advice": "Eat regular small meals even if you do not feel hungry." }
+    ],
+    "seriousSideEffects": [
+      { "effect": "Lactic acidosis (very rare): unusual muscle pain, difficulty breathing, stomach pain, feeling cold, dizziness", "action": "Stop taking metformin and go to the hospital immediately. This is rare but serious." },
+      { "effect": "Severe allergic reaction: rash, swelling, difficulty breathing", "action": "Seek emergency medical help immediately." }
+    ],
+    "avoidanceWarnings": [
+      { "substance": "Alcohol", "reason": "Drinking alcohol while taking metformin increases the risk of lactic acidosis and can cause dangerously low blood sugar." },
+      { "substance": "Bitter gourd (karela) supplements", "reason": "Bitter gourd can lower blood sugar on its own. Combining it with metformin may cause blood sugar to drop too low." }
+    ],
+    "whenToSeekHelp": "Contact your doctor if you experience persistent vomiting, severe stomach pain, unusual tiredness, or muscle cramps. If you feel extremely cold, dizzy, or have difficulty breathing, go to the emergency room immediately."
+  },
+  {
+    "id": "mc-amlodipine",
+    "medication": {
+      "id": "med-amlodipine",
+      "genericName": "Amlodipine",
+      "brandNames": ["Norvasc", "Amlopin"],
+      "strengths": ["5mg", "10mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["HYPERTENSION"]
+    },
+    "locale": "EN",
+    "description": "Amlodipine is a calcium channel blocker used to treat high blood pressure. It relaxes your blood vessels so blood can flow more easily, reducing the strain on your heart.",
+    "howItWorks": "Amlodipine blocks calcium from entering the muscle cells of your heart and blood vessels. When calcium is blocked, the blood vessels relax and widen, allowing blood to flow through more easily. This lowers your blood pressure and reduces the workload on your heart. The effect builds up over 7-10 days.",
+    "commonSideEffects": [
+      { "effect": "Swollen ankles or feet", "frequency": "Common, especially at higher doses", "advice": "Elevate your feet when sitting. This is not dangerous but tell your doctor if it bothers you." },
+      { "effect": "Headache", "frequency": "Common in the first week", "advice": "Usually improves as your body adjusts. Take a mild painkiller if needed." },
+      { "effect": "Feeling flushed or warm", "frequency": "Occasional", "advice": "This is caused by blood vessels widening. It is not harmful." },
+      { "effect": "Dizziness", "frequency": "Occasional, especially when standing up quickly", "advice": "Stand up slowly from sitting or lying down. Avoid driving if you feel dizzy." }
+    ],
+    "seriousSideEffects": [
+      { "effect": "Very fast or irregular heartbeat", "action": "Seek medical attention immediately." },
+      { "effect": "Severe dizziness or fainting", "action": "Lie down and call your doctor. If it happens repeatedly, go to the hospital." }
+    ],
+    "avoidanceWarnings": [
+      { "substance": "Grapefruit or grapefruit juice", "reason": "Grapefruit can increase the amount of amlodipine in your blood, making side effects worse." },
+      { "substance": "St. John's Wort", "reason": "This herbal supplement can reduce the effectiveness of amlodipine, causing your blood pressure to rise." }
+    ],
+    "whenToSeekHelp": "Contact your doctor if you notice significant ankle swelling that does not improve, persistent headaches, or if your blood pressure readings remain high despite taking amlodipine regularly."
+  },
+  {
+    "id": "mc-losartan",
+    "medication": {
+      "id": "med-losartan",
+      "genericName": "Losartan",
+      "brandNames": ["Cozaar", "Losacar"],
+      "strengths": ["25mg", "50mg", "100mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["HYPERTENSION"]
+    },
+    "locale": "EN",
+    "description": "Losartan is an angiotensin II receptor blocker (ARB) that treats high blood pressure. It blocks a chemical in your body that causes blood vessels to tighten, helping them relax and lowering blood pressure.",
+    "howItWorks": "Losartan blocks the action of angiotensin II, a hormone that normally causes blood vessels to narrow. By blocking this hormone at its receptor, losartan allows blood vessels to relax and widen. It also reduces the amount of water and salt your kidneys retain, further lowering blood pressure. It provides kidney-protective benefits for people with diabetes.",
+    "commonSideEffects": [
+      { "effect": "Dizziness or lightheadedness", "frequency": "Common when starting treatment", "advice": "Stand up slowly. Avoid driving until you know how losartan affects you." },
+      { "effect": "Upper respiratory infection symptoms", "frequency": "Occasional", "advice": "Mild cold-like symptoms may occur. See your doctor if they persist." },
+      { "effect": "Back pain or muscle cramps", "frequency": "Occasional", "advice": "Stay hydrated and stretch regularly. Tell your doctor if pain is severe." },
+      { "effect": "Tiredness", "frequency": "Common in the first few weeks", "advice": "This usually improves as your body adjusts to the medication." }
+    ],
+    "seriousSideEffects": [
+      { "effect": "Signs of high potassium: muscle weakness, slow heartbeat, tingling", "action": "Contact your doctor immediately. High potassium can be dangerous." },
+      { "effect": "Signs of kidney problems: changes in urination amount, swelling in feet or ankles", "action": "See your doctor as soon as possible for blood tests." }
+    ],
+    "avoidanceWarnings": [
+      { "substance": "Potassium supplements or salt substitutes", "reason": "Losartan can raise potassium levels. Adding more potassium can cause dangerous heart rhythm problems." },
+      { "substance": "NSAIDs (ibuprofen, diclofenac) used regularly", "reason": "Regular use of these painkillers can reduce the blood pressure lowering effect of losartan and harm your kidneys." }
+    ],
+    "whenToSeekHelp": "Contact your doctor if you experience swelling of your face, lips, or tongue, difficulty breathing, or if you notice a significant decrease in the amount of urine you pass."
+  },
+  {
+    "id": "mc-enalapril",
+    "medication": {
+      "id": "med-enalapril",
+      "genericName": "Enalapril",
+      "brandNames": ["Vasotec", "Renitec"],
+      "strengths": ["5mg", "10mg", "20mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["HYPERTENSION"]
+    },
+    "locale": "EN",
+    "description": "Enalapril is an ACE inhibitor used to treat high blood pressure and heart failure. It works by relaxing blood vessels and reducing the workload on your heart.",
+    "howItWorks": "Enalapril inhibits the angiotensin-converting enzyme (ACE), which normally produces a chemical that tightens blood vessels. By blocking this enzyme, enalapril prevents blood vessels from narrowing and reduces the amount of water and salt retained by your kidneys. This lowers blood pressure and makes it easier for your heart to pump blood.",
+    "commonSideEffects": [
+      { "effect": "Dry persistent cough", "frequency": "Affects up to 1 in 5 people", "advice": "This is a known side effect of ACE inhibitors. If it becomes intolerable, your doctor can switch you to a different medication." },
+      { "effect": "Dizziness", "frequency": "Common, especially when standing up", "advice": "Get up slowly from sitting or lying positions. Drink enough water." },
+      { "effect": "Headache", "frequency": "Common in the first few weeks", "advice": "Usually temporary. Take a mild painkiller if needed." },
+      { "effect": "Fatigue", "frequency": "Occasional", "advice": "This usually improves over time. Rest when needed." }
+    ],
+    "seriousSideEffects": [
+      { "effect": "Swelling of face, lips, tongue, or throat (angioedema)", "action": "This is a medical emergency. Stop taking enalapril and go to the hospital immediately." },
+      { "effect": "Signs of high potassium: irregular heartbeat, muscle weakness", "action": "Contact your doctor immediately for blood tests." }
+    ],
+    "avoidanceWarnings": [
+      { "substance": "Potassium supplements or potassium-rich salt substitutes", "reason": "Enalapril raises potassium levels. Extra potassium can cause dangerous heart rhythm problems." },
+      { "substance": "Alcohol", "reason": "Alcohol can increase the blood pressure lowering effect of enalapril, causing excessive dizziness or fainting." }
+    ],
+    "whenToSeekHelp": "Seek emergency help immediately if you experience swelling of your face, tongue, or throat. Contact your doctor if you develop a persistent cough that interferes with sleep, or if you notice decreased urination."
+  },
+  {
+    "id": "mc-hydrochlorothiazide",
+    "medication": {
+      "id": "med-hydrochlorothiazide",
+      "genericName": "Hydrochlorothiazide",
+      "brandNames": ["Hydrodiuril", "Microzide"],
+      "strengths": ["12.5mg", "25mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["HYPERTENSION"]
+    },
+    "locale": "EN",
+    "description": "Hydrochlorothiazide (HCTZ) is a thiazide diuretic, commonly called a water pill, used to treat high blood pressure. It helps your kidneys remove extra salt and water from your body, which lowers blood pressure.",
+    "howItWorks": "Hydrochlorothiazide works in your kidneys by blocking the reabsorption of sodium and chloride. When these salts are not reabsorbed, water follows them out of your body as urine. Reducing the volume of fluid in your blood vessels lowers the pressure inside them. It is often used in combination with other blood pressure medications for better control.",
+    "commonSideEffects": [
+      { "effect": "Increased urination", "frequency": "Very common, especially in the first few weeks", "advice": "Take your dose in the morning so you are not waking up at night. This effect usually reduces over time." },
+      { "effect": "Dizziness or lightheadedness", "frequency": "Common", "advice": "Stand up slowly. Drink enough water to stay hydrated." },
+      { "effect": "Muscle cramps", "frequency": "Occasional", "advice": "This may be caused by low potassium. Eat potassium-rich foods like bananas, oranges, and spinach." },
+      { "effect": "Increased sensitivity to sunlight", "frequency": "Occasional", "advice": "Wear sunscreen and protective clothing when outdoors." }
+    ],
+    "seriousSideEffects": [
+      { "effect": "Signs of severe dehydration: extreme thirst, very dry mouth, dark urine, confusion", "action": "Stop taking the medication and seek medical attention. Drink fluids slowly." },
+      { "effect": "Severe muscle weakness or irregular heartbeat (electrolyte imbalance)", "action": "Go to the hospital. This may indicate dangerously low potassium or sodium levels." }
+    ],
+    "avoidanceWarnings": [
+      { "substance": "Excessive salt restriction", "reason": "While reducing salt is good for blood pressure, extreme restriction combined with this diuretic can cause dangerously low sodium levels." },
+      { "substance": "Liquorice root or supplements", "reason": "Liquorice can cause your body to lose potassium. Combined with HCTZ, this can lead to dangerous potassium depletion." }
+    ],
+    "whenToSeekHelp": "Contact your doctor if you experience severe muscle cramps, unusual tiredness, rapid heartbeat, or if you feel very thirsty and are passing very little urine. These may indicate electrolyte imbalances that need blood test monitoring."
+  }
+]

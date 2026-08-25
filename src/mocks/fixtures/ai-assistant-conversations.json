@@ -1,0 +1,82 @@
+{
+  "margaret-cough": {
+    "sessionId": "session-margaret-cough",
+    "messages": [
+      {
+        "id": "msg-margaret-01",
+        "role": "ASSISTANT",
+        "content": "I see you are taking Enalapril for blood pressure. A dry cough is one of the most common side effects of ACE inhibitors like Enalapril. Up to 10% of people who take it develop this cough.\n\nThe cough is not dangerous, but it can be very annoying. It happens because the medication affects how your body processes certain chemicals in your lungs.\n\nIf the cough is bothering you, your doctor can switch you to a different type of blood pressure medication called an ARB (like Losartan) that works similarly but rarely causes coughing.\n\nDo not stop taking your medication without talking to your doctor first.",
+        "guardrailFlags": ["disclaimer_shown"],
+        "suggestedActions": [
+          {
+            "type": "VIEW_CARD",
+            "label": "View Enalapril info card",
+            "deepLink": "/patients/care-companion/medication-cards"
+          }
+        ],
+        "timestamp": "2026-08-25T10:01:00Z"
+      }
+    ]
+  },
+  "james-dinner": {
+    "sessionId": "session-james-dinner",
+    "messages": [
+      {
+        "id": "msg-james-01",
+        "role": "ASSISTANT",
+        "content": "Here is a diabetes-friendly dinner idea that works for the whole family and costs around KES 300 for four people:\n\n**Brown ugali with sukuma wiki and grilled tilapia**\n\n- Brown ugali (use whole maize flour): KES 50\n- Sukuma wiki (one bunch, cooked with a little oil, onions, and tomatoes): KES 40\n- Tilapia fillet (grilled or pan-fried with lemon): KES 180\n- Tomato and onion kachumbari: KES 30\n\nFor your portion: fill half the plate with sukuma wiki and kachumbari, a quarter with fish, and a quarter with ugali. Your family can have bigger ugali portions.\n\nThis meal is balanced for blood sugar management without requiring separate cooking. The whole family eats the same food.",
+        "guardrailFlags": ["disclaimer_shown"],
+        "suggestedActions": [],
+        "timestamp": "2026-08-25T10:02:00Z"
+      }
+    ]
+  },
+  "grace-timing": {
+    "sessionId": "session-grace-timing",
+    "messages": [
+      {
+        "id": "msg-grace-01",
+        "role": "ASSISTANT",
+        "content": "Good question about taking Metformin and Amlodipine together.\n\nYes, you can take them at the same time. There is no harmful interaction between Metformin (for diabetes) and Amlodipine (for blood pressure). Many patients take both together.\n\nHere is a suggested schedule:\n- **Morning with breakfast**: Metformin 500mg + Amlodipine 5mg\n- **Evening with dinner**: Metformin 500mg\n\nTaking Metformin with food reduces stomach upset. Amlodipine can be taken with or without food, so pairing it with your morning Metformin keeps things simple.\n\nFor your Aspirin 75mg, take it with your morning meal as well.\n\nThe key is consistency. Pick a time that works with your daily routine and stick with it.",
+        "guardrailFlags": ["disclaimer_shown"],
+        "suggestedActions": [
+          {
+            "type": "VIEW_CARD",
+            "label": "View Metformin info",
+            "deepLink": "/patients/care-companion/medication-cards"
+          },
+          {
+            "type": "VIEW_CARD",
+            "label": "View Amlodipine info",
+            "deepLink": "/patients/care-companion/medication-cards"
+          }
+        ],
+        "timestamp": "2026-08-25T10:03:00Z"
+      }
+    ]
+  },
+  "default-redirect": {
+    "sessionId": "session-default",
+    "messages": [
+      {
+        "id": "msg-default-01",
+        "role": "ASSISTANT",
+        "content": "I do not have enough information to answer that question confidently. For medical advice specific to your situation, please consult your pharmacist or doctor.\n\nHere are some things I can help with:\n- Information about your medications and their side effects\n- Drug interaction checks\n- Meal ideas that work with your condition\n- When to take your medications\n\nTry asking about one of these topics, or use the options below.",
+        "guardrailFlags": ["disclaimer_shown", "redirect_to_professional"],
+        "suggestedActions": [
+          {
+            "type": "VIEW_CARD",
+            "label": "View your medication cards",
+            "deepLink": "/patients/care-companion/medication-cards"
+          },
+          {
+            "type": "CHECK_STOCK",
+            "label": "Find a nearby pharmacy",
+            "deepLink": "/patients/care-companion/pharmacy-stock"
+          }
+        ],
+        "timestamp": "2026-08-25T10:04:00Z"
+      }
+    ]
+  }
+}

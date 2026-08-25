@@ -1,0 +1,12 @@
+{
+  "isPreApproved": true,
+  "maxAmount": "5500",
+  "medications": [
+    { "name": "Metformin 500mg", "estimatedCost": "2400" },
+    { "name": "Amlodipine 5mg", "estimatedCost": "1600" },
+    { "name": "Aspirin 75mg", "estimatedCost": "750" }
+  ],
+  "targetPharmacy": { "id": 1001, "name": "City Chemist Mombasa" },
+  "reason": "Historically difficult month: January school fees period typically disrupts medication purchases",
+  "expiresAt": "2027-01-31T23:59:59Z"
+}

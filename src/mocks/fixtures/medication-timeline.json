@@ -1,0 +1,242 @@
+[
+  {
+    "date": "2026-08-05",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "480",
+    "facilityName": "Mombasa Hospital Pharmacy",
+    "gapDaysFromPrevious": 30,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-08-02",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "320",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 28,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-07-28",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "150",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 32,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-07-06",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "480",
+    "facilityName": "Mombasa Hospital Pharmacy",
+    "gapDaysFromPrevious": 29,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-07-05",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "350",
+    "facilityName": "Coast General Pharmacy",
+    "gapDaysFromPrevious": 31,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-06-26",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "140",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 30,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-06-07",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "500",
+    "facilityName": "Coast General Pharmacy",
+    "gapDaysFromPrevious": 28,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-06-04",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "300",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 30,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-05-27",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "150",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 28,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-05-10",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "480",
+    "facilityName": "Mombasa Hospital Pharmacy",
+    "gapDaysFromPrevious": 30,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-05-05",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "320",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 29,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-04-29",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "150",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 60,
+    "isGapAnomaly": true
+  },
+  {
+    "date": "2026-04-10",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "520",
+    "facilityName": "Coast General Pharmacy",
+    "gapDaysFromPrevious": 41,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-04-06",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "340",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 30,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-02-28",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "480",
+    "facilityName": "Mombasa Hospital Pharmacy",
+    "gapDaysFromPrevious": 30,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-02-28",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "140",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 29,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-03-07",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "300",
+    "facilityName": "Coast General Pharmacy",
+    "gapDaysFromPrevious": 28,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-02-07",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "320",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 28,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-01-30",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "500",
+    "facilityName": "Coast General Pharmacy",
+    "gapDaysFromPrevious": 43,
+    "isGapAnomaly": true
+  },
+  {
+    "date": "2026-01-30",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "150",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": 20,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-01-10",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "300",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": null,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2026-01-10",
+    "medicationName": "Aspirin 75mg",
+    "dosage": "75mg",
+    "quantity": 30,
+    "lineTotal": "140",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": null,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2025-12-18",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 60,
+    "lineTotal": "460",
+    "facilityName": "Mombasa Hospital Pharmacy",
+    "gapDaysFromPrevious": null,
+    "isGapAnomaly": false
+  },
+  {
+    "date": "2025-12-18",
+    "medicationName": "Metformin 500mg",
+    "dosage": "500mg",
+    "quantity": 30,
+    "lineTotal": "250",
+    "facilityName": "City Chemist Mombasa",
+    "gapDaysFromPrevious": null,
+    "isGapAnomaly": false
+  }
+]

@@ -1,0 +1,134 @@
+[
+  {
+    "id": "edu-d-diet-01",
+    "conditionType": "DIABETES",
+    "contentType": "DIETARY",
+    "locale": "EN",
+    "title": "Cook one meal for the whole family",
+    "body": "You do not need to cook separate meals for your diabetes. A meal of brown ugali, sukuma wiki with a little oil, and grilled fish works for everyone at the table. The key is portions: fill half your plate with vegetables, a quarter with the starch, and a quarter with protein. Your family eats the same food. You eat a slightly smaller portion of the ugali.\n\nThis is not a special diet. It is just good eating.",
+    "weekNumber": 1,
+    "householdCompatible": true,
+    "costNeutral": true
+  },
+  {
+    "id": "edu-d-diet-02",
+    "conditionType": "DIABETES",
+    "contentType": "DIETARY",
+    "locale": "EN",
+    "title": "Chapati does not have to disappear",
+    "body": "Many people think they can never eat chapati again after a diabetes diagnosis. That is not true. The issue is quantity, not the food itself. One chapati with a large serving of vegetables and beans is a balanced meal. Three chapatis with little else is where blood sugar spikes.\n\nYou can still enjoy the foods your family loves. Just adjust the balance on the plate.",
+    "weekNumber": 2,
+    "householdCompatible": true,
+    "costNeutral": true
+  },
+  {
+    "id": "edu-h-diet-01",
+    "conditionType": "HYPERTENSION",
+    "contentType": "DIETARY",
+    "locale": "EN",
+    "title": "Reducing salt without losing flavour",
+    "body": "Salt is not the only way to make food taste good. Lemon juice, fresh coriander, garlic, ginger, and tomatoes all add flavour without raising blood pressure. Try cooking with half the salt you normally use and adding lemon juice at the table instead.\n\nYour family will barely notice the difference. Your blood pressure will.",
+    "weekNumber": 3,
+    "householdCompatible": true,
+    "costNeutral": true
+  },
+  {
+    "id": "edu-d-diet-03",
+    "conditionType": "DIABETES",
+    "contentType": "DIETARY",
+    "locale": "EN",
+    "title": "Fruits are not the enemy",
+    "body": "Some people with diabetes avoid all fruit. That is unnecessary and means missing out on vitamins and fibre. The trick is choosing fruits with lower sugar impact: guavas, oranges, and passion fruit are good choices. Mangoes and bananas are fine in small amounts.\n\nEat fruit whole rather than juiced. The fibre in whole fruit slows down sugar absorption.",
+    "weekNumber": 4,
+    "householdCompatible": true,
+    "costNeutral": true
+  },
+  {
+    "id": "edu-g-exercise-01",
+    "conditionType": "GENERAL",
+    "contentType": "EXERCISE",
+    "locale": "EN",
+    "title": "Walking counts as exercise",
+    "body": "You do not need a gym membership or special equipment. A 20-minute walk after your evening meal helps lower blood sugar and blood pressure. Walk at a pace where you can still talk but feel slightly out of breath.\n\nStart with 10 minutes if 20 feels too much. Add a minute each week. Walking with a family member or neighbour makes it easier to keep the habit.",
+    "weekNumber": 5,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-g-exercise-02",
+    "conditionType": "GENERAL",
+    "contentType": "EXERCISE",
+    "locale": "EN",
+    "title": "Household chores count too",
+    "body": "Sweeping, mopping, hand-washing clothes, and gardening all count as physical activity. If you do 30 minutes of active housework most days, you are meeting the minimum exercise recommendation.\n\nThe goal is not to run a marathon. It is to move your body regularly throughout the day.",
+    "weekNumber": 6,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-d-myth-01",
+    "conditionType": "DIABETES",
+    "contentType": "MYTH_BUSTING",
+    "locale": "EN",
+    "title": "Diabetes medication is not addictive",
+    "body": "Some people believe that once you start diabetes medication, your body becomes dependent on it and you can never stop. This is not true. Metformin helps your body use insulin more effectively. It does not create a chemical dependency.\n\nYour doctor prescribed it because your body needs help managing blood sugar. Stopping it without medical advice risks dangerously high blood sugar, not withdrawal.",
+    "weekNumber": 7,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-h-myth-01",
+    "conditionType": "HYPERTENSION",
+    "contentType": "MYTH_BUSTING",
+    "locale": "EN",
+    "title": "You cannot feel high blood pressure",
+    "body": "Many people stop taking their blood pressure medication because they feel fine. High blood pressure usually has no symptoms until it causes serious damage. Feeling fine does not mean your blood pressure is controlled.\n\nThe damage happens silently: to your heart, kidneys, eyes, and brain. The medication is working precisely because you feel fine. Stopping it lets the silent damage resume.",
+    "weekNumber": 8,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-g-emotional-01",
+    "conditionType": "GENERAL",
+    "contentType": "EMOTIONAL",
+    "locale": "EN",
+    "title": "It is okay to feel overwhelmed",
+    "body": "Managing a chronic condition is hard. There are days when it feels like too much: the medication schedule, the diet changes, the cost, the worry. That is a normal response to an abnormal situation.\n\nYou are not failing if you have a bad day. One missed dose, one unhealthy meal, one skipped walk does not undo months of effort. Start fresh tomorrow.",
+    "weekNumber": 9,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-g-acceptance-01",
+    "conditionType": "GENERAL",
+    "contentType": "ACCEPTANCE",
+    "locale": "EN",
+    "title": "A diagnosis is not a punishment",
+    "body": "Many people feel shame or guilt when diagnosed with a chronic condition. Some hide it from family and friends. Others feel they did something wrong.\n\nNon-communicable diseases are not caused by personal failure. They result from a combination of genetics, environment, and life circumstances. Millions of Kenyans manage the same conditions.\n\nAccepting your diagnosis is not giving up. It is the first step toward managing it well.",
+    "weekNumber": 10,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-d-selfmon-01",
+    "conditionType": "DIABETES",
+    "contentType": "SELF_MONITORING",
+    "locale": "EN",
+    "title": "When and how to check your blood sugar",
+    "body": "If you have a glucometer, check your fasting blood sugar first thing in the morning before eating. A normal fasting reading is between 4.0 and 7.0 mmol/L (70-126 mg/dL).\n\nWrite down each reading with the date and time. Bring this record to your doctor visits. Patterns over weeks matter more than any single reading.",
+    "weekNumber": 11,
+    "householdCompatible": null,
+    "costNeutral": null
+  },
+  {
+    "id": "edu-g-milestone-01",
+    "conditionType": "GENERAL",
+    "contentType": "MILESTONE",
+    "locale": "EN",
+    "title": "You have been managing your health for 3 months",
+    "body": "Three months of consistent medication, regular check-ups, and making better choices. That is real progress.\n\nAt this point your body has adjusted to your medication, your habits are forming, and your healthcare costs are becoming predictable. You are building a foundation.\n\nKeep going. The next three months get easier.",
+    "weekNumber": 12,
+    "householdCompatible": null,
+    "costNeutral": null
+  }
+]

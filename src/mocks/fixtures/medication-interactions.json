@@ -1,0 +1,82 @@
+[
+  {
+    "id": "mi-metformin-alcohol",
+    "medicationA": "Metformin",
+    "medicationB": "Alcohol",
+    "herbName": null,
+    "severity": "SEVERE",
+    "description": "Combining metformin with alcohol significantly increases the risk of lactic acidosis, a rare but potentially fatal condition.",
+    "clinicalEffect": "Alcohol impairs the liver's ability to clear lactate. Metformin also increases lactate production. Together, they can cause a dangerous buildup of lactic acid in the blood.",
+    "recommendation": "Avoid heavy drinking. Limit alcohol to occasional, moderate amounts (no more than 1-2 drinks). Never drink on an empty stomach while taking metformin."
+  },
+  {
+    "id": "mi-ace-potassium",
+    "medicationA": "Enalapril",
+    "medicationB": "Potassium supplements",
+    "herbName": null,
+    "severity": "MODERATE",
+    "description": "ACE inhibitors like enalapril raise potassium levels. Taking additional potassium supplements can cause dangerously high potassium.",
+    "clinicalEffect": "High potassium (hyperkalemia) can cause muscle weakness, fatigue, and in severe cases, dangerous heart rhythm changes.",
+    "recommendation": "Do not take potassium supplements or use salt substitutes (which contain potassium) without your doctor's guidance. Have your potassium levels checked regularly."
+  },
+  {
+    "id": "mi-amlodipine-stjohns",
+    "medicationA": "Amlodipine",
+    "medicationB": null,
+    "herbName": "St. John's Wort",
+    "severity": "MODERATE",
+    "description": "St. John's Wort can reduce the effectiveness of amlodipine by speeding up how quickly your body breaks down the drug.",
+    "clinicalEffect": "Your blood pressure may not be adequately controlled, increasing the risk of hypertensive events.",
+    "recommendation": "Avoid St. John's Wort while taking amlodipine. If you use herbal remedies for mood, discuss alternatives with your doctor."
+  },
+  {
+    "id": "mi-metformin-bittergourd",
+    "medicationA": "Metformin",
+    "medicationB": null,
+    "herbName": "Bitter gourd (Karela)",
+    "severity": "MODERATE",
+    "description": "Bitter gourd has natural blood sugar lowering properties. Combined with metformin, blood sugar may drop too low.",
+    "clinicalEffect": "Hypoglycemia (low blood sugar): shakiness, sweating, confusion, dizziness, and in severe cases, loss of consciousness.",
+    "recommendation": "If you regularly eat bitter gourd, monitor your blood sugar more frequently. Tell your doctor so they can adjust your metformin dose if needed."
+  },
+  {
+    "id": "mi-amlodipine-grapefruit",
+    "medicationA": "Amlodipine",
+    "medicationB": "Grapefruit",
+    "herbName": null,
+    "severity": "MILD",
+    "description": "Grapefruit juice can slightly increase the levels of amlodipine in your blood.",
+    "clinicalEffect": "You may experience more pronounced side effects such as dizziness, flushing, or ankle swelling.",
+    "recommendation": "Limit grapefruit juice consumption. One small glass occasionally is unlikely to cause problems, but regular large quantities should be avoided."
+  },
+  {
+    "id": "mi-aspirin-ibuprofen",
+    "medicationA": "Aspirin",
+    "medicationB": "Ibuprofen",
+    "herbName": null,
+    "severity": "MODERATE",
+    "description": "Ibuprofen can interfere with the blood-thinning effect of low-dose aspirin.",
+    "clinicalEffect": "If you take aspirin for heart protection, ibuprofen may block its ability to prevent blood clots, reducing its cardiovascular benefit.",
+    "recommendation": "If you need a pain reliever, take the aspirin first and wait at least 30 minutes before taking ibuprofen. Better yet, ask your doctor about paracetamol as an alternative."
+  },
+  {
+    "id": "mi-metformin-neem",
+    "medicationA": "Metformin",
+    "medicationB": null,
+    "herbName": "Neem",
+    "severity": "MILD",
+    "description": "Neem has mild blood sugar lowering properties that may add to metformin's effect.",
+    "clinicalEffect": "Slightly increased risk of low blood sugar, especially if fasting or skipping meals.",
+    "recommendation": "If you use neem remedies, monitor your blood sugar and report any episodes of low blood sugar to your doctor."
+  },
+  {
+    "id": "mi-enalapril-nsaids",
+    "medicationA": "Enalapril",
+    "medicationB": "NSAIDs (Diclofenac, Ibuprofen)",
+    "herbName": null,
+    "severity": "MODERATE",
+    "description": "Non-steroidal anti-inflammatory drugs (NSAIDs) can reduce the blood pressure lowering effect of enalapril and may harm kidney function.",
+    "clinicalEffect": "Blood pressure may rise. Long-term combined use can contribute to kidney damage.",
+    "recommendation": "Avoid regular use of NSAIDs. For occasional pain relief, paracetamol is safer. If you need an NSAID, use the lowest dose for the shortest time and have your kidney function monitored."
+  }
+]

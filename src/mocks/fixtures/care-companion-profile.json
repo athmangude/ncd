@@ -1,0 +1,35 @@
+{
+  "id": "profile-grace-001",
+  "completedAt": "2026-01-15T10:30:00Z",
+  "skippedAt": null,
+  "conditions": {
+    "type": ["DIABETES", "HYPERTENSION"],
+    "otherDescription": null,
+    "diagnosisRecency": "MORE_THAN_2_YEARS"
+  },
+  "treatment": {
+    "currentlyOnMedication": true,
+    "medicationNames": ["Metformin 500mg", "Amlodipine 5mg", "Aspirin 75mg"],
+    "takingMedicationRegularly": "MOSTLY",
+    "reasonsForMissing": ["COST"],
+    "usingHerbalAlternatives": false,
+    "herbalDetails": null
+  },
+  "challenges": {
+    "selected": ["COST", "EMERGENCY_PREPAREDNESS", "DIET", "UNDERSTANDING_MEDICATION"],
+    "topChallenge": "COST"
+  },
+  "coping": {
+    "costCoping": ["BORROW_FAMILY", "SKIP_DOSES"],
+    "informationSources": ["PHARMACIST", "WHATSAPP"],
+    "hasEmergencyPlan": false,
+    "exerciseFrequency": null
+  },
+  "goals": {
+    "selected": ["TRACK_COSTS", "MEDICATION_REMINDERS", "UNDERSTAND_MEDICATION", "EMERGENCY_HELP", "CREDIT_FOR_MEDICATION"]
+  },
+  "userRole": {
+    "role": "SELF",
+    "patientRelationship": null
+  }
+}

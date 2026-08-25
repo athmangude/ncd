@@ -1,0 +1,40 @@
+{
+  "year": 2026,
+  "ytdSpend": "47200",
+  "monthlyAverage": "5900",
+  "cashbackEarned": "2360",
+  "netSpend": "44840",
+  "annualProjection": "70800",
+  "transactionCount": 24,
+  "currency": "KES",
+  "breakdown": [
+    {
+      "category": "MEDICATION",
+      "totalSpend": "39176",
+      "percentage": 83,
+      "transactionCount": 20
+    },
+    {
+      "category": "LAB_TEST",
+      "totalSpend": "4720",
+      "percentage": 10,
+      "transactionCount": 3
+    },
+    {
+      "category": "CONSULTATION",
+      "totalSpend": "3304",
+      "percentage": 7,
+      "transactionCount": 1
+    }
+  ],
+  "monthlyTrend": [
+    { "month": 1, "spend": "4260" },
+    { "month": 2, "spend": "5640" },
+    { "month": 3, "spend": "5100" },
+    { "month": 4, "spend": "3860" },
+    { "month": 5, "spend": "6450" },
+    { "month": 6, "spend": "7140" },
+    { "month": 7, "spend": "8220" },
+    { "month": 8, "spend": "6530" }
+  ]
+}

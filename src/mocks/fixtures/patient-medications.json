@@ -1,0 +1,53 @@
+[
+  {
+    "id": "pm-metformin-grace",
+    "medication": {
+      "id": "med-metformin",
+      "genericName": "Metformin",
+      "brandNames": ["Glucophage", "Dianben"],
+      "strengths": ["500mg", "850mg", "1000mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["DIABETES"]
+    },
+    "firstPurchaseDate": "2025-12-18",
+    "lastPurchaseDate": "2026-08-05",
+    "totalPurchaseCount": 9,
+    "averageRefillIntervalDays": 28,
+    "isActive": true,
+    "inferredConditions": ["DIABETES"]
+  },
+  {
+    "id": "pm-amlodipine-grace",
+    "medication": {
+      "id": "med-amlodipine",
+      "genericName": "Amlodipine",
+      "brandNames": ["Norvasc", "Amlopin"],
+      "strengths": ["5mg", "10mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["HYPERTENSION"]
+    },
+    "firstPurchaseDate": "2026-01-10",
+    "lastPurchaseDate": "2026-08-02",
+    "totalPurchaseCount": 8,
+    "averageRefillIntervalDays": 30,
+    "isActive": true,
+    "inferredConditions": ["HYPERTENSION"]
+  },
+  {
+    "id": "pm-aspirin-grace",
+    "medication": {
+      "id": "med-aspirin",
+      "genericName": "Aspirin",
+      "brandNames": ["Disprin", "Ecosprin"],
+      "strengths": ["75mg", "100mg", "300mg"],
+      "category": "MEDICATION",
+      "conditionTags": ["GENERAL"]
+    },
+    "firstPurchaseDate": "2026-01-10",
+    "lastPurchaseDate": "2026-07-28",
+    "totalPurchaseCount": 7,
+    "averageRefillIntervalDays": 30,
+    "isActive": true,
+    "inferredConditions": ["GENERAL"]
+  }
+]
