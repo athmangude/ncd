@@ -1329,6 +1329,21 @@ describe("care-companion spec-aligned entity interfaces", () => {
     })
   })
 
+  describe("MonthlySpend", () => {
+    it("stores month as a number and spend as a string", () => {
+      const ms: MonthlySpend = { month: 6, spend: "4200.00" }
+      expect(typeof ms.month).toBe("number")
+      expect(typeof ms.spend).toBe("string")
+    })
+
+    it("represents months as 1-indexed integers", () => {
+      const jan: MonthlySpend = { month: 1, spend: "0.00" }
+      const dec: MonthlySpend = { month: 12, spend: "9999.99" }
+      expect(jan.month).toBe(1)
+      expect(dec.month).toBe(12)
+    })
+  })
+
   describe("all 16 spec entity interfaces are importable", () => {
     it("can reference every spec-aligned interface", () => {
       const entities: Record<string, unknown> = {
@@ -1350,6 +1365,348 @@ describe("care-companion spec-aligned entity interfaces", () => {
         TimelineEntry: timelineEntry,
       }
       expect(Object.keys(entities)).toHaveLength(16)
+    })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Edge case tests — boundary values, empty states, healthcare-specific
+// scenarios that could cause real bugs if the type contract drifts
+// ---------------------------------------------------------------------------
+
+describe("care-companion edge cases", () => {
+  describe("RefillScheduleItem overdue scenario", () => {
+    it("represents overdue refills with negative daysUntilRefill", () => {
+      const overdue: RefillScheduleItem = {
+        id: "rsi-overdue",
+        medicationName: "Lisinopril 10mg",
+        expectedRefillDate: "2026-08-10",
+        status: "OVERDUE",
+        daysUntilRefill: -15,
+        estimatedDaysSupply: 30,
+        escalatedToLoanOffer: true,
+      }
+      expect(overdue.daysUntilRefill).toBeLessThan(0)
+      expect(overdue.status).toBe("OVERDUE")
+      expect(overdue.escalatedToLoanOffer).toBe(true)
+    })
+
+    it("represents a refill that is due today with zero daysUntilRefill", () => {
+      const dueToday: RefillScheduleItem = {
+        id: "rsi-today",
+        medicationName: "Metformin 500mg",
+        expectedRefillDate: "2026-08-25",
+        status: "DUE",
+        daysUntilRefill: 0,
+        estimatedDaysSupply: 30,
+        escalatedToLoanOffer: false,
+      }
+      expect(dueToday.daysUntilRefill).toBe(0)
+      expect(dueToday.status).toBe("DUE")
+    })
+  })
+
+  describe("AiAssistantMessage empty states", () => {
+    it("supports empty guardrailFlags and suggestedActions", () => {
+      const clean: AiAssistantMessage = {
+        sessionId: "session-empty",
+        message: {
+          content: "Everything looks good with your medications.",
+          guardrailFlags: [],
+        },
+        suggestedActions: [],
+      }
+      expect(clean.message.guardrailFlags).toHaveLength(0)
+      expect(clean.suggestedActions).toHaveLength(0)
+    })
+
+    it("supports multiple guardrail flags for sensitive content", () => {
+      const flagged: AiAssistantMessage = {
+        sessionId: "session-flagged",
+        message: {
+          content: "I cannot provide dosage recommendations.",
+          guardrailFlags: [
+            "medical_advice_boundary",
+            "disclaimer_shown",
+            "escalate_to_doctor",
+          ],
+        },
+        suggestedActions: [],
+      }
+      expect(flagged.message.guardrailFlags).toHaveLength(3)
+    })
+  })
+
+  describe("InteractionCheckResult clean product", () => {
+    it("represents a product with no known interactions", () => {
+      const clean: InteractionCheckResult = {
+        productName: "Vitamin D3",
+        interactions: [],
+        overallRisk: "NONE",
+        disclaimer:
+          "This is not medical advice. Always consult your doctor or pharmacist.",
+      }
+      expect(clean.interactions).toHaveLength(0)
+      expect(clean.overallRisk).toBe("NONE")
+    })
+
+    it("represents a product with multiple interactions at different severities", () => {
+      const multi: InteractionCheckResult = {
+        productName: "Grapefruit",
+        interactions: [
+          {
+            withMedication: "Amlodipine",
+            severity: "MODERATE",
+            description: "Increases blood levels of Amlodipine.",
+            recommendation: "Avoid grapefruit or consult doctor.",
+          },
+          {
+            withMedication: "Simvastatin",
+            severity: "SEVERE",
+            description: "Significantly increases risk of muscle damage.",
+            recommendation: "Do not consume grapefruit with this medication.",
+          },
+        ],
+        overallRisk: "HIGH",
+        disclaimer:
+          "This is not medical advice. Always consult your doctor or pharmacist.",
+      }
+      expect(multi.interactions).toHaveLength(2)
+      expect(multi.overallRisk).toBe("HIGH")
+      // The highest severity interaction should be identifiable
+      const severe = multi.interactions.find((i) => i.severity === "SEVERE")
+      expect(severe?.withMedication).toBe("Simvastatin")
+    })
+  })
+
+  describe("MedicationCard empty arrays", () => {
+    it("supports medications with no known side effects or warnings", () => {
+      const minimal: MedicationCard = {
+        id: "mc-minimal",
+        medicationId: "med-safe",
+        locale: "EN",
+        description: "A well-tolerated medication.",
+        howItWorks: null,
+        commonSideEffects: [],
+        seriousSideEffects: [],
+        avoidanceWarnings: [],
+        whenToSeekHelp: "If you experience any unusual symptoms",
+        storageInstructions: null,
+      }
+      expect(minimal.commonSideEffects).toHaveLength(0)
+      expect(minimal.seriousSideEffects).toHaveLength(0)
+      expect(minimal.avoidanceWarnings).toHaveLength(0)
+    })
+  })
+
+  describe("CostBreakdownResponse empty states", () => {
+    it("represents a new patient with no spending data", () => {
+      const empty: CostBreakdownResponse = {
+        year: 2026,
+        categories: [],
+        monthlyTrend: [],
+        pagination: { total: 0, limit: 12, offset: 0 },
+      }
+      expect(empty.categories).toHaveLength(0)
+      expect(empty.monthlyTrend).toHaveLength(0)
+      expect(empty.pagination.total).toBe(0)
+    })
+  })
+
+  describe("ParsedInvoiceLineItem confidence boundaries", () => {
+    it("accepts confidence at lower bound (0.0 — no match confidence)", () => {
+      const lowConf: ParsedInvoiceLineItem = {
+        ...parsedLineItem,
+        confidence: 0.0,
+        reviewStatus: "PENDING_REVIEW",
+      }
+      expect(lowConf.confidence).toBe(0.0)
+    })
+
+    it("accepts confidence at upper bound (1.0 — perfect match)", () => {
+      const perfect: ParsedInvoiceLineItem = {
+        ...parsedLineItem,
+        confidence: 1.0,
+        reviewStatus: "AUTO_ACCEPTED",
+      }
+      expect(perfect.confidence).toBe(1.0)
+    })
+  })
+
+  describe("PatientMedicationRecord empty collections", () => {
+    it("supports medications with no brand names", () => {
+      const generic: PatientMedicationRecord = {
+        ...patientMedicationRecord,
+        medication: {
+          genericName: "Hydrochlorothiazide",
+          brandNames: [],
+          category: "MEDICATION",
+        },
+      }
+      expect(generic.medication.brandNames).toHaveLength(0)
+    })
+
+    it("supports patients with no inferred conditions", () => {
+      const noConditions: PatientMedicationRecord = {
+        ...patientMedicationRecord,
+        inferredConditions: [],
+      }
+      expect(noConditions.inferredConditions).toHaveLength(0)
+    })
+
+    it("represents a first-time purchase with count of 1", () => {
+      const firstTime: PatientMedicationRecord = {
+        ...patientMedicationRecord,
+        totalPurchaseCount: 1,
+        averageRefillIntervalDays: null,
+        firstPurchaseDate: "2026-08-25",
+        lastPurchaseDate: "2026-08-25",
+      }
+      expect(firstTime.totalPurchaseCount).toBe(1)
+      expect(firstTime.averageRefillIntervalDays).toBeNull()
+      expect(firstTime.firstPurchaseDate).toBe(firstTime.lastPurchaseDate)
+    })
+  })
+
+  describe("PaginatedResponse pagination scenarios", () => {
+    it("represents a second page with offset > 0", () => {
+      const page2: PaginatedResponse<TimelineEntry> = {
+        data: [timelineEntry],
+        pagination: { total: 45, limit: 20, offset: 20 },
+      }
+      expect(page2.pagination.offset).toBe(20)
+      expect(page2.pagination.total).toBeGreaterThan(
+        page2.pagination.offset + page2.data.length,
+      )
+    })
+
+    it("represents the last page where offset + data.length equals total", () => {
+      const lastPage: PaginatedResponse<TimelineEntry> = {
+        data: [timelineEntry],
+        pagination: { total: 21, limit: 20, offset: 20 },
+      }
+      expect(lastPage.pagination.offset + lastPage.data.length).toBe(
+        lastPage.pagination.total,
+      )
+    })
+  })
+
+  describe("CareCompanionHomeResponse truncated refill list", () => {
+    it("signals more refills available with hasMore=true", () => {
+      const truncated: CareCompanionHomeResponse = {
+        ...homeResponse,
+        refillSchedule: {
+          schedules: [
+            refillItem,
+            { ...refillItem, id: "rsi-002", medicationName: "Lisinopril 10mg" },
+            {
+              ...refillItem,
+              id: "rsi-003",
+              medicationName: "Amlodipine 5mg",
+            },
+          ],
+          hasMore: true,
+        },
+      }
+      expect(truncated.refillSchedule.schedules).toHaveLength(3)
+      expect(truncated.refillSchedule.hasMore).toBe(true)
+    })
+
+    it("represents a patient with no refills, no education, no emergency card", () => {
+      const empty: CareCompanionHomeResponse = {
+        refillSchedule: {
+          schedules: [],
+          hasMore: false,
+        },
+        costSummary,
+        educationFeed: null,
+        emergencyCard: null,
+      }
+      expect(empty.refillSchedule.schedules).toHaveLength(0)
+      expect(empty.educationFeed).toBeNull()
+      expect(empty.emergencyCard).toBeNull()
+    })
+  })
+
+  describe("MedicationTaxonomyEntry inactive medication", () => {
+    it("represents a deactivated medication entry", () => {
+      const inactive: MedicationTaxonomyEntry = {
+        ...taxonomyEntry,
+        isActive: false,
+      }
+      expect(inactive.isActive).toBe(false)
+    })
+  })
+
+  describe("MedicationLoanPreApproval with multiple medications", () => {
+    it("supports pre-approval covering multiple medications", () => {
+      const multi: MedicationLoanPreApproval = {
+        isPreApproved: true,
+        preApprovalDetails: {
+          maxAmount: "12000.00",
+          medications: [
+            { name: "Metformin 500mg", estimatedCost: "450.00" },
+            { name: "Lisinopril 10mg", estimatedCost: "600.00" },
+            { name: "Amlodipine 5mg", estimatedCost: "350.00" },
+          ],
+          targetPharmacy: { id: 42, name: "MedPlus Pharmacy Westlands" },
+          reason: "Good repayment history.",
+          expiresAt: "2026-09-25T00:00:00Z",
+        },
+      }
+      expect(multi.preApprovalDetails?.medications).toHaveLength(3)
+    })
+  })
+
+  describe("EmergencyReferenceCard Swahili locale", () => {
+    it("supports SW locale for Kenyan patients", () => {
+      const swCard: EmergencyReferenceCard = {
+        ...emergencyRefCard,
+        id: "erc-hyp-sw",
+        locale: "SW",
+        title: "Kadi ya Dharura ya Shinikizo la Damu",
+      }
+      expect(swCard.locale).toBe("SW")
+    })
+  })
+
+  describe("TimelineEntry gap anomaly detection", () => {
+    it("flags a purchase gap exceeding 1.5x the average refill interval", () => {
+      const anomaly: TimelineEntry = {
+        ...timelineEntry,
+        gapDaysFromPrevious: 65,
+        isGapAnomaly: true,
+      }
+      expect(anomaly.isGapAnomaly).toBe(true)
+      expect(anomaly.gapDaysFromPrevious).toBeGreaterThan(30 * 1.5)
+    })
+
+    it("does not flag a gap within normal range", () => {
+      expect(timelineEntry.isGapAnomaly).toBe(false)
+      expect(timelineEntry.gapDaysFromPrevious).toBeLessThanOrEqual(30 * 1.5)
+    })
+
+    it("represents the first purchase in the timeline with null gap", () => {
+      const first: TimelineEntry = {
+        ...timelineEntry,
+        gapDaysFromPrevious: null,
+        isGapAnomaly: false,
+      }
+      expect(first.gapDaysFromPrevious).toBeNull()
+      expect(first.isGapAnomaly).toBe(false)
+    })
+  })
+
+  describe("MedicationInteraction Swahili description", () => {
+    it("supports bilingual interaction descriptions", () => {
+      const bilingual: MedicationInteraction = {
+        ...medicationInteraction,
+        descriptionEn: "May cause low blood sugar when taken together.",
+        descriptionSw: "Inaweza kusababisha sukari ndogo ya damu ikichukuliwa pamoja.",
+      }
+      expect(bilingual.descriptionEn).toBeDefined()
+      expect(bilingual.descriptionSw).toBeDefined()
+      expect(bilingual.descriptionSw).not.toBeNull()
     })
   })
 })
