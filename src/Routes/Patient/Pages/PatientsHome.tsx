@@ -95,6 +95,9 @@ const PatientDashboardLoansTab = lazy(
 const PatientDashboardCircleTab = lazy(
   () => import("./Dashboard/PatientDashboardCircleTab")
 )
+const PatientDashboardCareTab = lazy(
+  () => import("./Dashboard/PatientDashboardCareTab")
+)
 const PatientDashboardExploreTab = lazy(
   () => import("./Dashboard/PatientDashboardExploreTab")
 )
@@ -105,7 +108,7 @@ const PatientDashboardProfileTab = lazy(
 function PatientDashboardRedirect() {
   const location = useLocation()
   const tab = location.state?.tab || "home"
-  const validTabs = ["home", "circle", "explore", "profile"]
+  const validTabs = ["home", "circle", "care", "explore", "profile"]
   const target = validTabs.includes(tab) ? tab : "home"
 
   return <Navigate to={target} replace state={location.state} />
@@ -167,6 +170,14 @@ export default function PatientsHome() {
             }
           />
           <Route
+            path="care"
+            element={
+              <Suspense fallback={<DashboardTabFallback />}>
+                <PatientDashboardCareTab />
+              </Suspense>
+            }
+          />
+          <Route
             path="explore"
             element={
               <Suspense fallback={<DashboardTabFallback />}>
@@ -183,6 +194,16 @@ export default function PatientsHome() {
             }
           />
         </Route>
+
+        {/* Care Companion deep routes */}
+        <Route
+          path="/care-companion/*"
+          element={
+            <RouteMetadata title="Care Companion">
+              <PatientDashboardCareTab />
+            </RouteMetadata>
+          }
+        />
 
         <Route
           path="/scan-qr-intro"

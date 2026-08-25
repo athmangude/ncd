@@ -1,5 +1,11 @@
 import { TabsList } from "@/components/Tabs"
-import { CircleDotDashed, Search, House, CircleUserRound } from "lucide-react"
+import {
+  CircleDotDashed,
+  Search,
+  House,
+  CircleUserRound,
+  HeartPulse,
+} from "lucide-react"
 import { motion } from "framer-motion"
 import type { MotionValue } from "framer-motion"
 import { PatientTabTrigger } from "./PatientTabTrigger"
@@ -59,6 +65,11 @@ export function DashboardTabBar({
             value="circle"
             icon={<CircleDotDashed className="w-5 h-5" />}
             setRef={(el) => (tabRefs.current["circle"] = el)}
+          />
+          <PatientTabTrigger
+            value="care"
+            icon={<HeartPulse className="w-5 h-5" />}
+            setRef={(el) => (tabRefs.current["care"] = el)}
           />
           <PatientTabTrigger
             value="explore"
