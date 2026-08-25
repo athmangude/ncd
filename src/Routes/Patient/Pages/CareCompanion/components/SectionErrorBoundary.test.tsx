@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { SectionErrorBoundary } from "./SectionErrorBoundary"
+import { EmergencyCardStaticFallback } from "./EmergencyCardStaticFallback"
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -95,6 +96,32 @@ describe("SectionErrorBoundary", () => {
     expect(screen.getByText("Custom fallback")).toBeInTheDocument()
     expect(
       screen.queryByText("Unable to load Emergency"),
+    ).not.toBeInTheDocument()
+  })
+
+  it("renders EmergencyCardStaticFallback (not the generic error) when the Emergency Card section crashes", () => {
+    render(
+      <SectionErrorBoundary
+        sectionName="Emergency Card"
+        fallbackContent={<EmergencyCardStaticFallback />}
+      >
+        <AlwaysThrow />
+      </SectionErrorBoundary>,
+    )
+
+    // Static fallback's own content is shown
+    expect(
+      screen.getByRole("alert", { name: /emergency contacts/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText("Emergency Contacts")).toBeInTheDocument()
+    expect(screen.getByText("999")).toBeInTheDocument()
+
+    // The generic boundary fallback (with its own Retry button) is absent
+    expect(
+      screen.queryByText("Unable to load Emergency Card"),
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole("button", { name: /retry/i }),
     ).not.toBeInTheDocument()
   })
 
