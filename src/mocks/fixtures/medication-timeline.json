@@ -140,6 +140,16 @@
     "isGapAnomaly": false
   },
   {
+    "date": "2026-03-07",
+    "medicationName": "Amlodipine 5mg",
+    "dosage": "5mg",
+    "quantity": 30,
+    "lineTotal": "300",
+    "facilityName": "Coast General Pharmacy",
+    "gapDaysFromPrevious": 28,
+    "isGapAnomaly": false
+  },
+  {
     "date": "2026-02-28",
     "medicationName": "Metformin 500mg",
     "dosage": "500mg",
@@ -157,16 +167,6 @@
     "lineTotal": "140",
     "facilityName": "City Chemist Mombasa",
     "gapDaysFromPrevious": 29,
-    "isGapAnomaly": false
-  },
-  {
-    "date": "2026-03-07",
-    "medicationName": "Amlodipine 5mg",
-    "dosage": "5mg",
-    "quantity": 30,
-    "lineTotal": "300",
-    "facilityName": "Coast General Pharmacy",
-    "gapDaysFromPrevious": 28,
     "isGapAnomaly": false
   },
   {
