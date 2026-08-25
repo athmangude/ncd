@@ -1,10 +1,11 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import IntakeOption from "./IntakeOption"
 
 describe("IntakeOption", () => {
   describe("checkbox mode", () => {
-    it("renders a checkbox indicator when mode is checkbox", () => {
+    it("renders the label and a checkbox indicator", () => {
       render(
         <IntakeOption
           label="Diabetes"
@@ -13,10 +14,14 @@ describe("IntakeOption", () => {
           mode="checkbox"
         />
       )
-      expect(screen.getByRole("checkbox")).toBeInTheDocument()
+      expect(screen.getByText("Diabetes")).toBeInTheDocument()
+      expect(
+        screen.getByRole("checkbox", { name: "Diabetes" })
+      ).toBeInTheDocument()
     })
 
-    it("fires onToggle when the card is clicked", () => {
+    it("fires onToggle when the card is clicked", async () => {
+      const user = userEvent.setup()
       const onToggle = vi.fn()
       render(
         <IntakeOption
@@ -26,12 +31,12 @@ describe("IntakeOption", () => {
           mode="checkbox"
         />
       )
-      fireEvent.click(screen.getByRole("button", { name: /diabetes/i }))
-      expect(onToggle).toHaveBeenCalledOnce()
+      await user.click(screen.getByText("Diabetes"))
+      expect(onToggle).toHaveBeenCalled()
     })
 
-    it("applies selected styles when selected is true", () => {
-      const { container } = render(
+    it("sets aria-checked=true and selected styles when selected", () => {
+      render(
         <IntakeOption
           label="Diabetes"
           selected={true}
@@ -39,13 +44,14 @@ describe("IntakeOption", () => {
           mode="checkbox"
         />
       )
-      const button = container.querySelector("button")
-      expect(button?.className).toContain("border-primary")
-      expect(button?.className).toContain("bg-secondary")
+      const button = screen.getByRole("button")
+      expect(button).toHaveAttribute("aria-checked", "true")
+      expect(button.className).toContain("border-primary")
+      expect(button.className).toContain("bg-secondary")
     })
 
-    it("applies unselected styles when selected is false", () => {
-      const { container } = render(
+    it("sets aria-checked=false and unselected styles when not selected", () => {
+      render(
         <IntakeOption
           label="Diabetes"
           selected={false}
@@ -53,9 +59,10 @@ describe("IntakeOption", () => {
           mode="checkbox"
         />
       )
-      const button = container.querySelector("button")
-      expect(button?.className).toContain("border-border")
-      expect(button?.className).not.toContain("bg-secondary")
+      const button = screen.getByRole("button")
+      expect(button).toHaveAttribute("aria-checked", "false")
+      expect(button.className).toContain("border-border")
+      expect(button.className).not.toContain("bg-secondary")
     })
 
     it("renders description text when provided", () => {
@@ -82,11 +89,39 @@ describe("IntakeOption", () => {
       )
       expect(screen.queryByText("Type 2 diabetes mellitus")).toBeNull()
     })
+
+    it("toggles correctly across re-renders (unselected -> selected)", () => {
+      const { rerender } = render(
+        <IntakeOption
+          label="Diabetes"
+          selected={false}
+          onToggle={vi.fn()}
+          mode="checkbox"
+        />
+      )
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-checked",
+        "false"
+      )
+
+      rerender(
+        <IntakeOption
+          label="Diabetes"
+          selected={true}
+          onToggle={vi.fn()}
+          mode="checkbox"
+        />
+      )
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-checked",
+        "true"
+      )
+    })
   })
 
   describe("radio mode", () => {
     it("renders a RadioGroupItem indicator when mode is radio", () => {
-      const { container } = render(
+      render(
         <IntakeOption
           label="Yes"
           selected={false}
@@ -95,13 +130,11 @@ describe("IntakeOption", () => {
           value="yes"
         />
       )
-      // The inner Radix RadioGroupItem renders with data-slot="radio-group-item"
-      expect(
-        container.querySelector("[data-slot='radio-group-item']")
-      ).toBeInTheDocument()
+      // The outer button gets role="radio" in radio mode
+      expect(screen.getByRole("radio", { name: "Yes" })).toBeInTheDocument()
     })
 
-    it("does not crash (RadioGroup context is provided internally)", () => {
+    it("provides its own RadioGroup context so it renders standalone", () => {
       expect(() =>
         render(
           <IntakeOption
@@ -115,9 +148,10 @@ describe("IntakeOption", () => {
       ).not.toThrow()
     })
 
-    it("fires onToggle when the outer card is clicked", () => {
+    it("fires onToggle when the outer card is clicked", async () => {
+      const user = userEvent.setup()
       const onToggle = vi.fn()
-      const { container } = render(
+      render(
         <IntakeOption
           label="Yes"
           selected={false}
@@ -126,12 +160,8 @@ describe("IntakeOption", () => {
           value="yes"
         />
       )
-      // The outer button is the first <button> child of the root
-      const outerButton = container.querySelector(
-        "button[aria-checked]"
-      ) as HTMLElement
-      fireEvent.click(outerButton)
-      expect(onToggle).toHaveBeenCalledOnce()
+      await user.click(screen.getByText("Yes"))
+      expect(onToggle).toHaveBeenCalled()
     })
 
     it("uses label as fallback value when value prop is omitted", () => {
@@ -146,10 +176,36 @@ describe("IntakeOption", () => {
         )
       ).not.toThrow()
     })
+
+    it("reflects aria-checked on the outer radio button", () => {
+      const { rerender } = render(
+        <IntakeOption
+          label="Option A"
+          selected={false}
+          onToggle={vi.fn()}
+          mode="radio"
+          value="a"
+        />
+      )
+
+      const outerBtn = screen.getByRole("radio", { name: "Option A" })
+      expect(outerBtn).toHaveAttribute("aria-checked", "false")
+
+      rerender(
+        <IntakeOption
+          label="Option A"
+          selected={true}
+          onToggle={vi.fn()}
+          mode="radio"
+          value="a"
+        />
+      )
+      expect(outerBtn).toHaveAttribute("aria-checked", "true")
+    })
   })
 
   it("passes custom className to the outer button", () => {
-    const { container } = render(
+    render(
       <IntakeOption
         label="Test"
         selected={false}
@@ -158,7 +214,7 @@ describe("IntakeOption", () => {
         className="mt-4"
       />
     )
-    const button = container.querySelector("button")
-    expect(button?.className).toContain("mt-4")
+    const button = screen.getByRole("button")
+    expect(button.className).toContain("mt-4")
   })
 })

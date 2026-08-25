@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen, fireEvent } from "@testing-library/react"
+import userEvent from "@testing-library/user-event"
 import ConditionTypeahead from "./ConditionTypeahead"
 
 // Use a small subset of the fixture so tests are deterministic and fast.
@@ -41,9 +42,18 @@ const metformin = {
   conditionTags: ["DIABETES"],
 }
 
+const amlodipine = {
+  id: "med-amlodipine",
+  genericName: "Amlodipine",
+  brandNames: ["Norvasc", "Amlopin"],
+  strengths: ["5mg"],
+  category: "MEDICATION",
+  conditionTags: ["HYPERTENSION"],
+}
+
 describe("ConditionTypeahead", () => {
   const defaultProps = {
-    selectedMedications: [],
+    selectedMedications: [] as typeof metformin[],
     onSelect: vi.fn(),
     onRemove: vi.fn(),
   }
@@ -70,6 +80,16 @@ describe("ConditionTypeahead", () => {
     expect(screen.queryByRole("listbox")).toBeNull()
   })
 
+  it("does not show dropdown for whitespace-only input", async () => {
+    const user = userEvent.setup()
+    render(<ConditionTypeahead {...defaultProps} />)
+    const input = screen.getByLabelText("Search medications")
+
+    await user.type(input, "   ")
+
+    expect(screen.queryByRole("listbox")).toBeNull()
+  })
+
   it("filters medications by partial genericName (case-insensitive)", () => {
     render(<ConditionTypeahead {...defaultProps} />)
     const input = screen.getByLabelText("Search medications")
@@ -83,6 +103,15 @@ describe("ConditionTypeahead", () => {
     expect(screen.queryByText("Losartan")).toBeNull()
   })
 
+  it("matches uppercase queries against lowercase names", () => {
+    render(<ConditionTypeahead {...defaultProps} />)
+    const input = screen.getByLabelText("Search medications")
+
+    fireEvent.change(input, { target: { value: "METFOR" } })
+
+    expect(screen.getByText("Metformin")).toBeInTheDocument()
+  })
+
   it("filters medications by partial brandName (case-insensitive)", () => {
     render(<ConditionTypeahead {...defaultProps} />)
     const input = screen.getByLabelText("Search medications")
@@ -91,6 +120,15 @@ describe("ConditionTypeahead", () => {
 
     expect(screen.getByText("Amlodipine")).toBeInTheDocument()
     expect(screen.queryByText("Metformin")).toBeNull()
+  })
+
+  it("displays brand names below the generic name in the dropdown", () => {
+    render(<ConditionTypeahead {...defaultProps} />)
+    const input = screen.getByLabelText("Search medications")
+
+    fireEvent.change(input, { target: { value: "met" } })
+
+    expect(screen.getByText("Glucophage, Dianben")).toBeInTheDocument()
   })
 
   it("shows empty state when no medications match", () => {
@@ -141,6 +179,19 @@ describe("ConditionTypeahead", () => {
     expect(screen.getByText("Metformin")).toBeInTheDocument()
   })
 
+  it("renders multiple selected medication chips with remove buttons", () => {
+    render(
+      <ConditionTypeahead
+        {...defaultProps}
+        selectedMedications={[metformin, amlodipine]}
+      />
+    )
+    expect(screen.getByText("Metformin")).toBeInTheDocument()
+    expect(screen.getByText("Amlodipine")).toBeInTheDocument()
+    expect(screen.getByLabelText("Remove Metformin")).toBeInTheDocument()
+    expect(screen.getByLabelText("Remove Amlodipine")).toBeInTheDocument()
+  })
+
   it("calls onRemove when a chip remove button is clicked", () => {
     const onRemove = vi.fn()
     render(
@@ -153,6 +204,23 @@ describe("ConditionTypeahead", () => {
 
     fireEvent.click(screen.getByLabelText("Remove Metformin"))
     expect(onRemove).toHaveBeenCalledWith("med-metformin")
+  })
+
+  it("does not render chips area when no medications are selected", () => {
+    render(<ConditionTypeahead {...defaultProps} />)
+    expect(
+      screen.queryByLabelText("Selected medications")
+    ).not.toBeInTheDocument()
+  })
+
+  it("renders the selected medications area when medications are selected", () => {
+    render(
+      <ConditionTypeahead
+        {...defaultProps}
+        selectedMedications={[metformin]}
+      />
+    )
+    expect(screen.getByLabelText("Selected medications")).toBeInTheDocument()
   })
 
   it("uses unique IDs (useId) instead of hardcoded id", () => {

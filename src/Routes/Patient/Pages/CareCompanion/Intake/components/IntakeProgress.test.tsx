@@ -57,4 +57,15 @@ describe("IntakeProgress", () => {
     const wrapper = container.firstElementChild
     expect(wrapper?.className).toContain("mt-6")
   })
+
+  it("handles a single-step flow (step 1 of 1)", () => {
+    render(<IntakeProgress currentStep={1} totalSteps={1} />)
+    expect(screen.getByText("Step 1 of 1")).toBeInTheDocument()
+    expect(screen.getByText("100%")).toBeInTheDocument()
+  })
+
+  it("renders correct percentage for step 2 of 4 (50%)", () => {
+    render(<IntakeProgress currentStep={2} totalSteps={4} />)
+    expect(screen.getByText("50%")).toBeInTheDocument()
+  })
 })
