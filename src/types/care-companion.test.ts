@@ -13,6 +13,8 @@ import {
   STOCK_STATUS,
   MEDICATION_LOAN_TRIGGER,
   MESSAGE_ROLE,
+  OVERALL_RISK,
+  SUGGESTED_ACTION_TYPE,
 } from "./care-companion"
 import type {
   Medication,
@@ -44,19 +46,37 @@ import type {
   StockStatus,
   MedicationLoanTrigger,
   MessageRole,
+  OverallRisk,
+  SuggestedActionType,
+  // New spec-aligned types
+  MedicationTaxonomyEntry,
+  ParsedInvoiceLineItem,
+  PatientMedicationRecord,
+  CostBreakdownResponse,
+  MonthlySpend,
+  EmergencyReferenceCard,
+  RefillScheduleItem,
+  PharmacyStockItem,
+  AiAssistantMessage,
+  InteractionCheckResult,
+  CareCompanionHomeResponse,
+  PaginatedResponse,
+  // Sub-types
+  WarningSymptom,
+  ImmediateAction,
+  SideEffect,
+  SeriousSideEffect,
+  AvoidanceWarning,
+  SuggestedAction,
 } from "./care-companion"
-
-// ---------------------------------------------------------------------------
-// Helper: compile-time assertion that a value satisfies a type.
-// If the type definition changes in a way that breaks conformance, the test
-// file will fail to compile — which surfaces the regression immediately.
-// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Fixtures — realistic data modelled after what the Jireh backend returns.
 // Each fixture doubles as a compile-time check (TS rejects non-conforming
 // shapes) and a runtime check (we assert on key structural properties).
 // ---------------------------------------------------------------------------
+
+// -- Backward-compatible types (used by existing mocks) --------------------
 
 const medication: Medication = {
   id: "med-001",
@@ -128,7 +148,7 @@ const emergencyCard: EmergencyCard = {
 
 const medicationCard: MedicationCard = {
   id: "mc-metformin-en",
-  medication,
+  medicationId: "med-001",
   locale: "EN",
   description: "Metformin helps control blood sugar levels in type 2 diabetes.",
   howItWorks: "Decreases glucose production in the liver.",
@@ -147,17 +167,20 @@ const medicationCard: MedicationCard = {
   ],
   whenToSeekHelp:
     "If you experience severe nausea, vomiting, or unusual fatigue",
+  storageInstructions: "Store below 25C in a dry place",
 }
 
 const medicationInteraction: MedicationInteraction = {
   id: "mi-001",
-  medicationA: "Metformin",
-  medicationB: "Lisinopril",
+  medicationAId: "med-001",
+  medicationBId: "med-002",
   herbName: null,
   severity: "MILD",
-  description: "Minor interaction between Metformin and Lisinopril.",
+  descriptionEn: "Minor interaction between Metformin and Lisinopril.",
+  descriptionSw: null,
   clinicalEffect: "May slightly increase hypoglycemia risk.",
   recommendation: "Monitor blood sugar more frequently.",
+  source: "BNF Kenya 2025",
 }
 
 const refillSchedule: RefillSchedule = {
@@ -178,6 +201,8 @@ const educationContentCard: EducationContentCard = {
   title: "Understanding Carbohydrates",
   body: "Carbohydrates have the greatest effect on blood sugar...",
   weekNumber: 3,
+  imageUrl: null,
+  isPublished: true,
   householdCompatible: true,
   costNeutral: null,
 }
@@ -195,11 +220,13 @@ const pharmacyStock: PharmacyStock = {
 
 const medicationLoanPreApproval: MedicationLoanPreApproval = {
   isPreApproved: true,
-  maxAmount: "5000.00",
-  medications: [{ name: "Metformin 500mg", estimatedCost: "450.00" }],
-  targetPharmacy: { id: 42, name: "MedPlus Pharmacy Westlands" },
-  reason: "Good repayment history and active savings.",
-  expiresAt: "2026-09-25T00:00:00Z",
+  preApprovalDetails: {
+    maxAmount: "5000.00",
+    medications: [{ name: "Metformin 500mg", estimatedCost: "450.00" }],
+    targetPharmacy: { id: 42, name: "MedPlus Pharmacy Westlands" },
+    reason: "Good repayment history and active savings.",
+    expiresAt: "2026-09-25T00:00:00Z",
+  },
 }
 
 const emergencyTransportCredit: EmergencyTransportCredit = {
@@ -278,8 +305,156 @@ const careCompanionProfile: CareCompanionProfile = {
   },
 }
 
+// -- New spec-aligned types ------------------------------------------------
+
+const taxonomyEntry: MedicationTaxonomyEntry = {
+  id: "mte-001",
+  genericName: "Metformin",
+  brandNames: ["Glucophage", "Glycomet", "Dianben"],
+  dosageForms: ["tablet", "injection"],
+  strengths: ["500mg", "850mg", "1000mg"],
+  category: "MEDICATION",
+  atcCode: "A10BA02",
+  synonyms: ["metfoming", "metformine"],
+  conditionTags: ["DIABETES"],
+  isActive: true,
+}
+
+const parsedLineItem: ParsedInvoiceLineItem = {
+  id: "pili-001",
+  sourceType: "SUBMITTED_INVOICE",
+  submittedInvoiceId: "inv-001",
+  medicalInvoiceItemId: null,
+  sourceLineIndex: 0,
+  patientId: "patient-001",
+  providerId: 42,
+  transactionDate: "2026-08-01",
+  originalDescription: "Metformin 500mg x60",
+  medicationId: "mte-001",
+  parsedDosage: "500mg",
+  parsedQuantity: 60,
+  unitPrice: "7.50",
+  lineTotal: "450.00",
+  parsedCategory: "MEDICATION",
+  confidence: 0.95,
+  parseMethod: "FUZZY_MATCH",
+  reviewStatus: "AUTO_ACCEPTED",
+  reviewedByUserId: null,
+  createdAt: "2026-08-01T10:00:00Z",
+  updatedAt: "2026-08-01T10:00:00Z",
+}
+
+const patientMedicationRecord: PatientMedicationRecord = {
+  id: "pmr-001",
+  medication: {
+    genericName: "Metformin",
+    brandNames: ["Glucophage", "Glycomet"],
+    category: "MEDICATION",
+  },
+  firstPurchaseDate: "2025-03-15",
+  lastPurchaseDate: "2026-08-01",
+  totalPurchaseCount: 18,
+  averageRefillIntervalDays: 30,
+  isActive: true,
+  inferredConditions: ["DIABETES"],
+}
+
+const costBreakdown: CostBreakdownResponse = {
+  year: 2026,
+  categories: [costCategoryBreakdown],
+  monthlyTrend: [
+    { month: 1, spend: "3200.00" },
+    { month: 2, spend: "4100.00" },
+  ],
+  pagination: { total: 8, limit: 12, offset: 0 },
+}
+
+const emergencyRefCard: EmergencyReferenceCard = {
+  id: "erc-hyp-en",
+  conditionType: "HYPERTENSION",
+  locale: "EN",
+  title: "Hypertension Emergency Guide",
+  warningSymptoms: [
+    { symptom: "Severe headache", severity: "warning" },
+    { symptom: "Chest pain", severity: "critical" },
+  ],
+  immediateActions: [
+    { step: 1, action: "Sit down and rest" },
+    { step: 2, action: "Take prescribed emergency medication" },
+  ],
+  whenToGoToER: ["Blood pressure above 180/120"],
+  doNotDo: ["Do not drive yourself"],
+  version: 2,
+  isPublished: true,
+}
+
+const refillItem: RefillScheduleItem = {
+  id: "rsi-001",
+  medicationName: "Metformin 500mg",
+  expectedRefillDate: "2026-09-01",
+  status: "UPCOMING",
+  daysUntilRefill: 7,
+  estimatedDaysSupply: 30,
+  escalatedToLoanOffer: false,
+}
+
+const stockItem: PharmacyStockItem = {
+  facility: {
+    id: 42,
+    name: "MedPlus Pharmacy Westlands",
+    lat: -1.2635,
+    lng: 36.8038,
+  },
+  distance: 2.3,
+  stockStatus: "IN_STOCK",
+}
+
+const aiMessage: AiAssistantMessage = {
+  sessionId: "session-001",
+  message: {
+    content: "Your Metformin refill is due in 7 days.",
+    guardrailFlags: ["disclaimer_shown"],
+  },
+  suggestedActions: [
+    {
+      type: "CHECK_STOCK",
+      label: "Check pharmacy stock",
+      deepLink: "/care-companion/pharmacy-stock/metformin",
+    },
+  ],
+}
+
+const interactionCheck: InteractionCheckResult = {
+  productName: "St. John's Wort",
+  interactions: [
+    {
+      withMedication: "Metformin",
+      severity: "MODERATE",
+      description: "May reduce effectiveness of Metformin.",
+      recommendation: "Consult your doctor before using.",
+    },
+  ],
+  overallRisk: "MODERATE",
+  disclaimer:
+    "This is not medical advice. Always consult your doctor or pharmacist.",
+}
+
+const homeResponse: CareCompanionHomeResponse = {
+  refillSchedule: {
+    schedules: [refillItem],
+    hasMore: false,
+  },
+  costSummary,
+  educationFeed: educationContentCard,
+  emergencyCard: {
+    conditionType: "HYPERTENSION",
+    title: "Hypertension Emergency Guide",
+    cardId: "erc-hyp-en",
+  },
+}
+
 // ---------------------------------------------------------------------------
-// Tests
+// Tests — backward-compatible types
 // ---------------------------------------------------------------------------
 
 describe("care-companion types", () => {
@@ -445,8 +620,8 @@ describe("care-companion types", () => {
   })
 
   describe("MedicationCard", () => {
-    it("contains nested Medication reference", () => {
-      expect(medicationCard.medication.genericName).toBe("Metformin")
+    it("references medication by ID", () => {
+      expect(medicationCard.medicationId).toBe("med-001")
     })
 
     it("has structured side effects", () => {
@@ -473,6 +648,14 @@ describe("care-companion types", () => {
       }
       expect(noMechanism.howItWorks).toBeNull()
     })
+
+    it("supports null for storageInstructions", () => {
+      const noStorage: MedicationCard = {
+        ...medicationCard,
+        storageInstructions: null,
+      }
+      expect(noStorage.storageInstructions).toBeNull()
+    })
   })
 
   describe("MedicationInteraction", () => {
@@ -486,19 +669,33 @@ describe("care-companion types", () => {
       expect(severities).toHaveLength(4)
     })
 
-    it("supports herb-medication interactions (medicationB null, herbName set)", () => {
+    it("supports herb-medication interactions (medicationBId null, herbName set)", () => {
       const herbInteraction: MedicationInteraction = {
         ...medicationInteraction,
-        medicationB: null,
+        medicationBId: null,
         herbName: "St. John's Wort",
       }
-      expect(herbInteraction.medicationB).toBeNull()
+      expect(herbInteraction.medicationBId).toBeNull()
       expect(herbInteraction.herbName).toBe("St. John's Wort")
     })
 
-    it("supports drug-drug interactions (herbName null, medicationB set)", () => {
-      expect(medicationInteraction.medicationB).toBe("Lisinopril")
+    it("supports drug-drug interactions (herbName null, medicationBId set)", () => {
+      expect(medicationInteraction.medicationBId).toBe("med-002")
       expect(medicationInteraction.herbName).toBeNull()
+    })
+
+    it("has bilingual descriptions", () => {
+      expect(medicationInteraction.descriptionEn).toBeDefined()
+      expect(medicationInteraction.descriptionSw).toBeNull()
+    })
+
+    it("supports nullable source reference", () => {
+      expect(medicationInteraction.source).toBe("BNF Kenya 2025")
+      const noSource: MedicationInteraction = {
+        ...medicationInteraction,
+        source: null,
+      }
+      expect(noSource.source).toBeNull()
     })
   })
 
@@ -549,6 +746,11 @@ describe("care-companion types", () => {
       expect(educationContentCard.conditionType).toBe("DIABETES")
     })
 
+    it("has imageUrl and isPublished from the spec", () => {
+      expect(educationContentCard.imageUrl).toBeNull()
+      expect(educationContentCard.isPublished).toBe(true)
+    })
+
     it("supports CHP household compatibility metadata as nullable", () => {
       expect(educationContentCard.householdCompatible).toBe(true)
       expect(educationContentCard.costNeutral).toBeNull()
@@ -592,34 +794,36 @@ describe("care-companion types", () => {
   })
 
   describe("MedicationLoanPreApproval", () => {
-    it("stores monetary values as strings", () => {
-      expect(typeof medicationLoanPreApproval.maxAmount).toBe("string")
-      expect(typeof medicationLoanPreApproval.medications[0].estimatedCost).toBe(
+    it("stores monetary values as strings inside preApprovalDetails", () => {
+      expect(typeof medicationLoanPreApproval.preApprovalDetails?.maxAmount).toBe(
         "string",
       )
+      expect(
+        typeof medicationLoanPreApproval.preApprovalDetails?.medications[0]
+          .estimatedCost,
+      ).toBe("string")
     })
 
     it("has a target pharmacy with numeric id", () => {
-      expect(typeof medicationLoanPreApproval.targetPharmacy.id).toBe("number")
-      expect(typeof medicationLoanPreApproval.targetPharmacy.name).toBe(
-        "string",
-      )
+      expect(
+        typeof medicationLoanPreApproval.preApprovalDetails?.targetPharmacy.id,
+      ).toBe("number")
+      expect(
+        typeof medicationLoanPreApproval.preApprovalDetails?.targetPharmacy.name,
+      ).toBe("string")
     })
 
     it("has a boolean pre-approval flag", () => {
       expect(typeof medicationLoanPreApproval.isPreApproved).toBe("boolean")
     })
 
-    it("represents a declined pre-approval", () => {
+    it("represents a declined pre-approval with null details", () => {
       const declined: MedicationLoanPreApproval = {
-        ...medicationLoanPreApproval,
         isPreApproved: false,
-        maxAmount: "0.00",
-        medications: [],
-        reason: "Insufficient credit history.",
+        preApprovalDetails: null,
       }
       expect(declined.isPreApproved).toBe(false)
-      expect(declined.medications).toHaveLength(0)
+      expect(declined.preApprovalDetails).toBeNull()
     })
   })
 
@@ -913,32 +1117,239 @@ describe("care-companion types", () => {
       })
     })
   })
+})
 
-  describe("all 17 exports are importable", () => {
-    it("imports all interfaces and types without error", () => {
-      // This test verifies that every exported type from care-companion.ts
-      // can be referenced. If an export is removed or renamed, this test
-      // will fail at compile time (TS error) before it even runs.
-      const typeChecks: Record<string, unknown> = {
-        Medication: medication,
-        PatientMedication: patientMedication,
-        TimelineEntry: timelineEntry,
+// ---------------------------------------------------------------------------
+// Tests — new spec-aligned entity interfaces
+// ---------------------------------------------------------------------------
+
+describe("care-companion spec-aligned entity interfaces", () => {
+  describe("MedicationTaxonomyEntry", () => {
+    it("has all spec-defined fields", () => {
+      expect(taxonomyEntry.id).toBe("mte-001")
+      expect(taxonomyEntry.genericName).toBe("Metformin")
+      expect(taxonomyEntry.atcCode).toBe("A10BA02")
+      expect(taxonomyEntry.isActive).toBe(true)
+    })
+
+    it("supports nullable array fields", () => {
+      const minimal: MedicationTaxonomyEntry = {
+        ...taxonomyEntry,
+        brandNames: null,
+        dosageForms: null,
+        strengths: null,
+        synonyms: null,
+        conditionTags: null,
+        atcCode: null,
+      }
+      expect(minimal.brandNames).toBeNull()
+      expect(minimal.dosageForms).toBeNull()
+    })
+  })
+
+  describe("ParsedInvoiceLineItem", () => {
+    it("has monetary fields typed as strings", () => {
+      expect(typeof parsedLineItem.lineTotal).toBe("string")
+      expect(typeof parsedLineItem.unitPrice).toBe("string")
+    })
+
+    it("supports SUBMITTED_INVOICE source with null medicalInvoiceItemId", () => {
+      expect(parsedLineItem.sourceType).toBe("SUBMITTED_INVOICE")
+      expect(parsedLineItem.submittedInvoiceId).toBe("inv-001")
+      expect(parsedLineItem.medicalInvoiceItemId).toBeNull()
+    })
+
+    it("supports MEDICAL_INVOICE_ITEM source", () => {
+      const mii: ParsedInvoiceLineItem = {
+        ...parsedLineItem,
+        sourceType: "MEDICAL_INVOICE_ITEM",
+        submittedInvoiceId: null,
+        medicalInvoiceItemId: 42,
+      }
+      expect(mii.submittedInvoiceId).toBeNull()
+      expect(mii.medicalInvoiceItemId).toBe(42)
+    })
+
+    it("supports nullable optional fields", () => {
+      const unresolved: ParsedInvoiceLineItem = {
+        ...parsedLineItem,
+        medicationId: null,
+        parsedDosage: null,
+        parsedQuantity: null,
+        unitPrice: null,
+        reviewedByUserId: null,
+      }
+      expect(unresolved.medicationId).toBeNull()
+    })
+  })
+
+  describe("PatientMedicationRecord", () => {
+    it("has a denormalized medication sub-object", () => {
+      expect(patientMedicationRecord.medication.genericName).toBe("Metformin")
+      expect(patientMedicationRecord.medication.brandNames).toEqual([
+        "Glucophage",
+        "Glycomet",
+      ])
+      expect(patientMedicationRecord.medication.category).toBe("MEDICATION")
+    })
+
+    it("supports null for averageRefillIntervalDays", () => {
+      const fresh: PatientMedicationRecord = {
+        ...patientMedicationRecord,
+        averageRefillIntervalDays: null,
+      }
+      expect(fresh.averageRefillIntervalDays).toBeNull()
+    })
+  })
+
+  describe("CostBreakdownResponse", () => {
+    it("has categories, monthlyTrend, and pagination", () => {
+      expect(costBreakdown.categories).toHaveLength(1)
+      expect(costBreakdown.monthlyTrend).toHaveLength(2)
+      expect(costBreakdown.pagination.total).toBe(8)
+    })
+
+    it("stores spend in monthlyTrend as string", () => {
+      expect(typeof costBreakdown.monthlyTrend[0].spend).toBe("string")
+    })
+  })
+
+  describe("EmergencyReferenceCard", () => {
+    it("has version and isPublished metadata", () => {
+      expect(emergencyRefCard.version).toBe(2)
+      expect(emergencyRefCard.isPublished).toBe(true)
+    })
+
+    it("uses named sub-types for JSONB fields", () => {
+      const ws: WarningSymptom = emergencyRefCard.warningSymptoms[0]
+      expect(ws.symptom).toBe("Severe headache")
+
+      const ia: ImmediateAction = emergencyRefCard.immediateActions[0]
+      expect(ia.step).toBe(1)
+    })
+
+    it("supports null for doNotDo", () => {
+      const noDoNotDo: EmergencyReferenceCard = {
+        ...emergencyRefCard,
+        doNotDo: null,
+      }
+      expect(noDoNotDo.doNotDo).toBeNull()
+    })
+  })
+
+  describe("RefillScheduleItem", () => {
+    it("matches the RefillSchedule alias shape", () => {
+      const item: RefillScheduleItem = refillItem
+      const schedule: RefillSchedule = item
+      expect(schedule.id).toBe(item.id)
+    })
+  })
+
+  describe("PharmacyStockItem", () => {
+    it("has a nested facility object", () => {
+      expect(stockItem.facility.id).toBe(42)
+      expect(stockItem.facility.name).toBe("MedPlus Pharmacy Westlands")
+    })
+
+    it("supports null distance when geolocation unavailable", () => {
+      const noGeo: PharmacyStockItem = {
+        ...stockItem,
+        distance: null,
+      }
+      expect(noGeo.distance).toBeNull()
+    })
+  })
+
+  describe("AiAssistantMessage", () => {
+    it("has sessionId and nested message with guardrailFlags", () => {
+      expect(aiMessage.sessionId).toBe("session-001")
+      expect(aiMessage.message.guardrailFlags).toContain("disclaimer_shown")
+    })
+
+    it("has suggestedActions with typed actions", () => {
+      expect(aiMessage.suggestedActions).toHaveLength(1)
+      expect(aiMessage.suggestedActions[0].type).toBe("CHECK_STOCK")
+    })
+  })
+
+  describe("InteractionCheckResult", () => {
+    it("has productName, interactions, overallRisk, and disclaimer", () => {
+      expect(interactionCheck.productName).toBe("St. John's Wort")
+      expect(interactionCheck.interactions).toHaveLength(1)
+      expect(interactionCheck.overallRisk).toBe("MODERATE")
+      expect(interactionCheck.disclaimer).toBeDefined()
+    })
+
+    it("accepts all valid overallRisk values", () => {
+      const risks: InteractionCheckResult["overallRisk"][] = [
+        "NONE",
+        "LOW",
+        "MODERATE",
+        "HIGH",
+      ]
+      expect(risks).toHaveLength(4)
+    })
+  })
+
+  describe("CareCompanionHomeResponse", () => {
+    it("matches the BFF endpoint shape from API-021", () => {
+      expect(homeResponse.refillSchedule.schedules).toHaveLength(1)
+      expect(homeResponse.costSummary.currency).toBe("KES")
+      expect(homeResponse.educationFeed).toBeDefined()
+      expect(homeResponse.emergencyCard?.cardId).toBe("erc-hyp-en")
+    })
+
+    it("supports null educationFeed and emergencyCard", () => {
+      const empty: CareCompanionHomeResponse = {
+        ...homeResponse,
+        educationFeed: null,
+        emergencyCard: null,
+      }
+      expect(empty.educationFeed).toBeNull()
+      expect(empty.emergencyCard).toBeNull()
+    })
+  })
+
+  describe("PaginatedResponse", () => {
+    it("wraps any type with pagination metadata", () => {
+      const page: PaginatedResponse<TimelineEntry> = {
+        data: [timelineEntry],
+        pagination: { total: 1, limit: 20, offset: 0 },
+      }
+      expect(page.data).toHaveLength(1)
+      expect(page.pagination.total).toBe(1)
+    })
+
+    it("works with empty data arrays", () => {
+      const empty: PaginatedResponse<MedicationCard> = {
+        data: [],
+        pagination: { total: 0, limit: 20, offset: 0 },
+      }
+      expect(empty.data).toHaveLength(0)
+    })
+  })
+
+  describe("all 16 spec entity interfaces are importable", () => {
+    it("can reference every spec-aligned interface", () => {
+      const entities: Record<string, unknown> = {
+        MedicationTaxonomyEntry: taxonomyEntry,
+        ParsedInvoiceLineItem: parsedLineItem,
+        PatientMedicationRecord: patientMedicationRecord,
         CostSummary: costSummary,
-        CostCategoryBreakdown: costCategoryBreakdown,
-        EmergencyCard: emergencyCard,
+        CostBreakdownResponse: costBreakdown,
+        EmergencyReferenceCard: emergencyRefCard,
         MedicationCard: medicationCard,
         MedicationInteraction: medicationInteraction,
-        RefillSchedule: refillSchedule,
+        RefillScheduleItem: refillItem,
         EducationContentCard: educationContentCard,
-        PharmacyStock: pharmacyStock,
+        PharmacyStockItem: stockItem,
         MedicationLoanPreApproval: medicationLoanPreApproval,
-        EmergencyTransportCredit: emergencyTransportCredit,
-        AssistantMessage: assistantMessage,
-        CareCompanionHome: careCompanionHome,
-        CareCompanionProfile: careCompanionProfile,
+        AiAssistantMessage: aiMessage,
+        InteractionCheckResult: interactionCheck,
+        CareCompanionHomeResponse: homeResponse,
+        TimelineEntry: timelineEntry,
       }
-      // EducationContentType is a type alias, verified via the card fixture
-      expect(Object.keys(typeChecks)).toHaveLength(16)
+      expect(Object.keys(entities)).toHaveLength(16)
     })
   })
 })
@@ -946,18 +1357,8 @@ describe("care-companion types", () => {
 // ---------------------------------------------------------------------------
 // Enum const object tests
 // ---------------------------------------------------------------------------
-// These tests verify that each `as const` object:
-//   1. Is exported and importable at runtime (not just a type)
-//   2. Contains exactly the members defined in the spec
-//   3. Has key-value identity (each key maps to a string equal to itself)
-//   4. Is not accidentally mutated or extended
-// ---------------------------------------------------------------------------
 
 describe("care-companion enum const objects", () => {
-  /**
-   * Helper: given an enum const object and the expected set of string values,
-   * assert that the object has exactly those keys, each mapping to itself.
-   */
   function assertEnumShape(
     enumObj: Record<string, string>,
     expectedValues: string[],
@@ -965,21 +1366,17 @@ describe("care-companion enum const objects", () => {
     const keys = Object.keys(enumObj)
     const values = Object.values(enumObj)
 
-    // Correct member count
     expect(keys).toHaveLength(expectedValues.length)
     expect(values).toHaveLength(expectedValues.length)
 
-    // Every expected value is present as both a key and a value
     for (const val of expectedValues) {
       expect(enumObj).toHaveProperty(val, val)
     }
 
-    // No extra keys beyond the expected set
     for (const key of keys) {
       expect(expectedValues).toContain(key)
     }
 
-    // Key-value identity: each key equals its own value
     for (const key of keys) {
       expect(enumObj[key]).toBe(key)
     }
@@ -1108,8 +1505,6 @@ describe("care-companion enum const objects", () => {
 
   describe("EDUCATION_CONTENT_TYPE", () => {
     it("contains all spec-defined members plus implementation additions", () => {
-      // Spec defines 5: DIETARY, MYTH_BUSTING, EMOTIONAL, SELF_MONITORING, MILESTONE
-      // Implementation adds EXERCISE and ACCEPTANCE (7 total)
       assertEnumShape(EDUCATION_CONTENT_TYPE, [
         "DIETARY",
         "EXERCISE",
@@ -1180,6 +1575,33 @@ describe("care-companion enum const objects", () => {
     })
   })
 
+  describe("OVERALL_RISK", () => {
+    it("contains exactly the 4 spec-defined members", () => {
+      assertEnumShape(OVERALL_RISK, ["NONE", "LOW", "MODERATE", "HIGH"])
+    })
+
+    it("values are usable as OverallRisk type", () => {
+      const val: OverallRisk = OVERALL_RISK.HIGH
+      expect(val).toBe("HIGH")
+    })
+  })
+
+  describe("SUGGESTED_ACTION_TYPE", () => {
+    it("contains exactly the 4 spec-defined members", () => {
+      assertEnumShape(SUGGESTED_ACTION_TYPE, [
+        "PAY",
+        "CHECK_STOCK",
+        "APPLY_LOAN",
+        "VIEW_CARD",
+      ])
+    })
+
+    it("values are usable as SuggestedActionType type", () => {
+      const val: SuggestedActionType = SUGGESTED_ACTION_TYPE.VIEW_CARD
+      expect(val).toBe("VIEW_CARD")
+    })
+  })
+
   describe("cross-cutting enum guarantees", () => {
     const allEnums: Record<string, Record<string, string>> = {
       MEDICATION_CATEGORY,
@@ -1195,10 +1617,12 @@ describe("care-companion enum const objects", () => {
       STOCK_STATUS,
       MEDICATION_LOAN_TRIGGER,
       MESSAGE_ROLE,
+      OVERALL_RISK,
+      SUGGESTED_ACTION_TYPE,
     }
 
-    it("all 13 enum objects are exported", () => {
-      expect(Object.keys(allEnums)).toHaveLength(13)
+    it("all 15 enum objects are exported", () => {
+      expect(Object.keys(allEnums)).toHaveLength(15)
       for (const enumObj of Object.values(allEnums)) {
         expect(enumObj).toBeDefined()
         expect(typeof enumObj).toBe("object")
@@ -1206,17 +1630,14 @@ describe("care-companion enum const objects", () => {
     })
 
     it("no enum object is empty", () => {
-      for (const [name, enumObj] of Object.entries(allEnums)) {
-        expect(Object.keys(enumObj).length).toBeGreaterThan(
-          0,
-          // Template literal for diagnostic message if this ever fails
-        )
+      for (const [_name, enumObj] of Object.entries(allEnums)) {
+        expect(Object.keys(enumObj).length).toBeGreaterThan(0)
       }
     })
 
     it("all values across all enums are uppercase strings", () => {
-      for (const [name, enumObj] of Object.entries(allEnums)) {
-        for (const [key, value] of Object.entries(enumObj)) {
+      for (const [_name, enumObj] of Object.entries(allEnums)) {
+        for (const [_key, value] of Object.entries(enumObj)) {
           expect(typeof value).toBe("string")
           expect(value).toBe(value.toUpperCase())
         }

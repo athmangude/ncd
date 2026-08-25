@@ -1,4 +1,15 @@
 // ---------------------------------------------------------------------------
+// Care Companion — TypeScript types
+//
+// API response shapes for the NCD Care Companion feature set. These map to
+// the backend entity column definitions in the technical architecture spec.
+// Monetary values are typed as string (Decimal.js serialization). Dates
+// arrive as ISO 8601 strings from JSON responses, not Date objects.
+//
+// @see ncd-care-companion-technical-architecture.md
+// ---------------------------------------------------------------------------
+
+// ---------------------------------------------------------------------------
 // Enum const objects — runtime-iterable, with derived union types
 // ---------------------------------------------------------------------------
 
@@ -122,11 +133,566 @@ export const MESSAGE_ROLE = {
 
 export type MessageRole = (typeof MESSAGE_ROLE)[keyof typeof MESSAGE_ROLE]
 
+export const OVERALL_RISK = {
+  NONE: "NONE",
+  LOW: "LOW",
+  MODERATE: "MODERATE",
+  HIGH: "HIGH",
+} as const
+
+export type OverallRisk = (typeof OVERALL_RISK)[keyof typeof OVERALL_RISK]
+
+export const SUGGESTED_ACTION_TYPE = {
+  PAY: "PAY",
+  CHECK_STOCK: "CHECK_STOCK",
+  APPLY_LOAN: "APPLY_LOAN",
+  VIEW_CARD: "VIEW_CARD",
+} as const
+
+export type SuggestedActionType =
+  (typeof SUGGESTED_ACTION_TYPE)[keyof typeof SUGGESTED_ACTION_TYPE]
+
 // ---------------------------------------------------------------------------
-// Interfaces
+// Sub-types for JSONB fields
 // ---------------------------------------------------------------------------
 
-// Medication taxonomy (simplified from MedicationTaxonomyEntry)
+/**
+ * A warning symptom entry in an emergency reference card.
+ * @see ncd-care-companion-technical-architecture.md EmergencyReferenceCard.warningSymptoms
+ */
+export interface WarningSymptom {
+  symptom: string
+  severity: "warning" | "critical"
+}
+
+/**
+ * An ordered step in emergency immediate actions.
+ * @see ncd-care-companion-technical-architecture.md EmergencyReferenceCard.immediateActions
+ */
+export interface ImmediateAction {
+  step: number
+  action: string
+}
+
+/**
+ * A common side effect with frequency and patient advice.
+ * @see ncd-care-companion-technical-architecture.md MedicationCard.commonSideEffects
+ */
+export interface SideEffect {
+  effect: string
+  frequency: string
+  advice: string
+}
+
+/**
+ * A serious side effect requiring specific action.
+ * @see ncd-care-companion-technical-architecture.md MedicationCard.seriousSideEffects
+ */
+export interface SeriousSideEffect {
+  effect: string
+  action: string
+}
+
+/**
+ * A substance the patient should avoid while on a medication.
+ * @see ncd-care-companion-technical-architecture.md MedicationCard.avoidanceWarnings
+ */
+export interface AvoidanceWarning {
+  substance: string
+  reason: string
+}
+
+/**
+ * A suggested follow-up action from the AI assistant.
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 5
+ */
+export interface SuggestedAction {
+  type: SuggestedActionType
+  label: string
+  deepLink: string
+}
+
+// ---------------------------------------------------------------------------
+// Generic pagination wrapper
+// ---------------------------------------------------------------------------
+
+/**
+ * Generic wrapper for paginated API responses. Used by medication timeline,
+ * cost breakdown, interactions, and other list endpoints.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 (pagination per B-M5)
+ */
+export interface PaginatedResponse<T> {
+  data: T[]
+  pagination: {
+    total: number
+    limit: number
+    offset: number
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 1: MedicationTaxonomyEntry
+// ---------------------------------------------------------------------------
+
+/**
+ * Canonical medication reference entry from the taxonomy table.
+ * Source of truth for name normalization and fuzzy-match resolution.
+ * Seeded from pharmaceutical reference data; new entries added via admin
+ * tooling, never by patient-facing code.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 0
+ */
+export interface MedicationTaxonomyEntry {
+  id: string
+  genericName: string
+  brandNames: string[] | null
+  dosageForms: string[] | null
+  strengths: string[] | null
+  category: MedicationCategory
+  atcCode: string | null
+  synonyms: string[] | null
+  conditionTags: ConditionType[] | null
+  isActive: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 2: ParsedInvoiceLineItem
+// ---------------------------------------------------------------------------
+
+/**
+ * Structured interpretation of a freetext invoice line item.
+ * One ParsedInvoiceLineItem per ServiceLineItem (from SubmittedInvoice)
+ * or per MedicalInvoiceItem row. The foundational data layer that the
+ * cost tracker, medication timeline, and refill engine build on.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 0
+ */
+export interface ParsedInvoiceLineItem {
+  id: string
+  sourceType: InvoiceSourceType
+  submittedInvoiceId: string | null
+  medicalInvoiceItemId: number | null
+  sourceLineIndex: number
+  patientId: string
+  providerId: number
+  transactionDate: string
+  originalDescription: string
+  medicationId: string | null
+  parsedDosage: string | null
+  parsedQuantity: number | null
+  /** Monetary value as string for decimal precision. */
+  unitPrice: string | null
+  /** Monetary value as string for decimal precision. */
+  lineTotal: string
+  parsedCategory: MedicationCategory
+  confidence: number
+  parseMethod: ParseMethod
+  reviewStatus: ReviewStatus
+  reviewedByUserId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 3: PatientMedicationRecord
+// ---------------------------------------------------------------------------
+
+/**
+ * Materialized aggregate of a patient's relationship with a specific
+ * medication. One row per patient per medication. Updated asynchronously
+ * when new ParsedInvoiceLineItem rows are created.
+ *
+ * The nested medication object is a denormalized subset of the full
+ * MedicationTaxonomyEntry, containing only the fields the frontend needs
+ * for display in medication lists.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 0
+ */
+export interface PatientMedicationRecord {
+  id: string
+  medication: {
+    genericName: string
+    brandNames: string[]
+    category: MedicationCategory
+  }
+  firstPurchaseDate: string
+  lastPurchaseDate: string
+  totalPurchaseCount: number
+  averageRefillIntervalDays: number | null
+  isActive: boolean
+  inferredConditions: string[]
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 4: CostSummary
+// ---------------------------------------------------------------------------
+
+/**
+ * Annual cost summary for a patient. All monetary values are strings
+ * because the backend computes them with Decimal.js and serializes to
+ * string to avoid floating-point drift.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 1
+ */
+export interface CostSummary {
+  year: number
+  /** Monetary value as string for decimal precision. */
+  ytdSpend: string
+  /** Monetary value as string for decimal precision. */
+  monthlyAverage: string
+  /** Monetary value as string for decimal precision. */
+  cashbackEarned: string
+  /** Monetary value as string for decimal precision. */
+  netSpend: string
+  /** Monetary value as string for decimal precision. */
+  annualProjection: string
+  transactionCount: number
+  currency: "KES"
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 5: CostBreakdownResponse
+// ---------------------------------------------------------------------------
+
+/**
+ * Spend breakdown for a single category.
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 1
+ */
+export interface CostCategoryBreakdown {
+  category: MedicationCategory
+  /** Monetary value as string for decimal precision. */
+  totalSpend: string
+  percentage: number
+  transactionCount: number
+}
+
+/**
+ * Monthly spend data point used in cost trend charts.
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 1
+ */
+export interface MonthlySpend {
+  month: number
+  /** Monetary value as string for decimal precision. */
+  spend: string
+}
+
+/**
+ * Cost breakdown by category with monthly trend data. Includes pagination
+ * for the monthly trend array.
+ *
+ * Response shape for GET /api/patients/:id/cost-summary/breakdown.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 1
+ */
+export interface CostBreakdownResponse {
+  year: number
+  categories: CostCategoryBreakdown[]
+  monthlyTrend: MonthlySpend[]
+  pagination: {
+    total: number
+    limit: number
+    offset: number
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 6: EmergencyReferenceCard
+// ---------------------------------------------------------------------------
+
+/**
+ * Static, clinician-reviewed emergency content per condition type and locale.
+ * Designed for a panicking caregiver needing 60-second guidance. Always
+ * accessible after initial load (service worker precached).
+ *
+ * Includes publishing metadata (version, isPublished) from the entity.
+ * Only published cards are returned to patients.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 1
+ */
+export interface EmergencyReferenceCard {
+  id: string
+  conditionType: ConditionType
+  locale: ContentLocale
+  title: string
+  warningSymptoms: WarningSymptom[]
+  immediateActions: ImmediateAction[]
+  whenToGoToER: string[]
+  doNotDo: string[] | null
+  version: number
+  isPublished: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 7: MedicationCard
+// ---------------------------------------------------------------------------
+
+/**
+ * Curated drug intelligence content. One card per medication per locale.
+ * Created by pharmacists, reviewed before publishing. Displayed as a
+ * post-payment overlay after Jireh Pay transactions.
+ *
+ * References medication by ID rather than embedding the full taxonomy
+ * entry. The frontend resolves the medication name via the taxonomy
+ * or PatientMedicationRecord.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 2
+ */
+export interface MedicationCard {
+  id: string
+  medicationId: string
+  locale: ContentLocale
+  description: string
+  howItWorks: string | null
+  commonSideEffects: SideEffect[]
+  seriousSideEffects: SeriousSideEffect[]
+  avoidanceWarnings: AvoidanceWarning[]
+  whenToSeekHelp: string
+  storageInstructions: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 8: MedicationInteraction
+// ---------------------------------------------------------------------------
+
+/**
+ * Known drug-drug and drug-herbal interaction record. Bidirectional:
+ * a query for medication A returns interactions where A appears as
+ * either medicationAId or medicationBId. The herbName field handles
+ * herbal remedies not in the taxonomy.
+ *
+ * Uses canonical ordering: medicationAId < medicationBId to prevent
+ * duplicate (A,B) and (B,A) entries.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 2
+ */
+export interface MedicationInteraction {
+  id: string
+  medicationAId: string
+  medicationBId: string | null
+  herbName: string | null
+  severity: InteractionSeverity
+  descriptionEn: string
+  descriptionSw: string | null
+  clinicalEffect: string
+  recommendation: string
+  source: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 9: RefillScheduleItem
+// ---------------------------------------------------------------------------
+
+/**
+ * Per-patient per-medication refill tracking item.
+ * API response shape for GET /api/patients/:id/refill-schedule.
+ *
+ * Computed from PatientMedicationRecord.averageRefillIntervalDays +
+ * lastPurchaseDate. The refill cron updates statuses and triggers
+ * notifications.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 3
+ */
+export interface RefillScheduleItem {
+  id: string
+  medicationName: string
+  expectedRefillDate: string
+  status: RefillStatus
+  /** Negative values indicate overdue days. */
+  daysUntilRefill: number
+  estimatedDaysSupply: number | null
+  escalatedToLoanOffer: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 10: EducationContentCard
+// ---------------------------------------------------------------------------
+
+/**
+ * Weekly education content card for NCD patients. One card per condition
+ * type, locale, and week number in the annual rotation.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 1 Phase 3
+ */
+export interface EducationContentCard {
+  id: string
+  conditionType: ConditionType
+  contentType: EducationContentType
+  locale: ContentLocale
+  title: string
+  body: string
+  weekNumber: number
+  imageUrl: string | null
+  isPublished: boolean
+  /** CHP addition: whether the content applies to full households. */
+  householdCompatible: boolean | null
+  /** CHP addition: whether the advice is cost-neutral to implement. */
+  costNeutral: boolean | null
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 11: PharmacyStockItem
+// ---------------------------------------------------------------------------
+
+/**
+ * Pharmacy stock availability for a medication at a specific facility.
+ * Response shape for GET /api/pharmacies/stock (nearby stock endpoint).
+ *
+ * Distance is null when geolocation is unavailable and the fallback
+ * path returns all in-network pharmacies sorted alphabetically.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 4
+ */
+export interface PharmacyStockItem {
+  facility: {
+    id: number
+    name: string
+    lat: number
+    lng: number
+  }
+  distance: number | null
+  stockStatus: StockStatus
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 12: MedicationLoanPreApproval
+// ---------------------------------------------------------------------------
+
+/**
+ * Medication loan pre-approval status.
+ * Response shape for GET /api/patients/:id/credit/pre-approval.
+ *
+ * When the patient is not pre-approved, preApprovalDetails is null.
+ * All monetary values inside preApprovalDetails are strings for
+ * decimal precision.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 4
+ */
+export interface MedicationLoanPreApproval {
+  isPreApproved: boolean
+  preApprovalDetails: {
+    /** Monetary value as string for decimal precision. */
+    maxAmount: string
+    medications: {
+      name: string
+      /** Monetary value as string for decimal precision. */
+      estimatedCost: string
+    }[]
+    targetPharmacy: {
+      id: number
+      name: string
+    }
+    reason: string
+    expiresAt: string
+  } | null
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 13: AiAssistantMessage
+// ---------------------------------------------------------------------------
+
+/**
+ * AI assistant response message.
+ * Response shape for POST /api/patients/:id/assistant/message.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 5
+ */
+export interface AiAssistantMessage {
+  sessionId: string
+  message: {
+    content: string
+    guardrailFlags: string[]
+  }
+  suggestedActions: SuggestedAction[]
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 14: InteractionCheckResult
+// ---------------------------------------------------------------------------
+
+/**
+ * Result of checking a product or herbal remedy against the patient's
+ * active medications.
+ * Response shape for POST /api/patients/:id/assistant/interaction-check.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 5
+ */
+export interface InteractionCheckResult {
+  productName: string
+  interactions: {
+    withMedication: string
+    severity: InteractionSeverity
+    description: string
+    recommendation: string
+  }[]
+  overallRisk: OverallRisk
+  disclaimer: string
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 15: CareCompanionHomeResponse
+// ---------------------------------------------------------------------------
+
+/**
+ * Aggregated BFF response for the care companion home page.
+ * Single request replaces 4 parallel API calls on 3G networks.
+ *
+ * Response shape for GET /api/patients/:id/care-companion/home (API-021).
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 BFF Endpoint
+ */
+export interface CareCompanionHomeResponse {
+  refillSchedule: {
+    /** Max 3 items, most urgent first. */
+    schedules: RefillScheduleItem[]
+    hasMore: boolean
+  }
+  costSummary: CostSummary
+  educationFeed: EducationContentCard | null
+  emergencyCard: {
+    conditionType: ConditionType
+    title: string
+    cardId: string
+  } | null
+}
+
+// ---------------------------------------------------------------------------
+// Entity interface 16: TimelineEntry
+// ---------------------------------------------------------------------------
+
+/**
+ * A single entry in the medication purchase timeline. Denormalized from
+ * ParsedInvoiceLineItem with facility name and gap analysis.
+ *
+ * @see ncd-care-companion-technical-architecture.md Section 3 Phase 1b
+ */
+export interface TimelineEntry {
+  date: string
+  medicationName: string
+  dosage: string | null
+  quantity: number | null
+  /** Monetary value as string for decimal precision. */
+  lineTotal: string
+  facilityName: string
+  gapDaysFromPrevious: number | null
+  /** True when gap exceeds 1.5x the average refill interval. */
+  isGapAnomaly: boolean
+}
+
+// ---------------------------------------------------------------------------
+// Backward-compatible type aliases
+//
+// These preserve imports used by existing mock handlers and test files.
+// New code should prefer the spec-aligned interfaces above.
+// ---------------------------------------------------------------------------
+
+/**
+ * Simplified medication reference used by mock fixtures.
+ * Subset of MedicationTaxonomyEntry with only the fields needed for
+ * display in patient-facing medication lists.
+ *
+ * @deprecated Prefer MedicationTaxonomyEntry for new code.
+ */
 export interface Medication {
   id: string
   genericName: string
@@ -136,7 +702,13 @@ export interface Medication {
   conditionTags: ConditionType[]
 }
 
-// Patient's relationship with a medication (from PatientMedicationRecord)
+/**
+ * Patient medication record using a nested Medication object.
+ * Used by existing mock fixtures where the full medication object is
+ * inlined rather than referenced by ID.
+ *
+ * @deprecated Prefer PatientMedicationRecord for new code.
+ */
 export interface PatientMedication {
   id: string
   medication: Medication
@@ -148,102 +720,38 @@ export interface PatientMedication {
   inferredConditions: string[]
 }
 
-// Medication timeline entry (from ParsedInvoiceLineItem, denormalized)
-export interface TimelineEntry {
-  date: string
-  medicationName: string
-  dosage: string | null
-  quantity: number | null
-  lineTotal: string
-  facilityName: string
-  gapDaysFromPrevious: number | null
-  isGapAnomaly: boolean
-}
-
-// Cost tracker
-export interface CostSummary {
-  year: number
-  ytdSpend: string
-  monthlyAverage: string
-  cashbackEarned: string
-  netSpend: string
-  annualProjection: string
-  transactionCount: number
-  currency: "KES"
-}
-
-export interface CostCategoryBreakdown {
-  category: MedicationCategory
-  totalSpend: string
-  percentage: number
-  transactionCount: number
-}
-
-// Emergency card
+/**
+ * Emergency card with CHP transport credit additions.
+ * Used by existing mock fixtures that include the transport credit CTA.
+ *
+ * @deprecated Prefer EmergencyReferenceCard for new code.
+ */
 export interface EmergencyCard {
   id: string
   conditionType: ConditionType
   locale: ContentLocale
   title: string
-  warningSymptoms: { symptom: string; severity: "warning" | "critical" }[]
-  immediateActions: { step: number; action: string }[]
+  warningSymptoms: WarningSymptom[]
+  immediateActions: ImmediateAction[]
   whenToGoToER: string[]
   doNotDo: string[]
-  // CHP addition: emergency transport credit CTA
   emergencyTransportCreditAvailable: boolean
+  /** Monetary value as string for decimal precision. */
   emergencyTransportCreditAmount: string | null
 }
 
-// Medication intelligence card
-export interface MedicationCard {
-  id: string
-  medication: Medication
-  locale: ContentLocale
-  description: string
-  howItWorks: string | null
-  commonSideEffects: { effect: string; frequency: string; advice: string }[]
-  seriousSideEffects: { effect: string; action: string }[]
-  avoidanceWarnings: { substance: string; reason: string }[]
-  whenToSeekHelp: string
-}
+/**
+ * Refill schedule item (alias for backward compatibility).
+ * @deprecated Prefer RefillScheduleItem for new code.
+ */
+export type RefillSchedule = RefillScheduleItem
 
-export interface MedicationInteraction {
-  id: string
-  medicationA: string
-  medicationB: string | null
-  herbName: string | null
-  severity: InteractionSeverity
-  description: string
-  clinicalEffect: string
-  recommendation: string
-}
-
-// Refill schedule
-export interface RefillSchedule {
-  id: string
-  medicationName: string
-  expectedRefillDate: string
-  status: RefillStatus
-  daysUntilRefill: number
-  estimatedDaysSupply: number | null
-  escalatedToLoanOffer: boolean
-}
-
-// Education content
-export interface EducationContentCard {
-  id: string
-  conditionType: ConditionType
-  contentType: EducationContentType
-  locale: ContentLocale
-  title: string
-  body: string
-  weekNumber: number
-  // CHP addition: household compatibility metadata
-  householdCompatible: boolean | null
-  costNeutral: boolean | null
-}
-
-// Pharmacy stock
+/**
+ * Pharmacy stock entry using a flat structure.
+ * Used by existing mock fixtures.
+ *
+ * @deprecated Prefer PharmacyStockItem for new code.
+ */
 export interface PharmacyStock {
   facilityId: number
   facilityName: string
@@ -255,41 +763,41 @@ export interface PharmacyStock {
   lng: number
 }
 
-// Medication loan pre-approval
-export interface MedicationLoanPreApproval {
-  isPreApproved: boolean
-  maxAmount: string
-  medications: { name: string; estimatedCost: string }[]
-  targetPharmacy: { id: number; name: string }
-  reason: string
-  expiresAt: string
-}
-
-// Emergency transport credit (CHP addition: P25.3)
-export interface EmergencyTransportCredit {
-  isAvailable: boolean
-  preApprovedAmount: string
-  expiresAt: string
-}
-
-// AI assistant
+/**
+ * AI assistant message using the per-message structure.
+ * Used by existing mock fixtures for conversation history.
+ *
+ * @deprecated Prefer AiAssistantMessage for new code.
+ */
 export interface AssistantMessage {
   id: string
   role: MessageRole
   content: string
   guardrailFlags: string[]
-  suggestedActions: {
-    type: "PAY" | "CHECK_STOCK" | "APPLY_LOAN" | "VIEW_CARD"
-    label: string
-    deepLink: string
-  }[]
+  suggestedActions: SuggestedAction[]
   timestamp: string
 }
 
-// Care companion home (BFF shape)
+/**
+ * Emergency transport credit pre-approval.
+ * CHP addition (P25.3). Standalone type used by mock fixtures.
+ */
+export interface EmergencyTransportCredit {
+  isAvailable: boolean
+  /** Monetary value as string for decimal precision. */
+  preApprovedAmount: string
+  expiresAt: string
+}
+
+/**
+ * Care companion home page BFF response with emergency transport credit.
+ * Used by existing mock fixtures that include the transport credit field.
+ *
+ * @deprecated Prefer CareCompanionHomeResponse for new code.
+ */
 export interface CareCompanionHome {
   refillSchedule: {
-    schedules: RefillSchedule[]
+    schedules: RefillScheduleItem[]
     hasMore: boolean
   }
   costSummary: CostSummary
@@ -302,13 +810,22 @@ export interface CareCompanionHome {
   emergencyTransportCredit: EmergencyTransportCredit | null
 }
 
-// Care companion profile (intake questionnaire responses)
+// ---------------------------------------------------------------------------
+// Care Companion Profile (intake questionnaire responses)
+// ---------------------------------------------------------------------------
+
+/**
+ * Full care companion profile from the intake questionnaire.
+ * Six branching steps that personalize the companion experience.
+ *
+ * @see NCD Patient Care Companion.md Section 4.1
+ */
 export interface CareCompanionProfile {
   id: string
   completedAt: string | null
   skippedAt: string | null
 
-  // Step 1: Conditions
+  /** Step 1: Conditions the patient is managing. */
   conditions: {
     type: (
       | "DIABETES"
@@ -328,7 +845,7 @@ export interface CareCompanionProfile {
       | null
   }
 
-  // Step 2: Current treatment (branched by condition)
+  /** Step 2: Current treatment (branched by condition). */
   treatment: {
     currentlyOnMedication: boolean
     medicationNames: string[]
@@ -350,7 +867,7 @@ export interface CareCompanionProfile {
     herbalDetails: string | null
   }
 
-  // Step 3: Biggest challenges (multi-select, ranked)
+  /** Step 3: Biggest challenges (multi-select, ranked). */
   challenges: {
     selected: (
       | "COST"
@@ -368,7 +885,7 @@ export interface CareCompanionProfile {
     topChallenge: string | null
   }
 
-  // Step 4: How they currently cope (branched by challenges)
+  /** Step 4: How they currently cope (branched by challenges). */
   coping: {
     costCoping:
       | (
@@ -400,7 +917,7 @@ export interface CareCompanionProfile {
       | null
   }
 
-  // Step 5: What they want from the companion
+  /** Step 5: What they want from the companion. */
   goals: {
     selected: (
       | "TRACK_COSTS"
@@ -416,7 +933,7 @@ export interface CareCompanionProfile {
     )[]
   }
 
-  // Step 6: Relationship to patient (branched, addresses H11.0)
+  /** Step 6: Relationship to patient (addresses H11.0). */
   userRole: {
     role: "SELF" | "CAREGIVER" | "BOTH"
     patientRelationship:
