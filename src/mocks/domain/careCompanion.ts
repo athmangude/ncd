@@ -22,6 +22,8 @@ import type {
   EmergencyCard,
   EmergencyTransportCredit,
   PatientMedication,
+  PatientMedicationRecord,
+  MedicationTaxonomyEntry,
   TimelineEntry,
   MedicationCard,
   MedicationInteraction,
@@ -31,6 +33,8 @@ import type {
 } from "@/types/care-companion"
 
 import patientMedicationsSeed from "../fixtures/patient-medications.json"
+import patientMedicationRecordsSeed from "../fixtures/patient-medication-records.json"
+import medicationTaxonomySeed from "../fixtures/medication-taxonomy.json"
 import medicationTimelineSeed from "../fixtures/medication-timeline.json"
 import costSummarySeed from "../fixtures/cost-summary.json"
 import emergencyCardsSeed from "../fixtures/emergency-cards.json"
@@ -255,6 +259,54 @@ export function getMatchedEmergencyCard(): EmergencyCard | undefined {
     (c) => c.conditionType === "GENERAL" && c.locale === "EN",
   )
   return general ?? cards[0]
+}
+
+/**
+ * Infers condition types from the patient's active medication records.
+ * Collects unique inferredConditions across all active medications,
+ * excluding GENERAL (which is a fallback, not a real condition).
+ */
+export function getInferredConditions(): string[] {
+  const medications = getPatientMedications()
+  const active = medications.filter((m) => m.isActive)
+
+  const conditionSet = new Set<string>()
+  for (const med of active) {
+    for (const condition of med.inferredConditions) {
+      if (condition !== "GENERAL") {
+        conditionSet.add(condition)
+      }
+    }
+  }
+
+  return Array.from(conditionSet)
+}
+
+/**
+ * Returns the emergency card matching a specific condition and locale.
+ * Falls back to GENERAL for the same locale if no condition-specific card
+ * exists, then falls back to the first card in the collection.
+ */
+export function getEmergencyCard(
+  condition: string,
+  locale: string,
+): EmergencyCard | undefined {
+  const cards = getEmergencyCards()
+
+  // Try exact match on condition + locale
+  const match = cards.find(
+    (c) => c.conditionType === condition && c.locale === locale,
+  )
+  if (match) return match
+
+  // Fallback to GENERAL for the requested locale
+  const general = cards.find(
+    (c) => c.conditionType === "GENERAL" && c.locale === locale,
+  )
+  if (general) return general
+
+  // Last resort: first card in the collection
+  return cards[0]
 }
 
 // ---------------------------------------------------------------------------

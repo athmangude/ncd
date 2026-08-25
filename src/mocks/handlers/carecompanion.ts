@@ -9,6 +9,8 @@ import {
   getMedicationTimeline,
   getCostSummary,
   getMatchedEmergencyCard,
+  getInferredConditions,
+  getEmergencyCard,
   getEmergencyTransportCredit,
   getMedicationCards,
   getMedicationInteractions,
@@ -97,8 +99,26 @@ export const careCompanionHandlers = [
   // -------------------------------------------------------------------------
   // 4. Annual cost summary
   // -------------------------------------------------------------------------
-  http.get("/api/patients/:id/cost-summary", () => {
+  http.get("/api/patients/:id/cost-summary", ({ request }) => {
+    const url = new URL(request.url)
+    const year =
+      Number(url.searchParams.get("year")) || new Date().getFullYear()
     const summary = getCostSummary()
+
+    // Return zero values when the requested year has no data
+    if (summary.year !== year) {
+      return HttpResponse.json({
+        year,
+        ytdSpend: "0",
+        monthlyAverage: "0",
+        cashbackEarned: "0",
+        netSpend: "0",
+        annualProjection: "0",
+        transactionCount: 0,
+        currency: "KES",
+      })
+    }
+
     return HttpResponse.json({
       year: summary.year,
       ytdSpend: summary.ytdSpend,
@@ -112,26 +132,46 @@ export const careCompanionHandlers = [
   }),
 
   // -------------------------------------------------------------------------
-  // 5. Cost breakdown by category + monthly trend
+  // 5. Cost breakdown by category + monthly trend (paginated)
   // -------------------------------------------------------------------------
-  http.get("/api/patients/:id/cost-summary/breakdown", () => {
+  http.get("/api/patients/:id/cost-summary/breakdown", ({ request }) => {
+    const url = new URL(request.url)
+    const limit = Number(url.searchParams.get("limit")) || 12
+    const offset = Number(url.searchParams.get("offset")) || 0
+
     const summary = getCostSummary()
+    const trend = summary.monthlyTrend
+    const total = trend.length
+    const paged = trend.slice(offset, offset + limit)
+
     return HttpResponse.json({
       year: summary.year,
       categories: summary.breakdown,
-      monthlyTrend: summary.monthlyTrend,
+      monthlyTrend: paged,
+      pagination: { total, limit, offset },
     })
   }),
 
   // -------------------------------------------------------------------------
-  // 6. Emergency card (condition-matched)
+  // 6. Emergency card (condition-inferred from medications)
   // -------------------------------------------------------------------------
-  http.get("/api/patients/:id/emergency-card", () => {
-    const card = getMatchedEmergencyCard()
+  http.get("/api/patients/:id/emergency-card", ({ request }) => {
+    const url = new URL(request.url)
+    const locale = url.searchParams.get("locale") ?? "EN"
+
+    // Infer the patient's primary condition from their medication records
+    const conditions = getInferredConditions()
+    const primaryCondition = conditions[0] ?? "GENERAL"
+
+    // Fetch the matching card with GENERAL fallback
+    const card = getEmergencyCard(primaryCondition, locale)
     if (!card) {
       return HttpResponse.json(null, { status: 404 })
     }
-    return HttpResponse.json(card)
+
+    return HttpResponse.json(card, {
+      headers: { "Cache-Control": "public, max-age=86400" },
+    })
   }),
 
   // -------------------------------------------------------------------------
