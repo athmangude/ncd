@@ -52,7 +52,10 @@ describe("useAssistantChat", () => {
     vi.clearAllMocks()
     uuidCounter = 0
     mockMutate.mockImplementation((payload) => {
-      capturedMutationOptions.onMutate?.(payload)
+      const onMutate = capturedMutationOptions.onMutate as
+        | ((variables: unknown) => unknown)
+        | undefined
+      onMutate?.(payload)
     })
     const mod = await import("./useAssistantChat")
     useAssistantChat = mod.useAssistantChat
@@ -186,12 +189,11 @@ describe("useAssistantChat", () => {
     const { result } = renderHook(() => useAssistantChat())
 
     // Send first message successfully
-    let firstContext: { previousMessages: unknown[] } | undefined
     mockMutate.mockImplementationOnce((payload) => {
       const onMutate = capturedMutationOptions.onMutate as (
         variables: unknown
       ) => { previousMessages: unknown[] }
-      firstContext = onMutate(payload)
+      onMutate(payload)
     })
 
     act(() => {

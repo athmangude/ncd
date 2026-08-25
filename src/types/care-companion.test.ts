@@ -64,10 +64,6 @@ import type {
   // Sub-types
   WarningSymptom,
   ImmediateAction,
-  SideEffect,
-  SeriousSideEffect,
-  AvoidanceWarning,
-  SuggestedAction,
 } from "./care-companion"
 
 // ---------------------------------------------------------------------------
@@ -346,6 +342,7 @@ const parsedLineItem: ParsedInvoiceLineItem = {
 
 const patientMedicationRecord: PatientMedicationRecord = {
   id: "pmr-001",
+  medicationId: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
   medication: {
     genericName: "Metformin",
     brandNames: ["Glucophage", "Glycomet"],

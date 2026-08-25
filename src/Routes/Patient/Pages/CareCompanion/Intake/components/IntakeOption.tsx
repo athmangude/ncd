@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/Checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/Radio"
 
-interface IntakeOptionProps {
+export interface IntakeOptionProps {
   label: string
   description?: string
   selected: boolean
@@ -12,6 +12,7 @@ interface IntakeOptionProps {
   /** Required when mode is "radio" — the value passed to RadioGroupItem */
   value?: string
   className?: string
+  disabled?: boolean
 }
 
 export default function IntakeOption({

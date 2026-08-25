@@ -42,7 +42,7 @@ describe("EVENTS.CARE_COMPANION", () => {
   })
 
   it("has no empty sub-objects", () => {
-    for (const [key, section] of Object.entries(CC)) {
+    for (const [, section] of Object.entries(CC)) {
       expect(Object.keys(section).length).toBeGreaterThan(
         0,
       )

@@ -8,7 +8,6 @@ import type {
   CostSummary,
   CostCategoryBreakdown,
   CostBreakdownResponse,
-  MonthlySpend,
   EmergencyCard,
   MedicationCard,
   MedicationInteraction,

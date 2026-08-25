@@ -227,27 +227,29 @@ export const careCompanionHandlers = [
     const allCards = getMedicationCards()
     const interactions = getMedicationInteractions()
     const patientMeds = getPatientMedications()
-    const activeMedNames = patientMeds
+    const taxonomy = getMedicationTaxonomy()
+    const medName = (id: string) =>
+      taxonomy.find((t) => t.id === id)?.genericName ?? "Unknown"
+    const activeMedIds = patientMeds
       .filter((m) => m.isActive)
-      .map((m) => m.medication.genericName)
+      .map((m) => m.medication.id)
 
     // Annotate each card with relevant interactions
     const annotated = allCards.map((card) => {
-      const cardMedName = card.medication.genericName
       const relevantInteractions = interactions.filter(
         (i) =>
-          i.medicationA === cardMedName ||
-          i.medicationB === cardMedName,
+          i.medicationAId === card.medicationId ||
+          i.medicationBId === card.medicationId,
       )
       return {
         card,
         interactions: relevantInteractions.map((i) => ({
           withMedication:
-            i.medicationA === cardMedName
-              ? (i.medicationB ?? i.herbName ?? "Unknown")
-              : i.medicationA,
+            i.medicationAId === card.medicationId
+              ? (i.medicationBId ? medName(i.medicationBId) : i.herbName ?? "Unknown")
+              : medName(i.medicationAId),
           severity: i.severity,
-          description: i.description,
+          description: i.descriptionEn,
           recommendation: i.recommendation,
         })),
       }
@@ -255,7 +257,7 @@ export const careCompanionHandlers = [
 
     // Filter to cards for the patient's active medications
     const relevant = annotated.filter((a) =>
-      activeMedNames.includes(a.card.medication.genericName),
+      activeMedIds.includes(a.card.medicationId),
     )
 
     const total = relevant.length
@@ -402,11 +404,17 @@ export const careCompanionHandlers = [
       const interactions = getMedicationInteractions()
       const productLower = body.productName.toLowerCase()
 
+      const taxonomy = getMedicationTaxonomy()
+      const medName = (id: string) =>
+        taxonomy.find((t) => t.id === id)?.genericName ?? "Unknown"
+
       // Find interactions involving the queried product
       const matching = interactions.filter(
         (i) =>
-          i.medicationA.toLowerCase().includes(productLower) ||
-          (i.medicationB?.toLowerCase().includes(productLower) ?? false) ||
+          medName(i.medicationAId).toLowerCase().includes(productLower) ||
+          (i.medicationBId
+            ? medName(i.medicationBId).toLowerCase().includes(productLower)
+            : false) ||
           (i.herbName?.toLowerCase().includes(productLower) ?? false),
       )
 
@@ -431,11 +439,11 @@ export const careCompanionHandlers = [
         productName: body.productName,
         interactions: matching.map((i) => ({
           withMedication:
-            i.medicationA.toLowerCase().includes(productLower)
-              ? (i.medicationB ?? i.herbName ?? "Unknown")
-              : i.medicationA,
+            medName(i.medicationAId).toLowerCase().includes(productLower)
+              ? (i.medicationBId ? medName(i.medicationBId) : i.herbName ?? "Unknown")
+              : medName(i.medicationAId),
           severity: i.severity,
-          description: i.description,
+          description: i.descriptionEn,
           recommendation: i.recommendation,
         })),
         overallRisk,

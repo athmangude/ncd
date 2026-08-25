@@ -4,7 +4,6 @@ import type {
   RefillScheduleItem,
   CostSummary,
   EducationContentCard,
-  ConditionType,
 } from "@/types/care-companion"
 import {
   REFILL_STATUS,

@@ -217,7 +217,7 @@ describe("fixture data accessors", () => {
   it("returns medication loan pre-approval from seed", () => {
     const preApproval = getMedicationLoanPreApproval()
     expect(preApproval.isPreApproved).toBe(true)
-    expect(preApproval.maxAmount).toBe("5500")
+    expect(preApproval.preApprovalDetails?.maxAmount).toBe("5500")
   })
 
   it("returns emergency transport credit from seed", () => {
