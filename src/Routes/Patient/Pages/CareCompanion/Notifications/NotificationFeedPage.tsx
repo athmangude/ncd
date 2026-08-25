@@ -1,18 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import { Bell } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/Skeleton"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
+import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import type { CareCompanionNotification } from "@/types/care-companion"
-
-// ---------------------------------------------------------------------------
-// Query keys
-// ---------------------------------------------------------------------------
-
-const NOTIFICATIONS_QUERY_KEY = "careCompanionNotifications"
+import {
+  useNotifications,
+  useMarkNotificationRead,
+} from "@/Routes/Patient/Pages/CareCompanion/hooks/useNotifications"
 
 // ---------------------------------------------------------------------------
 // Date grouping helpers
@@ -39,7 +36,7 @@ interface NotificationGroup {
 }
 
 function groupNotifications(
-  notifications: CareCompanionNotification[],
+  notifications: CareCompanionNotification[]
 ): NotificationGroup[] {
   const groups: Record<string, CareCompanionNotification[]> = {}
 
@@ -49,11 +46,7 @@ function groupNotifications(
     groups[label].push(n)
   }
 
-  const order: NotificationGroup["label"][] = [
-    "Today",
-    "Yesterday",
-    "Earlier",
-  ]
+  const order: NotificationGroup["label"][] = ["Today", "Yesterday", "Earlier"]
 
   return order
     .filter((label) => groups[label]?.length)
@@ -108,7 +101,7 @@ function NotificationCard({
   onTap,
 }: {
   notification: CareCompanionNotification
-  onTap: (notification: CareCompanionNotification) => void
+  onTap: (n: CareCompanionNotification) => void
 }) {
   const isUnread = notification.readAt === null
 
@@ -116,26 +109,32 @@ function NotificationCard({
     <button
       type="button"
       onClick={() => onTap(notification)}
+      aria-label={
+        isUnread ? `Unread: ${notification.title}` : notification.title
+      }
       className={cn(
         "flex w-full items-start gap-3 rounded-md border border-border p-4 text-left",
         "transition-colors active:bg-muted/60",
-        isUnread && "bg-accent/30",
+        isUnread && "bg-accent/30"
       )}
     >
       {/* Teal unread dot */}
       <span
         className={cn(
           "mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full",
-          isUnread ? "bg-accent-foreground" : "bg-transparent",
+          isUnread ? "bg-accent-foreground" : "bg-transparent"
         )}
         aria-hidden
       />
 
       <div className="flex flex-1 flex-col gap-1">
+        {isUnread && <span className="sr-only">Unread.</span>}
         <span
           className={cn(
             "text-sm leading-snug",
-            isUnread ? "font-semibold text-foreground" : "font-medium text-foreground",
+            isUnread
+              ? "font-semibold text-foreground"
+              : "font-medium text-foreground"
           )}
         >
           {notification.title}
@@ -154,62 +153,15 @@ function NotificationCard({
 
 export default function NotificationFeedPage() {
   const navigate = useNavigate()
-  const queryClient = useQueryClient()
 
   const {
     data: notifications,
     isLoading,
     isError,
     refetch,
-  } = useQuery({
-    queryKey: [NOTIFICATIONS_QUERY_KEY],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/notifications`,
-      )
-      return response.data as CareCompanionNotification[]
-    },
-    staleTime: 2 * 60 * 1000,
-  })
+  } = useNotifications()
 
-  const markReadMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/notifications/${id}/read`,
-      )
-    },
-    onMutate: async (id: string) => {
-      // Optimistic update: set readAt locally so the teal dot disappears
-      // immediately, even before the server responds.
-      await queryClient.cancelQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] })
-
-      const previous = queryClient.getQueryData<CareCompanionNotification[]>([
-        NOTIFICATIONS_QUERY_KEY,
-      ])
-
-      queryClient.setQueryData<CareCompanionNotification[]>(
-        [NOTIFICATIONS_QUERY_KEY],
-        (old) =>
-          old?.map((n) =>
-            n.id === id ? { ...n, readAt: new Date().toISOString() } : n,
-          ),
-      )
-
-      return { previous }
-    },
-    onError: (_err, _id, context) => {
-      // Rollback on failure so the dot reappears (edge case per spec).
-      if (context?.previous) {
-        queryClient.setQueryData(
-          [NOTIFICATIONS_QUERY_KEY],
-          context.previous,
-        )
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] })
-    },
-  })
+  const markReadMutation = useMarkNotificationRead()
 
   function handleTap(notification: CareCompanionNotification) {
     // Fire mark-read in background; navigate immediately regardless of
@@ -221,49 +173,72 @@ export default function NotificationFeedPage() {
     navigate(notification.deepLink)
   }
 
-  // -- Loading state --------------------------------------------------------
+  // -- Loading state -------------------------------------------------------
   if (isLoading) {
-    return <NotificationSkeleton />
-  }
-
-  // -- Error state ----------------------------------------------------------
-  if (isError) {
     return (
-      <ErrorBlock
-        message="We couldn't load your notifications. Check your connection and try again."
-        action={
-          <Button variant="outline" onClick={() => refetch()}>
-            Try again
-          </Button>
-        }
-      />
+      <PatientPageWrapper title="Notifications" onBack={() => navigate(-1)}>
+        <NotificationSkeleton />
+      </PatientPageWrapper>
     )
   }
 
-  // -- Empty state ----------------------------------------------------------
-  if (!notifications || notifications.length === 0) {
-    return <EmptyState />
+  // -- Error state --------------------------------------------------------
+  if (isError) {
+    return (
+      <PatientPageWrapper title="Notifications" onBack={() => navigate(-1)}>
+        <ErrorBlock
+          message="We couldn't load your notifications. Check your connection and try again."
+          action={
+            <Button variant="outline" onClick={() => refetch()}>
+              Try again
+            </Button>
+          }
+        />
+      </PatientPageWrapper>
+    )
   }
 
-  // -- Grouped feed ---------------------------------------------------------
-  const groups = groupNotifications(notifications)
+  // Filter out notifications that have not been sent yet
+  // (sentAt === null means scheduled but not yet delivered).
+  const sent = notifications?.filter((n) => n.sentAt !== null)
+
+  // -- Empty state --------------------------------------------------------
+  if (!sent || sent.length === 0) {
+    return (
+      <PatientPageWrapper title="Notifications" onBack={() => navigate(-1)}>
+        <EmptyState />
+      </PatientPageWrapper>
+    )
+  }
+
+  // -- Grouped feed -------------------------------------------------------
+  const groups = groupNotifications(sent)
 
   return (
-    <div className="flex flex-col gap-6 p-4 pb-tabbar">
-      {groups.map((group) => (
-        <section key={group.label} aria-label={`${group.label} notifications`}>
-          <h2 className="mb-3 text-muted-foreground">{group.label}</h2>
-          <div className="flex flex-col gap-2">
-            {group.items.map((notification) => (
-              <NotificationCard
-                key={notification.id}
-                notification={notification}
-                onTap={handleTap}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
-    </div>
+    <PatientPageWrapper
+      title="Notifications"
+      onBack={() => navigate(-1)}
+      bodyPadding="none"
+    >
+      <div className="flex flex-col gap-6 p-4 pb-tabbar">
+        {groups.map((group) => (
+          <section
+            key={group.label}
+            aria-label={`${group.label} notifications`}
+          >
+            <h2 className="mb-3 text-muted-foreground">{group.label}</h2>
+            <div className="flex flex-col gap-2">
+              {group.items.map((notification) => (
+                <NotificationCard
+                  key={notification.id}
+                  notification={notification}
+                  onTap={handleTap}
+                />
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </PatientPageWrapper>
   )
 }
