@@ -233,6 +233,31 @@ describe("GET /api/patients/:id/cost-summary", () => {
     expect(data.ytdSpend).toBe("47200")
     expect(data.transactionCount).toBe(24)
   })
+
+  it("defaults to current year when no year param is provided", async () => {
+    const data = await (await get("/cost-summary")).json()
+    expect(data.year).toBe(new Date().getFullYear())
+  })
+
+  it("returns fixture data when year matches", async () => {
+    const data = await (await get("/cost-summary?year=2026")).json()
+    expect(data.year).toBe(2026)
+    expect(data.ytdSpend).toBe("47200")
+    expect(data.transactionCount).toBe(24)
+    expect(data.currency).toBe("KES")
+  })
+
+  it("returns zero-value summary for a year with no data", async () => {
+    const data = await (await get("/cost-summary?year=2020")).json()
+    expect(data.year).toBe(2020)
+    expect(data.ytdSpend).toBe("0")
+    expect(data.monthlyAverage).toBe("0")
+    expect(data.cashbackEarned).toBe("0")
+    expect(data.netSpend).toBe("0")
+    expect(data.annualProjection).toBe("0")
+    expect(data.transactionCount).toBe(0)
+    expect(data.currency).toBe("KES")
+  })
 })
 
 // ---------------------------------------------------------------------------

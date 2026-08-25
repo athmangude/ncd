@@ -6,9 +6,11 @@ import {
   saveCareCompanionProfile,
   patchCareCompanionProfile,
   getPatientMedications,
+  getPatientMedicationRecords,
+  getMedicationTaxonomy,
+  searchTaxonomy,
   getMedicationTimeline,
   getCostSummary,
-  getMatchedEmergencyCard,
   getInferredConditions,
   getEmergencyCard,
   getEmergencyTransportCredit,
@@ -47,10 +49,43 @@ export const careCompanionHandlers = [
   }),
 
   // -------------------------------------------------------------------------
-  // 2. Patient medication list
+  // 2. Medication taxonomy search
+  // -------------------------------------------------------------------------
+  http.get("/api/medications/taxonomy", ({ request }) => {
+    const url = new URL(request.url)
+    const q = url.searchParams.get("q") ?? undefined
+    const category = url.searchParams.get("category")
+    const limit = Number(url.searchParams.get("limit")) || 20
+
+    let results = searchTaxonomy(q)
+
+    if (category) {
+      results = results.filter((entry) => entry.category === category)
+    }
+
+    return HttpResponse.json(results.slice(0, limit))
+  }),
+
+  // -------------------------------------------------------------------------
+  // 3. Patient medication list (with taxonomy enrichment)
   // -------------------------------------------------------------------------
   http.get("/api/patients/:id/medications", () => {
-    const medications = getPatientMedications()
+    const records = getPatientMedicationRecords()
+    const taxonomy = getMedicationTaxonomy()
+
+    // Enrich each record with taxonomy details by joining on medicationId
+    const medications = records.map((record) => {
+      const taxEntry = taxonomy.find((t) => t.id === record.medicationId)
+      return {
+        ...record,
+        medication: {
+          genericName: taxEntry?.genericName ?? record.medication.genericName,
+          brandNames: taxEntry?.brandNames ?? record.medication.brandNames,
+          category: taxEntry?.category ?? record.medication.category,
+        },
+      }
+    })
+
     return HttpResponse.json({ medications })
   }),
 

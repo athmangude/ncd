@@ -189,6 +189,12 @@ export function getTimeline(
   }
 }
 
+/**
+ * Internal mock-layer type extending CostSummary with breakdown and
+ * monthlyTrend fields present in the JSON fixture. Intentionally local
+ * to the mock layer -- these fields are not part of the CostSummary API
+ * contract; the handler splits them into separate endpoint responses.
+ */
 interface CostSummaryFixture extends CostSummary {
   breakdown: CostCategoryBreakdown[]
   monthlyTrend: MonthlySpend[]
