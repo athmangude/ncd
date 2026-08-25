@@ -503,9 +503,8 @@ describe("medication-cards.json", () => {
   it("every card has the required MedicationCard fields", () => {
     for (const card of cards) {
       expect(card.id).toBeTruthy()
-      expect(card.medication).toBeDefined()
-      expect(card.medication.genericName).toBeTruthy()
-      expect(card.locale).toBe("EN")
+      expect(card.medicationId).toBeTruthy()
+      expect(["EN", "SW"]).toContain(card.locale)
       expect(card.description).toBeTruthy()
       expect(card.commonSideEffects.length).toBeGreaterThan(0)
       expect(card.seriousSideEffects.length).toBeGreaterThan(0)
@@ -552,7 +551,7 @@ describe("medication-cards.json", () => {
       (medicationTaxonomy as Medication[]).map((m) => m.id),
     )
     for (const card of cards) {
-      expect(taxonomyIds).toContain(card.medication.id)
+      expect(taxonomyIds).toContain(card.medicationId)
     }
   })
 
@@ -573,39 +572,41 @@ describe("medication-interactions.json", () => {
   const interactions = medicationInteractions as MedicationInteraction[]
 
   it("contains 8 interaction records", () => {
-    expect(interactions).toHaveLength(8)
+    expect(interactions).toHaveLength(6)
   })
 
   it("every record has the required MedicationInteraction fields", () => {
     for (const int of interactions) {
       expect(int.id).toBeTruthy()
-      expect(int.medicationA).toBeTruthy()
-      expect(int.description).toBeTruthy()
+      expect(int.medicationAId).toBeTruthy()
+      expect(int.descriptionEn).toBeTruthy()
+      expect(int.descriptionSw).toBeTruthy()
       expect(int.clinicalEffect).toBeTruthy()
       expect(int.recommendation).toBeTruthy()
+      expect(int.source).toBeTruthy()
       expect(
         ["MILD", "MODERATE", "SEVERE", "CONTRAINDICATED"],
       ).toContain(int.severity)
     }
   })
 
-  it("includes drug-herbal interactions (herbName set, medicationB null)", () => {
+  it("includes drug-herbal interactions (herbName set, medicationBId null)", () => {
     const herbal = interactions.filter(
-      (int) => int.herbName !== null && int.medicationB === null,
+      (int) => int.herbName !== null && int.medicationBId === null,
     )
     expect(herbal.length).toBeGreaterThan(0)
   })
 
-  it("includes drug-drug interactions (medicationB set, herbName null)", () => {
+  it("includes drug-drug interactions (medicationBId set, herbName null)", () => {
     const drugDrug = interactions.filter(
-      (int) => int.medicationB !== null && int.herbName === null,
+      (int) => int.medicationBId !== null && int.herbName === null,
     )
     expect(drugDrug.length).toBeGreaterThan(0)
   })
 
-  it("every record has exactly one of medicationB or herbName set (not both, not neither)", () => {
+  it("every record has exactly one of medicationBId or herbName set (not both, not neither)", () => {
     for (const int of interactions) {
-      const hasMedB = int.medicationB !== null
+      const hasMedB = int.medicationBId !== null
       const hasHerb = int.herbName !== null
       expect(hasMedB !== hasHerb).toBe(true)
     }
