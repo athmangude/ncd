@@ -62,7 +62,7 @@ function CostTrackerSection() {
 
 function EmergencyCardSection() {
   return (
-    <div className="rounded-md border border-destructive/30 bg-destructive/5 p-4">
+    <div className="rounded-md border bg-card p-4">
       <h2 className="text-sm font-semibold text-foreground">
         Emergency Card
       </h2>
