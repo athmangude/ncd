@@ -7,6 +7,8 @@ import type {
   TimelineEntry,
   CostSummary,
   CostCategoryBreakdown,
+  CostBreakdownResponse,
+  MonthlySpend,
   EmergencyCard,
   MedicationCard,
   MedicationInteraction,
@@ -34,6 +36,9 @@ import emergencyTransportCredit from "./emergency-transport-credit.json"
 import aiAssistantConversations from "./ai-assistant-conversations.json"
 import careCompanionProfile from "./care-companion-profile.json"
 import patientMedicationRecords from "./patient-medication-records.json"
+import careCompanionCostSummary from "./care-companion-cost-summary.json"
+import careCompanionCostBreakdown from "./care-companion-cost-breakdown.json"
+import careCompanionTimeline from "./care-companion-timeline.json"
 
 // ---------------------------------------------------------------------------
 // Helper: type-check assertion. If the fixture shape drifts from the
@@ -815,9 +820,9 @@ describe("education-cards.json", () => {
 describe("pharmacy-stock.json", () => {
   const stock = pharmacyStock as PharmacyStock[]
 
-  it("contains stock entries for 6 Mombasa pharmacies", () => {
+  it("contains stock entries for 6 Mombasa and 3 Nairobi pharmacies", () => {
     const uniqueFacilities = new Set(stock.map((s) => s.facilityId))
-    expect(uniqueFacilities.size).toBe(6)
+    expect(uniqueFacilities.size).toBe(9)
   })
 
   it("every entry has the required PharmacyStock fields", () => {
@@ -831,8 +836,9 @@ describe("pharmacy-stock.json", () => {
     }
   })
 
-  it("coordinates are in the Mombasa region (lat ~ -4.0, lng ~ 39.6)", () => {
-    for (const s of stock) {
+  it("Mombasa pharmacies have coordinates in the Mombasa region (lat ~ -4.0, lng ~ 39.6)", () => {
+    const mombasaEntries = stock.filter((s) => s.facilityId <= 106)
+    for (const s of mombasaEntries) {
       expect(s.lat).toBeLessThan(-3.5)
       expect(s.lat).toBeGreaterThan(-4.5)
       expect(s.lng).toBeGreaterThan(39.0)
@@ -840,8 +846,29 @@ describe("pharmacy-stock.json", () => {
     }
   })
 
+  it("Nairobi pharmacies have coordinates in the Nairobi region (lat ~ -1.3, lng ~ 36.8)", () => {
+    const nairobiEntries = stock.filter((s) => s.facilityId >= 201)
+    expect(nairobiEntries.length).toBeGreaterThanOrEqual(6)
+    for (const s of nairobiEntries) {
+      expect(s.lat).toBeLessThan(-1.0)
+      expect(s.lat).toBeGreaterThan(-1.5)
+      expect(s.lng).toBeGreaterThan(36.5)
+      expect(s.lng).toBeLessThan(37.5)
+    }
+  })
+
   it("includes all 3 stock statuses across the dataset", () => {
     const statuses = new Set(stock.map((s) => s.status))
+    expect(statuses).toContain("IN_STOCK")
+    expect(statuses).toContain("LOW_STOCK")
+    expect(statuses).toContain("OUT_OF_STOCK")
+  })
+
+  it("Nairobi pharmacies include all 3 stock statuses for Metformin", () => {
+    const nairobiMetformin = stock.filter(
+      (s) => s.facilityId >= 201 && s.medicationName === "Metformin 500mg",
+    )
+    const statuses = new Set(nairobiMetformin.map((s) => s.status))
     expect(statuses).toContain("IN_STOCK")
     expect(statuses).toContain("LOW_STOCK")
     expect(statuses).toContain("OUT_OF_STOCK")
@@ -856,6 +883,11 @@ describe("pharmacy-stock.json", () => {
     }
   })
 
+  it("at least one pharmacy has distance null (no geolocation available)", () => {
+    const nullDistance = stock.filter((s) => s.distance === null)
+    expect(nullDistance.length).toBeGreaterThan(0)
+  })
+
   it("lastReportedAt values are valid ISO date strings", () => {
     for (const s of stock) {
       expect(s.lastReportedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
@@ -863,10 +895,10 @@ describe("pharmacy-stock.json", () => {
     }
   })
 
-  it("facility names reference Mombasa-area locations", () => {
+  it("facility names reference both Mombasa and Nairobi locations", () => {
     const allNames = stock.map((s) => s.facilityName).join(" ").toLowerCase()
-    // At least one Mombasa reference in the set
     expect(allNames).toContain("mombasa")
+    expect(allNames).toContain("nairobi")
   })
 })
 

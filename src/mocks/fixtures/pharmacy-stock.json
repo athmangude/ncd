@@ -118,5 +118,65 @@
     "distance": 1.8,
     "lat": -4.0561,
     "lng": 39.6631
+  },
+  {
+    "facilityId": 201,
+    "facilityName": "Nairobi West Pharmacy",
+    "medicationName": "Metformin 500mg",
+    "status": "IN_STOCK",
+    "lastReportedAt": "2026-08-25T09:00:00Z",
+    "distance": 2.1,
+    "lat": -1.3032,
+    "lng": 36.8145
+  },
+  {
+    "facilityId": 201,
+    "facilityName": "Nairobi West Pharmacy",
+    "medicationName": "Amlodipine 5mg",
+    "status": "IN_STOCK",
+    "lastReportedAt": "2026-08-25T09:00:00Z",
+    "distance": 2.1,
+    "lat": -1.3032,
+    "lng": 36.8145
+  },
+  {
+    "facilityId": 202,
+    "facilityName": "Westlands Chemist Nairobi",
+    "medicationName": "Metformin 500mg",
+    "status": "LOW_STOCK",
+    "lastReportedAt": "2026-08-24T16:30:00Z",
+    "distance": 4.5,
+    "lat": -1.2673,
+    "lng": 36.8110
+  },
+  {
+    "facilityId": 202,
+    "facilityName": "Westlands Chemist Nairobi",
+    "medicationName": "Amlodipine 5mg",
+    "status": "IN_STOCK",
+    "lastReportedAt": "2026-08-24T16:30:00Z",
+    "distance": 4.5,
+    "lat": -1.2673,
+    "lng": 36.8110
+  },
+  {
+    "facilityId": 203,
+    "facilityName": "Kenyatta Market Pharmacy Nairobi",
+    "medicationName": "Metformin 500mg",
+    "status": "OUT_OF_STOCK",
+    "lastReportedAt": "2026-08-23T11:00:00Z",
+    "distance": null,
+    "lat": -1.2985,
+    "lng": 36.8199
+  },
+  {
+    "facilityId": 203,
+    "facilityName": "Kenyatta Market Pharmacy Nairobi",
+    "medicationName": "Amlodipine 5mg",
+    "status": "LOW_STOCK",
+    "lastReportedAt": "2026-08-23T11:00:00Z",
+    "distance": null,
+    "lat": -1.2985,
+    "lng": 36.8199
   }
 ]
