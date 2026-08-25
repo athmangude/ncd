@@ -1342,6 +1342,264 @@ describe("patient-medication-records.json", () => {
 })
 
 // ---------------------------------------------------------------------------
+// 16. care-companion-cost-summary.json
+// ---------------------------------------------------------------------------
+
+describe("care-companion-cost-summary.json", () => {
+  const data = careCompanionCostSummary as CostSummary
+
+  it("conforms to CostSummary type", () => {
+    assertType<CostSummary>(data)
+  })
+
+  it("is year 2026 with KES currency", () => {
+    expect(data.year).toBe(2026)
+    expect(data.currency).toBe("KES")
+  })
+
+  it("all monetary fields are string representations of numbers", () => {
+    const fields = [
+      data.ytdSpend,
+      data.monthlyAverage,
+      data.cashbackEarned,
+      data.netSpend,
+      data.annualProjection,
+    ]
+    for (const val of fields) {
+      expect(typeof val).toBe("string")
+      expect(Number.isNaN(Number(val))).toBe(false)
+    }
+  })
+
+  it("netSpend = ytdSpend - cashbackEarned", () => {
+    const expected = Number(data.ytdSpend) - Number(data.cashbackEarned)
+    expect(Number(data.netSpend)).toBeCloseTo(expected, 2)
+  })
+
+  it("monthlyAverage = ytdSpend / 7 (Jan-Jul)", () => {
+    const expected = Number(data.ytdSpend) / 7
+    expect(Number(data.monthlyAverage)).toBeCloseTo(expected, 2)
+  })
+
+  it("annualProjection = (ytdSpend / 7) * 12", () => {
+    const expected = (Number(data.ytdSpend) / 7) * 12
+    expect(Number(data.annualProjection)).toBeCloseTo(expected, 2)
+  })
+
+  it("transactionCount is a positive integer", () => {
+    expect(data.transactionCount).toBeGreaterThan(0)
+    expect(Number.isInteger(data.transactionCount)).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 17. care-companion-cost-breakdown.json
+// ---------------------------------------------------------------------------
+
+describe("care-companion-cost-breakdown.json", () => {
+  const data = careCompanionCostBreakdown as CostBreakdownResponse
+
+  it("conforms to CostBreakdownResponse type", () => {
+    assertType<CostBreakdownResponse>(data)
+  })
+
+  it("is year 2026", () => {
+    expect(data.year).toBe(2026)
+  })
+
+  it("categories use valid MedicationCategory values", () => {
+    const valid = new Set(["MEDICATION", "LAB_TEST", "CONSULTATION", "SUPPLY"])
+    for (const cat of data.categories) {
+      expect(valid).toContain(cat.category)
+    }
+  })
+
+  it("category percentages sum to approximately 100", () => {
+    const totalPct = data.categories.reduce((s, c) => s + c.percentage, 0)
+    expect(totalPct).toBeGreaterThanOrEqual(99)
+    expect(totalPct).toBeLessThanOrEqual(101)
+  })
+
+  it("category totalSpend values are numeric strings", () => {
+    for (const cat of data.categories) {
+      expect(typeof cat.totalSpend).toBe("string")
+      expect(Number.isNaN(Number(cat.totalSpend))).toBe(false)
+      expect(Number(cat.totalSpend)).toBeGreaterThan(0)
+    }
+  })
+
+  it("category totalSpend values sum to the cost summary ytdSpend", () => {
+    const categoryTotal = data.categories.reduce(
+      (s, c) => s + Number(c.totalSpend),
+      0,
+    )
+    const summaryYtd = Number(
+      (careCompanionCostSummary as CostSummary).ytdSpend,
+    )
+    expect(categoryTotal).toBeCloseTo(summaryYtd, 2)
+  })
+
+  it("category transactionCounts sum to the cost summary transactionCount", () => {
+    const categoryTxCount = data.categories.reduce(
+      (s, c) => s + c.transactionCount,
+      0,
+    )
+    const summaryTxCount = (careCompanionCostSummary as CostSummary)
+      .transactionCount
+    expect(categoryTxCount).toBe(summaryTxCount)
+  })
+
+  it("monthlyTrend has entries for months 1 through 7", () => {
+    expect(Array.isArray(data.monthlyTrend)).toBe(true)
+    expect(data.monthlyTrend).toHaveLength(7)
+    const months = data.monthlyTrend.map((t) => t.month)
+    expect(months).toEqual([1, 2, 3, 4, 5, 6, 7])
+  })
+
+  it("monthlyTrend spend values are positive numeric strings", () => {
+    for (const t of data.monthlyTrend) {
+      expect(typeof t.spend).toBe("string")
+      expect(Number.isNaN(Number(t.spend))).toBe(false)
+      expect(Number(t.spend)).toBeGreaterThan(0)
+    }
+  })
+
+  it("monthlyTrend spend values sum to ytdSpend", () => {
+    const trendTotal = data.monthlyTrend.reduce(
+      (s, t) => s + Number(t.spend),
+      0,
+    )
+    const summaryYtd = Number(
+      (careCompanionCostSummary as CostSummary).ytdSpend,
+    )
+    expect(trendTotal).toBeCloseTo(summaryYtd, 2)
+  })
+
+  it("pagination has valid total, limit, and offset", () => {
+    expect(data.pagination.total).toBe(data.monthlyTrend.length)
+    expect(data.pagination.limit).toBeGreaterThan(0)
+    expect(data.pagination.offset).toBe(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// 18. care-companion-timeline.json
+// ---------------------------------------------------------------------------
+
+describe("care-companion-timeline.json", () => {
+  const entries = careCompanionTimeline as TimelineEntry[]
+
+  it("conforms to TimelineEntry[] type", () => {
+    for (const entry of entries) {
+      assertType<TimelineEntry>(entry)
+    }
+  })
+
+  it("contains exactly 18 medication purchase entries", () => {
+    expect(entries).toHaveLength(18)
+  })
+
+  it("every entry has the required TimelineEntry fields", () => {
+    for (const entry of entries) {
+      expect(entry.date).toBeTruthy()
+      expect(entry.medicationName).toBeTruthy()
+      expect(typeof entry.lineTotal).toBe("string")
+      expect(entry.facilityName).toBeTruthy()
+      expect(typeof entry.isGapAnomaly).toBe("boolean")
+    }
+  })
+
+  it("dates are valid ISO date strings in descending order", () => {
+    for (let i = 1; i < entries.length; i++) {
+      const prev = new Date(entries[i - 1].date).getTime()
+      const curr = new Date(entries[i].date).getTime()
+      expect(prev).toBeGreaterThanOrEqual(curr)
+    }
+  })
+
+  it("dates fall within the Jan-Jul 2026 range", () => {
+    const start = new Date("2026-01-01").getTime()
+    const end = new Date("2026-07-31").getTime()
+    for (const entry of entries) {
+      const d = new Date(entry.date).getTime()
+      expect(d).toBeGreaterThanOrEqual(start)
+      expect(d).toBeLessThanOrEqual(end)
+    }
+  })
+
+  it("includes all 3 of Grace's medications", () => {
+    const medNames = new Set(entries.map((e) => e.medicationName))
+    expect(medNames).toContain("Metformin 500mg")
+    expect(medNames).toContain("Amlodipine 5mg")
+    expect(medNames).toContain("Aspirin 75mg")
+  })
+
+  it("includes purchases from 3 different pharmacies", () => {
+    const facilities = new Set(entries.map((e) => e.facilityName))
+    expect(facilities.size).toBeGreaterThanOrEqual(3)
+  })
+
+  it("lineTotal values are positive numeric strings", () => {
+    for (const entry of entries) {
+      expect(Number.isNaN(Number(entry.lineTotal))).toBe(false)
+      expect(Number(entry.lineTotal)).toBeGreaterThan(0)
+    }
+  })
+
+  it("contains exactly 2 gap anomalies", () => {
+    const anomalies = entries.filter((e) => e.isGapAnomaly)
+    expect(anomalies).toHaveLength(2)
+  })
+
+  it("gap anomalies have gapDaysFromPrevious > 35 (exceeds typical ~30-day cycle)", () => {
+    const anomalies = entries.filter((e) => e.isGapAnomaly)
+    for (const anomaly of anomalies) {
+      expect(anomaly.gapDaysFromPrevious).toBeGreaterThan(35)
+    }
+  })
+
+  it("first entries per medication have gapDaysFromPrevious: null", () => {
+    const medGroups = new Map<string, TimelineEntry[]>()
+    // Entries are in descending date order, so the last entry per med is the earliest
+    for (const entry of entries) {
+      if (!medGroups.has(entry.medicationName)) {
+        medGroups.set(entry.medicationName, [])
+      }
+      medGroups.get(entry.medicationName)!.push(entry)
+    }
+    for (const [, group] of medGroups) {
+      const earliest = group[group.length - 1]
+      expect(earliest.gapDaysFromPrevious).toBeNull()
+    }
+  })
+
+  it("gap day calculations are mathematically correct per medication", () => {
+    const medGroups = new Map<string, TimelineEntry[]>()
+    for (const entry of entries) {
+      if (!medGroups.has(entry.medicationName)) {
+        medGroups.set(entry.medicationName, [])
+      }
+      medGroups.get(entry.medicationName)!.push(entry)
+    }
+    for (const [, group] of medGroups) {
+      // group is in descending order; iterate pairs
+      for (let i = 0; i < group.length - 1; i++) {
+        const newer = group[i]
+        const older = group[i + 1]
+        if (newer.gapDaysFromPrevious !== null) {
+          const expected = Math.round(
+            (new Date(newer.date).getTime() -
+              new Date(older.date).getTime()) /
+              (1000 * 60 * 60 * 24),
+          )
+          expect(newer.gapDaysFromPrevious).toBe(expected)
+        }
+      }
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
 // Cross-fixture consistency checks
 // ---------------------------------------------------------------------------
 
@@ -1451,7 +1709,31 @@ describe("cross-fixture consistency", () => {
     }
   })
 
-  it("all 15 fixture files are importable without error", () => {
+  it("care-companion-cost-breakdown MEDICATION transactionCount matches care-companion-timeline entry count", () => {
+    const breakdown = careCompanionCostBreakdown as CostBreakdownResponse
+    const timeline = careCompanionTimeline as TimelineEntry[]
+    const medCategory = breakdown.categories.find(
+      (c) => c.category === "MEDICATION",
+    )
+    expect(medCategory).toBeDefined()
+    expect(medCategory!.transactionCount).toBe(timeline.length)
+  })
+
+  it("care-companion-cost-breakdown MEDICATION totalSpend matches sum of care-companion-timeline lineTotals", () => {
+    const breakdown = careCompanionCostBreakdown as CostBreakdownResponse
+    const timeline = careCompanionTimeline as TimelineEntry[]
+    const medCategory = breakdown.categories.find(
+      (c) => c.category === "MEDICATION",
+    )
+    expect(medCategory).toBeDefined()
+    const timelineSum = timeline.reduce(
+      (s, e) => s + Number(e.lineTotal),
+      0,
+    )
+    expect(Number(medCategory!.totalSpend)).toBeCloseTo(timelineSum, 2)
+  })
+
+  it("all 18 fixture files are importable without error", () => {
     expect(medicationTaxonomy).toBeDefined()
     expect(patientMedications).toBeDefined()
     expect(medicationTimeline).toBeDefined()
@@ -1467,5 +1749,8 @@ describe("cross-fixture consistency", () => {
     expect(aiAssistantConversations).toBeDefined()
     expect(careCompanionProfile).toBeDefined()
     expect(patientMedicationRecords).toBeDefined()
+    expect(careCompanionCostSummary).toBeDefined()
+    expect(careCompanionCostBreakdown).toBeDefined()
+    expect(careCompanionTimeline).toBeDefined()
   })
 })
