@@ -23,7 +23,7 @@ describe("EVENTS.CARE_COMPANION", () => {
   // Structural completeness
   // ---------------------------------------------------------------------------
 
-  it("contains all 11 required sub-objects", () => {
+  it("contains all 12 required sub-objects", () => {
     const expectedKeys = [
       "INTAKE",
       "HOME",
@@ -36,6 +36,7 @@ describe("EVENTS.CARE_COMPANION", () => {
       "PHARMACY_STOCK",
       "MEDICATION_LOAN",
       "AI_ASSISTANT",
+      "ERROR",
     ]
     expect(Object.keys(CC).sort()).toEqual(expectedKeys.sort())
   })
@@ -128,6 +129,24 @@ describe("EVENTS.CARE_COMPANION", () => {
       expect(CC.HOME.VIEW).toBe("CARE_COMPANION:Home:view")
       expect(CC.HOME.CARD_TAP).toBe("CARE_COMPANION:Home:card-tap")
     })
+
+    it("includes newly added home shortcut events", () => {
+      expect(CC.HOME.EMERGENCY_CARD_TAP).toBe(
+        "CARE_COMPANION:Home:emergency-card-tap",
+      )
+      expect(CC.HOME.REFILL_CARD_TAP).toBe(
+        "CARE_COMPANION:Home:refill-card-tap",
+      )
+      expect(CC.HOME.COST_CARD_TAP).toBe(
+        "CARE_COMPANION:Home:cost-card-tap",
+      )
+      expect(CC.HOME.EDUCATION_CARD_VIEW).toBe(
+        "CARE_COMPANION:Home:education-card-view",
+      )
+      expect(CC.HOME.AI_ASSISTANT_OPEN).toBe(
+        "CARE_COMPANION:Home:ai-assistant-open",
+      )
+    })
   })
 
   describe("EMERGENCY_CARD", () => {
@@ -148,6 +167,15 @@ describe("EVENTS.CARE_COMPANION", () => {
         "CARE_COMPANION:CostTracker:share-tap",
       )
     })
+
+    it("includes newly added cost tracker events", () => {
+      expect(CC.COST_TRACKER.CATEGORY_TAP).toBe(
+        "CARE_COMPANION:CostTracker:category-tap",
+      )
+      expect(CC.COST_TRACKER.TREND_SCROLL).toBe(
+        "CARE_COMPANION:CostTracker:trend-scroll",
+      )
+    })
   })
 
   describe("MEDICATION_TIMELINE", () => {
@@ -160,6 +188,15 @@ describe("EVENTS.CARE_COMPANION", () => {
       )
       expect(CC.MEDICATION_TIMELINE.EXPORT_TAP).toBe(
         "CARE_COMPANION:MedicationTimeline:export-tap",
+      )
+    })
+
+    it("includes newly added timeline events", () => {
+      expect(CC.MEDICATION_TIMELINE.FILTER_DATE).toBe(
+        "CARE_COMPANION:MedicationTimeline:filter-date",
+      )
+      expect(CC.MEDICATION_TIMELINE.EXPORT_SUCCESS).toBe(
+        "CARE_COMPANION:MedicationTimeline:export-success",
       )
     })
   })
@@ -179,6 +216,15 @@ describe("EVENTS.CARE_COMPANION", () => {
         "CARE_COMPANION:MedicationCards:overlay-view-all",
       )
     })
+
+    it("includes newly added medication card events", () => {
+      expect(CC.MEDICATION_CARDS.CARD_SWIPE).toBe(
+        "CARE_COMPANION:MedicationCards:card-swipe",
+      )
+      expect(CC.MEDICATION_CARDS.INTERACTION_WARNING_TAP).toBe(
+        "CARE_COMPANION:MedicationCards:interaction-warning-tap",
+      )
+    })
   })
 
   describe("REFILL_SCHEDULE", () => {
@@ -193,6 +239,12 @@ describe("EVENTS.CARE_COMPANION", () => {
         "CARE_COMPANION:RefillSchedule:apply-credit-tap",
       )
     })
+
+    it("includes newly added refill schedule events", () => {
+      expect(CC.REFILL_SCHEDULE.ITEM_TAP).toBe(
+        "CARE_COMPANION:RefillSchedule:item-tap",
+      )
+    })
   })
 
   describe("EDUCATION", () => {
@@ -203,6 +255,12 @@ describe("EVENTS.CARE_COMPANION", () => {
       )
       expect(CC.EDUCATION.PREVIOUS_CARDS_TAP).toBe(
         "CARE_COMPANION:Education:previous-cards-tap",
+      )
+    })
+
+    it("includes newly added education events", () => {
+      expect(CC.EDUCATION.CARD_COMPLETE).toBe(
+        "CARE_COMPANION:Education:card-complete",
       )
     })
   })
@@ -219,6 +277,18 @@ describe("EVENTS.CARE_COMPANION", () => {
         "CARE_COMPANION:PharmacyStock:map-toggle",
       )
     })
+
+    it("includes newly added pharmacy stock events", () => {
+      expect(CC.PHARMACY_STOCK.LOCATION_GRANTED).toBe(
+        "CARE_COMPANION:PharmacyStock:location-granted",
+      )
+      expect(CC.PHARMACY_STOCK.LOCATION_DENIED).toBe(
+        "CARE_COMPANION:PharmacyStock:location-denied",
+      )
+      expect(CC.PHARMACY_STOCK.MANUAL_LOCATION).toBe(
+        "CARE_COMPANION:PharmacyStock:manual-location",
+      )
+    })
   })
 
   describe("MEDICATION_LOAN", () => {
@@ -231,6 +301,12 @@ describe("EVENTS.CARE_COMPANION", () => {
       )
       expect(CC.MEDICATION_LOAN.DECLINE_TAP).toBe(
         "CARE_COMPANION:MedicationLoan:decline-tap",
+      )
+    })
+
+    it("includes newly added medication loan events", () => {
+      expect(CC.MEDICATION_LOAN.PRE_APPROVAL_VIEW).toBe(
+        "CARE_COMPANION:MedicationLoan:pre-approval-view",
       )
     })
   })
@@ -247,14 +323,38 @@ describe("EVENTS.CARE_COMPANION", () => {
         "CARE_COMPANION:AiAssistant:suggested-action-tap",
       )
     })
+
+    it("includes newly added AI assistant events", () => {
+      expect(CC.AI_ASSISTANT.INTERACTION_CHECK).toBe(
+        "CARE_COMPANION:AiAssistant:interaction-check",
+      )
+      expect(CC.AI_ASSISTANT.GUARDRAIL_TRIGGERED).toBe(
+        "CARE_COMPANION:AiAssistant:guardrail-triggered",
+      )
+      expect(CC.AI_ASSISTANT.REPORT_INACCURATE).toBe(
+        "CARE_COMPANION:AiAssistant:report-inaccurate",
+      )
+    })
+  })
+
+  describe("ERROR", () => {
+    it("includes boundary-hit and retry-tap events", () => {
+      expect(CC.ERROR.BOUNDARY_HIT).toBe(
+        "CARE_COMPANION:Error:boundary-hit",
+      )
+      expect(CC.ERROR.RETRY_TAP).toBe(
+        "CARE_COMPANION:Error:retry-tap",
+      )
+    })
   })
 
   // ---------------------------------------------------------------------------
   // Every sub-section has a VIEW event (screen views are required)
   // ---------------------------------------------------------------------------
 
-  it("every sub-section includes a VIEW event", () => {
+  it("every sub-section includes a VIEW event (except ERROR)", () => {
     for (const [key, section] of Object.entries(CC)) {
+      if (key === "ERROR") continue
       expect(
         (section as Record<string, string>).VIEW,
       ).toBeDefined()
@@ -265,8 +365,8 @@ describe("EVENTS.CARE_COMPANION", () => {
   // Total event count guard — catches accidental deletions
   // ---------------------------------------------------------------------------
 
-  it("contains exactly 32 total events across all sub-sections", () => {
+  it("contains exactly 54 total events across all sub-sections", () => {
     const values = collectValues(CC as unknown as Record<string, unknown>)
-    expect(values).toHaveLength(32)
+    expect(values).toHaveLength(54)
   })
 })
