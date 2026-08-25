@@ -1,14 +1,7 @@
 [
   {
-    "id": "mc-metformin",
-    "medication": {
-      "id": "med-metformin",
-      "genericName": "Metformin",
-      "brandNames": ["Glucophage", "Dianben"],
-      "strengths": ["500mg", "850mg", "1000mg"],
-      "category": "MEDICATION",
-      "conditionTags": ["DIABETES"]
-    },
+    "id": "mc-metformin-en",
+    "medicationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     "locale": "EN",
     "description": "Metformin is the most commonly prescribed medication for type 2 diabetes. It lowers the amount of sugar your liver releases into your blood and helps your body respond better to insulin.",
     "howItWorks": "Metformin works in three ways: it reduces the amount of glucose produced by your liver, it slows the absorption of sugar from your intestines, and it helps your muscle cells use insulin more effectively. It does not cause your body to produce more insulin, which is why it rarely causes dangerously low blood sugar on its own.",
@@ -26,18 +19,12 @@
       { "substance": "Alcohol", "reason": "Drinking alcohol while taking metformin increases the risk of lactic acidosis and can cause dangerously low blood sugar." },
       { "substance": "Bitter gourd (karela) supplements", "reason": "Bitter gourd can lower blood sugar on its own. Combining it with metformin may cause blood sugar to drop too low." }
     ],
-    "whenToSeekHelp": "Contact your doctor if you experience persistent vomiting, severe stomach pain, unusual tiredness, or muscle cramps. If you feel extremely cold, dizzy, or have difficulty breathing, go to the emergency room immediately."
+    "whenToSeekHelp": "Contact your doctor if you experience persistent vomiting, severe stomach pain, unusual tiredness, or muscle cramps. If you feel extremely cold, dizzy, or have difficulty breathing, go to the emergency room immediately.",
+    "storageInstructions": "Store at room temperature between 15-25 degrees Celsius. Keep in the original container with the lid tightly closed. Protect from moisture and light. Do not store in the bathroom."
   },
   {
-    "id": "mc-amlodipine",
-    "medication": {
-      "id": "med-amlodipine",
-      "genericName": "Amlodipine",
-      "brandNames": ["Norvasc", "Amlopin"],
-      "strengths": ["5mg", "10mg"],
-      "category": "MEDICATION",
-      "conditionTags": ["HYPERTENSION"]
-    },
+    "id": "mc-amlodipine-en",
+    "medicationId": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     "locale": "EN",
     "description": "Amlodipine is a calcium channel blocker used to treat high blood pressure. It relaxes your blood vessels so blood can flow more easily, reducing the strain on your heart.",
     "howItWorks": "Amlodipine blocks calcium from entering the muscle cells of your heart and blood vessels. When calcium is blocked, the blood vessels relax and widen, allowing blood to flow through more easily. This lowers your blood pressure and reduces the workload on your heart. The effect builds up over 7-10 days.",
@@ -55,18 +42,12 @@
       { "substance": "Grapefruit or grapefruit juice", "reason": "Grapefruit can increase the amount of amlodipine in your blood, making side effects worse." },
       { "substance": "St. John's Wort", "reason": "This herbal supplement can reduce the effectiveness of amlodipine, causing your blood pressure to rise." }
     ],
-    "whenToSeekHelp": "Contact your doctor if you notice significant ankle swelling that does not improve, persistent headaches, or if your blood pressure readings remain high despite taking amlodipine regularly."
+    "whenToSeekHelp": "Contact your doctor if you notice significant ankle swelling that does not improve, persistent headaches, or if your blood pressure readings remain high despite taking amlodipine regularly.",
+    "storageInstructions": "Store at room temperature between 15-30 degrees Celsius. Keep away from moisture. Store in the original blister pack until ready to take. Do not refrigerate."
   },
   {
-    "id": "mc-losartan",
-    "medication": {
-      "id": "med-losartan",
-      "genericName": "Losartan",
-      "brandNames": ["Cozaar", "Losacar"],
-      "strengths": ["25mg", "50mg", "100mg"],
-      "category": "MEDICATION",
-      "conditionTags": ["HYPERTENSION"]
-    },
+    "id": "mc-losartan-en",
+    "medicationId": "550e8400-e29b-41d4-a716-446655440001",
     "locale": "EN",
     "description": "Losartan is an angiotensin II receptor blocker (ARB) that treats high blood pressure. It blocks a chemical in your body that causes blood vessels to tighten, helping them relax and lowering blood pressure.",
     "howItWorks": "Losartan blocks the action of angiotensin II, a hormone that normally causes blood vessels to narrow. By blocking this hormone at its receptor, losartan allows blood vessels to relax and widen. It also reduces the amount of water and salt your kidneys retain, further lowering blood pressure. It provides kidney-protective benefits for people with diabetes.",
@@ -84,64 +65,54 @@
       { "substance": "Potassium supplements or salt substitutes", "reason": "Losartan can raise potassium levels. Adding more potassium can cause dangerous heart rhythm problems." },
       { "substance": "NSAIDs (ibuprofen, diclofenac) used regularly", "reason": "Regular use of these painkillers can reduce the blood pressure lowering effect of losartan and harm your kidneys." }
     ],
-    "whenToSeekHelp": "Contact your doctor if you experience swelling of your face, lips, or tongue, difficulty breathing, or if you notice a significant decrease in the amount of urine you pass."
+    "whenToSeekHelp": "Contact your doctor if you experience swelling of your face, lips, or tongue, difficulty breathing, or if you notice a significant decrease in the amount of urine you pass.",
+    "storageInstructions": "Store at room temperature between 15-30 degrees Celsius. Keep in the original container, tightly closed. Protect from light. Do not store in humid environments like the bathroom."
   },
   {
-    "id": "mc-enalapril",
-    "medication": {
-      "id": "med-enalapril",
-      "genericName": "Enalapril",
-      "brandNames": ["Vasotec", "Renitec"],
-      "strengths": ["5mg", "10mg", "20mg"],
-      "category": "MEDICATION",
-      "conditionTags": ["HYPERTENSION"]
-    },
+    "id": "mc-atorvastatin-en",
+    "medicationId": "550e8400-e29b-41d4-a716-446655440002",
     "locale": "EN",
-    "description": "Enalapril is an ACE inhibitor used to treat high blood pressure and heart failure. It works by relaxing blood vessels and reducing the workload on your heart.",
-    "howItWorks": "Enalapril inhibits the angiotensin-converting enzyme (ACE), which normally produces a chemical that tightens blood vessels. By blocking this enzyme, enalapril prevents blood vessels from narrowing and reduces the amount of water and salt retained by your kidneys. This lowers blood pressure and makes it easier for your heart to pump blood.",
+    "description": "Atorvastatin is a statin medication used to lower cholesterol levels and reduce the risk of heart attack and stroke. It is one of the most widely prescribed medications for people with diabetes or hypertension who have elevated cholesterol.",
+    "howItWorks": "Atorvastatin works by blocking an enzyme in your liver called HMG-CoA reductase, which your body uses to make cholesterol. By reducing cholesterol production, atorvastatin lowers the levels of LDL (bad) cholesterol and triglycerides in your blood while slightly raising HDL (good) cholesterol. It also helps stabilise existing fatty deposits in your blood vessels, reducing the risk of them breaking off and causing a heart attack or stroke.",
     "commonSideEffects": [
-      { "effect": "Dry persistent cough", "frequency": "Affects up to 1 in 5 people", "advice": "This is a known side effect of ACE inhibitors. If it becomes intolerable, your doctor can switch you to a different medication." },
-      { "effect": "Dizziness", "frequency": "Common, especially when standing up", "advice": "Get up slowly from sitting or lying positions. Drink enough water." },
-      { "effect": "Headache", "frequency": "Common in the first few weeks", "advice": "Usually temporary. Take a mild painkiller if needed." },
-      { "effect": "Fatigue", "frequency": "Occasional", "advice": "This usually improves over time. Rest when needed." }
+      { "effect": "Muscle aches or joint pain", "frequency": "Common, affects about 1 in 10 people", "advice": "Mild muscle aches are usually harmless. Stay active and stretch regularly. Tell your doctor if pain is persistent or severe." },
+      { "effect": "Headache", "frequency": "Common in the first few weeks", "advice": "Usually improves as your body adjusts. A mild painkiller can help." },
+      { "effect": "Nausea or digestive discomfort", "frequency": "Occasional", "advice": "Take with food if stomach upset occurs. Symptoms usually settle within a few days." },
+      { "effect": "Difficulty sleeping", "frequency": "Occasional", "advice": "Try taking atorvastatin in the morning instead of at night if this occurs." }
     ],
     "seriousSideEffects": [
-      { "effect": "Swelling of face, lips, tongue, or throat (angioedema)", "action": "This is a medical emergency. Stop taking enalapril and go to the hospital immediately." },
-      { "effect": "Signs of high potassium: irregular heartbeat, muscle weakness", "action": "Contact your doctor immediately for blood tests." }
+      { "effect": "Severe unexplained muscle pain, tenderness, or weakness, especially with fever or dark urine (rhabdomyolysis)", "action": "Stop taking atorvastatin and seek emergency medical attention immediately. This is rare but can cause kidney damage." },
+      { "effect": "Signs of liver problems: yellowing of skin or eyes, dark urine, persistent nausea, upper stomach pain", "action": "Contact your doctor immediately. Liver function tests may be needed." }
     ],
     "avoidanceWarnings": [
-      { "substance": "Potassium supplements or potassium-rich salt substitutes", "reason": "Enalapril raises potassium levels. Extra potassium can cause dangerous heart rhythm problems." },
-      { "substance": "Alcohol", "reason": "Alcohol can increase the blood pressure lowering effect of enalapril, causing excessive dizziness or fainting." }
+      { "substance": "Grapefruit or grapefruit juice", "reason": "Grapefruit inhibits the enzyme that breaks down atorvastatin, increasing drug levels in your blood and raising the risk of side effects including muscle damage." },
+      { "substance": "St. John's Wort", "reason": "This herbal supplement speeds up the breakdown of atorvastatin in your liver, potentially making it ineffective at controlling your cholesterol." },
+      { "substance": "Excessive alcohol", "reason": "Heavy alcohol use combined with atorvastatin increases the risk of liver damage. Limit alcohol to occasional small amounts." }
     ],
-    "whenToSeekHelp": "Seek emergency help immediately if you experience swelling of your face, tongue, or throat. Contact your doctor if you develop a persistent cough that interferes with sleep, or if you notice decreased urination."
+    "whenToSeekHelp": "Contact your doctor urgently if you experience unexplained muscle pain or weakness, especially if accompanied by fever, dark-coloured urine, or general tiredness. Also seek help if you notice yellowing of your skin or eyes.",
+    "storageInstructions": "Store at room temperature between 15-25 degrees Celsius. Keep in the original packaging to protect from moisture. Do not store above 30 degrees Celsius. Keep out of direct sunlight."
   },
   {
-    "id": "mc-hydrochlorothiazide",
-    "medication": {
-      "id": "med-hydrochlorothiazide",
-      "genericName": "Hydrochlorothiazide",
-      "brandNames": ["Hydrodiuril", "Microzide"],
-      "strengths": ["12.5mg", "25mg"],
-      "category": "MEDICATION",
-      "conditionTags": ["HYPERTENSION"]
-    },
-    "locale": "EN",
-    "description": "Hydrochlorothiazide (HCTZ) is a thiazide diuretic, commonly called a water pill, used to treat high blood pressure. It helps your kidneys remove extra salt and water from your body, which lowers blood pressure.",
-    "howItWorks": "Hydrochlorothiazide works in your kidneys by blocking the reabsorption of sodium and chloride. When these salts are not reabsorbed, water follows them out of your body as urine. Reducing the volume of fluid in your blood vessels lowers the pressure inside them. It is often used in combination with other blood pressure medications for better control.",
+    "id": "mc-metformin-sw",
+    "medicationId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+    "locale": "SW",
+    "description": "Metformin ni dawa inayotumiwa sana kwa ugonjwa wa kisukari aina ya 2. Inapunguza kiasi cha sukari ambacho ini yako inazalisha na kusaidia mwili wako kutumia insulini vizuri zaidi.",
+    "howItWorks": "Metformin inafanya kazi kwa njia tatu: inapunguza kiasi cha sukari inayozalishwa na ini yako, inapunguza kasi ya kunyonya sukari kutoka kwenye utumbo wako, na inasaidia seli za misuli yako kutumia insulini vizuri zaidi. Haifanyi mwili wako kuzalisha insulini zaidi, ndiyo sababu mara chache husababisha sukari ya damu kushuka sana peke yake.",
     "commonSideEffects": [
-      { "effect": "Increased urination", "frequency": "Very common, especially in the first few weeks", "advice": "Take your dose in the morning so you are not waking up at night. This effect usually reduces over time." },
-      { "effect": "Dizziness or lightheadedness", "frequency": "Common", "advice": "Stand up slowly. Drink enough water to stay hydrated." },
-      { "effect": "Muscle cramps", "frequency": "Occasional", "advice": "This may be caused by low potassium. Eat potassium-rich foods like bananas, oranges, and spinach." },
-      { "effect": "Increased sensitivity to sunlight", "frequency": "Occasional", "advice": "Wear sunscreen and protective clothing when outdoors." }
+      { "effect": "Kichefuchefu au tumbo kuuma", "frequency": "Kawaida katika wiki 1-2 za kwanza", "advice": "Tumia dawa pamoja na chakula. Dalili hizi huisha mwili unapoizoea." },
+      { "effect": "Kuharisha", "frequency": "Kawaida wakati wa kuanza au kuongeza dozi", "advice": "Anza na dozi ndogo na uongeze taratibu. Kunywa maji mengi." },
+      { "effect": "Ladha ya chuma mdomoni", "frequency": "Mara kwa mara", "advice": "Hii si hatari na huisha yenyewe." },
+      { "effect": "Kupungua kwa hamu ya kula", "frequency": "Kawaida", "advice": "Kula milo midogo mara kwa mara hata kama huna hamu ya kula." }
     ],
     "seriousSideEffects": [
-      { "effect": "Signs of severe dehydration: extreme thirst, very dry mouth, dark urine, confusion", "action": "Stop taking the medication and seek medical attention. Drink fluids slowly." },
-      { "effect": "Severe muscle weakness or irregular heartbeat (electrolyte imbalance)", "action": "Go to the hospital. This may indicate dangerously low potassium or sodium levels." }
+      { "effect": "Lactic acidosis (nadra sana): maumivu ya misuli yasiyo ya kawaida, ugumu wa kupumua, maumivu ya tumbo, kuhisi baridi, kizunguzungu", "action": "Acha kutumia metformin na nenda hospitali mara moja. Hii ni nadra lakini ni hatari." },
+      { "effect": "Mzio mkubwa: upele, kuvimba, ugumu wa kupumua", "action": "Tafuta msaada wa dharura wa matibabu mara moja." }
     ],
     "avoidanceWarnings": [
-      { "substance": "Excessive salt restriction", "reason": "While reducing salt is good for blood pressure, extreme restriction combined with this diuretic can cause dangerously low sodium levels." },
-      { "substance": "Liquorice root or supplements", "reason": "Liquorice can cause your body to lose potassium. Combined with HCTZ, this can lead to dangerous potassium depletion." }
+      { "substance": "Pombe", "reason": "Kunywa pombe wakati unatumia metformin kunaongeza hatari ya lactic acidosis na kunaweza kusababisha sukari ya damu kushuka sana." },
+      { "substance": "Virutubisho vya mkarela", "reason": "Mkarela inaweza kupunguza sukari ya damu yenyewe. Kuchanganya na metformin kunaweza kusababisha sukari ya damu kushuka sana." }
     ],
-    "whenToSeekHelp": "Contact your doctor if you experience severe muscle cramps, unusual tiredness, rapid heartbeat, or if you feel very thirsty and are passing very little urine. These may indicate electrolyte imbalances that need blood test monitoring."
+    "whenToSeekHelp": "Wasiliana na daktari wako ukipata kutapika kwa muda mrefu, maumivu makubwa ya tumbo, uchovu usio wa kawaida, au misuli kukakamaa. Ukihisi baridi sana, kizunguzungu, au ugumu wa kupumua, nenda chumba cha dharura mara moja.",
+    "storageInstructions": "Hifadhi kwa joto la kawaida kati ya nyuzi joto 15-25. Weka kwenye chombo cha asili na kifuniko kimefungwa vizuri. Linda kutokana na unyevu na mwanga. Usihifadhi bafuni."
   }
 ]
