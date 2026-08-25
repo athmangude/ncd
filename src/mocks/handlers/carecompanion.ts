@@ -302,7 +302,9 @@ export const careCompanionHandlers = [
 
     const content = typeof body.content === "string" ? body.content : ""
     const conversation = matchAssistantResponse(content)
-    const assistantMsg = conversation.messages[0]
+    const assistantMsg =
+      conversation.messages.find((m) => m.role === "ASSISTANT") ??
+      conversation.messages[0]
 
     return HttpResponse.json({
       sessionId: body.sessionId ?? conversation.sessionId,
