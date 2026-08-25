@@ -1,7 +1,7 @@
 import { useId } from "react"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/Checkbox"
-import { RadioGroupItem } from "@/components/Radio"
+import { RadioGroup, RadioGroupItem } from "@/components/Radio"
 
 interface IntakeOptionProps {
   label: string
@@ -24,6 +24,7 @@ export default function IntakeOption({
   className,
 }: IntakeOptionProps) {
   const id = useId()
+  const itemValue = value ?? label
 
   return (
     <button
@@ -49,13 +50,17 @@ export default function IntakeOption({
             aria-label={label}
           />
         ) : (
-          <RadioGroupItem
-            id={id}
-            value={value ?? label}
-            checked={selected}
-            onClick={(e) => e.stopPropagation()}
-            aria-label={label}
-          />
+          <RadioGroup
+            value={selected ? itemValue : ""}
+            onValueChange={onToggle}
+          >
+            <RadioGroupItem
+              id={id}
+              value={itemValue}
+              onClick={(e) => e.stopPropagation()}
+              aria-label={label}
+            />
+          </RadioGroup>
         )}
       </div>
 

@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from "react"
+import { useState, useMemo, useRef, useEffect, useId } from "react"
 import { cn } from "@/lib/utils"
 import { Chip } from "@/components/Chip"
 import FormGroupInput from "@/components/form/FormGroupInput"
@@ -32,6 +32,7 @@ export default function ConditionTypeahead({
   placeholder = "Type a medication name...",
   className,
 }: ConditionTypeaheadProps) {
+  const id = useId()
   const [query, setQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -80,7 +81,7 @@ export default function ConditionTypeahead({
     <div ref={containerRef} className={cn("flex flex-col gap-3", className)}>
       <div className="relative">
         <FormGroupInput
-          id="condition-typeahead"
+          id={id}
           label={label}
           type="text"
           placeholder={placeholder}
@@ -89,10 +90,7 @@ export default function ConditionTypeahead({
             setQuery(e.target.value)
             setIsOpen(true)
           }}
-          onBlur={() => {
-            // Delay closing so click on dropdown can fire
-            setTimeout(() => setIsOpen(false), 200)
-          }}
+          onBlur={() => setIsOpen(false)}
           error={undefined}
         />
 
@@ -116,7 +114,10 @@ export default function ConditionTypeahead({
                   type="button"
                   role="option"
                   aria-selected={false}
-                  onClick={() => handleSelect(med)}
+                  onMouseDown={(e) => {
+                    e.preventDefault()
+                    handleSelect(med)
+                  }}
                   className={cn(
                     "flex w-full flex-col gap-0.5 px-3 py-2 text-left transition-colors",
                     "hover:bg-accent focus:bg-accent focus:outline-none"
