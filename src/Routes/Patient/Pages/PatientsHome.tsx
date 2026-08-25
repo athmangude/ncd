@@ -98,6 +98,9 @@ const PatientDashboardCircleTab = lazy(
 const PatientDashboardCareTab = lazy(
   () => import("./Dashboard/PatientDashboardCareTab")
 )
+const CareCompanionWrapper = lazy(
+  () => import("./CareCompanion/CareCompanionWrapper")
+)
 const PatientDashboardExploreTab = lazy(
   () => import("./Dashboard/PatientDashboardExploreTab")
 )
@@ -200,7 +203,9 @@ export default function PatientsHome() {
           path="/care-companion/*"
           element={
             <RouteMetadata title="Care Companion">
-              <PatientDashboardCareTab />
+              <Suspense fallback={<DashboardTabFallback />}>
+                <CareCompanionWrapper />
+              </Suspense>
             </RouteMetadata>
           }
         />
