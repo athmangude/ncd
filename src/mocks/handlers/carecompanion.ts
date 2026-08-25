@@ -6,9 +6,6 @@ import {
   saveCareCompanionProfile,
   patchCareCompanionProfile,
   getPatientMedications,
-  getPatientMedicationRecords,
-  getMedicationTaxonomy,
-  searchTaxonomy,
   getMedicationTimeline,
   getCostSummary,
   getMatchedEmergencyCard,
@@ -32,11 +29,10 @@ import type { CareCompanionProfile } from "@/types/care-companion"
 /**
  * Care Companion MSW handlers.
  *
- * 23 endpoints covering the full care companion feature set: BFF home,
- * medication taxonomy search, patient medications, timeline, cost tracker,
- * emergency card, medication intelligence, refill schedule, education feed,
- * pharmacy stock, medication loan, AI assistant, interaction check, and
- * profile (intake questionnaire).
+ * 21 endpoints covering the full care companion feature set: BFF home,
+ * medications, timeline, cost tracker, emergency card, medication intelligence,
+ * refill schedule, education feed, pharmacy stock, medication loan,
+ * AI assistant, interaction check, and profile (intake questionnaire).
  *
  * All data is read from JSON fixtures via the domain module, with localStorage
  * persistence for user mutations (profile saves, education card views).
@@ -51,58 +47,21 @@ export const careCompanionHandlers = [
   }),
 
   // -------------------------------------------------------------------------
-  // 2. Medication taxonomy search
-  // -------------------------------------------------------------------------
-  http.get("/api/medications/taxonomy", ({ request }) => {
-    const url = new URL(request.url)
-    const q = url.searchParams.get("q") ?? undefined
-    const category = url.searchParams.get("category") ?? undefined
-    const limit = Number(url.searchParams.get("limit")) || 20
-
-    let results = searchTaxonomy(q)
-
-    if (category) {
-      results = results.filter((entry) => entry.category === category)
-    }
-
-    return HttpResponse.json(results.slice(0, limit))
-  }),
-
-  // -------------------------------------------------------------------------
-  // 3. Patient medication list (with taxonomy enrichment)
+  // 2. Patient medication list
   // -------------------------------------------------------------------------
   http.get("/api/patients/:id/medications", () => {
-    const records = getPatientMedicationRecords()
-    const taxonomy = getMedicationTaxonomy()
-    const taxonomyById = new Map(taxonomy.map((t) => [t.id, t]))
-
-    const medications = records.map((record) => {
-      const entry = taxonomyById.get(record.medicationId)
-      return {
-        ...record,
-        medication: entry
-          ? {
-              genericName: entry.genericName,
-              brandNames: entry.brandNames ?? [],
-              category: entry.category,
-            }
-          : record.medication,
-      }
-    })
-
+    const medications = getPatientMedications()
     return HttpResponse.json({ medications })
   }),
 
   // -------------------------------------------------------------------------
-  // 3. Medication timeline (paginated, with date range filtering)
+  // 3. Medication timeline (paginated)
   // -------------------------------------------------------------------------
   http.get("/api/patients/:id/medication-timeline", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 20
     const offset = Number(url.searchParams.get("offset")) || 0
     const medicationId = url.searchParams.get("medicationId")
-    const from = url.searchParams.get("from")
-    const to = url.searchParams.get("to")
 
     let entries = getMedicationTimeline()
 
@@ -115,18 +74,10 @@ export const careCompanionHandlers = [
       )
     }
 
-    // Optional date range filter (ISO date strings compared lexicographically)
-    if (from) {
-      entries = entries.filter((e) => e.date >= from)
-    }
-    if (to) {
-      entries = entries.filter((e) => e.date <= to)
-    }
-
     const total = entries.length
     const paged = entries.slice(offset, offset + limit)
 
-    // Compute summary from the full filtered set (before pagination)
+    // Compute summary
     const medNames = new Set(entries.map((e) => e.medicationName))
     const facilityNames = new Set(entries.map((e) => e.facilityName))
     const dates = entries.map((e) => e.date).sort()
@@ -143,23 +94,6 @@ export const careCompanionHandlers = [
       },
       pagination: { total, limit, offset },
     })
-  }),
-
-  // -------------------------------------------------------------------------
-  // 3a. Medication timeline export (PDF placeholder)
-  // -------------------------------------------------------------------------
-  http.get("/api/patients/:id/medication-timeline/export", () => {
-    return new HttpResponse(
-      "Medication timeline export — PDF generation is not available in the prototype. This placeholder confirms the endpoint is reachable.",
-      {
-        status: 200,
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition":
-            'attachment; filename="medication-timeline.pdf"',
-        },
-      },
-    )
   }),
 
   // -------------------------------------------------------------------------

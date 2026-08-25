@@ -17,9 +17,12 @@ import type {
   CareCompanionHome,
   CostSummary,
   CostCategoryBreakdown,
+  CostBreakdownResponse,
+  MonthlySpend,
   RefillSchedule,
   EducationContentCard,
   EmergencyCard,
+  EmergencyReferenceCard,
   EmergencyTransportCredit,
   PatientMedication,
   PatientMedicationRecord,
@@ -30,14 +33,20 @@ import type {
   PharmacyStock,
   MedicationLoanPreApproval,
   AssistantMessage,
+  PaginatedResponse,
+  ConditionType,
+  ContentLocale,
 } from "@/types/care-companion"
 
 import patientMedicationsSeed from "../fixtures/patient-medications.json"
 import patientMedicationRecordsSeed from "../fixtures/patient-medication-records.json"
 import medicationTaxonomySeed from "../fixtures/medication-taxonomy.json"
 import medicationTimelineSeed from "../fixtures/medication-timeline.json"
+import careCompanionTimelineSeed from "../fixtures/care-companion-timeline.json"
 import costSummarySeed from "../fixtures/cost-summary.json"
+import careCompanionCostBreakdownSeed from "../fixtures/care-companion-cost-breakdown.json"
 import emergencyCardsSeed from "../fixtures/emergency-cards.json"
+import emergencyReferenceCardsSeed from "../fixtures/emergency-reference-cards.json"
 import medicationCardsSeed from "../fixtures/medication-cards.json"
 import medicationInteractionsSeed from "../fixtures/medication-interactions.json"
 import refillSchedulesSeed from "../fixtures/refill-schedules.json"
@@ -67,6 +76,9 @@ const MEDICATION_LOAN_KEY = "care-companion-medication-loan"
 const EMERGENCY_TRANSPORT_KEY = "care-companion-emergency-transport"
 const MEDICATION_TAXONOMY_KEY = "care-companion-medication-taxonomy"
 const PATIENT_MEDICATION_RECORDS_KEY = "care-companion-patient-medication-records"
+const COST_BREAKDOWN_KEY = "care-companion-cost-breakdown"
+const CARE_COMPANION_TIMELINE_KEY = "care-companion-timeline"
+const EMERGENCY_REFERENCE_CARDS_KEY = "care-companion-emergency-reference-cards"
 
 // ---------------------------------------------------------------------------
 // Profile CRUD
@@ -139,16 +151,79 @@ export function getMedicationTimeline(): TimelineEntry[] {
   )
 }
 
-interface CostSummaryFixture extends CostSummary {
-  breakdown: CostCategoryBreakdown[]
-  monthlyTrend: { month: number; spend: string }[]
+/** Pagination options for the timeline endpoint. */
+interface TimelineOptions {
+  medicationId?: string
+  limit: number
+  offset: number
 }
 
-export function getCostSummary(): CostSummaryFixture {
-  return readObject<CostSummaryFixture>(
+/**
+ * Returns a paginated slice of the medication timeline, optionally
+ * filtered by medication name. Uses the care-companion-timeline fixture
+ * which has the full purchase history for the patient.
+ */
+export function getTimeline(
+  options: TimelineOptions,
+): PaginatedResponse<TimelineEntry> {
+  const { medicationId, limit, offset } = options
+
+  let entries = readCollection<TimelineEntry>(
+    CARE_COMPANION_TIMELINE_KEY,
+    careCompanionTimelineSeed as unknown as TimelineEntry[],
+  )
+
+  if (medicationId) {
+    const lowerMedId = medicationId.toLowerCase()
+    entries = entries.filter(
+      (e) => e.medicationName.toLowerCase().includes(lowerMedId),
+    )
+  }
+
+  const total = entries.length
+  const paged = entries.slice(offset, offset + limit)
+
+  return {
+    data: paged,
+    pagination: { total, limit, offset },
+  }
+}
+
+interface CostSummaryFixture extends CostSummary {
+  breakdown: CostCategoryBreakdown[]
+  monthlyTrend: MonthlySpend[]
+}
+
+/**
+ * Returns the annual cost summary. The optional year parameter selects the
+ * year to query; in the mock layer only one year of fixture data exists so
+ * the fixture is returned with the year field adjusted when needed.
+ */
+export function getCostSummary(year?: number): CostSummaryFixture {
+  const summary = readObject<CostSummaryFixture>(
     COST_SUMMARY_KEY,
     costSummarySeed as unknown as CostSummaryFixture,
   )
+  if (year !== undefined && summary.year !== year) {
+    return { ...summary, year }
+  }
+  return summary
+}
+
+/**
+ * Returns cost breakdown by category with monthly trend data. Reads from
+ * the dedicated cost breakdown fixture which includes pagination metadata.
+ * The optional year parameter adjusts the returned year field.
+ */
+export function getCostBreakdown(year?: number): CostBreakdownResponse {
+  const breakdown = readObject<CostBreakdownResponse>(
+    COST_BREAKDOWN_KEY,
+    careCompanionCostBreakdownSeed as unknown as CostBreakdownResponse,
+  )
+  if (year !== undefined && breakdown.year !== year) {
+    return { ...breakdown, year }
+  }
+  return breakdown
 }
 
 export function getEmergencyCards(): EmergencyCard[] {
@@ -179,6 +254,11 @@ export function getRefillSchedules(): RefillSchedule[] {
   )
 }
 
+/** Alias for getRefillSchedules matching the spec-aligned function name. */
+export function getRefillSchedule(): RefillSchedule[] {
+  return getRefillSchedules()
+}
+
 export function getEducationCards(): EducationContentCard[] {
   return readCollection<EducationContentCard>(
     EDUCATION_CARDS_KEY,
@@ -186,10 +266,38 @@ export function getEducationCards(): EducationContentCard[] {
   )
 }
 
-export function getPharmacyStock(): PharmacyStock[] {
-  return readCollection<PharmacyStock>(
+/**
+ * Returns pharmacy stock entries. When facilityId is provided, returns
+ * only stock entries for that facility. Otherwise returns all entries.
+ */
+export function getPharmacyStock(facilityId?: number): PharmacyStock[] {
+  const stock = readCollection<PharmacyStock>(
     PHARMACY_STOCK_KEY,
     pharmacyStockSeed as unknown as PharmacyStock[],
+  )
+
+  if (facilityId !== undefined) {
+    return stock.filter((s) => s.facilityId === facilityId)
+  }
+
+  return stock
+}
+
+/**
+ * Returns pharmacy stock entries for a specific medication across all
+ * nearby facilities, sorted by distance (closest first). Matches on
+ * medication name using case-insensitive substring matching.
+ */
+export function getNearbyStock(medicationId: string): PharmacyStock[] {
+  const stock = getPharmacyStock()
+  const lower = medicationId.toLowerCase()
+
+  const matching = stock.filter(
+    (s) => s.medicationName.toLowerCase().includes(lower),
+  )
+
+  return matching.sort(
+    (a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity),
   )
 }
 
@@ -251,9 +359,44 @@ export function getPatientMedicationRecords(): PatientMedicationRecord[] {
   )
 }
 
+/**
+ * Find a single patient medication record by its id. Returns undefined
+ * when the id does not match any record in the collection.
+ */
+export function getPatientMedicationById(
+  id: string,
+): PatientMedicationRecord | undefined {
+  return getPatientMedicationRecords().find((record) => record.id === id)
+}
+
 // ---------------------------------------------------------------------------
 // Education feed: next unviewed card
 // ---------------------------------------------------------------------------
+
+/**
+ * Returns the next unviewed education card for the given condition type
+ * and locale. Includes GENERAL cards as fallback content. Returns null
+ * when all relevant cards have been viewed.
+ */
+export function getEducationFeed(
+  conditionType?: ConditionType | string,
+  locale: ContentLocale | string = "EN",
+): EducationContentCard | null {
+  const viewed = getEducationViewedIds()
+  const cards = getEducationCards()
+
+  const relevant = cards.filter((c) => {
+    const localeMatch = c.locale === locale
+    const conditionMatch =
+      !conditionType ||
+      c.conditionType === conditionType ||
+      c.conditionType === "GENERAL"
+    return localeMatch && conditionMatch
+  })
+
+  const sorted = [...relevant].sort((a, b) => a.weekNumber - b.weekNumber)
+  return sorted.find((c) => !viewed.includes(c.id)) ?? null
+}
 
 /**
  * Returns the next education card the patient has not viewed, filtered by
@@ -329,30 +472,39 @@ export function getInferredConditions(): string[] {
 }
 
 /**
- * Returns the emergency card matching a specific condition and locale.
- * Falls back to GENERAL for the same locale if no condition-specific card
- * exists, then falls back to the first card in the collection.
+ * Returns all published emergency reference cards from the fixture.
+ */
+export function getEmergencyReferenceCards(): EmergencyReferenceCard[] {
+  return readCollection<EmergencyReferenceCard>(
+    EMERGENCY_REFERENCE_CARDS_KEY,
+    emergencyReferenceCardsSeed as unknown as EmergencyReferenceCard[],
+  )
+}
+
+/**
+ * Find the emergency reference card matching a specific condition type
+ * and locale. Only considers published cards. Falls back to GENERAL in
+ * the same locale when no exact condition match exists, then to the first
+ * published card as a last resort.
  */
 export function getEmergencyCard(
-  condition: string,
-  locale: string,
-): EmergencyCard | undefined {
-  const cards = getEmergencyCards()
+  conditionType: ConditionType | string,
+  locale: ContentLocale | string = "EN",
+): EmergencyReferenceCard | undefined {
+  const cards = getEmergencyReferenceCards()
+  const published = cards.filter((c) => c.isPublished)
 
-  // Try exact match on condition + locale
-  const match = cards.find(
-    (c) => c.conditionType === condition && c.locale === locale,
+  const exactMatch = published.find(
+    (c) => c.conditionType === conditionType && c.locale === locale,
   )
-  if (match) return match
+  if (exactMatch) return exactMatch
 
-  // Fallback to GENERAL for the requested locale
-  const general = cards.find(
+  const generalFallback = published.find(
     (c) => c.conditionType === "GENERAL" && c.locale === locale,
   )
-  if (general) return general
+  if (generalFallback) return generalFallback
 
-  // Last resort: first card in the collection
-  return cards[0]
+  return published[0]
 }
 
 // ---------------------------------------------------------------------------
@@ -408,6 +560,14 @@ export function buildCareCompanionHome(): CareCompanionHome {
       ? transportCredit
       : null,
   }
+}
+
+/**
+ * Alias for buildCareCompanionHome matching the spec-aligned function
+ * name used by the care companion domain API.
+ */
+export function getCareCompanionHome(): CareCompanionHome {
+  return buildCareCompanionHome()
 }
 
 // ---------------------------------------------------------------------------

@@ -2,9 +2,9 @@
   {
     "id": "pm-metformin-grace",
     "medication": {
-      "id": "med-metformin",
+      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
       "genericName": "Metformin",
-      "brandNames": ["Glucophage", "Dianben"],
+      "brandNames": ["Glucophage", "Dianben", "Glycomin"],
       "strengths": ["500mg", "850mg", "1000mg"],
       "category": "MEDICATION",
       "conditionTags": ["DIABETES"]
@@ -19,9 +19,9 @@
   {
     "id": "pm-amlodipine-grace",
     "medication": {
-      "id": "med-amlodipine",
+      "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
       "genericName": "Amlodipine",
-      "brandNames": ["Norvasc", "Amlopin"],
+      "brandNames": ["Norvasc", "Amlopin", "Amloc"],
       "strengths": ["5mg", "10mg"],
       "category": "MEDICATION",
       "conditionTags": ["HYPERTENSION"]
@@ -36,9 +36,9 @@
   {
     "id": "pm-aspirin-grace",
     "medication": {
-      "id": "med-aspirin",
+      "id": "550e8400-e29b-41d4-a716-446655440008",
       "genericName": "Aspirin",
-      "brandNames": ["Disprin", "Ecosprin"],
+      "brandNames": ["Disprin", "Ecosprin", "Junior Aspirin"],
       "strengths": ["75mg", "100mg", "300mg"],
       "category": "MEDICATION",
       "conditionTags": ["GENERAL"]
