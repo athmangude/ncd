@@ -4,17 +4,47 @@
     "messages": [
       {
         "id": "msg-margaret-01",
+        "role": "USER",
+        "content": "I have been coughing a lot since I started my new blood pressure medication. Is this normal?",
+        "guardrailFlags": [],
+        "suggestedActions": [],
+        "timestamp": "2026-08-20T09:15:00Z"
+      },
+      {
+        "id": "msg-margaret-02",
         "role": "ASSISTANT",
-        "content": "I see you are taking Enalapril for blood pressure. A dry cough is one of the most common side effects of ACE inhibitors like Enalapril. Up to 10% of people who take it develop this cough.\n\nThe cough is not dangerous, but it can be very annoying. It happens because the medication affects how your body processes certain chemicals in your lungs.\n\nIf the cough is bothering you, your doctor can switch you to a different type of blood pressure medication called an ARB (like Losartan) that works similarly but rarely causes coughing.\n\nDo not stop taking your medication without talking to your doctor first.",
+        "content": "A persistent dry cough is a known side effect of ACE inhibitor medications like enalapril. It affects up to 1 in 5 people who take them. The cough is not dangerous, but it can be very annoying and disrupt your sleep.\n\nThis is something your doctor should know about. They may switch you to a different type of blood pressure medication called an ARB (like losartan), which works in a similar way but rarely causes a cough.\n\nDo not stop taking your medication without speaking to your doctor first. Uncontrolled blood pressure is more dangerous than the cough.",
         "guardrailFlags": ["disclaimer_shown"],
         "suggestedActions": [
           {
             "type": "VIEW_CARD",
-            "label": "View Enalapril info card",
+            "label": "View Enalapril medication card",
             "deepLink": "/patients/care-companion/medication-cards"
           }
         ],
-        "timestamp": "2026-08-25T10:01:00Z"
+        "timestamp": "2026-08-20T09:15:05Z"
+      },
+      {
+        "id": "msg-margaret-03",
+        "role": "USER",
+        "content": "Should I take cough syrup for it?",
+        "guardrailFlags": [],
+        "suggestedActions": [],
+        "timestamp": "2026-08-20T09:16:30Z"
+      },
+      {
+        "id": "msg-margaret-04",
+        "role": "ASSISTANT",
+        "content": "Cough syrup will not help with this type of cough because it is caused by the medication itself, not by an infection or irritation. Over-the-counter cough syrups target different mechanisms and are unlikely to give you relief.\n\nThe best solution is to talk to your doctor about switching to an alternative medication. In the meantime, drinking warm water with honey and lemon may soothe your throat slightly, but it will not stop the cough.\n\nWould you like me to help you find your nearest pharmacy in case your doctor prescribes a new medication?",
+        "guardrailFlags": ["disclaimer_shown"],
+        "suggestedActions": [
+          {
+            "type": "CHECK_STOCK",
+            "label": "Find pharmacies near you",
+            "deepLink": "/patients/care-companion/pharmacy-stock"
+          }
+        ],
+        "timestamp": "2026-08-20T09:16:35Z"
       }
     ]
   },
@@ -23,11 +53,35 @@
     "messages": [
       {
         "id": "msg-james-01",
+        "role": "USER",
+        "content": "What can I cook for dinner tonight that is good for my blood sugar? I only have about KES 300.",
+        "guardrailFlags": [],
+        "suggestedActions": [],
+        "timestamp": "2026-08-18T16:45:00Z"
+      },
+      {
+        "id": "msg-james-02",
         "role": "ASSISTANT",
-        "content": "Here is a diabetes-friendly dinner idea that works for the whole family and costs around KES 300 for four people:\n\n**Brown ugali with sukuma wiki and grilled tilapia**\n\n- Brown ugali (use whole maize flour): KES 50\n- Sukuma wiki (one bunch, cooked with a little oil, onions, and tomatoes): KES 40\n- Tilapia fillet (grilled or pan-fried with lemon): KES 180\n- Tomato and onion kachumbari: KES 30\n\nFor your portion: fill half the plate with sukuma wiki and kachumbari, a quarter with fish, and a quarter with ugali. Your family can have bigger ugali portions.\n\nThis meal is balanced for blood sugar management without requiring separate cooking. The whole family eats the same food.",
+        "content": "Here is a diabetes-friendly dinner you can make for about KES 300 that your whole family will enjoy:\n\nSukuma wiki and bean stew with a small portion of ugali\n\nIngredients (approximate prices at a local market):\n- 1 bunch sukuma wiki: KES 30\n- 1 cup dried beans (or use canned): KES 50-80\n- 2 tomatoes: KES 20\n- 1 onion: KES 10\n- Cooking oil: KES 30\n- 1 kg maize flour for ugali: KES 120\n\nTotal: about KES 260-290\n\nPreparation:\n1. Boil the beans until soft (soak overnight to save cooking gas)\n2. Saute onions and tomatoes in a little oil\n3. Add beans and simmer for 10 minutes\n4. Steam the sukuma wiki separately with just a pinch of salt\n5. Make ugali but keep portions fist-sized for managing blood sugar\n\nThe beans provide protein and fibre, which slow down sugar absorption. The sukuma wiki adds vitamins and bulk without raising blood sugar. Keeping the ugali portion small is the key.",
         "guardrailFlags": ["disclaimer_shown"],
         "suggestedActions": [],
-        "timestamp": "2026-08-25T10:02:00Z"
+        "timestamp": "2026-08-18T16:45:08Z"
+      },
+      {
+        "id": "msg-james-03",
+        "role": "USER",
+        "content": "Can I add rice instead of ugali?",
+        "guardrailFlags": [],
+        "suggestedActions": [],
+        "timestamp": "2026-08-18T16:47:00Z"
+      },
+      {
+        "id": "msg-james-04",
+        "role": "ASSISTANT",
+        "content": "Yes, you can use rice instead of ugali. A few tips to make it better for blood sugar:\n\n- Use the same fist-sized portion rule\n- If possible, choose brown rice over white rice. It has more fibre and releases sugar more slowly\n- Cook the rice, let it cool completely, then reheat it. Cooling and reheating rice changes the starch structure (resistant starch), which reduces the blood sugar spike by up to 20%\n- Eat the beans and sukuma wiki first, then the rice. Eating fibre and protein before carbohydrates slows down sugar absorption\n\nBrown rice costs a bit more (about KES 150-180 per kg compared to KES 100-120 for white rice), so use white rice if budget is tight and just apply the cooling trick.",
+        "guardrailFlags": ["disclaimer_shown"],
+        "suggestedActions": [],
+        "timestamp": "2026-08-18T16:47:06Z"
       }
     ]
   },
@@ -36,22 +90,46 @@
     "messages": [
       {
         "id": "msg-grace-01",
+        "role": "USER",
+        "content": "I take metformin, amlodipine, and aspirin. Does it matter what time I take each one?",
+        "guardrailFlags": [],
+        "suggestedActions": [],
+        "timestamp": "2026-08-22T07:30:00Z"
+      },
+      {
+        "id": "msg-grace-02",
         "role": "ASSISTANT",
-        "content": "Good question about taking Metformin and Amlodipine together.\n\nYes, you can take them at the same time. There is no harmful interaction between Metformin (for diabetes) and Amlodipine (for blood pressure). Many patients take both together.\n\nHere is a suggested schedule:\n- **Morning with breakfast**: Metformin 500mg + Amlodipine 5mg\n- **Evening with dinner**: Metformin 500mg\n\nTaking Metformin with food reduces stomach upset. Amlodipine can be taken with or without food, so pairing it with your morning Metformin keeps things simple.\n\nFor your Aspirin 75mg, take it with your morning meal as well.\n\nThe key is consistency. Pick a time that works with your daily routine and stick with it.",
+        "content": "Yes, timing matters for each of your medications. Here is a simple daily schedule:\n\nMorning (with breakfast):\n- Metformin 500mg: Take with food to reduce stomach upset. If you take it twice daily, have the second dose with dinner.\n- Aspirin 75mg: Take with food to protect your stomach lining.\n\nEvening (before bed):\n- Amlodipine 5mg: Blood pressure naturally rises in the early morning hours. Taking amlodipine at night gives you better protection during that high-risk period. However, the most important thing is consistency. If you prefer mornings, that is fine too.\n\nThe key rules:\n1. Take metformin with food, never on an empty stomach\n2. Take your medications at the same time every day\n3. If you miss a dose, take it as soon as you remember unless it is almost time for the next dose. Never double up.\n\nWould you like to set up refill reminders so you never run out?",
         "guardrailFlags": ["disclaimer_shown"],
         "suggestedActions": [
           {
             "type": "VIEW_CARD",
-            "label": "View Metformin info",
-            "deepLink": "/patients/care-companion/medication-cards"
+            "label": "View your refill schedule",
+            "deepLink": "/patients/care-companion/refill-schedule"
           },
           {
             "type": "VIEW_CARD",
-            "label": "View Amlodipine info",
+            "label": "Check medication interactions",
             "deepLink": "/patients/care-companion/medication-cards"
           }
         ],
-        "timestamp": "2026-08-25T10:03:00Z"
+        "timestamp": "2026-08-22T07:30:07Z"
+      },
+      {
+        "id": "msg-grace-03",
+        "role": "USER",
+        "content": "What if I forget and take metformin without food?",
+        "guardrailFlags": [],
+        "suggestedActions": [],
+        "timestamp": "2026-08-22T07:32:00Z"
+      },
+      {
+        "id": "msg-grace-04",
+        "role": "ASSISTANT",
+        "content": "Taking metformin without food is not dangerous, but it is likely to cause stomach discomfort, nausea, or diarrhoea. If you have already taken it on an empty stomach, eat something as soon as possible, even a small snack like a banana or a few biscuits.\n\nIf this happens often because you rush out in the morning, try these strategies:\n- Keep your metformin next to where you eat breakfast so you see it during the meal\n- Have a small snack ready (a boiled egg, a banana, or a handful of groundnuts) that you can eat quickly with your medication\n- If mornings are too hectic, ask your doctor if you can take your full dose with dinner instead\n\nThe most important thing is that you take it. Taking metformin on an empty stomach is better than skipping the dose entirely.",
+        "guardrailFlags": ["disclaimer_shown"],
+        "suggestedActions": [],
+        "timestamp": "2026-08-22T07:32:06Z"
       }
     ]
   },

@@ -1,7 +1,7 @@
 [
   {
-    "facilityId": 1001,
-    "facilityName": "City Chemist Mombasa",
+    "facilityId": 101,
+    "facilityName": "Coast Chemist Mombasa",
     "medicationName": "Metformin 500mg",
     "status": "IN_STOCK",
     "lastReportedAt": "2026-08-24T14:30:00Z",
@@ -10,8 +10,8 @@
     "lng": 39.6682
   },
   {
-    "facilityId": 1001,
-    "facilityName": "City Chemist Mombasa",
+    "facilityId": 101,
+    "facilityName": "Coast Chemist Mombasa",
     "medicationName": "Amlodipine 5mg",
     "status": "IN_STOCK",
     "lastReportedAt": "2026-08-24T14:30:00Z",
@@ -20,103 +20,103 @@
     "lng": 39.6682
   },
   {
-    "facilityId": 1002,
-    "facilityName": "Coast General Pharmacy",
+    "facilityId": 102,
+    "facilityName": "Mombasa Medicare Pharmacy",
     "medicationName": "Metformin 500mg",
     "status": "LOW_STOCK",
     "lastReportedAt": "2026-08-23T09:15:00Z",
-    "distance": 2.8,
-    "lat": -4.0555,
-    "lng": 39.6643
+    "distance": 2.4,
+    "lat": -4.0512,
+    "lng": 39.6714
   },
   {
-    "facilityId": 1002,
-    "facilityName": "Coast General Pharmacy",
+    "facilityId": 102,
+    "facilityName": "Mombasa Medicare Pharmacy",
     "medicationName": "Amlodipine 5mg",
     "status": "IN_STOCK",
     "lastReportedAt": "2026-08-23T09:15:00Z",
-    "distance": 2.8,
-    "lat": -4.0555,
-    "lng": 39.6643
+    "distance": 2.4,
+    "lat": -4.0512,
+    "lng": 39.6714
   },
   {
-    "facilityId": 1003,
-    "facilityName": "Mombasa Hospital Pharmacy",
+    "facilityId": 103,
+    "facilityName": "City Chemist Mombasa",
     "medicationName": "Metformin 500mg",
     "status": "IN_STOCK",
     "lastReportedAt": "2026-08-24T11:00:00Z",
-    "distance": 3.5,
-    "lat": -4.0510,
-    "lng": 39.6745
+    "distance": 0.8,
+    "lat": -4.0453,
+    "lng": 39.6617
   },
   {
-    "facilityId": 1003,
-    "facilityName": "Mombasa Hospital Pharmacy",
+    "facilityId": 103,
+    "facilityName": "City Chemist Mombasa",
     "medicationName": "Amlodipine 5mg",
     "status": "OUT_OF_STOCK",
     "lastReportedAt": "2026-08-22T16:45:00Z",
-    "distance": 3.5,
-    "lat": -4.0510,
-    "lng": 39.6745
+    "distance": 0.8,
+    "lat": -4.0453,
+    "lng": 39.6617
   },
   {
-    "facilityId": 1004,
-    "facilityName": "Aga Khan Health Centre Mombasa",
+    "facilityId": 104,
+    "facilityName": "Nyali Pharmacy",
     "medicationName": "Metformin 500mg",
     "status": "IN_STOCK",
     "lastReportedAt": "2026-08-24T10:00:00Z",
-    "distance": 4.1,
-    "lat": -4.0465,
-    "lng": 39.6598
+    "distance": 3.6,
+    "lat": -4.0267,
+    "lng": 39.6893
   },
   {
-    "facilityId": 1004,
-    "facilityName": "Aga Khan Health Centre Mombasa",
+    "facilityId": 104,
+    "facilityName": "Nyali Pharmacy",
     "medicationName": "Amlodipine 5mg",
     "status": "IN_STOCK",
     "lastReportedAt": "2026-08-24T10:00:00Z",
-    "distance": 4.1,
-    "lat": -4.0465,
-    "lng": 39.6598
+    "distance": 3.6,
+    "lat": -4.0267,
+    "lng": 39.6893
   },
   {
-    "facilityId": 1005,
-    "facilityName": "Nyali Pharmacy",
+    "facilityId": 105,
+    "facilityName": "Likoni Health Pharmacy",
     "medicationName": "Metformin 500mg",
     "status": "OUT_OF_STOCK",
     "lastReportedAt": "2026-08-21T08:30:00Z",
-    "distance": 5.6,
-    "lat": -4.0280,
-    "lng": 39.6930
+    "distance": 5.1,
+    "lat": -4.0822,
+    "lng": 39.6556
   },
   {
-    "facilityId": 1005,
-    "facilityName": "Nyali Pharmacy",
+    "facilityId": 105,
+    "facilityName": "Likoni Health Pharmacy",
     "medicationName": "Amlodipine 5mg",
     "status": "LOW_STOCK",
     "lastReportedAt": "2026-08-21T08:30:00Z",
-    "distance": 5.6,
-    "lat": -4.0280,
-    "lng": 39.6930
+    "distance": 5.1,
+    "lat": -4.0822,
+    "lng": 39.6556
   },
   {
-    "facilityId": 1006,
-    "facilityName": "Tudor Chemist",
+    "facilityId": 106,
+    "facilityName": "Ganjoni Medical Supplies",
     "medicationName": "Metformin 500mg",
     "status": "IN_STOCK",
-    "lastReportedAt": "2026-08-24T13:00:00Z",
-    "distance": 2.0,
-    "lat": -4.0470,
-    "lng": 39.6700
+    "lastReportedAt": "2026-08-25T07:00:00Z",
+    "distance": 1.8,
+    "lat": -4.0561,
+    "lng": 39.6631
   },
   {
-    "facilityId": 1006,
-    "facilityName": "Tudor Chemist",
+    "facilityId": 106,
+    "facilityName": "Ganjoni Medical Supplies",
     "medicationName": "Amlodipine 5mg",
     "status": "IN_STOCK",
-    "lastReportedAt": "2026-08-24T13:00:00Z",
-    "distance": 2.0,
-    "lat": -4.0470,
-    "lng": 39.6700
+    "lastReportedAt": "2026-08-25T07:00:00Z",
+    "distance": 1.8,
+    "lat": -4.0561,
+    "lng": 39.6631
   }
 ]

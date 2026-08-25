@@ -1,82 +1,82 @@
 [
   {
-    "id": "mi-metformin-alcohol",
+    "id": "int-001",
     "medicationA": "Metformin",
-    "medicationB": "Alcohol",
-    "herbName": null,
-    "severity": "SEVERE",
-    "description": "Combining metformin with alcohol significantly increases the risk of lactic acidosis, a rare but potentially fatal condition.",
-    "clinicalEffect": "Alcohol impairs the liver's ability to clear lactate. Metformin also increases lactate production. Together, they can cause a dangerous buildup of lactic acid in the blood.",
-    "recommendation": "Avoid heavy drinking. Limit alcohol to occasional, moderate amounts (no more than 1-2 drinks). Never drink on an empty stomach while taking metformin."
+    "medicationB": null,
+    "herbName": "Alcohol",
+    "severity": "MODERATE",
+    "description": "Metformin combined with alcohol consumption increases the risk of a rare but serious condition called lactic acidosis.",
+    "clinicalEffect": "Alcohol inhibits the liver from producing glucose and impairs lactate clearance. Combined with metformin, which also affects lactate metabolism, this can lead to a dangerous buildup of lactic acid in the blood.",
+    "recommendation": "Limit alcohol intake to occasional small amounts with food. Avoid binge drinking entirely. If you feel unwell after drinking, check your blood sugar and seek medical attention if you experience unusual muscle pain or difficulty breathing."
   },
   {
-    "id": "mi-ace-potassium",
+    "id": "int-002",
     "medicationA": "Enalapril",
     "medicationB": "Potassium supplements",
     "herbName": null,
-    "severity": "MODERATE",
-    "description": "ACE inhibitors like enalapril raise potassium levels. Taking additional potassium supplements can cause dangerously high potassium.",
-    "clinicalEffect": "High potassium (hyperkalemia) can cause muscle weakness, fatigue, and in severe cases, dangerous heart rhythm changes.",
-    "recommendation": "Do not take potassium supplements or use salt substitutes (which contain potassium) without your doctor's guidance. Have your potassium levels checked regularly."
+    "severity": "SEVERE",
+    "description": "ACE inhibitors like enalapril raise potassium levels. Taking potassium supplements on top of this can cause dangerously high potassium (hyperkalaemia).",
+    "clinicalEffect": "Enalapril reduces aldosterone secretion, which means your kidneys retain more potassium. Additional potassium supplementation can push levels above the safe range, potentially causing fatal cardiac arrhythmias.",
+    "recommendation": "Do not take potassium supplements or use potassium-based salt substitutes unless your doctor has checked your potassium level and specifically prescribed them. Have your potassium levels checked regularly."
   },
   {
-    "id": "mi-amlodipine-stjohns",
+    "id": "int-003",
     "medicationA": "Amlodipine",
     "medicationB": null,
     "herbName": "St. John's Wort",
     "severity": "MODERATE",
-    "description": "St. John's Wort can reduce the effectiveness of amlodipine by speeding up how quickly your body breaks down the drug.",
-    "clinicalEffect": "Your blood pressure may not be adequately controlled, increasing the risk of hypertensive events.",
-    "recommendation": "Avoid St. John's Wort while taking amlodipine. If you use herbal remedies for mood, discuss alternatives with your doctor."
+    "description": "St. John's Wort is an herbal supplement sometimes used for mood support. It can significantly reduce the effectiveness of amlodipine.",
+    "clinicalEffect": "St. John's Wort induces CYP3A4 liver enzymes, which break down amlodipine faster than normal. This can reduce amlodipine blood levels by up to 50%, causing blood pressure to rise to uncontrolled levels.",
+    "recommendation": "Avoid taking St. John's Wort while on amlodipine. If you are using it for mood support, discuss alternative options with your doctor. Do not stop amlodipine without medical advice."
   },
   {
-    "id": "mi-metformin-bittergourd",
+    "id": "int-004",
     "medicationA": "Metformin",
     "medicationB": null,
-    "herbName": "Bitter gourd (Karela)",
+    "herbName": "Bitter gourd (karela)",
     "severity": "MODERATE",
-    "description": "Bitter gourd has natural blood sugar lowering properties. Combined with metformin, blood sugar may drop too low.",
-    "clinicalEffect": "Hypoglycemia (low blood sugar): shakiness, sweating, confusion, dizziness, and in severe cases, loss of consciousness.",
-    "recommendation": "If you regularly eat bitter gourd, monitor your blood sugar more frequently. Tell your doctor so they can adjust your metformin dose if needed."
+    "description": "Bitter gourd is a traditional remedy used in East Africa to lower blood sugar. Combined with metformin, it can cause blood sugar to drop too low.",
+    "clinicalEffect": "Bitter gourd contains compounds (charantin, polypeptide-p) that have insulin-like effects and increase glucose uptake by cells. When used alongside metformin, the combined blood sugar lowering effect can cause hypoglycaemia.",
+    "recommendation": "If you use bitter gourd in cooking occasionally, the amounts are generally safe. Avoid concentrated bitter gourd supplements, juices, or extracts while taking metformin. Monitor your blood sugar more frequently if you consume bitter gourd regularly."
   },
   {
-    "id": "mi-amlodipine-grapefruit",
+    "id": "int-005",
+    "medicationA": "Metformin",
+    "medicationB": "Glibenclamide",
+    "herbName": null,
+    "severity": "MODERATE",
+    "description": "Both medications lower blood sugar through different mechanisms. Combined use increases the risk of hypoglycaemia (low blood sugar).",
+    "clinicalEffect": "Metformin reduces liver glucose production and improves insulin sensitivity, while glibenclamide stimulates the pancreas to release more insulin. The dual action can lower blood sugar below safe levels, especially if meals are skipped or delayed.",
+    "recommendation": "This combination is commonly prescribed and can be safe under medical supervision. Always eat regular meals, carry glucose tablets or a sugary snack, and know the signs of low blood sugar (shaking, sweating, confusion, fast heartbeat). Tell your doctor if you experience frequent low blood sugar episodes."
+  },
+  {
+    "id": "int-006",
     "medicationA": "Amlodipine",
-    "medicationB": "Grapefruit",
+    "medicationB": "Simvastatin",
     "herbName": null,
-    "severity": "MILD",
-    "description": "Grapefruit juice can slightly increase the levels of amlodipine in your blood.",
-    "clinicalEffect": "You may experience more pronounced side effects such as dizziness, flushing, or ankle swelling.",
-    "recommendation": "Limit grapefruit juice consumption. One small glass occasionally is unlikely to cause problems, but regular large quantities should be avoided."
+    "severity": "MODERATE",
+    "description": "Amlodipine can increase the blood levels of simvastatin, raising the risk of muscle-related side effects.",
+    "clinicalEffect": "Amlodipine inhibits CYP3A4 metabolism of simvastatin, increasing simvastatin exposure. Higher simvastatin levels increase the risk of myopathy (muscle damage) and in rare cases rhabdomyolysis (severe muscle breakdown).",
+    "recommendation": "If you take both medications, your simvastatin dose should not exceed 20mg daily. Report any unexplained muscle pain, tenderness, or weakness to your doctor immediately, especially if accompanied by fever or dark urine."
   },
   {
-    "id": "mi-aspirin-ibuprofen",
+    "id": "int-007",
     "medicationA": "Aspirin",
-    "medicationB": "Ibuprofen",
+    "medicationB": "Enalapril",
     "herbName": null,
-    "severity": "MODERATE",
-    "description": "Ibuprofen can interfere with the blood-thinning effect of low-dose aspirin.",
-    "clinicalEffect": "If you take aspirin for heart protection, ibuprofen may block its ability to prevent blood clots, reducing its cardiovascular benefit.",
-    "recommendation": "If you need a pain reliever, take the aspirin first and wait at least 30 minutes before taking ibuprofen. Better yet, ask your doctor about paracetamol as an alternative."
-  },
-  {
-    "id": "mi-metformin-neem",
-    "medicationA": "Metformin",
-    "medicationB": null,
-    "herbName": "Neem",
     "severity": "MILD",
-    "description": "Neem has mild blood sugar lowering properties that may add to metformin's effect.",
-    "clinicalEffect": "Slightly increased risk of low blood sugar, especially if fasting or skipping meals.",
-    "recommendation": "If you use neem remedies, monitor your blood sugar and report any episodes of low blood sugar to your doctor."
+    "description": "Regular aspirin use may slightly reduce the blood pressure lowering effect of ACE inhibitors like enalapril.",
+    "clinicalEffect": "Aspirin inhibits prostaglandin synthesis, which can partly counteract the vasodilatory and natriuretic effects of ACE inhibitors. At low cardioprotective doses (75-100mg), the clinical significance is small.",
+    "recommendation": "Low-dose aspirin (75mg) is generally safe to use with enalapril. Your doctor has likely already accounted for this interaction. Continue taking both as prescribed and monitor your blood pressure regularly."
   },
   {
-    "id": "mi-enalapril-nsaids",
-    "medicationA": "Enalapril",
-    "medicationB": "NSAIDs (Diclofenac, Ibuprofen)",
+    "id": "int-008",
+    "medicationA": "Losartan",
+    "medicationB": "Potassium supplements",
     "herbName": null,
-    "severity": "MODERATE",
-    "description": "Non-steroidal anti-inflammatory drugs (NSAIDs) can reduce the blood pressure lowering effect of enalapril and may harm kidney function.",
-    "clinicalEffect": "Blood pressure may rise. Long-term combined use can contribute to kidney damage.",
-    "recommendation": "Avoid regular use of NSAIDs. For occasional pain relief, paracetamol is safer. If you need an NSAID, use the lowest dose for the shortest time and have your kidney function monitored."
+    "severity": "SEVERE",
+    "description": "Losartan, like other ARBs, can raise potassium levels. Taking potassium supplements alongside it creates a serious risk of hyperkalaemia.",
+    "clinicalEffect": "Losartan reduces aldosterone release, causing potassium retention in the kidneys. Additional potassium intake can elevate serum potassium to dangerous levels, potentially causing cardiac arrest.",
+    "recommendation": "Avoid potassium supplements and potassium-based salt substitutes unless your doctor has specifically prescribed them after checking your blood levels. Have your kidney function and potassium levels monitored regularly."
   }
 ]

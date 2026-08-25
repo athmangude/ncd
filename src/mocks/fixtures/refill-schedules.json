@@ -1,26 +1,26 @@
 [
   {
-    "id": "rs-metformin-grace",
+    "id": "refill-metformin-grace",
     "medicationName": "Metformin 500mg",
-    "expectedRefillDate": "2026-09-02",
+    "expectedRefillDate": "2026-08-28",
     "status": "DUE",
     "daysUntilRefill": 3,
-    "estimatedDaysSupply": 28,
+    "estimatedDaysSupply": 30,
     "escalatedToLoanOffer": false
   },
   {
-    "id": "rs-amlodipine-grace",
+    "id": "refill-amlodipine-grace",
     "medicationName": "Amlodipine 5mg",
-    "expectedRefillDate": "2026-09-01",
+    "expectedRefillDate": "2026-09-12",
     "status": "UPCOMING",
     "daysUntilRefill": 18,
     "estimatedDaysSupply": 30,
     "escalatedToLoanOffer": false
   },
   {
-    "id": "rs-aspirin-grace",
+    "id": "refill-aspirin-grace",
     "medicationName": "Aspirin 75mg",
-    "expectedRefillDate": "2026-08-22",
+    "expectedRefillDate": "2026-08-20",
     "status": "OVERDUE",
     "daysUntilRefill": -5,
     "estimatedDaysSupply": 30,
