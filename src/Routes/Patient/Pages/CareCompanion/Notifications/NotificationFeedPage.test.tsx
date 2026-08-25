@@ -42,7 +42,7 @@ const server = setupServer(...notificationsHandlers)
 const ORIGIN = window.location.origin
 
 const fixtureNotifications =
-  careCompanionNotificationsFixture as CareCompanionNotification[]
+  careCompanionNotificationsFixture as unknown as CareCompanionNotification[]
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }))
 afterAll(() => server.close())

@@ -10,7 +10,9 @@ import { MemoryRouter, Route, Routes } from "react-router-dom"
 // Controlled return value for useCareCompanionProfile
 const mockRefetch = vi.fn()
 let profileReturn: {
-  data: { intakeCompletedAt: string | null; skippedAt: string | null } | undefined
+  data:
+    | { intakeCompletedAt: string | null; skippedAt: string | null }
+    | undefined
   isLoading: boolean
   isError: boolean
   refetch: () => void
@@ -65,6 +67,9 @@ vi.mock("./MedicationLoanPage", () => ({
 }))
 vi.mock("./AiAssistantPage", () => ({
   default: () => <div>AiAssistant</div>,
+}))
+vi.mock("./Notifications/NotificationFeedPage", () => ({
+  default: () => <div>NotificationFeed</div>,
 }))
 
 // Stub RouteMetadata — pass children through
@@ -311,6 +316,12 @@ describe("CareCompanionWrapper", () => {
       renderWrapper("/patients/care-companion/assistant")
       expect(await screen.findByText("AiAssistant")).toBeInTheDocument()
     })
+
+    it("renders NotificationFeedPage on /notifications", async () => {
+      withProfile()
+      renderWrapper("/patients/care-companion/notifications")
+      expect(await screen.findByText("NotificationFeed")).toBeInTheDocument()
+    })
   })
 
   describe("loading state with existing profile confirmation", () => {
@@ -323,7 +334,9 @@ describe("CareCompanionWrapper", () => {
       expect(
         screen.queryByTestId("dashboard-tab-fallback")
       ).not.toBeInTheDocument()
-      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("care-companion-home")
+      ).toBeInTheDocument()
     })
 
     it("skips loading fallback when profile data confirms completion even if isLoading is true", async () => {
@@ -336,7 +349,9 @@ describe("CareCompanionWrapper", () => {
       expect(
         screen.queryByTestId("dashboard-tab-fallback")
       ).not.toBeInTheDocument()
-      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("care-companion-home")
+      ).toBeInTheDocument()
     })
   })
 
@@ -349,7 +364,9 @@ describe("CareCompanionWrapper", () => {
       }
       renderWrapper()
       expect(screen.queryByTestId("error-block")).not.toBeInTheDocument()
-      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("care-companion-home")
+      ).toBeInTheDocument()
     })
 
     it("does NOT show error when API errors but profile data has skippedAt", async () => {
@@ -360,7 +377,9 @@ describe("CareCompanionWrapper", () => {
       }
       renderWrapper()
       expect(screen.queryByTestId("error-block")).not.toBeInTheDocument()
-      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("care-companion-home")
+      ).toBeInTheDocument()
     })
   })
 
@@ -369,7 +388,9 @@ describe("CareCompanionWrapper", () => {
       storeReturn = { intakeCompleted: true }
       renderWrapper()
       // hasProfile is true from store, so no redirect
-      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("care-companion-home")
+      ).toBeInTheDocument()
     })
 
     it("does NOT redirect when skippedAt is set even though intakeCompletedAt is null", async () => {
@@ -378,7 +399,9 @@ describe("CareCompanionWrapper", () => {
         skippedAt: "2025-02-01T00:00:00Z",
       }
       renderWrapper()
-      expect(await screen.findByTestId("care-companion-home")).toBeInTheDocument()
+      expect(
+        await screen.findByTestId("care-companion-home")
+      ).toBeInTheDocument()
     })
   })
 })

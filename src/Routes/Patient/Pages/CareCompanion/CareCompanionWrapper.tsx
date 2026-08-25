@@ -8,20 +8,14 @@ import { useCareCompanionProfile } from "./Intake/hooks/useCareCompanionProfile"
 import { useCareCompanionStore } from "./store/careCompanionStore"
 
 const CareCompanionHome = lazy(() => import("./CareCompanionHome"))
-const CareCompanionIntake = lazy(
-  () => import("./Intake/CareCompanionIntake")
-)
+const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
 const CostTrackerPage = lazy(() => import("./CostTrackerPage"))
 const EmergencyCardPage = lazy(() => import("./EmergencyCardPage"))
-const MedicationTimelinePage = lazy(
-  () => import("./MedicationTimelinePage")
-)
+const MedicationTimelinePage = lazy(() => import("./MedicationTimelinePage"))
 const MedicationCardsPage = lazy(() => import("./MedicationCardsPage"))
 const RefillSchedulePage = lazy(() => import("./RefillSchedulePage"))
 const EducationFeedPage = lazy(() => import("./EducationFeedPage"))
-const PharmacyStockFinderPage = lazy(
-  () => import("./PharmacyStockFinderPage")
-)
+const PharmacyStockFinderPage = lazy(() => import("./PharmacyStockFinderPage"))
 const MedicationLoanPage = lazy(() => import("./MedicationLoanPage"))
 const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
 const NotificationFeedPage = lazy(
@@ -30,8 +24,12 @@ const NotificationFeedPage = lazy(
 
 export default function CareCompanionWrapper() {
   const { intakeCompleted } = useCareCompanionStore()
-  const { data: profile, isLoading, isError, refetch } =
-    useCareCompanionProfile()
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
+  } = useCareCompanionProfile()
   const location = useLocation()
 
   // Exact match on the intake route — intentionally does not match sub-paths
@@ -41,8 +39,7 @@ export default function CareCompanionWrapper() {
 
   // Profile is considered valid if intake was completed or explicitly skipped
   const hasProfile =
-    intakeCompleted ||
-    !!(profile?.intakeCompletedAt || profile?.skippedAt)
+    intakeCompleted || !!(profile?.intakeCompletedAt || profile?.skippedAt)
 
   // Show loading fallback while checking profile (unless already on intake)
   if (!hasProfile && isLoading && !isIntakeRoute) {
