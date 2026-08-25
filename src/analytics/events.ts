@@ -240,4 +240,62 @@ export const EVENTS = {
     SKIP_TAP: "NOTIFICATIONS:Skip:tap",
     HELP_DIALOG_OPEN: "NOTIFICATIONS:HelpDialog:open",
   },
+
+  // CARE_COMPANION Journey
+  CARE_COMPANION: {
+    INTAKE: {
+      VIEW: "CARE-COMPANION:Intake:view",
+      STEP_COMPLETE: "CARE-COMPANION:Intake:step-complete",
+      SKIP: "CARE-COMPANION:Intake:skip",
+      COMPLETE: "CARE-COMPANION:Intake:complete",
+    },
+    HOME: {
+      VIEW: "CARE-COMPANION:Home:view",
+      CARD_TAP: "CARE-COMPANION:Home:card-tap",
+    },
+    EMERGENCY_CARD: {
+      VIEW: "CARE-COMPANION:EmergencyCard:view",
+      TRANSPORT_CREDIT_TAP: "CARE-COMPANION:EmergencyCard:transport-credit-tap",
+    },
+    COST_TRACKER: {
+      VIEW: "CARE-COMPANION:CostTracker:view",
+      SHARE_TAP: "CARE-COMPANION:CostTracker:share-tap",
+    },
+    MEDICATION_TIMELINE: {
+      VIEW: "CARE-COMPANION:MedicationTimeline:view",
+      FILTER_CHANGE: "CARE-COMPANION:MedicationTimeline:filter-change",
+      EXPORT_TAP: "CARE-COMPANION:MedicationTimeline:export-tap",
+    },
+    MEDICATION_CARDS: {
+      VIEW: "CARE-COMPANION:MedicationCards:view",
+      CARD_EXPAND: "CARE-COMPANION:MedicationCards:card-expand",
+      OVERLAY_DISMISS: "CARE-COMPANION:MedicationCards:overlay-dismiss",
+      OVERLAY_VIEW_ALL: "CARE-COMPANION:MedicationCards:overlay-view-all",
+    },
+    REFILL_SCHEDULE: {
+      VIEW: "CARE-COMPANION:RefillSchedule:view",
+      FIND_PHARMACY_TAP: "CARE-COMPANION:RefillSchedule:find-pharmacy-tap",
+      APPLY_CREDIT_TAP: "CARE-COMPANION:RefillSchedule:apply-credit-tap",
+    },
+    EDUCATION: {
+      VIEW: "CARE-COMPANION:Education:view",
+      CARD_VIEWED: "CARE-COMPANION:Education:card-viewed",
+      PREVIOUS_CARDS_TAP: "CARE-COMPANION:Education:previous-cards-tap",
+    },
+    PHARMACY_STOCK: {
+      VIEW: "CARE-COMPANION:PharmacyStock:view",
+      SEARCH: "CARE-COMPANION:PharmacyStock:search",
+      MAP_TOGGLE: "CARE-COMPANION:PharmacyStock:map-toggle",
+    },
+    MEDICATION_LOAN: {
+      VIEW: "CARE-COMPANION:MedicationLoan:view",
+      ACCEPT_TAP: "CARE-COMPANION:MedicationLoan:accept-tap",
+      DECLINE_TAP: "CARE-COMPANION:MedicationLoan:decline-tap",
+    },
+    AI_ASSISTANT: {
+      VIEW: "CARE-COMPANION:AiAssistant:view",
+      MESSAGE_SEND: "CARE-COMPANION:AiAssistant:message-send",
+      SUGGESTED_ACTION_TAP: "CARE-COMPANION:AiAssistant:suggested-action-tap",
+    },
+  },
 } as const
