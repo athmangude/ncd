@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { getFirstIncompleteStep } from "../../hooks/useNextOnboardingStep"
 import { KYC_START_URL } from "../../hooks/useNextKYCStep"
 import { AlertCard } from "../../components/CallToActions"
+import { MedicationNudgeCard } from "./components/MedicationNudgeCard"
 
 import { DashboardSearch } from "./components/DashboardSearch"
 import { DashboardTabs } from "./components/DashboardTabs"
@@ -112,6 +113,8 @@ export default function PatientDashboardLoansTab() {
       <DashboardSearch />
 
       {dashboardAlert && <AlertCard alert={dashboardAlert} />}
+
+      <MedicationNudgeCard />
 
       <DashboardTabs activeTab={activeTab} onTabChange={setActiveTab} />
 

@@ -1,27 +1,32 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import type { TimelineEntry } from "@/types/care-companion"
 
-export interface MedicationTimelineEntry {
-  id: string
-  medicationName: string
-  dosage: string
-  scheduledAt: string
-  takenAt: string | null
-  status: "taken" | "missed" | "upcoming" | "skipped"
-  notes: string | null
+export interface MedicationTimelineSummary {
+  totalMedications: number
+  pharmaciesUsed: number
+  dateRange: {
+    from: string
+    to: string
+  }
 }
 
-export interface MedicationTimelineData {
-  entries: MedicationTimelineEntry[]
+export interface MedicationTimelinePagination {
   total: number
   limit: number
   offset: number
-  hasMore: boolean
+}
+
+export interface MedicationTimelineData {
+  entries: TimelineEntry[]
+  summary: MedicationTimelineSummary
+  pagination: MedicationTimelinePagination
 }
 
 export interface MedicationTimelineParams {
   limit: number
   offset: number
+  medicationId?: string | null
 }
 
 export const medicationTimelineQueryKey = "careCompanionMedicationTimeline"
@@ -29,13 +34,18 @@ export const medicationTimelineQueryKey = "careCompanionMedicationTimeline"
 export function useMedicationTimeline({
   limit,
   offset,
+  medicationId,
 }: MedicationTimelineParams) {
   return useQuery({
-    queryKey: [medicationTimelineQueryKey, limit, offset],
+    queryKey: [medicationTimelineQueryKey, limit, offset, medicationId ?? null],
     queryFn: async () => {
+      const params: Record<string, string | number> = { limit, offset }
+      if (medicationId) {
+        params.medicationId = medicationId
+      }
       const response = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/care-companion/medication-timeline`,
-        { params: { limit, offset } }
+        { params }
       )
       return response.data as MedicationTimelineData
     },

@@ -33,21 +33,22 @@ vi.mock("@tanstack/react-query", () => ({
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
-    articles: [
+    cards: [
       {
-        id: "article-1",
-        title: "Managing Diabetes Through Diet",
-        summary: "Tips for managing blood sugar levels",
-        thumbnailUrl: "https://example.com/thumb.jpg",
-        contentUrl: "https://example.com/article-1",
-        category: "Diabetes",
-        readTimeMinutes: 5,
-        publishedAt: "2026-08-20T12:00:00Z",
+        id: "edu-dietary-001",
+        conditionType: "DIABETES",
+        contentType: "DIETARY",
+        locale: "EN",
+        title: "Ugali portions that work for blood sugar control",
+        body: "You do not have to stop eating ugali.",
+        weekNumber: 1,
+        imageUrl: null,
+        isPublished: true,
+        householdCompatible: true,
+        costNeutral: true,
         viewed: false,
-        viewedAt: null,
       },
     ],
-    totalUnread: 3,
   },
 })
 
@@ -99,7 +100,7 @@ describe("useEducationFeed", () => {
     expect(capturedQueryOptions.staleTime).toBe(5 * 60 * 1000)
   })
 
-  it("queryFn calls the education-feed endpoint", async () => {
+  it("queryFn calls the education-cards endpoint", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useEducationFeed())
 
@@ -107,36 +108,36 @@ describe("useEducationFeed", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/education-feed")
+      expect.stringContaining("/care-companion/education-cards")
     )
   })
 
-  it("queryFn returns articles with unread count", async () => {
+  it("queryFn returns cards array", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useEducationFeed())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = (await queryFn()) as {
-      articles: unknown[]
-      totalUnread: number
+      cards: unknown[]
     }
 
-    expect(result.articles).toHaveLength(1)
-    expect(result.totalUnread).toBe(3)
+    expect(result.cards).toHaveLength(1)
+    expect(result.cards[0]).toHaveProperty("viewed", false)
+    expect(result.cards[0]).toHaveProperty("contentType", "DIETARY")
   })
 
-  it("markViewed mutationFn posts to the correct article-specific endpoint", async () => {
+  it("markViewed mutationFn posts to the correct card-specific endpoint", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useEducationFeed())
 
     const mutationFn = capturedMutationOptions.mutationFn as (
-      articleId: string
+      cardId: string
     ) => Promise<unknown>
-    await mutationFn("article-42")
+    await mutationFn("edu-dietary-001")
 
     expect(mockAxiosPost).toHaveBeenCalledWith(
       expect.stringContaining(
-        "/care-companion/education-feed/article-42/viewed"
+        "/care-companion/education-feed/edu-dietary-001/viewed"
       )
     )
   })

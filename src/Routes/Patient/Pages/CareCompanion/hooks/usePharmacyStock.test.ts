@@ -14,34 +14,38 @@ vi.mock("@tanstack/react-query", () => ({
 }))
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
-  data: {
-    pharmacies: [
-      {
-        pharmacyId: "pharm-1",
-        pharmacyName: "MedPlus Pharmacy",
-        distanceKm: 1.5,
-        items: [
-          {
-            medicationName: "Metformin",
-            dosage: "500mg",
-            inStock: true,
-            price: 50,
-            currency: "KES",
-            lastCheckedAt: "2026-08-25T10:00:00Z",
-          },
-          {
-            medicationName: "Amlodipine",
-            dosage: "5mg",
-            inStock: false,
-            price: null,
-            currency: "KES",
-            lastCheckedAt: "2026-08-25T10:00:00Z",
-          },
-        ],
-      },
-    ],
-    checkedAt: "2026-08-25T10:00:00Z",
-  },
+  data: [
+    {
+      facilityId: 101,
+      facilityName: "Coast Chemist Mombasa",
+      medicationName: "Metformin 500mg",
+      status: "IN_STOCK",
+      lastReportedAt: "2026-08-24T14:30:00Z",
+      distance: 1.2,
+      lat: -4.0435,
+      lng: 39.6682,
+    },
+    {
+      facilityId: 101,
+      facilityName: "Coast Chemist Mombasa",
+      medicationName: "Amlodipine 5mg",
+      status: "IN_STOCK",
+      lastReportedAt: "2026-08-24T14:30:00Z",
+      distance: 1.2,
+      lat: -4.0435,
+      lng: 39.6682,
+    },
+    {
+      facilityId: 102,
+      facilityName: "Mombasa Medicare Pharmacy",
+      medicationName: "Metformin 500mg",
+      status: "LOW_STOCK",
+      lastReportedAt: "2026-08-23T09:15:00Z",
+      distance: 2.4,
+      lat: -4.0512,
+      lng: 39.6714,
+    },
+  ],
 })
 
 vi.mock("axios", () => ({
@@ -88,20 +92,23 @@ describe("usePharmacyStock", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/pharmacy-stock")
+      expect.stringContaining("/care-companion/pharmacy-stock"),
     )
   })
 
-  it("queryFn returns pharmacies with stock items", async () => {
+  it("queryFn returns a flat array of stock items", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => usePharmacyStock())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
-    const result = (await queryFn()) as {
-      pharmacies: { items: unknown[] }[]
-    }
+    const result = (await queryFn()) as Array<{
+      facilityId: number
+      medicationName: string
+    }>
 
-    expect(result.pharmacies).toHaveLength(1)
-    expect(result.pharmacies[0].items).toHaveLength(2)
+    expect(result).toHaveLength(3)
+    expect(result[0].facilityId).toBe(101)
+    expect(result[0].medicationName).toBe("Metformin 500mg")
+    expect(result[2].facilityId).toBe(102)
   })
 })

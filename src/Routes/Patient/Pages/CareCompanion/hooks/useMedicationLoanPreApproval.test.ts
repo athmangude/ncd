@@ -16,30 +16,18 @@ vi.mock("@tanstack/react-query", () => ({
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
     isPreApproved: true,
-    maxLoanAmount: 25000,
-    currency: "KES",
-    interestRate: 0.05,
-    repaymentPeriodDays: 30,
-    eligibilityFactors: [
-      {
-        factor: "Circle membership",
-        status: "met",
-        description: "Active in at least one circle",
-      },
-      {
-        factor: "Care Saver balance",
-        status: "partial",
-        description: "Minimum balance requirement partially met",
-      },
-    ],
-    estimatedMonthlyRepayment: 26250,
-    medicationsCovered: [
-      {
-        medicationId: "med-1",
-        medicationName: "Metformin",
-        estimatedCost: 1500,
-      },
-    ],
+    preApprovalDetails: {
+      maxAmount: "5500",
+      medications: [
+        { name: "Metformin 500mg", estimatedCost: "2400" },
+        { name: "Amlodipine 5mg", estimatedCost: "1800" },
+        { name: "Aspirin 75mg", estimatedCost: "900" },
+      ],
+      targetPharmacy: { id: 103, name: "City Chemist Mombasa" },
+      reason:
+        "Based on your 8-month purchase history and consistent Jireh Care Saver activity, you are pre-approved for a medication loan to cover your next refill cycle.",
+      expiresAt: "2026-09-30T23:59:59Z",
+    },
   },
 })
 
@@ -95,21 +83,28 @@ describe("useMedicationLoanPreApproval", () => {
     )
   })
 
-  it("queryFn returns pre-approval data with financial details", async () => {
+  it("queryFn returns pre-approval data matching MedicationLoanPreApproval shape", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useMedicationLoanPreApproval())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = (await queryFn()) as {
       isPreApproved: boolean
-      maxLoanAmount: number
-      eligibilityFactors: unknown[]
-      medicationsCovered: unknown[]
+      preApprovalDetails: {
+        maxAmount: string
+        medications: { name: string; estimatedCost: string }[]
+        targetPharmacy: { id: number; name: string }
+        reason: string
+        expiresAt: string
+      } | null
     }
 
     expect(result.isPreApproved).toBe(true)
-    expect(result.maxLoanAmount).toBe(25000)
-    expect(result.eligibilityFactors).toHaveLength(2)
-    expect(result.medicationsCovered).toHaveLength(1)
+    expect(result.preApprovalDetails).not.toBeNull()
+    expect(result.preApprovalDetails?.maxAmount).toBe("5500")
+    expect(result.preApprovalDetails?.medications).toHaveLength(3)
+    expect(result.preApprovalDetails?.targetPharmacy.name).toBe(
+      "City Chemist Mombasa"
+    )
   })
 })

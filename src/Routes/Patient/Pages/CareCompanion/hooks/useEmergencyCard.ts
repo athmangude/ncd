@@ -1,26 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import type { EmergencyReferenceCard } from "@/types/care-companion"
 
-export interface EmergencyContact {
-  id: string
-  name: string
-  phone: string
-  relationship: string
-}
-
-export interface EmergencyCardData {
-  patientName: string
-  conditions: string[]
-  allergies: string[]
-  bloodType: string | null
-  currentMedications: {
-    name: string
-    dosage: string
-  }[]
-  emergencyContacts: EmergencyContact[]
-  insuranceProvider: string | null
-  insurancePolicyNumber: string | null
-}
+export type EmergencyCardData = EmergencyReferenceCard
 
 export const emergencyCardQueryKey = "careCompanionEmergencyCard"
 

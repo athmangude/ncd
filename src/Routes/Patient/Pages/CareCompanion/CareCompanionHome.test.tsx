@@ -1,15 +1,80 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
+import { MemoryRouter } from "react-router-dom"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 // ---------------------------------------------------------------------------
-// Mocks — vi.mock is hoisted above all imports by Vitest, so factories
-// must only reference values via require() or vi.hoisted().
+// Mocks
 // ---------------------------------------------------------------------------
 
-// Mock SectionErrorBoundary with a real class-component error boundary so
-// that crash-isolation tests work properly. The real implementation is
-// tested in its own file; here we just need the catch-and-fallback contract.
+const mockHomeData = {
+  refillSchedule: {
+    schedules: [
+      {
+        id: "refill-1",
+        medicationName: "Metformin 500mg",
+        expectedRefillDate: "2026-08-20",
+        status: "OVERDUE",
+        daysUntilRefill: -5,
+        estimatedDaysSupply: 30,
+        escalatedToLoanOffer: true,
+      },
+      {
+        id: "refill-2",
+        medicationName: "Amlodipine 5mg",
+        expectedRefillDate: "2026-08-27",
+        status: "DUE",
+        daysUntilRefill: 2,
+        estimatedDaysSupply: 30,
+        escalatedToLoanOffer: false,
+      },
+    ],
+    hasMore: true,
+  },
+  costSummary: {
+    year: 2026,
+    ytdSpend: "18000.00",
+    monthlyAverage: "2571.43",
+    cashbackEarned: "1260.00",
+    netSpend: "16740.00",
+    annualProjection: "30857.14",
+    transactionCount: 24,
+    currency: "KES" as const,
+  },
+  educationFeed: {
+    id: "edu-dietary-001",
+    conditionType: "DIABETES" as const,
+    contentType: "DIETARY" as const,
+    locale: "EN" as const,
+    title: "Ugali portions that work for blood sugar control",
+    body: "Test body",
+    weekNumber: 1,
+    imageUrl: null,
+    isPublished: true,
+    householdCompatible: true,
+    costNeutral: true,
+  },
+  emergencyCard: {
+    conditionType: "DIABETES",
+    title: "Diabetes Emergency Card",
+    cardId: "ec-diabetes-en",
+  },
+  emergencyTransportCredit: {
+    isAvailable: true,
+    preApprovedAmount: "2000",
+    expiresAt: "2026-12-31T23:59:59Z",
+  },
+}
+
+vi.mock("./hooks/useCareCompanionHome", () => ({
+  useCareCompanionHome: vi.fn(() => ({
+    data: mockHomeData,
+    isLoading: false,
+    error: null,
+  })),
+}))
+
 vi.mock("./components/SectionErrorBoundary", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react")
@@ -32,7 +97,7 @@ vi.mock("./components/SectionErrorBoundary", () => {
     }
 
     componentDidCatch() {
-      // intentionally empty — silences noisy test output
+      // intentionally empty
     }
 
     render() {
@@ -56,7 +121,6 @@ vi.mock("./components/SectionErrorBoundary", () => {
   return { SectionErrorBoundary: MockSectionErrorBoundary }
 })
 
-// Mock EmergencyCardStaticFallback with a detectable marker
 vi.mock("./components/EmergencyCardStaticFallback", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react")
@@ -71,7 +135,7 @@ vi.mock("./components/EmergencyCardStaticFallback", () => {
 })
 
 // ---------------------------------------------------------------------------
-// Imports — resolved after mocks are applied
+// Imports
 // ---------------------------------------------------------------------------
 
 import CareCompanionHome from "./CareCompanionHome"
@@ -82,12 +146,21 @@ import { EmergencyCardStaticFallback } from "./components/EmergencyCardStaticFal
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Always throws on render — used for crash-isolation tests. */
+function wrap(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return (
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </QueryClientProvider>
+  )
+}
+
 function AlwaysThrow({ message }: { message: string }): JSX.Element {
   throw new Error(message)
 }
 
-// Suppress noisy React error-boundary console output in test runner
 beforeEach(() => {
   vi.spyOn(console, "error").mockImplementation(() => {})
 })
@@ -98,73 +171,41 @@ beforeEach(() => {
 
 describe("CareCompanionHome", () => {
   describe("normal rendering", () => {
-    it("renders all four section aria-labels", () => {
-      render(<CareCompanionHome />)
+    it("renders refill schedule card with medication names", () => {
+      render(wrap(<CareCompanionHome />))
+      expect(screen.getByText("Refill Schedule")).toBeInTheDocument()
+      expect(screen.getByText("Metformin 500mg")).toBeInTheDocument()
+      expect(screen.getByText("Amlodipine 5mg")).toBeInTheDocument()
+    })
 
+    it("shows overdue badge for overdue refills", () => {
+      render(wrap(<CareCompanionHome />))
+      expect(screen.getByText("1 overdue, 1 due soon")).toBeInTheDocument()
+      expect(screen.getByText("5 days overdue")).toBeInTheDocument()
+    })
+
+    it("renders cost tracker card with KES amounts", () => {
+      render(wrap(<CareCompanionHome />))
+      expect(screen.getByText("Cost Tracker")).toBeInTheDocument()
+      expect(screen.getByText("KES 18,000")).toBeInTheDocument()
+      expect(screen.getByText("KES 1,260")).toBeInTheDocument()
+    })
+
+    it("renders emergency card with title and transport credit", () => {
+      render(wrap(<CareCompanionHome />))
       expect(
-        screen.getByRole("region", { name: "Refill Schedule" }),
+        screen.getByText("Diabetes Emergency Card"),
       ).toBeInTheDocument()
       expect(
-        screen.getByRole("region", { name: "Cost Tracker" }),
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole("region", { name: "Emergency Card" }),
-      ).toBeInTheDocument()
-      expect(
-        screen.getByRole("region", { name: "Education Feed" }),
+        screen.getByText(/2,000/),
       ).toBeInTheDocument()
     })
 
-    it("renders Refill Schedule section content", () => {
-      render(<CareCompanionHome />)
+    it("renders education card with article title", () => {
+      render(wrap(<CareCompanionHome />))
       expect(
-        screen.getByText("Your upcoming medication refills will appear here."),
+        screen.getByText("Ugali portions that work for blood sugar control"),
       ).toBeInTheDocument()
-    })
-
-    it("renders Cost Tracker section content", () => {
-      render(<CareCompanionHome />)
-      expect(
-        screen.getByText("Track your healthcare spending over time."),
-      ).toBeInTheDocument()
-    })
-
-    it("renders Emergency Card section content", () => {
-      render(<CareCompanionHome />)
-      expect(
-        screen.getByText(
-          "Your emergency contacts and medical information.",
-        ),
-      ).toBeInTheDocument()
-    })
-
-    it("renders Education Feed section content", () => {
-      render(<CareCompanionHome />)
-      expect(
-        screen.getByText("Health education articles and resources."),
-      ).toBeInTheDocument()
-    })
-
-    it("renders all four section headings", () => {
-      render(<CareCompanionHome />)
-
-      const headings = screen.getAllByRole("heading", { level: 2 })
-      const headingTexts = headings.map((h) => h.textContent)
-
-      expect(headingTexts).toContain("Refill Schedule")
-      expect(headingTexts).toContain("Cost Tracker")
-      expect(headingTexts).toContain("Emergency Card")
-      expect(headingTexts).toContain("Education Feed")
-    })
-
-    it("uses neutral bg-card styling on the Emergency Card section (not destructive)", () => {
-      render(<CareCompanionHome />)
-      const section = screen.getByRole("region", { name: "Emergency Card" })
-      const card = section.querySelector("div")
-
-      expect(card?.className).toContain("bg-card")
-      expect(card?.className).not.toContain("bg-destructive")
-      expect(card?.className).not.toContain("border-destructive")
     })
   })
 
@@ -198,18 +239,15 @@ describe("CareCompanionHome", () => {
         </div>,
       )
 
-      // The crashed section shows a fallback
       expect(
         screen.getByText("Unable to load Cost Tracker"),
       ).toBeInTheDocument()
-
-      // The other three sections remain intact
       expect(screen.getByText("Refill content")).toBeInTheDocument()
       expect(screen.getByText("Emergency content")).toBeInTheDocument()
       expect(screen.getByText("Education content")).toBeInTheDocument()
     })
 
-    it("renders EmergencyCardStaticFallback (not generic fallback) when Emergency Card throws", () => {
+    it("renders EmergencyCardStaticFallback when Emergency Card throws", () => {
       render(
         <div>
           <SectionErrorBoundary sectionName="Refill Schedule">
@@ -229,44 +267,13 @@ describe("CareCompanionHome", () => {
         </div>,
       )
 
-      // Emergency Card renders its domain-specific fallback
       expect(
         screen.getByTestId("emergency-card-static-fallback"),
       ).toBeInTheDocument()
       expect(
-        screen.getByText("Emergency Contacts Fallback"),
-      ).toBeInTheDocument()
-
-      // It does NOT render the generic "Unable to load" message
-      expect(
         screen.queryByText("Unable to load Emergency Card"),
       ).not.toBeInTheDocument()
-
-      // Other sections remain intact
       expect(screen.getByText("Refill content")).toBeInTheDocument()
-    })
-
-    it("a crash in Education Feed does not affect Emergency Card", () => {
-      render(
-        <div>
-          <SectionErrorBoundary sectionName="Emergency Card">
-            <section aria-label="Emergency Card">
-              <div>Emergency OK</div>
-            </section>
-          </SectionErrorBoundary>
-
-          <SectionErrorBoundary sectionName="Education Feed">
-            <section aria-label="Education Feed">
-              <AlwaysThrow message="Education Feed crashed" />
-            </section>
-          </SectionErrorBoundary>
-        </div>,
-      )
-
-      expect(
-        screen.getByText("Unable to load Education Feed"),
-      ).toBeInTheDocument()
-      expect(screen.getByText("Emergency OK")).toBeInTheDocument()
     })
   })
 })

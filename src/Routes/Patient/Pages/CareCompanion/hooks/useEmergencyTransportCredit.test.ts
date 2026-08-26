@@ -15,18 +15,9 @@ vi.mock("@tanstack/react-query", () => ({
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
-    availableCredit: 2000,
-    currency: "KES",
-    isEligible: true,
-    maxCreditLimit: 5000,
-    usedCredit: 3000,
-    nearestFacility: {
-      id: "fac-1",
-      name: "Kenyatta National Hospital",
-      distanceKm: 3.2,
-      estimatedTransportCost: 500,
-    },
-    lastUsedAt: "2026-07-15T10:00:00Z",
+    isAvailable: true,
+    preApprovedAmount: "2000",
+    expiresAt: "2026-12-31T23:59:59Z",
   },
 })
 
@@ -80,19 +71,19 @@ describe("useEmergencyTransportCredit", () => {
     )
   })
 
-  it("queryFn returns credit data with eligibility", async () => {
+  it("queryFn returns transport credit with availability and pre-approved amount", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useEmergencyTransportCredit())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = (await queryFn()) as {
-      availableCredit: number
-      isEligible: boolean
-      nearestFacility: { name: string } | null
+      isAvailable: boolean
+      preApprovedAmount: string
+      expiresAt: string
     }
 
-    expect(result.availableCredit).toBe(2000)
-    expect(result.isEligible).toBe(true)
-    expect(result.nearestFacility?.name).toBe("Kenyatta National Hospital")
+    expect(result.isAvailable).toBe(true)
+    expect(result.preApprovedAmount).toBe("2000")
+    expect(result.expiresAt).toBe("2026-12-31T23:59:59Z")
   })
 })

@@ -13,7 +13,7 @@ export interface CareCompanionState {
 }
 
 export const useCareCompanionStore = create<CareCompanionState>((set) => ({
-  intakeCompleted: false,
+  intakeCompleted: true,
   activeAiSessionId: null,
   dismissedOverlayIds: [],
   activeMedicationFilter: null,

@@ -1,23 +1,9 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
-
-export interface RefillItem {
-  id: string
-  medicationName: string
-  dosage: string
-  dueDate: string
-  daysUntilDue: number
-  estimatedCost: number
-  currency: string
-  pharmacyName: string | null
-  pharmacyId: string | null
-  status: "upcoming" | "due-soon" | "overdue"
-}
+import type { RefillScheduleItem } from "@/types/care-companion"
 
 export interface RefillScheduleData {
-  refills: RefillItem[]
-  totalEstimatedCost: number
-  currency: string
+  schedules: RefillScheduleItem[]
 }
 
 export const refillScheduleQueryKey = "careCompanionRefillSchedule"

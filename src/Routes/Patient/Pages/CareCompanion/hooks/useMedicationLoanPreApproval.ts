@@ -1,24 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
-
-export interface MedicationLoanPreApprovalData {
-  isPreApproved: boolean
-  maxLoanAmount: number
-  currency: string
-  interestRate: number
-  repaymentPeriodDays: number
-  eligibilityFactors: {
-    factor: string
-    status: "met" | "not-met" | "partial"
-    description: string
-  }[]
-  estimatedMonthlyRepayment: number | null
-  medicationsCovered: {
-    medicationId: string
-    medicationName: string
-    estimatedCost: number
-  }[]
-}
+import type { MedicationLoanPreApproval } from "@/types/care-companion"
 
 export const medicationLoanPreApprovalQueryKey =
   "careCompanionMedicationLoanPreApproval"
@@ -30,7 +12,7 @@ export function useMedicationLoanPreApproval() {
       const response = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/care-companion/medication-loan-pre-approval`
       )
-      return response.data as MedicationLoanPreApprovalData
+      return response.data as MedicationLoanPreApproval
     },
     staleTime: 15 * 60 * 1000,
   })

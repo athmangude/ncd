@@ -1,22 +1,15 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
+import type {
+  EducationContentCard,
+} from "@/types/care-companion"
 
-export interface EducationArticle {
-  id: string
-  title: string
-  summary: string
-  thumbnailUrl: string
-  contentUrl: string
-  category: string
-  readTimeMinutes: number
-  publishedAt: string
+export interface EducationFeedCard extends EducationContentCard {
   viewed: boolean
-  viewedAt: string | null
 }
 
 export interface EducationFeedData {
-  articles: EducationArticle[]
-  totalUnread: number
+  cards: EducationFeedCard[]
 }
 
 export const educationFeedQueryKey = "careCompanionEducationFeed"
@@ -28,7 +21,7 @@ export function useEducationFeed() {
     queryKey: [educationFeedQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/education-feed`
+        `${import.meta.env.VITE_API_BASE_URL}/care-companion/education-cards`
       )
       return response.data as EducationFeedData
     },
@@ -36,9 +29,9 @@ export function useEducationFeed() {
   })
 
   const markViewed = useMutation({
-    mutationFn: async (articleId: string) => {
+    mutationFn: async (cardId: string) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/education-feed/${articleId}/viewed`
+        `${import.meta.env.VITE_API_BASE_URL}/care-companion/education-feed/${cardId}/viewed`
       )
       return response.data
     },

@@ -15,21 +15,26 @@ vi.mock("@tanstack/react-query", () => ({
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
-    items: [
+    year: 2026,
+    categories: [
       {
-        id: "item-1",
-        medicationName: "Metformin",
-        dosage: "500mg",
-        unitCost: 50,
-        quantity: 30,
-        totalCost: 1500,
-        currency: "KES",
-        frequency: "daily",
-        pharmacyName: "MedPlus",
+        category: "MEDICATION",
+        totalSpend: "39176",
+        percentage: 83,
+        transactionCount: 20,
+      },
+      {
+        category: "LAB_TEST",
+        totalSpend: "4720",
+        percentage: 10,
+        transactionCount: 3,
       },
     ],
-    grandTotal: 1500,
-    currency: "KES",
+    monthlyTrend: [
+      { month: 1, spend: "4260" },
+      { month: 2, spend: "5640" },
+    ],
+    pagination: { total: 8, limit: 12, offset: 0 },
   },
 })
 
@@ -81,14 +86,19 @@ describe("useCostBreakdown", () => {
     )
   })
 
-  it("queryFn returns response.data with items and grandTotal", async () => {
+  it("queryFn returns response.data with CostBreakdownResponse shape", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useCostBreakdown())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
-    const result = (await queryFn()) as { items: unknown[]; grandTotal: number }
+    const result = (await queryFn()) as {
+      categories: unknown[]
+      monthlyTrend: unknown[]
+      year: number
+    }
 
-    expect(result.items).toHaveLength(1)
-    expect(result.grandTotal).toBe(1500)
+    expect(result.year).toBe(2026)
+    expect(result.categories).toHaveLength(2)
+    expect(result.monthlyTrend).toHaveLength(2)
   })
 })

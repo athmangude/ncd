@@ -15,12 +15,14 @@ vi.mock("@tanstack/react-query", () => ({
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
-    monthlyTotal: 7500,
-    previousMonthTotal: 6800,
-    percentageChange: 10.29,
+    year: 2026,
+    ytdSpend: "47200",
+    monthlyAverage: "5900",
+    cashbackEarned: "2360",
+    netSpend: "44840",
+    annualProjection: "70800",
+    transactionCount: 24,
     currency: "KES",
-    period: { start: "2026-08-01", end: "2026-08-31" },
-    categories: [{ name: "Medication", amount: 5000, percentage: 66.7 }],
   },
 })
 
@@ -80,14 +82,16 @@ describe("useCostSummary", () => {
     )
   })
 
-  it("queryFn returns response.data", async () => {
+  it("queryFn returns response.data with CostSummary shape", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useCostSummary())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = await queryFn()
 
-    expect(result).toHaveProperty("monthlyTotal", 7500)
+    expect(result).toHaveProperty("year", 2026)
+    expect(result).toHaveProperty("ytdSpend", "47200")
     expect(result).toHaveProperty("currency", "KES")
+    expect(result).toHaveProperty("transactionCount", 24)
   })
 })

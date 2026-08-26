@@ -1,0 +1,303 @@
+{
+  "repoPath": "/Users/athmangude/Workspace/Jireh/ncd-prototype",
+  "repoType": "prototype",
+  "specTitle": "NCD Care Companion — Backlog (Notifications + Error Boundaries)",
+  "specPath": "/Users/athmangude/Workspace/Jireh/jireh-context/specs/ncd-care-companion-backlog-spec.md",
+  "branch": "ncd-features",
+  "totalTasks": 9,
+  "phases": [
+    {
+      "phaseNumber": 1,
+      "name": "Foundation — Types + Fixtures",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "title": "Add notification types and fixture data",
+          "userStory": {
+            "persona": "Frontend engineer building the notification feed page",
+            "action": "import CareCompanionNotification type and NOTIFICATION_TYPE const to type my component props and filter notifications",
+            "benefit": "type-safe notification handling with autocomplete for all 7 notification types",
+            "context": "Engineer is about to build the notification feed page and MSW handlers. Needs types first so everything downstream is typed correctly",
+            "interactionDetail": "Engineer imports NOTIFICATION_TYPE and CareCompanionNotification from @/types/care-companion. Uses NOTIFICATION_TYPE keys for switch statements. Fixture file provides seed data for MSW handlers"
+          },
+          "description": "Add NOTIFICATION_TYPE const object (7 types) and CareCompanionNotification interface to src/types/care-companion.ts. Create src/mocks/fixtures/notifications.json with 7 sample notifications (one per type) using Grace persona data. Deep-links must match existing routes: REFILL_REMINDER/REFILL_OVERDUE → /patients/care-companion/refill-schedule, REFILL_LOAN_OFFER/PREDICTIVE_CREDIT_OFFER → /patients/care-companion/medication-loan, EDUCATION_WEEKLY → /patients/care-companion/education, MEDICATION_CARD_AVAILABLE → /patients/care-companion/medication-cards, LAB_REMINDER → /patients/care-companion. Read existing types in src/types/care-companion.ts and existing fixtures in src/mocks/fixtures/ for patterns.",
+          "specialization": "type-author",
+          "filesToCreate": [
+            "src/mocks/fixtures/notifications.json"
+          ],
+          "filesToModify": [
+            "src/types/care-companion.ts"
+          ],
+          "referenceFiles": [
+            "src/types/care-companion.ts",
+            "src/mocks/fixtures/care-companion-profile.json",
+            "src/mocks/fixtures/refill-schedules.json"
+          ],
+          "specSections": ["1.1", "1.2"],
+          "acceptanceCriteria": [
+            "NOTIFICATION_TYPE const with 7 keys exports from src/types/care-companion.ts",
+            "CareCompanionNotification interface exports from src/types/care-companion.ts with all required fields (id, type, title, body, deepLink, scheduledAt, sentAt, readAt, metadata)",
+            "notifications.json contains exactly 7 notifications, one per type",
+            "All deepLink values match existing route paths in the prototype",
+            "npm run build passes with no new type errors"
+          ],
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "phaseNumber": 2,
+      "name": "Infrastructure — Handlers + Error Boundary Component",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "title": "Add MSW notification handlers",
+          "userStory": {
+            "persona": "Frontend engineer building the notification feed page",
+            "action": "fetch notifications from the mock API and mark them as read",
+            "benefit": "realistic API simulation for notification CRUD without a backend",
+            "context": "Engineer needs working mock endpoints before building the React Query hook and feed page. Handlers should match the patterns in the existing carecompanion.ts handlers",
+            "interactionDetail": "GET /api/care-companion/notifications returns sorted list. PATCH /api/care-companion/notifications/:id/read sets readAt. POST /api/care-companion/notifications/simulate creates a test notification"
+          },
+          "description": "Create src/mocks/handlers/notifications.ts with 3 MSW handlers: GET /api/care-companion/notifications (returns all notifications sorted by scheduledAt desc, supports ?unreadOnly=true filter), PATCH /api/care-companion/notifications/:id/read (marks notification as read by setting readAt to current ISO timestamp), POST /api/care-companion/notifications/simulate (dev-only, creates a notification of the given type and returns it). Import and register handlers in src/mocks/handlers/index.ts. Read src/mocks/handlers/carecompanion.ts for the exact MSW v2 handler pattern used in this codebase. Use domain module pattern: create notification helpers in src/mocks/domain/careCompanion.ts or a new notifications domain module.",
+          "specialization": "mock-handler-author",
+          "filesToCreate": [
+            "src/mocks/handlers/notifications.ts"
+          ],
+          "filesToModify": [
+            "src/mocks/handlers/index.ts"
+          ],
+          "referenceFiles": [
+            "src/mocks/handlers/carecompanion.ts",
+            "src/mocks/handlers/index.ts",
+            "src/mocks/fixtures/notifications.json",
+            "src/types/care-companion.ts"
+          ],
+          "specSections": ["1.3"],
+          "acceptanceCriteria": [
+            "GET /api/care-companion/notifications handler exists and returns CareCompanionNotification[]",
+            "PATCH /api/care-companion/notifications/:id/read handler exists and updates readAt",
+            "POST /api/care-companion/notifications/simulate handler exists",
+            "Handlers are registered in src/mocks/handlers/index.ts",
+            "npm run build passes with no new type errors"
+          ],
+          "status": "done"
+        },
+        {
+          "id": "P2-T2",
+          "title": "Create SectionErrorBoundary and EmergencyCardStaticFallback components",
+          "userStory": {
+            "persona": "Grace, a 52-year-old diabetic patient in Nairobi",
+            "action": "continue using the care companion home screen even when one section fails to load",
+            "benefit": "I never lose access to my emergency card or other sections because of a crash in an unrelated section",
+            "context": "Grace opens care companion home. If the cost tracker section has a rendering bug, the rest of the page (refill schedule, emergency card, education) should still work. The emergency card section specifically must never show a generic error — it falls back to static emergency numbers",
+            "interactionDetail": "Grace sees the care companion home with all 4 sections. If cost tracker crashes, that section shows 'Unable to load Cost Tracker' with a Retry button. She taps Retry and the section reloads. If the emergency card section crashes, she sees a static card with emergency numbers (999, 112, 0800 723 253) instead of a generic error",
+            "edgeCases": ["Multiple sections crash simultaneously — each shows its own fallback independently", "Emergency card static fallback must be useful without any API data"]
+          },
+          "description": "Create SectionErrorBoundary at src/Routes/Patient/Pages/CareCompanion/components/SectionErrorBoundary.tsx. This is a React class component (error boundaries require componentDidCatch). Props: sectionName: string, children: ReactNode, fallbackContent?: ReactNode. On error: renders a card with 'Unable to load {sectionName}' message and a Retry button that resets error state. Uses bg-muted and text-muted-foreground tokens. Logs error to console (Sentry integration can be added later). Create EmergencyCardStaticFallback at src/Routes/Patient/Pages/CareCompanion/components/EmergencyCardStaticFallback.tsx. Renders a hardcoded emergency card for GENERAL condition with emergency numbers 999, 112, 0800 723 253. Read existing components in the CareCompanion directory for styling patterns.",
+          "specialization": "component-author",
+          "filesToCreate": [
+            "src/Routes/Patient/Pages/CareCompanion/components/SectionErrorBoundary.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/components/EmergencyCardStaticFallback.tsx"
+          ],
+          "filesToModify": [],
+          "referenceFiles": [
+            "src/Routes/Patient/Pages/CareCompanion/CareCompanionHome.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/EmergencyCardPage.tsx"
+          ],
+          "specSections": ["2.1", "2.2"],
+          "acceptanceCriteria": [
+            "SectionErrorBoundary exports from its file and accepts sectionName, children, and optional fallbackContent props",
+            "When a child throws, SectionErrorBoundary renders 'Unable to load {sectionName}' with a Retry button",
+            "Retry button resets error state and re-renders children",
+            "EmergencyCardStaticFallback renders emergency numbers 999, 112, 0800 723 253",
+            "Both components use Tailwind design tokens, not hardcoded colors",
+            "npm run build passes"
+          ],
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "phaseNumber": 3,
+      "name": "Components — Notification Feed Page",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "title": "Create NotificationFeedPage with route",
+          "userStory": {
+            "persona": "Grace, a 52-year-old diabetic patient in Nairobi",
+            "action": "view all my care companion notifications in one place and tap to navigate to the relevant page",
+            "benefit": "I never miss a refill reminder, education tip, or loan offer because notifications are centralized and actionable",
+            "context": "Grace navigates to the notifications tab from the care companion. She sees notifications grouped by date. Unread ones have a teal dot. She taps a refill reminder notification — it marks as read and takes her to the refill schedule page",
+            "interactionDetail": "Grace sees a list of notification cards grouped by date headers (Today, Yesterday, Earlier). Each card shows title, body preview, and a teal dot if unread. She taps a REFILL_REMINDER card. The teal dot disappears (mark read API fires) and she navigates to /patients/care-companion/refill-schedule. Back on the notifications page, the card no longer shows the dot",
+            "edgeCases": ["No notifications — show empty state with illustration", "All notifications read — no teal dots visible", "Network error marking as read — notification still navigates but dot remains"]
+          },
+          "description": "Create NotificationFeedPage at src/Routes/Patient/Pages/CareCompanion/Notifications/NotificationFeedPage.tsx. Lists all notifications grouped by date (Today, Yesterday, Earlier). Unread notifications show a teal dot (bg-accent). Tapping a notification: (1) calls mark-read mutation, (2) navigates to deepLink using react-router useNavigate. Empty state shows 'No notifications yet' message. Add lazy route at /patients/care-companion/notifications in the care companion route config. Read the existing page components (RefillSchedulePage, EducationFeedPage) for layout and styling patterns. Use React Query for data fetching (the hook will be created in the next phase, so use direct useQuery for now or create a simple inline fetch).",
+          "specialization": "page-author",
+          "filesToCreate": [
+            "src/Routes/Patient/Pages/CareCompanion/Notifications/NotificationFeedPage.tsx"
+          ],
+          "filesToModify": [
+            "src/Routes/Patient/Pages/CareCompanion/CareCompanionWrapper.tsx"
+          ],
+          "referenceFiles": [
+            "src/Routes/Patient/Pages/CareCompanion/RefillSchedulePage.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/EducationFeedPage.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/CareCompanionWrapper.tsx",
+            "src/types/care-companion.ts"
+          ],
+          "specSections": ["1.4"],
+          "acceptanceCriteria": [
+            "NotificationFeedPage renders at /patients/care-companion/notifications",
+            "Notifications are grouped by date (Today, Yesterday, Earlier)",
+            "Unread notifications show a teal dot indicator",
+            "Tapping a notification navigates to its deepLink path",
+            "Empty state renders when no notifications exist",
+            "Route is lazy-loaded in CareCompanionWrapper"
+          ],
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "phaseNumber": 4,
+      "name": "Hooks & Integration",
+      "tasks": [
+        {
+          "id": "P4-T1",
+          "title": "Create notification React Query hooks",
+          "userStory": {
+            "persona": "Frontend engineer maintaining the notification feed page",
+            "action": "use useNotifications() and useMarkNotificationRead() hooks to fetch and mutate notification data",
+            "benefit": "consistent data fetching with automatic cache invalidation, loading states, and error handling",
+            "context": "Engineer imports hooks into NotificationFeedPage. useNotifications fetches the list, useMarkNotificationRead provides a mutate function. On mark-read success, the notification list automatically refetches",
+            "interactionDetail": "const { data: notifications, isLoading } = useNotifications(). const { mutate: markRead } = useMarkNotificationRead(). On tap: markRead(notificationId). List refetches automatically via query invalidation"
+          },
+          "description": "Create src/Routes/Patient/Pages/CareCompanion/hooks/useNotifications.ts with two hooks: useNotifications(unreadOnly?: boolean) wraps useQuery fetching GET /api/care-companion/notifications with optional unreadOnly param. useMarkNotificationRead() wraps useMutation for PATCH /api/care-companion/notifications/:id/read, invalidates the notifications query key on success. Follow the exact pattern from existing hooks like useRefillSchedule.ts or useEducationFeed.ts. Then update NotificationFeedPage to use these hooks instead of any inline fetching.",
+          "specialization": "hook-author",
+          "filesToCreate": [
+            "src/Routes/Patient/Pages/CareCompanion/hooks/useNotifications.ts"
+          ],
+          "filesToModify": [
+            "src/Routes/Patient/Pages/CareCompanion/Notifications/NotificationFeedPage.tsx"
+          ],
+          "referenceFiles": [
+            "src/Routes/Patient/Pages/CareCompanion/hooks/useRefillSchedule.ts",
+            "src/Routes/Patient/Pages/CareCompanion/hooks/useEducationFeed.ts",
+            "src/types/care-companion.ts"
+          ],
+          "specSections": ["1.5"],
+          "acceptanceCriteria": [
+            "useNotifications hook exports and returns { data, isLoading, error }",
+            "useNotifications accepts optional unreadOnly boolean parameter",
+            "useMarkNotificationRead hook exports and returns { mutate, isPending }",
+            "Mark-read success invalidates the notifications query key",
+            "NotificationFeedPage uses these hooks for data fetching",
+            "npm run build passes"
+          ],
+          "status": "done"
+        },
+        {
+          "id": "P4-T2",
+          "title": "Integrate error boundaries into CareCompanionHome",
+          "userStory": {
+            "persona": "Grace, a 52-year-old diabetic patient in Nairobi",
+            "action": "see the care companion home page with each section independently protected from crashes",
+            "benefit": "a bug in the cost tracker never takes down my emergency card",
+            "context": "Grace opens care companion home. All 4 sections render normally. If any section has a rendering error, only that section shows a fallback while the rest remain functional",
+            "interactionDetail": "Grace sees refill schedule, cost tracker, emergency card, and education feed sections. Each is wrapped in SectionErrorBoundary. If cost tracker throws, she sees 'Unable to load Cost Tracker' with Retry. Emergency card section uses EmergencyCardStaticFallback instead of generic error"
+          },
+          "description": "Modify src/Routes/Patient/Pages/CareCompanion/CareCompanionHome.tsx to wrap each section with SectionErrorBoundary. Import SectionErrorBoundary and EmergencyCardStaticFallback. Wrap: refill schedule section with sectionName='Refill Schedule', cost tracker with sectionName='Cost Tracker', emergency card with sectionName='Emergency Card' and fallbackContent={<EmergencyCardStaticFallback />}, education feed with sectionName='Education Feed'. Read the current CareCompanionHome to understand the section layout.",
+          "specialization": "component-author",
+          "filesToCreate": [],
+          "filesToModify": [
+            "src/Routes/Patient/Pages/CareCompanion/CareCompanionHome.tsx"
+          ],
+          "referenceFiles": [
+            "src/Routes/Patient/Pages/CareCompanion/CareCompanionHome.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/components/SectionErrorBoundary.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/components/EmergencyCardStaticFallback.tsx"
+          ],
+          "specSections": ["2.3"],
+          "acceptanceCriteria": [
+            "CareCompanionHome wraps each of the 4 sections with SectionErrorBoundary",
+            "Each boundary has the correct sectionName prop",
+            "Emergency card section has fallbackContent={<EmergencyCardStaticFallback />}",
+            "npm run build passes"
+          ],
+          "status": "done"
+        }
+      ]
+    },
+    {
+      "phaseNumber": 5,
+      "name": "Quality — Tests",
+      "tasks": [
+        {
+          "id": "P5-T1",
+          "title": "Write notification feed page tests",
+          "userStory": {
+            "persona": "Frontend engineer maintaining the notification system",
+            "action": "run tests to verify notification rendering, deep-link navigation, and unread indicators",
+            "benefit": "confidence that changes to notifications don't break deep-link routing or read state management",
+            "context": "Engineer runs vitest after modifying notification components. Tests verify each notification type renders, tapping navigates to correct deepLink, unread dot shows/hides, and empty state renders",
+            "interactionDetail": "npx vitest run NotificationFeedPage.test.tsx — all tests pass"
+          },
+          "description": "Create src/Routes/Patient/Pages/CareCompanion/Notifications/NotificationFeedPage.test.tsx. Tests: (1) renders all 7 notification types correctly, (2) tapping a notification calls navigate with the correct deepLink path, (3) unread notifications show teal dot indicator, (4) read notifications do not show teal dot, (5) empty state renders when no notifications. Use @testing-library/react and userEvent. Mock useNavigate from react-router-dom. Use MSW handlers for API mocking (they are already registered). Read existing test files like CareCompanionWrapper.test.tsx for the testing pattern used in this codebase.",
+          "specialization": "test-author",
+          "filesToCreate": [
+            "src/Routes/Patient/Pages/CareCompanion/Notifications/NotificationFeedPage.test.tsx"
+          ],
+          "filesToModify": [],
+          "referenceFiles": [
+            "src/Routes/Patient/Pages/CareCompanion/CareCompanionWrapper.test.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/Notifications/NotificationFeedPage.tsx"
+          ],
+          "specSections": ["1.6"],
+          "acceptanceCriteria": [
+            "Test file exists with at least 5 test cases",
+            "Tests cover all 7 notification type rendering",
+            "Tests verify deep-link navigation on tap",
+            "Tests verify unread indicator visibility",
+            "Tests verify empty state",
+            "npx vitest run NotificationFeedPage.test.tsx passes"
+          ],
+          "status": "done"
+        },
+        {
+          "id": "P5-T2",
+          "title": "Write error boundary and hook tests",
+          "userStory": {
+            "persona": "Frontend engineer maintaining the care companion home page",
+            "action": "run tests to verify error boundaries catch errors, retry works, and emergency card uses static fallback",
+            "benefit": "confidence that error isolation works correctly and the emergency card never shows a generic error",
+            "context": "Engineer runs vitest after modifying error boundary components. Tests verify boundaries catch, retry resets, and emergency uses static fallback",
+            "interactionDetail": "npx vitest run SectionErrorBoundary.test.tsx and useNotifications.test.ts — all tests pass"
+          },
+          "description": "Create two test files: (1) src/Routes/Patient/Pages/CareCompanion/components/SectionErrorBoundary.test.tsx — test error boundary catches child errors and renders fallback, test retry button resets error state, test emergency card section uses EmergencyCardStaticFallback not generic error. (2) src/Routes/Patient/Pages/CareCompanion/hooks/useNotifications.test.ts — test useNotifications returns notification data, test useNotifications with unreadOnly filter, test useMarkNotificationRead marks a notification and invalidates cache. Follow existing test patterns in the hooks/ directory.",
+          "specialization": "test-author",
+          "filesToCreate": [
+            "src/Routes/Patient/Pages/CareCompanion/components/SectionErrorBoundary.test.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/hooks/useNotifications.test.ts"
+          ],
+          "filesToModify": [],
+          "referenceFiles": [
+            "src/Routes/Patient/Pages/CareCompanion/components/SectionErrorBoundary.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/components/EmergencyCardStaticFallback.tsx",
+            "src/Routes/Patient/Pages/CareCompanion/hooks/useNotifications.ts",
+            "src/Routes/Patient/Pages/CareCompanion/hooks/useRefillSchedule.test.ts"
+          ],
+          "specSections": ["2.4"],
+          "acceptanceCriteria": [
+            "SectionErrorBoundary.test.tsx has at least 3 test cases (catch, retry, emergency fallback)",
+            "useNotifications.test.ts has at least 3 test cases (fetch, filter, mark-read)",
+            "All tests pass with npx vitest run",
+            "No new type errors"
+          ],
+          "status": "done"
+        }
+      ]
+    }
+  ]
+}

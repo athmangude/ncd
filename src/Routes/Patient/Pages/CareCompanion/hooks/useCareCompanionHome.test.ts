@@ -20,13 +20,23 @@ vi.mock("@tanstack/react-query", () => ({
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
-    patientName: "Jane",
-    intakeCompleted: true,
-    medicationCount: 3,
-    nextRefillDate: "2026-09-01",
-    costSummary: { monthlyTotal: 4500, currency: "KES" },
-    activeAlerts: [],
-    educationHighlight: null,
+    refillSchedule: {
+      schedules: [{ id: "r1", medicationName: "Metformin 500mg", status: "DUE", daysUntilRefill: 3 }],
+      hasMore: false,
+    },
+    costSummary: {
+      year: 2026,
+      ytdSpend: "18000",
+      monthlyAverage: "2571",
+      cashbackEarned: "1260",
+      netSpend: "16740",
+      annualProjection: "30857",
+      transactionCount: 24,
+      currency: "KES",
+    },
+    educationFeed: null,
+    emergencyCard: null,
+    emergencyTransportCredit: null,
   },
 })
 
@@ -91,7 +101,7 @@ describe("useCareCompanionHome", () => {
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = await queryFn()
 
-    expect(result).toHaveProperty("patientName", "Jane")
-    expect(result).toHaveProperty("medicationCount", 3)
+    expect(result).toHaveProperty("refillSchedule")
+    expect(result).toHaveProperty("costSummary")
   })
 })

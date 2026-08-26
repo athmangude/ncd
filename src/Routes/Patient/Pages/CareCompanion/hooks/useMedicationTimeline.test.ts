@@ -17,19 +17,22 @@ const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
     entries: [
       {
-        id: "entry-1",
-        medicationName: "Metformin",
+        date: "2026-08-05",
+        medicationName: "Metformin 500mg",
         dosage: "500mg",
-        scheduledAt: "2026-08-25T08:00:00Z",
-        takenAt: "2026-08-25T08:15:00Z",
-        status: "taken",
-        notes: null,
+        quantity: 60,
+        lineTotal: "480",
+        facilityName: "Mombasa Hospital Pharmacy",
+        gapDaysFromPrevious: 30,
+        isGapAnomaly: false,
       },
     ],
-    total: 50,
-    limit: 10,
-    offset: 0,
-    hasMore: true,
+    summary: {
+      totalMedications: 3,
+      pharmaciesUsed: 2,
+      dateRange: { from: "2025-12-18", to: "2026-08-05" },
+    },
+    pagination: { total: 24, limit: 20, offset: 0 },
   },
 })
 
@@ -57,35 +60,49 @@ describe("useMedicationTimeline", () => {
     )
   })
 
-  it("includes limit and offset in the queryKey for cache isolation", async () => {
+  it("includes limit, offset, and medicationId in the queryKey for cache isolation", async () => {
     const { renderHook } = await import("@testing-library/react")
-    renderHook(() => useMedicationTimeline({ limit: 10, offset: 0 }))
+    renderHook(() => useMedicationTimeline({ limit: 20, offset: 0 }))
     expect(capturedQueryOptions.queryKey).toEqual([
       "careCompanionMedicationTimeline",
-      10,
+      20,
       0,
+      null,
+    ])
+  })
+
+  it("includes medicationId in queryKey when provided", async () => {
+    const { renderHook } = await import("@testing-library/react")
+    renderHook(() =>
+      useMedicationTimeline({ limit: 20, offset: 0, medicationId: "Metformin" })
+    )
+    expect(capturedQueryOptions.queryKey).toEqual([
+      "careCompanionMedicationTimeline",
+      20,
+      0,
+      "Metformin",
     ])
   })
 
   it("uses different queryKeys for different offsets", async () => {
     const { renderHook } = await import("@testing-library/react")
 
-    renderHook(() => useMedicationTimeline({ limit: 10, offset: 0 }))
+    renderHook(() => useMedicationTimeline({ limit: 20, offset: 0 }))
     const firstKey = capturedQueryOptions.queryKey
 
-    renderHook(() => useMedicationTimeline({ limit: 10, offset: 20 }))
+    renderHook(() => useMedicationTimeline({ limit: 20, offset: 20 }))
     const secondKey = capturedQueryOptions.queryKey
 
     expect(firstKey).not.toEqual(secondKey)
   })
 
-  it("sets a 2-minute staleTime (shorter than other hooks for live timeline data)", async () => {
+  it("sets a 2-minute staleTime", async () => {
     const { renderHook } = await import("@testing-library/react")
-    renderHook(() => useMedicationTimeline({ limit: 10, offset: 0 }))
+    renderHook(() => useMedicationTimeline({ limit: 20, offset: 0 }))
     expect(capturedQueryOptions.staleTime).toBe(2 * 60 * 1000)
   })
 
-  it("queryFn calls the medication-timeline endpoint with params", async () => {
+  it("queryFn calls the medication-timeline endpoint with limit and offset params", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useMedicationTimeline({ limit: 15, offset: 30 }))
 
@@ -98,19 +115,35 @@ describe("useMedicationTimeline", () => {
     )
   })
 
-  it("queryFn returns response.data with pagination fields", async () => {
+  it("queryFn passes medicationId param when provided", async () => {
     const { renderHook } = await import("@testing-library/react")
-    renderHook(() => useMedicationTimeline({ limit: 10, offset: 0 }))
+    renderHook(() =>
+      useMedicationTimeline({ limit: 20, offset: 0, medicationId: "Aspirin" })
+    )
+
+    const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
+    await queryFn()
+
+    expect(mockAxiosGet).toHaveBeenCalledWith(
+      expect.stringContaining("/care-companion/medication-timeline"),
+      { params: { limit: 20, offset: 0, medicationId: "Aspirin" } }
+    )
+  })
+
+  it("queryFn returns response.data with entries, summary, and pagination", async () => {
+    const { renderHook } = await import("@testing-library/react")
+    renderHook(() => useMedicationTimeline({ limit: 20, offset: 0 }))
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = (await queryFn()) as {
       entries: unknown[]
-      total: number
-      hasMore: boolean
+      summary: { totalMedications: number; pharmaciesUsed: number }
+      pagination: { total: number; limit: number; offset: number }
     }
 
     expect(result.entries).toHaveLength(1)
-    expect(result.total).toBe(50)
-    expect(result.hasMore).toBe(true)
+    expect(result.summary.totalMedications).toBe(3)
+    expect(result.summary.pharmaciesUsed).toBe(2)
+    expect(result.pagination.total).toBe(24)
   })
 })

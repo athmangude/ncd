@@ -15,34 +15,26 @@ vi.mock("@tanstack/react-query", () => ({
 
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
-    refills: [
+    schedules: [
       {
-        id: "refill-1",
-        medicationName: "Metformin",
-        dosage: "500mg",
-        dueDate: "2026-09-01",
-        daysUntilDue: 7,
-        estimatedCost: 1500,
-        currency: "KES",
-        pharmacyName: "MedPlus Pharmacy",
-        pharmacyId: "pharm-1",
-        status: "upcoming",
+        id: "refill-metformin-grace",
+        medicationName: "Metformin 500mg",
+        expectedRefillDate: "2026-08-28",
+        status: "DUE",
+        daysUntilRefill: 3,
+        estimatedDaysSupply: 30,
+        escalatedToLoanOffer: false,
       },
       {
-        id: "refill-2",
-        medicationName: "Amlodipine",
-        dosage: "5mg",
-        dueDate: "2026-08-26",
-        daysUntilDue: 1,
-        estimatedCost: 800,
-        currency: "KES",
-        pharmacyName: null,
-        pharmacyId: null,
-        status: "due-soon",
+        id: "refill-aspirin-grace",
+        medicationName: "Aspirin 75mg",
+        expectedRefillDate: "2026-08-20",
+        status: "OVERDUE",
+        daysUntilRefill: -5,
+        estimatedDaysSupply: 30,
+        escalatedToLoanOffer: true,
       },
     ],
-    totalEstimatedCost: 2300,
-    currency: "KES",
   },
 })
 
@@ -94,17 +86,21 @@ describe("useRefillSchedule", () => {
     )
   })
 
-  it("queryFn returns response.data with refills and total cost", async () => {
+  it("queryFn returns response.data with schedules array", async () => {
     const { renderHook } = await import("@testing-library/react")
     renderHook(() => useRefillSchedule())
 
     const queryFn = capturedQueryOptions.queryFn as () => Promise<unknown>
     const result = (await queryFn()) as {
-      refills: unknown[]
-      totalEstimatedCost: number
+      schedules: unknown[]
     }
 
-    expect(result.refills).toHaveLength(2)
-    expect(result.totalEstimatedCost).toBe(2300)
+    expect(result.schedules).toHaveLength(2)
+    expect(result.schedules[0]).toMatchObject({
+      id: "refill-metformin-grace",
+      medicationName: "Metformin 500mg",
+      status: "DUE",
+      daysUntilRefill: 3,
+    })
   })
 })
