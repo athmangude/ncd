@@ -1,25 +1,24 @@
 import { useNavigate } from "react-router-dom"
-import { Pill, ChevronRight, X } from "lucide-react"
-import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { Pill, ChevronRight } from "lucide-react"
 import { useCareCompanionStore } from "../../CareCompanion/store/careCompanionStore"
 import { useMedicationCards } from "../../CareCompanion/hooks/useMedicationCards"
+import { usePaymentHistory } from "@/Routes/Patient/hooks/usePaymentHistory"
 
 const NUDGE_DISMISS_KEY = "medication-nudge-dashboard"
 
 export function MedicationNudgeCard() {
   const navigate = useNavigate()
   const { data, isLoading } = useMedicationCards()
+  const { data: paymentData } = usePaymentHistory()
   const dismissedOverlayIds = useCareCompanionStore(
     (s) => s.dismissedOverlayIds,
   )
   const dismissOverlay = useCareCompanionStore((s) => s.dismissOverlay)
-  const [dismissed, setDismissed] = useState(false)
 
-  const isDismissed =
-    dismissed || dismissedOverlayIds.includes(NUDGE_DISMISS_KEY)
+  const isDismissed = dismissedOverlayIds.includes(NUDGE_DISMISS_KEY)
+  const hasPayments = (paymentData?.payments?.length ?? 0) > 0
 
-  if (isLoading || isDismissed || !data || data.cards.length === 0) {
+  if (isLoading || isDismissed || !hasPayments || !data || data.cards.length === 0) {
     return null
   }
 
@@ -41,7 +40,7 @@ export function MedicationNudgeCard() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-semibold text-violet-900">
-              Review your medications
+              Review your purchased medications
             </p>
             <p className="text-xs text-violet-700/70">
               {cardCount === 1
@@ -49,19 +48,17 @@ export function MedicationNudgeCard() {
                 : `${cardCount} medication info cards available`}
             </p>
           </div>
-          <ChevronRight className="h-5 w-5 shrink-0 text-violet-400" />
         </button>
 
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation()
-            setDismissed(true)
             dismissOverlay(NUDGE_DISMISS_KEY)
           }}
-          className="absolute right-1.5 top-1.5 rounded-full p-1 text-violet-400 transition-colors hover:bg-violet-100"
+          className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 text-violet-400 transition-colors hover:bg-violet-100"
         >
-          <X className="h-3.5 w-3.5" />
+          <ChevronRight className="h-5 w-5" />
         </button>
       </div>
     </div>

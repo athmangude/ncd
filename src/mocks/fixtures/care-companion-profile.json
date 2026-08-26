@@ -9,11 +9,27 @@
   },
   "treatment": {
     "currentlyOnMedication": true,
-    "medicationNames": ["Metformin 500mg", "Amlodipine 5mg", "Aspirin 75mg"],
+    "medicationNames": ["Metformin", "Amlodipine", "Aspirin"],
     "takingMedicationRegularly": "MOSTLY",
     "reasonsForMissing": ["COST"],
     "usingHerbalAlternatives": false,
     "herbalDetails": null
+  },
+  "recurringTests": {
+    "selectedTests": ["HbA1c Test", "Fasting Blood Sugar", "Lipid Profile", "Renal Function Panel"]
+  },
+  "costEstimates": {
+    "medications": [
+      { "name": "Metformin", "refillFrequencyDays": 30, "estimatedCostPerRefill": 450 },
+      { "name": "Amlodipine", "refillFrequencyDays": 30, "estimatedCostPerRefill": 380 },
+      { "name": "Aspirin", "refillFrequencyDays": 30, "estimatedCostPerRefill": 150 }
+    ],
+    "tests": [
+      { "name": "HbA1c Test", "frequencyMonths": 3, "estimatedCostPerTest": 1800 },
+      { "name": "Fasting Blood Sugar", "frequencyMonths": 3, "estimatedCostPerTest": 300 },
+      { "name": "Lipid Profile", "frequencyMonths": 12, "estimatedCostPerTest": 1200 },
+      { "name": "Renal Function Panel", "frequencyMonths": 6, "estimatedCostPerTest": 1500 }
+    ]
   },
   "challenges": {
     "selected": ["COST", "EMERGENCY_PREPAREDNESS", "DIET", "UNDERSTANDING_MEDICATION"],

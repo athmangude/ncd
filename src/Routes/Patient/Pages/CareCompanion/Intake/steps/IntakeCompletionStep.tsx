@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/Button"
 import { CheckCircle2 } from "lucide-react"
@@ -138,13 +137,7 @@ export default function IntakeCompletionStep({
   profile,
   onComplete,
 }: IntakeCompletionStepProps) {
-  const navigate = useNavigate()
   const bullets = derivePersonalisedBullets(profile)
-
-  function handleGetStarted() {
-    onComplete()
-    navigate("/patients/care-companion")
-  }
 
   return (
     <div className="flex flex-col items-center gap-8 px-2 py-6">
@@ -193,7 +186,7 @@ export default function IntakeCompletionStep({
       <Button
         size="lg"
         className="w-full"
-        onClick={handleGetStarted}
+        onClick={onComplete}
       >
         Get started
       </Button>

@@ -28,13 +28,19 @@ export default function IntakeOption({
   const itemValue = value ?? label
 
   return (
-    <button
-      type="button"
-      role={mode === "radio" ? "radio" : undefined}
+    <div
+      role={mode === "radio" ? "radio" : "checkbox"}
+      tabIndex={0}
       aria-checked={selected}
       onClick={onToggle}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault()
+          onToggle()
+        }
+      }}
       className={cn(
-        "flex w-full items-start gap-3 rounded-md border p-4 text-left transition-all",
+        "flex w-full cursor-pointer items-start gap-3 rounded-md border p-4 text-left transition-all",
         selected
           ? "border-primary bg-secondary"
           : "border-border hover:border-primary/40",
@@ -73,6 +79,6 @@ export default function IntakeOption({
           </span>
         )}
       </div>
-    </button>
+    </div>
   )
 }

@@ -2,9 +2,20 @@
   {
     "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
     "genericName": "Metformin",
-    "brandNames": ["Glucophage", "Dianben", "Glycomin"],
-    "dosageForms": ["tablet", "extended-release tablet"],
-    "strengths": ["500mg", "850mg", "1000mg"],
+    "brandNames": [
+      "Glucophage",
+      "Dianben",
+      "Glycomin"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "500mg",
+      "850mg",
+      "1000mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "A10BA02",
     "synonyms": [
@@ -15,15 +26,26 @@
       "metfomin",
       "sugar medicine"
     ],
-    "conditionTags": ["DIABETES"],
+    "conditionTags": [
+      "DIABETES"
+    ],
     "isActive": true
   },
   {
     "id": "7c9e6679-7425-40de-944b-e07fc1f90ae7",
     "genericName": "Amlodipine",
-    "brandNames": ["Norvasc", "Amlopin", "Amloc"],
-    "dosageForms": ["tablet"],
-    "strengths": ["5mg", "10mg"],
+    "brandNames": [
+      "Norvasc",
+      "Amlopin",
+      "Amloc"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C08CA01",
     "synonyms": [
@@ -34,15 +56,27 @@
       "amlodepine",
       "pressure medicine"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440001",
     "genericName": "Losartan",
-    "brandNames": ["Cozaar", "Losacar", "Losar"],
-    "dosageForms": ["tablet"],
-    "strengths": ["25mg", "50mg", "100mg"],
+    "brandNames": [
+      "Cozaar",
+      "Losacar",
+      "Losar"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C09CA01",
     "synonyms": [
@@ -52,15 +86,28 @@
       "losartin",
       "losatan"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440002",
     "genericName": "Atorvastatin",
-    "brandNames": ["Lipitor", "Atorva", "Lipvas"],
-    "dosageForms": ["tablet"],
-    "strengths": ["10mg", "20mg", "40mg", "80mg"],
+    "brandNames": [
+      "Lipitor",
+      "Atorva",
+      "Lipvas"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "40mg",
+      "80mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C10AA05",
     "synonyms": [
@@ -70,15 +117,27 @@
       "atorvastain",
       "cholesterol medicine"
     ],
-    "conditionTags": ["GENERAL"],
+    "conditionTags": [
+      "GENERAL",
+      "STROKE"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440003",
     "genericName": "Glibenclamide",
-    "brandNames": ["Daonil", "Glynase", "Semi-Daonil"],
-    "dosageForms": ["tablet"],
-    "strengths": ["2.5mg", "5mg"],
+    "brandNames": [
+      "Daonil",
+      "Glynase",
+      "Semi-Daonil"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "2.5mg",
+      "5mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "A10BB01",
     "synonyms": [
@@ -88,15 +147,26 @@
       "daonil",
       "glibencamide"
     ],
-    "conditionTags": ["DIABETES"],
+    "conditionTags": [
+      "DIABETES"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440004",
     "genericName": "Hydrochlorothiazide",
-    "brandNames": ["Hydrodiuril", "Microzide", "Esidrex"],
-    "dosageForms": ["tablet"],
-    "strengths": ["12.5mg", "25mg"],
+    "brandNames": [
+      "Hydrodiuril",
+      "Microzide",
+      "Esidrex"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "12.5mg",
+      "25mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C03AA03",
     "synonyms": [
@@ -106,15 +176,27 @@
       "water pill",
       "hydrochlorithiazide"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440005",
     "genericName": "Enalapril",
-    "brandNames": ["Vasotec", "Renitec", "Enap"],
-    "dosageForms": ["tablet"],
-    "strengths": ["5mg", "10mg", "20mg"],
+    "brandNames": [
+      "Vasotec",
+      "Renitec",
+      "Enap"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C09AA02",
     "synonyms": [
@@ -124,15 +206,29 @@
       "renitec",
       "enaliprel"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440006",
     "genericName": "Nifedipine",
-    "brandNames": ["Adalat", "Procardia", "Nifelat"],
-    "dosageForms": ["tablet", "extended-release tablet", "capsule"],
-    "strengths": ["10mg", "20mg", "30mg"],
+    "brandNames": [
+      "Adalat",
+      "Procardia",
+      "Nifelat"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "30mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C08CA05",
     "synonyms": [
@@ -142,15 +238,27 @@
       "procardia",
       "nifedapine"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440007",
     "genericName": "Insulin Glargine",
-    "brandNames": ["Lantus", "Basaglar", "Toujeo"],
-    "dosageForms": ["injection (pen)", "injection (vial)"],
-    "strengths": ["100 IU/mL", "300 IU/mL"],
+    "brandNames": [
+      "Lantus",
+      "Basaglar",
+      "Toujeo"
+    ],
+    "dosageForms": [
+      "injection (pen)",
+      "injection (vial)"
+    ],
+    "strengths": [
+      "100 IU/mL",
+      "300 IU/mL"
+    ],
     "category": "MEDICATION",
     "atcCode": "A10AE04",
     "synonyms": [
@@ -161,15 +269,29 @@
       "long-acting insulin",
       "insulin glargin"
     ],
-    "conditionTags": ["DIABETES"],
+    "conditionTags": [
+      "DIABETES"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440008",
     "genericName": "Aspirin",
-    "brandNames": ["Disprin", "Ecosprin", "Junior Aspirin"],
-    "dosageForms": ["tablet", "dispersible tablet", "enteric-coated tablet"],
-    "strengths": ["75mg", "100mg", "300mg"],
+    "brandNames": [
+      "Disprin",
+      "Ecosprin",
+      "Junior Aspirin"
+    ],
+    "dosageForms": [
+      "tablet",
+      "dispersible tablet",
+      "enteric-coated tablet"
+    ],
+    "strengths": [
+      "75mg",
+      "100mg",
+      "300mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "B01AC06",
     "synonyms": [
@@ -180,15 +302,27 @@
       "blood thinner",
       "acetylsalicylic acid"
     ],
-    "conditionTags": ["GENERAL"],
+    "conditionTags": [
+      "GENERAL"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440009",
     "genericName": "Lisinopril",
-    "brandNames": ["Zestril", "Prinivil", "Lisipril"],
-    "dosageForms": ["tablet"],
-    "strengths": ["5mg", "10mg", "20mg"],
+    "brandNames": [
+      "Zestril",
+      "Prinivil",
+      "Lisipril"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C09AA03",
     "synonyms": [
@@ -198,15 +332,27 @@
       "prinivil",
       "lisinapril"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440010",
     "genericName": "Simvastatin",
-    "brandNames": ["Zocor", "Simvor", "Simvacor"],
-    "dosageForms": ["tablet"],
-    "strengths": ["10mg", "20mg", "40mg"],
+    "brandNames": [
+      "Zocor",
+      "Simvor",
+      "Simvacor"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "40mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C10AA01",
     "synonyms": [
@@ -216,15 +362,28 @@
       "simvor",
       "cholesterol tablet"
     ],
-    "conditionTags": ["GENERAL"],
+    "conditionTags": [
+      "GENERAL"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440011",
     "genericName": "Metoprolol",
-    "brandNames": ["Betaloc", "Lopressor", "Metolar"],
-    "dosageForms": ["tablet", "extended-release tablet"],
-    "strengths": ["25mg", "50mg", "100mg"],
+    "brandNames": [
+      "Betaloc",
+      "Lopressor",
+      "Metolar"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C07AB02",
     "synonyms": [
@@ -234,15 +393,28 @@
       "lopressor",
       "metoprolal"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440012",
     "genericName": "Omeprazole",
-    "brandNames": ["Losec", "Omez", "Risek"],
-    "dosageForms": ["capsule", "tablet"],
-    "strengths": ["10mg", "20mg", "40mg"],
+    "brandNames": [
+      "Losec",
+      "Omez",
+      "Risek"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "40mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "A02BC01",
     "synonyms": [
@@ -253,15 +425,28 @@
       "stomach medicine",
       "omeperazole"
     ],
-    "conditionTags": ["GENERAL"],
+    "conditionTags": [
+      "GENERAL"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440013",
     "genericName": "Gliclazide",
-    "brandNames": ["Diamicron", "Glizid", "Reclide"],
-    "dosageForms": ["tablet", "modified-release tablet"],
-    "strengths": ["30mg", "60mg", "80mg"],
+    "brandNames": [
+      "Diamicron",
+      "Glizid",
+      "Reclide"
+    ],
+    "dosageForms": [
+      "tablet",
+      "modified-release tablet"
+    ],
+    "strengths": [
+      "30mg",
+      "60mg",
+      "80mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "A10BB09",
     "synonyms": [
@@ -271,15 +456,27 @@
       "gliclizide",
       "glicazide"
     ],
-    "conditionTags": ["DIABETES"],
+    "conditionTags": [
+      "DIABETES"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440014",
     "genericName": "Pioglitazone",
-    "brandNames": ["Actos", "Pioglar", "Piozone"],
-    "dosageForms": ["tablet"],
-    "strengths": ["15mg", "30mg", "45mg"],
+    "brandNames": [
+      "Actos",
+      "Pioglar",
+      "Piozone"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "15mg",
+      "30mg",
+      "45mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "A10BG03",
     "synonyms": [
@@ -289,15 +486,28 @@
       "pioglatazone",
       "pioglitizone"
     ],
-    "conditionTags": ["DIABETES"],
+    "conditionTags": [
+      "DIABETES"
+    ],
     "isActive": true
   },
   {
     "id": "550e8400-e29b-41d4-a716-446655440015",
     "genericName": "Furosemide",
-    "brandNames": ["Lasix", "Frusid", "Salurin"],
-    "dosageForms": ["tablet", "injection"],
-    "strengths": ["20mg", "40mg", "80mg"],
+    "brandNames": [
+      "Lasix",
+      "Frusid",
+      "Salurin"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "20mg",
+      "40mg",
+      "80mg"
+    ],
     "category": "MEDICATION",
     "atcCode": "C03CA01",
     "synonyms": [
@@ -307,7 +517,9 @@
       "furosemid",
       "water tablet"
     ],
-    "conditionTags": ["HYPERTENSION"],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
     "isActive": true
   },
   {
@@ -327,7 +539,5555 @@
       "sugar test",
       "glycated haemoglobin"
     ],
-    "conditionTags": ["DIABETES"],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440016",
+    "genericName": "Salbutamol",
+    "brandNames": [
+      "Ventolin",
+      "Asthalin",
+      "Salbulin"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "nebulizer solution",
+      "tablet"
+    ],
+    "strengths": [
+      "100mcg/puff",
+      "2mg",
+      "4mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03AC02",
+    "synonyms": [
+      "salbutamole",
+      "albuterol",
+      "ventolin",
+      "asthma pump",
+      "inhaler",
+      "blue inhaler",
+      "reliever inhaler"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440017",
+    "genericName": "Beclomethasone",
+    "brandNames": [
+      "Becotide",
+      "Clenil",
+      "Qvar"
+    ],
+    "dosageForms": [
+      "inhaler"
+    ],
+    "strengths": [
+      "50mcg/puff",
+      "100mcg/puff",
+      "250mcg/puff"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03BA01",
+    "synonyms": [
+      "beclometasone",
+      "beclazone",
+      "becotide",
+      "brown inhaler",
+      "preventer inhaler",
+      "steroid inhaler"
+    ],
+    "conditionTags": [
+      "ASTHMA"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440018",
+    "genericName": "Montelukast",
+    "brandNames": [
+      "Singulair",
+      "Montair",
+      "Montek"
+    ],
+    "dosageForms": [
+      "tablet",
+      "chewable tablet"
+    ],
+    "strengths": [
+      "4mg",
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03DC03",
+    "synonyms": [
+      "montelukaste",
+      "monteleukast",
+      "singulair",
+      "montair",
+      "montelcast"
+    ],
+    "conditionTags": [
+      "ASTHMA"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440019",
+    "genericName": "Peak Flow Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "peak flow",
+      "pefr",
+      "lung function",
+      "spirometry",
+      "breathing test"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440020",
+    "genericName": "Tamoxifen",
+    "brandNames": [
+      "Nolvadex",
+      "Tamodex",
+      "Mamofen"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L02BA01",
+    "synonyms": [
+      "tamoxifene",
+      "tamoxifen citrate",
+      "nolvadex",
+      "tamofen",
+      "breast cancer medicine"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440021",
+    "genericName": "Capecitabine",
+    "brandNames": [
+      "Xeloda",
+      "Capecite",
+      "Capegard"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "150mg",
+      "500mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01BC06",
+    "synonyms": [
+      "capecitabin",
+      "xeloda",
+      "capecitibine",
+      "chemo tablets"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440022",
+    "genericName": "Imatinib",
+    "brandNames": [
+      "Glivec",
+      "Gleevec",
+      "Veenat"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "100mg",
+      "400mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01EA01",
+    "synonyms": [
+      "imatinibe",
+      "imatanib",
+      "glivec",
+      "gleevec",
+      "imatinib mesylate"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440023",
+    "genericName": "Erythropoietin",
+    "brandNames": [
+      "Eprex",
+      "Epogin",
+      "Epogen"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "2000 IU",
+      "4000 IU",
+      "10000 IU"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B03XA01",
+    "synonyms": [
+      "epo",
+      "erythropoetin",
+      "epoetin",
+      "eprex",
+      "kidney injection",
+      "blood booster"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440024",
+    "genericName": "Calcium Carbonate",
+    "brandNames": [
+      "Calcichew",
+      "Tums",
+      "Calci-D"
+    ],
+    "dosageForms": [
+      "tablet",
+      "chewable tablet"
+    ],
+    "strengths": [
+      "500mg",
+      "1000mg",
+      "1250mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A12AA04",
+    "synonyms": [
+      "calcium",
+      "calci chew",
+      "calcium supplement",
+      "bone tablets"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440025",
+    "genericName": "Creatinine Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "creatinine",
+      "kidney function test",
+      "renal function test",
+      "kft",
+      "urea creatinine",
+      "kidney test"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440026",
+    "genericName": "Digoxin",
+    "brandNames": [
+      "Lanoxin",
+      "Digitek"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "0.0625mg",
+      "0.125mg",
+      "0.25mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C01AA05",
+    "synonyms": [
+      "digoxine",
+      "digitalis",
+      "lanoxin",
+      "heart medicine",
+      "digoksin"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440027",
+    "genericName": "Warfarin",
+    "brandNames": [
+      "Coumadin",
+      "Marevan",
+      "Warin"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1mg",
+      "2mg",
+      "3mg",
+      "5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B01AA03",
+    "synonyms": [
+      "warfarine",
+      "coumadin",
+      "marevan",
+      "blood thinner",
+      "anticoagulant",
+      "rat poison medicine"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440028",
+    "genericName": "Clopidogrel",
+    "brandNames": [
+      "Plavix",
+      "Clopilet",
+      "Plagril"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "75mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B01AC04",
+    "synonyms": [
+      "clopidogral",
+      "plavix",
+      "clopilet",
+      "blood clot medicine",
+      "clopedigrel"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440029",
+    "genericName": "Isosorbide Mononitrate",
+    "brandNames": [
+      "Imdur",
+      "Monoket",
+      "Ismo"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "60mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C01DA14",
+    "synonyms": [
+      "isosorbide",
+      "ismn",
+      "imdur",
+      "nitrate",
+      "chest pain medicine",
+      "angina medicine"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440030",
+    "genericName": "Hydroxyurea",
+    "brandNames": [
+      "Hydrea",
+      "Hydroxycarbamide",
+      "Droxia"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet"
+    ],
+    "strengths": [
+      "200mg",
+      "300mg",
+      "500mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01XX05",
+    "synonyms": [
+      "hydroxycarbamide",
+      "hydrea",
+      "hydroxyrea",
+      "sickle cell medicine",
+      "hu"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440031",
+    "genericName": "Folic Acid",
+    "brandNames": [
+      "Folvite",
+      "Folate",
+      "Acifol"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1mg",
+      "5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B03BB01",
+    "synonyms": [
+      "folate",
+      "folvite",
+      "folic",
+      "vitamin b9",
+      "blood vitamin"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440032",
+    "genericName": "Full Blood Count",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "fbc",
+      "cbc",
+      "complete blood count",
+      "blood count",
+      "hemoglobin test",
+      "blood test"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440033",
+    "genericName": "TLD (Tenofovir/Lamivudine/Dolutegravir)",
+    "brandNames": [
+      "TLD",
+      "Acriptega",
+      "Tenolam-D"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "300mg/300mg/50mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AR24",
+    "synonyms": [
+      "tld",
+      "acriptega",
+      "arv",
+      "antiretroviral",
+      "hiv medicine",
+      "arvs",
+      "dolutegravir combination"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440034",
+    "genericName": "Nevirapine",
+    "brandNames": [
+      "Viramune",
+      "Nevimune",
+      "Nevipan"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral suspension"
+    ],
+    "strengths": [
+      "200mg",
+      "50mg/5mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AG01",
+    "synonyms": [
+      "nevirapene",
+      "viramune",
+      "nvp",
+      "nevirapine suspension"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440035",
+    "genericName": "CD4 Count Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "cd4",
+      "cd4 count",
+      "cd4 test",
+      "immune test",
+      "t cell count"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440036",
+    "genericName": "Viral Load Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "viral load",
+      "vl test",
+      "hiv viral load",
+      "pcr test"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440037",
+    "genericName": "Carbamazepine",
+    "brandNames": [
+      "Tegretol",
+      "Carbatol",
+      "Mazetol"
+    ],
+    "dosageForms": [
+      "tablet",
+      "chewable tablet",
+      "oral suspension"
+    ],
+    "strengths": [
+      "100mg",
+      "200mg",
+      "400mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AF01",
+    "synonyms": [
+      "carbamazepene",
+      "tegretol",
+      "carbamezapine",
+      "seizure medicine",
+      "epilepsy tablets"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440038",
+    "genericName": "Sodium Valproate",
+    "brandNames": [
+      "Epilim",
+      "Depakote",
+      "Valparin"
+    ],
+    "dosageForms": [
+      "tablet",
+      "syrup",
+      "enteric-coated tablet"
+    ],
+    "strengths": [
+      "200mg",
+      "500mg",
+      "200mg/5mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AG01",
+    "synonyms": [
+      "valproate",
+      "valproic acid",
+      "epilim",
+      "depakote",
+      "sodium valporate",
+      "fits medicine"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440039",
+    "genericName": "Phenytoin",
+    "brandNames": [
+      "Dilantin",
+      "Epanutin",
+      "Eptoin"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet",
+      "oral suspension"
+    ],
+    "strengths": [
+      "50mg",
+      "100mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AB02",
+    "synonyms": [
+      "phenitoin",
+      "dilantin",
+      "epanutin",
+      "phenytion",
+      "anti-seizure"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440040",
+    "genericName": "Phenobarbital",
+    "brandNames": [
+      "Luminal",
+      "Gardenal"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "15mg",
+      "30mg",
+      "60mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AA02",
+    "synonyms": [
+      "phenobarbitone",
+      "phenobarb",
+      "luminal",
+      "gardenal",
+      "phenobarbitol"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440041",
+    "genericName": "Tiotropium",
+    "brandNames": [
+      "Spiriva",
+      "Tiova",
+      "Braltus"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "dry powder inhaler"
+    ],
+    "strengths": [
+      "9mcg/puff",
+      "18mcg capsule"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03BB04",
+    "synonyms": [
+      "tiotropeum",
+      "spiriva",
+      "tiova",
+      "long-acting inhaler",
+      "copd inhaler"
+    ],
+    "conditionTags": [
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440042",
+    "genericName": "Ipratropium",
+    "brandNames": [
+      "Atrovent",
+      "Ipravent",
+      "Ipratop"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "nebulizer solution"
+    ],
+    "strengths": [
+      "20mcg/puff",
+      "250mcg/mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03BB01",
+    "synonyms": [
+      "ipratropeum",
+      "atrovent",
+      "ipravent",
+      "anticholinergic inhaler"
+    ],
+    "conditionTags": [
+      "COPD",
+      "ASTHMA"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440043",
+    "genericName": "Prednisolone",
+    "brandNames": [
+      "Predone",
+      "Wysolone",
+      "Deltacortril"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral solution"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "H02AB06",
+    "synonyms": [
+      "prednisone",
+      "prednisolon",
+      "steroid",
+      "steroid tablets",
+      "wysolone",
+      "cortisone"
+    ],
+    "conditionTags": [
+      "COPD",
+      "ASTHMA",
+      "ARTHRITIS",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440044",
+    "genericName": "Diclofenac",
+    "brandNames": [
+      "Voltaren",
+      "Cataflam",
+      "Diclogesic"
+    ],
+    "dosageForms": [
+      "tablet",
+      "gel",
+      "injection"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "75mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M01AB05",
+    "synonyms": [
+      "diclofenack",
+      "voltaren",
+      "diclo",
+      "painkiller",
+      "joint medicine",
+      "diclofenac sodium"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440045",
+    "genericName": "Methotrexate",
+    "brandNames": [
+      "Trexall",
+      "Folitrax",
+      "Neotrexate"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "2.5mg",
+      "5mg",
+      "7.5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01BA01",
+    "synonyms": [
+      "methotrexat",
+      "mtx",
+      "trexall",
+      "folitrax",
+      "rheumatoid medicine"
+    ],
+    "conditionTags": [
+      "ARTHRITIS",
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440046",
+    "genericName": "Ibuprofen",
+    "brandNames": [
+      "Brufen",
+      "Nurofen",
+      "Advil"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule",
+      "suspension"
+    ],
+    "strengths": [
+      "200mg",
+      "400mg",
+      "600mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M01AE01",
+    "synonyms": [
+      "ibuprophen",
+      "ibuprufen",
+      "brufen",
+      "nurofen",
+      "advil",
+      "pain tablet"
+    ],
+    "conditionTags": [
+      "ARTHRITIS",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440047",
+    "genericName": "Celecoxib",
+    "brandNames": [
+      "Celebrex",
+      "Celact",
+      "Revibra"
+    ],
+    "dosageForms": [
+      "capsule"
+    ],
+    "strengths": [
+      "100mg",
+      "200mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M01AH01",
+    "synonyms": [
+      "celecoxibe",
+      "celebrex",
+      "celecoksib",
+      "cox-2 inhibitor"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440048",
+    "genericName": "Fluoxetine",
+    "brandNames": [
+      "Prozac",
+      "Fludac",
+      "Fluxotine"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "40mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AB03",
+    "synonyms": [
+      "fluoxetene",
+      "prozac",
+      "fludac",
+      "antidepressant",
+      "depression medicine",
+      "ssri"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440049",
+    "genericName": "Amitriptyline",
+    "brandNames": [
+      "Elavil",
+      "Tryptomer",
+      "Amitril"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "25mg",
+      "50mg",
+      "75mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AA09",
+    "synonyms": [
+      "amitriptiline",
+      "amitriptylene",
+      "elavil",
+      "tryptomer",
+      "nerve pain medicine"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440050",
+    "genericName": "Haloperidol",
+    "brandNames": [
+      "Haldol",
+      "Serenace"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection",
+      "oral solution"
+    ],
+    "strengths": [
+      "0.5mg",
+      "1.5mg",
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AD01",
+    "synonyms": [
+      "haloperidole",
+      "haldol",
+      "serenace",
+      "antipsychotic"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440051",
+    "genericName": "Diazepam",
+    "brandNames": [
+      "Valium",
+      "Calmpose",
+      "Diastat"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection",
+      "rectal gel"
+    ],
+    "strengths": [
+      "2mg",
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05BA01",
+    "synonyms": [
+      "valium",
+      "calmpose",
+      "diazipam",
+      "anxiety medicine",
+      "sleeping tablet"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH",
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440052",
+    "genericName": "Levothyroxine",
+    "brandNames": [
+      "Eltroxin",
+      "Synthroid",
+      "Thyronorm"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "25mcg",
+      "50mcg",
+      "75mcg",
+      "100mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "H03AA01",
+    "synonyms": [
+      "levothyroxin",
+      "thyroxine",
+      "eltroxin",
+      "synthroid",
+      "thyroid medicine",
+      "t4"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440053",
+    "genericName": "Carbimazole",
+    "brandNames": [
+      "Neo-Mercazole",
+      "Thyrocab",
+      "Carbizole"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "H03BB01",
+    "synonyms": [
+      "carbimazol",
+      "neo-mercazole",
+      "thyrocab",
+      "anti-thyroid",
+      "overactive thyroid medicine"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440054",
+    "genericName": "Thyroid Function Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "tft",
+      "thyroid test",
+      "tsh test",
+      "t3 t4",
+      "thyroid panel",
+      "thyroid blood test"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440055",
+    "genericName": "Physiotherapy Session",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "physio",
+      "physiotherapy",
+      "physical therapy",
+      "rehabilitation",
+      "rehab session",
+      "stroke therapy"
+    ],
+    "conditionTags": [
+      "STROKE",
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440056",
+    "genericName": "Tenofovir",
+    "brandNames": [
+      "Viread",
+      "Tenvir",
+      "Tenof"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AF07",
+    "synonyms": [
+      "tenofovire",
+      "viread",
+      "tenvir",
+      "hepatitis b medicine",
+      "hep b tablets"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE",
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440057",
+    "genericName": "Ursodeoxycholic Acid",
+    "brandNames": [
+      "Ursofalk",
+      "Udiliv",
+      "Ursodiol"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet"
+    ],
+    "strengths": [
+      "150mg",
+      "250mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A05AA02",
+    "synonyms": [
+      "ursodiol",
+      "udca",
+      "ursofalk",
+      "udiliv",
+      "bile acid",
+      "liver medicine",
+      "gallstone medicine"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440058",
+    "genericName": "Liver Function Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "lft",
+      "liver test",
+      "liver panel",
+      "alt ast",
+      "liver enzymes",
+      "liver blood test"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440059",
+    "genericName": "Glimepiride",
+    "brandNames": [
+      "Amaryl",
+      "Glimstar",
+      "Glimpid"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1mg",
+      "2mg",
+      "3mg",
+      "4mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10BB12",
+    "synonyms": [
+      "glimepride",
+      "amaryl",
+      "glimepirid",
+      "glimiperide",
+      "sugar tablet"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440060",
+    "genericName": "Insulin Soluble",
+    "brandNames": [
+      "Actrapid",
+      "Humulin R",
+      "Insuman Rapid"
+    ],
+    "dosageForms": [
+      "injection (vial)",
+      "injection (pen)"
+    ],
+    "strengths": [
+      "100 IU/mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10AB01",
+    "synonyms": [
+      "actrapid",
+      "regular insulin",
+      "soluble insulin",
+      "fast insulin",
+      "short acting insulin",
+      "rapid insulin"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440061",
+    "genericName": "Insulin NPH",
+    "brandNames": [
+      "Insulatard",
+      "Humulin N",
+      "Insuman Basal"
+    ],
+    "dosageForms": [
+      "injection (vial)",
+      "injection (pen)"
+    ],
+    "strengths": [
+      "100 IU/mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10AC01",
+    "synonyms": [
+      "insulatard",
+      "nph insulin",
+      "isophane insulin",
+      "intermediate insulin",
+      "humulin n",
+      "cloudy insulin"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440062",
+    "genericName": "Empagliflozin",
+    "brandNames": [
+      "Jardiance",
+      "Empagli"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "25mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10BK03",
+    "synonyms": [
+      "empagliflozine",
+      "jardiance",
+      "empagliflozen",
+      "sglt2 inhibitor",
+      "sugar pee medicine"
+    ],
+    "conditionTags": [
+      "DIABETES",
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440063",
+    "genericName": "Dapagliflozin",
+    "brandNames": [
+      "Forxiga",
+      "Farxiga",
+      "Dapaglyn"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10BK01",
+    "synonyms": [
+      "dapagliflozen",
+      "forxiga",
+      "farxiga",
+      "dapagliflozine"
+    ],
+    "conditionTags": [
+      "DIABETES",
+      "HEART_DISEASE",
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440064",
+    "genericName": "Sitagliptin",
+    "brandNames": [
+      "Januvia",
+      "Sitaday",
+      "Istavel"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10BH01",
+    "synonyms": [
+      "sitaglipten",
+      "januvia",
+      "sitagliptine",
+      "dpp4 inhibitor"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440065",
+    "genericName": "Vildagliptin",
+    "brandNames": [
+      "Galvus",
+      "Vysov",
+      "Jalra"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "50mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10BH02",
+    "synonyms": [
+      "vildagliptine",
+      "galvus",
+      "vildaglipten"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440066",
+    "genericName": "Insulin Mixtard",
+    "brandNames": [
+      "Mixtard 30",
+      "Humulin 70/30",
+      "Insuman Comb"
+    ],
+    "dosageForms": [
+      "injection (vial)",
+      "injection (pen)"
+    ],
+    "strengths": [
+      "100 IU/mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10AD01",
+    "synonyms": [
+      "mixtard",
+      "premixed insulin",
+      "70/30 insulin",
+      "humulin mix",
+      "mixed insulin"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440067",
+    "genericName": "Repaglinide",
+    "brandNames": [
+      "NovoNorm",
+      "Prandin",
+      "Eurepa"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A10BX02",
+    "synonyms": [
+      "repaglinde",
+      "novonorm",
+      "prandin",
+      "meglitinide"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440068",
+    "genericName": "Fasting Blood Sugar Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "fbs",
+      "fasting glucose",
+      "fasting sugar",
+      "fbs test",
+      "morning sugar test"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440069",
+    "genericName": "Random Blood Sugar Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "rbs",
+      "random glucose",
+      "random sugar",
+      "rbs test",
+      "sugar check"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440070",
+    "genericName": "Oral Glucose Tolerance Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "ogtt",
+      "glucose tolerance",
+      "sugar loading test",
+      "gtt"
+    ],
+    "conditionTags": [
+      "DIABETES"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440071",
+    "genericName": "Renal Function Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "rft",
+      "kidney function",
+      "renal panel",
+      "urea electrolytes",
+      "u&e",
+      "kidney blood test"
+    ],
+    "conditionTags": [
+      "DIABETES",
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440072",
+    "genericName": "Valsartan",
+    "brandNames": [
+      "Diovan",
+      "Valtan",
+      "Valzaar"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "40mg",
+      "80mg",
+      "160mg",
+      "320mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C09CA03",
+    "synonyms": [
+      "valsartin",
+      "diovan",
+      "valzaar",
+      "valsatan",
+      "arb"
+    ],
+    "conditionTags": [
+      "HYPERTENSION",
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440073",
+    "genericName": "Telmisartan",
+    "brandNames": [
+      "Micardis",
+      "Telma",
+      "Telmikind"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "20mg",
+      "40mg",
+      "80mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C09CA07",
+    "synonyms": [
+      "telmisartin",
+      "micardis",
+      "telma",
+      "telmisatan"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440074",
+    "genericName": "Candesartan",
+    "brandNames": [
+      "Atacand",
+      "Candesar",
+      "Blopress"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "4mg",
+      "8mg",
+      "16mg",
+      "32mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C09CA06",
+    "synonyms": [
+      "candesartin",
+      "atacand",
+      "candesar"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440075",
+    "genericName": "Spironolactone",
+    "brandNames": [
+      "Aldactone",
+      "Spiractin",
+      "Lasilactone"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C03DA01",
+    "synonyms": [
+      "spironolacton",
+      "aldactone",
+      "spiractin",
+      "potassium sparing"
+    ],
+    "conditionTags": [
+      "HYPERTENSION",
+      "HEART_DISEASE",
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440076",
+    "genericName": "Atenolol",
+    "brandNames": [
+      "Tenormin",
+      "Aten",
+      "Betacard"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C07AB03",
+    "synonyms": [
+      "atenolal",
+      "tenormin",
+      "aten",
+      "beta blocker"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440077",
+    "genericName": "Propranolol",
+    "brandNames": [
+      "Inderal",
+      "Ciplar",
+      "Betachron"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "40mg",
+      "80mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C07AA05",
+    "synonyms": [
+      "propranolal",
+      "inderal",
+      "ciplar",
+      "propanolol",
+      "beta blocker tablets"
+    ],
+    "conditionTags": [
+      "HYPERTENSION",
+      "THYROID",
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440078",
+    "genericName": "Prazosin",
+    "brandNames": [
+      "Minipress",
+      "Prazocip",
+      "Prazo"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "1mg",
+      "2mg",
+      "5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C02CA01",
+    "synonyms": [
+      "prazosine",
+      "minipress",
+      "prazocip",
+      "alpha blocker"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440079",
+    "genericName": "Carvedilol",
+    "brandNames": [
+      "Coreg",
+      "Carloc",
+      "Carvista"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "3.125mg",
+      "6.25mg",
+      "12.5mg",
+      "25mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C07AG02",
+    "synonyms": [
+      "carvedilal",
+      "coreg",
+      "carloc",
+      "carvista"
+    ],
+    "conditionTags": [
+      "HYPERTENSION",
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440080",
+    "genericName": "Indapamide",
+    "brandNames": [
+      "Natrilix",
+      "Lozol",
+      "Indapa"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1.5mg",
+      "2.5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C03BA11",
+    "synonyms": [
+      "indapamid",
+      "natrilix",
+      "lozol",
+      "indapamide sr"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440081",
+    "genericName": "Perindopril",
+    "brandNames": [
+      "Coversyl",
+      "Perindo",
+      "Perinace"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "2mg",
+      "4mg",
+      "8mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C09AA04",
+    "synonyms": [
+      "perindopral",
+      "coversyl",
+      "perinace",
+      "perindapril"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440082",
+    "genericName": "Ramipril",
+    "brandNames": [
+      "Altace",
+      "Tritace",
+      "Cardace"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet"
+    ],
+    "strengths": [
+      "1.25mg",
+      "2.5mg",
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C09AA05",
+    "synonyms": [
+      "ramiprile",
+      "altace",
+      "tritace",
+      "cardace",
+      "ace inhibitor"
+    ],
+    "conditionTags": [
+      "HYPERTENSION",
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440083",
+    "genericName": "Doxazosin",
+    "brandNames": [
+      "Cardura",
+      "Doxacor",
+      "Doxacard"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1mg",
+      "2mg",
+      "4mg",
+      "8mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C02CA04",
+    "synonyms": [
+      "doxazosine",
+      "cardura",
+      "doxacor",
+      "alpha1 blocker"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440084",
+    "genericName": "Bendroflumethiazide",
+    "brandNames": [
+      "Aprinox",
+      "Neo-NaClex"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "2.5mg",
+      "5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C03AA01",
+    "synonyms": [
+      "bendrofluazide",
+      "aprinox",
+      "bendro",
+      "thiazide diuretic"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440085",
+    "genericName": "Blood Pressure Monitor",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "SUPPLY",
+    "atcCode": null,
+    "synonyms": [
+      "bp monitor",
+      "blood pressure machine",
+      "sphygmomanometer",
+      "bp cuff",
+      "pressure machine",
+      "digital bp"
+    ],
+    "conditionTags": [
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440086",
+    "genericName": "Atazanavir/Ritonavir",
+    "brandNames": [
+      "Atazanavir/r",
+      "ATV/r"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "300mg/100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AR",
+    "synonyms": [
+      "atazanavir",
+      "atv/r",
+      "protease inhibitor",
+      "pi"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440087",
+    "genericName": "Lopinavir/Ritonavir",
+    "brandNames": [
+      "Aluvia",
+      "Kaletra",
+      "LPV/r"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral solution"
+    ],
+    "strengths": [
+      "200mg/50mg",
+      "80mg/20mg per mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AR10",
+    "synonyms": [
+      "aluvia",
+      "kaletra",
+      "lpv/r",
+      "lopinavir",
+      "second line arv"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440088",
+    "genericName": "Efavirenz",
+    "brandNames": [
+      "Stocrin",
+      "Sustiva",
+      "Efavir"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "200mg",
+      "600mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AG03",
+    "synonyms": [
+      "efavirenze",
+      "stocrin",
+      "sustiva",
+      "efv",
+      "efavirenz 600"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440089",
+    "genericName": "Abacavir/Lamivudine",
+    "brandNames": [
+      "Kivexa",
+      "Epzicom",
+      "ABC/3TC"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "600mg/300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AR02",
+    "synonyms": [
+      "kivexa",
+      "epzicom",
+      "abc/3tc",
+      "abacavir"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440090",
+    "genericName": "Zidovudine",
+    "brandNames": [
+      "Retrovir",
+      "AZT",
+      "Zidovir"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet",
+      "oral solution"
+    ],
+    "strengths": [
+      "100mg",
+      "250mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AF01",
+    "synonyms": [
+      "azt",
+      "retrovir",
+      "zidovir",
+      "zidovudene",
+      "azidothymidine"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440091",
+    "genericName": "Darunavir",
+    "brandNames": [
+      "Prezista",
+      "Darunavir Mylan"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "400mg",
+      "600mg",
+      "800mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AE10",
+    "synonyms": [
+      "prezista",
+      "drv",
+      "darunavire"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440092",
+    "genericName": "Raltegravir",
+    "brandNames": [
+      "Isentress",
+      "RAL"
+    ],
+    "dosageForms": [
+      "tablet",
+      "chewable tablet"
+    ],
+    "strengths": [
+      "400mg",
+      "600mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J05AJ01",
+    "synonyms": [
+      "isentress",
+      "ral",
+      "raltegravire",
+      "integrase inhibitor"
+    ],
+    "conditionTags": [
+      "HIV_AIDS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440093",
+    "genericName": "Cotrimoxazole",
+    "brandNames": [
+      "Septrin",
+      "Bactrim",
+      "Co-trimoxazole"
+    ],
+    "dosageForms": [
+      "tablet",
+      "suspension"
+    ],
+    "strengths": [
+      "480mg",
+      "960mg",
+      "240mg/5mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J01EE01",
+    "synonyms": [
+      "septrin",
+      "bactrim",
+      "cotrimoxazol",
+      "oi prophylaxis",
+      "trimethoprim sulfamethoxazole"
+    ],
+    "conditionTags": [
+      "HIV_AIDS",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440094",
+    "genericName": "Fluconazole",
+    "brandNames": [
+      "Diflucan",
+      "Flucazole",
+      "Forcan"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "50mg",
+      "150mg",
+      "200mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J02AC01",
+    "synonyms": [
+      "fluconazol",
+      "diflucan",
+      "flucazole",
+      "antifungal",
+      "fungal medicine"
+    ],
+    "conditionTags": [
+      "HIV_AIDS",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440095",
+    "genericName": "Budesonide",
+    "brandNames": [
+      "Pulmicort",
+      "Budecort",
+      "Budenase"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "nebulizer solution",
+      "nasal spray"
+    ],
+    "strengths": [
+      "100mcg/puff",
+      "200mcg/puff",
+      "0.5mg/2mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03BA02",
+    "synonyms": [
+      "budesonid",
+      "pulmicort",
+      "budecort",
+      "steroid inhaler",
+      "preventer"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440096",
+    "genericName": "Fluticasone",
+    "brandNames": [
+      "Flixotide",
+      "Flovent",
+      "Flutican"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "nasal spray"
+    ],
+    "strengths": [
+      "50mcg/puff",
+      "125mcg/puff",
+      "250mcg/puff"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03BA05",
+    "synonyms": [
+      "fluticason",
+      "flixotide",
+      "flovent",
+      "orange inhaler",
+      "steroid puffer"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440097",
+    "genericName": "Salmeterol",
+    "brandNames": [
+      "Serevent",
+      "Salmetol"
+    ],
+    "dosageForms": [
+      "inhaler"
+    ],
+    "strengths": [
+      "25mcg/puff",
+      "50mcg/puff"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03AC12",
+    "synonyms": [
+      "salmeterol xinafoate",
+      "serevent",
+      "long acting bronchodilator",
+      "green inhaler"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440098",
+    "genericName": "Formoterol",
+    "brandNames": [
+      "Foradil",
+      "Oxis",
+      "Atimos"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "dry powder inhaler"
+    ],
+    "strengths": [
+      "6mcg",
+      "12mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03AC13",
+    "synonyms": [
+      "formoterol fumarate",
+      "foradil",
+      "oxis",
+      "long acting reliever"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440099",
+    "genericName": "Aminophylline",
+    "brandNames": [
+      "Phyllocontin",
+      "Aminophyl"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "100mg",
+      "225mg",
+      "250mg/10mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03DA05",
+    "synonyms": [
+      "aminophyline",
+      "phyllocontin",
+      "aminofiline",
+      "theophylline ethylenediamine"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440100",
+    "genericName": "Theophylline",
+    "brandNames": [
+      "Theo-Dur",
+      "Uniphyllin",
+      "Nuelin"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet",
+      "syrup"
+    ],
+    "strengths": [
+      "100mg",
+      "200mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03DA04",
+    "synonyms": [
+      "theophyline",
+      "theo-dur",
+      "nuelin",
+      "uniphyllin",
+      "chest medicine"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440101",
+    "genericName": "Budesonide/Formoterol",
+    "brandNames": [
+      "Symbicort",
+      "Budamate",
+      "Foracort"
+    ],
+    "dosageForms": [
+      "inhaler"
+    ],
+    "strengths": [
+      "80/4.5mcg",
+      "160/4.5mcg",
+      "320/9mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03AK07",
+    "synonyms": [
+      "symbicort",
+      "budamate",
+      "foracort",
+      "combination inhaler",
+      "purple inhaler"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440102",
+    "genericName": "Fluticasone/Salmeterol",
+    "brandNames": [
+      "Seretide",
+      "Advair",
+      "Salmeflu"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "dry powder inhaler"
+    ],
+    "strengths": [
+      "50/25mcg",
+      "125/25mcg",
+      "250/25mcg",
+      "500/50mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03AK06",
+    "synonyms": [
+      "seretide",
+      "advair",
+      "salmeflu",
+      "diskus",
+      "combination puffer"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440103",
+    "genericName": "Cromoglycate",
+    "brandNames": [
+      "Intal",
+      "Cromogen",
+      "Nalcrom"
+    ],
+    "dosageForms": [
+      "inhaler",
+      "eye drops"
+    ],
+    "strengths": [
+      "5mg/puff",
+      "2%"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03BC01",
+    "synonyms": [
+      "sodium cromoglycate",
+      "cromolyn",
+      "intal",
+      "cromoglicate",
+      "mast cell stabilizer"
+    ],
+    "conditionTags": [
+      "ASTHMA"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440104",
+    "genericName": "Chest X-Ray",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "cxr",
+      "chest xray",
+      "chest radiograph",
+      "lung xray",
+      "x-ray chest"
+    ],
+    "conditionTags": [
+      "ASTHMA",
+      "COPD",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440105",
+    "genericName": "Levetiracetam",
+    "brandNames": [
+      "Keppra",
+      "Levera",
+      "Levepsy"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral solution"
+    ],
+    "strengths": [
+      "250mg",
+      "500mg",
+      "750mg",
+      "1000mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AX14",
+    "synonyms": [
+      "levetiracetame",
+      "keppra",
+      "levera",
+      "levetracetam",
+      "new epilepsy medicine"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440106",
+    "genericName": "Lamotrigine",
+    "brandNames": [
+      "Lamictal",
+      "Lamitor",
+      "Lametec"
+    ],
+    "dosageForms": [
+      "tablet",
+      "dispersible tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "200mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AX09",
+    "synonyms": [
+      "lamotrigene",
+      "lamictal",
+      "lamitor",
+      "lamotragine"
+    ],
+    "conditionTags": [
+      "EPILEPSY",
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440107",
+    "genericName": "Clonazepam",
+    "brandNames": [
+      "Rivotril",
+      "Clonotril",
+      "Epitril"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral drops"
+    ],
+    "strengths": [
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AE01",
+    "synonyms": [
+      "clonazepame",
+      "rivotril",
+      "clonotril",
+      "klonopin"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440108",
+    "genericName": "Topiramate",
+    "brandNames": [
+      "Topamax",
+      "Topamac",
+      "Topex"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "200mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AX11",
+    "synonyms": [
+      "topiramete",
+      "topamax",
+      "topamac",
+      "topirimate"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440109",
+    "genericName": "Gabapentin",
+    "brandNames": [
+      "Neurontin",
+      "Gabapin",
+      "Gabatop"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet"
+    ],
+    "strengths": [
+      "100mg",
+      "300mg",
+      "400mg",
+      "600mg",
+      "800mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N03AX12",
+    "synonyms": [
+      "gabapentine",
+      "neurontin",
+      "gabapin",
+      "nerve pain capsule",
+      "gabapenten"
+    ],
+    "conditionTags": [
+      "EPILEPSY",
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440110",
+    "genericName": "Clobazam",
+    "brandNames": [
+      "Frisium",
+      "Cloba",
+      "Urbanol"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05BA09",
+    "synonyms": [
+      "clobazame",
+      "frisium",
+      "urbanol",
+      "clobazam tablet"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440111",
+    "genericName": "EEG Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "eeg",
+      "electroencephalogram",
+      "brain wave test",
+      "brain electricity test",
+      "epilepsy test"
+    ],
+    "conditionTags": [
+      "EPILEPSY"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440112",
+    "genericName": "Risperidone",
+    "brandNames": [
+      "Risperdal",
+      "Risdon",
+      "Risdone"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral solution",
+      "injection"
+    ],
+    "strengths": [
+      "0.5mg",
+      "1mg",
+      "2mg",
+      "3mg",
+      "4mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AX08",
+    "synonyms": [
+      "risperidon",
+      "risperdal",
+      "risdon",
+      "risperadone",
+      "antipsychotic tablet"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440113",
+    "genericName": "Chlorpromazine",
+    "brandNames": [
+      "Largactil",
+      "Thorazine",
+      "Chlorprom"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection",
+      "syrup"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AA01",
+    "synonyms": [
+      "chlorpromazin",
+      "largactil",
+      "thorazine",
+      "cpz",
+      "major tranquilizer"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440114",
+    "genericName": "Sertraline",
+    "brandNames": [
+      "Zoloft",
+      "Serlift",
+      "Daxid"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AB06",
+    "synonyms": [
+      "sertralin",
+      "zoloft",
+      "serlift",
+      "daxid",
+      "ssri antidepressant"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440115",
+    "genericName": "Escitalopram",
+    "brandNames": [
+      "Lexapro",
+      "Cipralex",
+      "Escitam"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AB10",
+    "synonyms": [
+      "escitaloprame",
+      "lexapro",
+      "cipralex",
+      "escitam",
+      "anxiety medicine"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440116",
+    "genericName": "Lorazepam",
+    "brandNames": [
+      "Ativan",
+      "Loram",
+      "Calmese"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05BA06",
+    "synonyms": [
+      "lorazepame",
+      "ativan",
+      "loram",
+      "calming medicine",
+      "anxiolytic"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440117",
+    "genericName": "Olanzapine",
+    "brandNames": [
+      "Zyprexa",
+      "Olanza",
+      "Oleanz"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection",
+      "orally disintegrating tablet"
+    ],
+    "strengths": [
+      "2.5mg",
+      "5mg",
+      "10mg",
+      "15mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AH03",
+    "synonyms": [
+      "olanzapene",
+      "zyprexa",
+      "olanza",
+      "oleanz",
+      "atypical antipsychotic"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440118",
+    "genericName": "Quetiapine",
+    "brandNames": [
+      "Seroquel",
+      "Qutipin",
+      "Quel"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "100mg",
+      "200mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AH04",
+    "synonyms": [
+      "quetiapene",
+      "seroquel",
+      "qutipin",
+      "quetipin"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440119",
+    "genericName": "Lithium Carbonate",
+    "brandNames": [
+      "Eskalith",
+      "Camcolit",
+      "Priadel"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "150mg",
+      "300mg",
+      "450mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AN01",
+    "synonyms": [
+      "lithium",
+      "eskalith",
+      "camcolit",
+      "priadel",
+      "mood stabilizer",
+      "bipolar medicine"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440120",
+    "genericName": "Clomipramine",
+    "brandNames": [
+      "Anafranil",
+      "Clomicalm",
+      "Clomine"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "10mg",
+      "25mg",
+      "50mg",
+      "75mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AA04",
+    "synonyms": [
+      "clomipramin",
+      "anafranil",
+      "clomine",
+      "ocd medicine"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440121",
+    "genericName": "Trazodone",
+    "brandNames": [
+      "Desyrel",
+      "Molipaxin",
+      "Trazorel"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "50mg",
+      "100mg",
+      "150mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AX05",
+    "synonyms": [
+      "trazodon",
+      "desyrel",
+      "molipaxin",
+      "sleep antidepressant"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440122",
+    "genericName": "Paroxetine",
+    "brandNames": [
+      "Paxil",
+      "Seroxat",
+      "Parotin"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg",
+      "30mg",
+      "40mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N06AB05",
+    "synonyms": [
+      "paroxetin",
+      "paxil",
+      "seroxat",
+      "parotin",
+      "ssri"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440123",
+    "genericName": "Alprazolam",
+    "brandNames": [
+      "Xanax",
+      "Alprax",
+      "Trika"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "0.25mg",
+      "0.5mg",
+      "1mg",
+      "2mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05BA12",
+    "synonyms": [
+      "alprazolame",
+      "xanax",
+      "alprax",
+      "trika",
+      "panic medicine"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440124",
+    "genericName": "Fluphenazine Decanoate",
+    "brandNames": [
+      "Modecate",
+      "Prolixin Decanoate"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "25mg/mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N05AB02",
+    "synonyms": [
+      "fluphenazine",
+      "modecate",
+      "prolixin",
+      "depot injection",
+      "monthly injection",
+      "madawa ya sindano"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440125",
+    "genericName": "Psychiatric Consultation",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "psychiatrist",
+      "mental health consultation",
+      "psych consult",
+      "therapy session",
+      "counselling"
+    ],
+    "conditionTags": [
+      "MENTAL_HEALTH"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440126",
+    "genericName": "Naproxen",
+    "brandNames": [
+      "Naprosyn",
+      "Aleve",
+      "Xenobid"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "250mg",
+      "375mg",
+      "500mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M01AE02",
+    "synonyms": [
+      "naproxene",
+      "naprosyn",
+      "aleve",
+      "naproxin",
+      "anti-inflammatory"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440127",
+    "genericName": "Hydroxychloroquine",
+    "brandNames": [
+      "Plaquenil",
+      "HCQS",
+      "Oxiklorin"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "200mg",
+      "400mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "P01BA02",
+    "synonyms": [
+      "hydroxychloroquin",
+      "plaquenil",
+      "hcqs",
+      "rheumatoid medicine",
+      "antimalarial for joints"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440128",
+    "genericName": "Sulfasalazine",
+    "brandNames": [
+      "Salazopyrin",
+      "Azulfidine",
+      "Sazo"
+    ],
+    "dosageForms": [
+      "tablet",
+      "enteric-coated tablet"
+    ],
+    "strengths": [
+      "500mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A07EC01",
+    "synonyms": [
+      "sulfasalazin",
+      "salazopyrin",
+      "azulfidine",
+      "sazo",
+      "sulphasalazine"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440129",
+    "genericName": "Colchicine",
+    "brandNames": [
+      "Colcrys",
+      "Colchimax",
+      "Goutnil"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "0.5mg",
+      "0.6mg",
+      "1mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M04AC01",
+    "synonyms": [
+      "colchicin",
+      "colcrys",
+      "gout medicine",
+      "colchimax",
+      "goutnil"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440130",
+    "genericName": "Allopurinol",
+    "brandNames": [
+      "Zyloric",
+      "Zyloprim",
+      "Alloric"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "100mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M04AA01",
+    "synonyms": [
+      "alopurinol",
+      "zyloric",
+      "zyloprim",
+      "gout prevention",
+      "uric acid medicine"
+    ],
+    "conditionTags": [
+      "ARTHRITIS",
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440131",
+    "genericName": "Indomethacin",
+    "brandNames": [
+      "Indocin",
+      "Indocap",
+      "Indo"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet",
+      "suppository"
+    ],
+    "strengths": [
+      "25mg",
+      "50mg",
+      "75mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "M01AB01",
+    "synonyms": [
+      "indometacin",
+      "indocin",
+      "indocap",
+      "strong painkiller"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440132",
+    "genericName": "Leflunomide",
+    "brandNames": [
+      "Arava",
+      "Lefra",
+      "Lefluar"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "10mg",
+      "20mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L04AA13",
+    "synonyms": [
+      "leflunomid",
+      "arava",
+      "lefra",
+      "dmard"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440133",
+    "genericName": "Adalimumab",
+    "brandNames": [
+      "Humira",
+      "Exemptia",
+      "Adalimab"
+    ],
+    "dosageForms": [
+      "injection (pen)",
+      "injection (syringe)"
+    ],
+    "strengths": [
+      "40mg/0.4mL",
+      "40mg/0.8mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L04AB04",
+    "synonyms": [
+      "adalimumabe",
+      "humira",
+      "exemptia",
+      "biologic injection",
+      "tnf blocker"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440134",
+    "genericName": "ESR Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "esr",
+      "erythrocyte sedimentation rate",
+      "sed rate",
+      "inflammation test",
+      "westergren"
+    ],
+    "conditionTags": [
+      "ARTHRITIS",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440135",
+    "genericName": "Uric Acid Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "uric acid",
+      "gout test",
+      "urate level",
+      "serum uric acid"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440136",
+    "genericName": "Rheumatoid Factor Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "rf test",
+      "rheumatoid factor",
+      "ra test",
+      "rheumatoid blood test",
+      "anti-ccp"
+    ],
+    "conditionTags": [
+      "ARTHRITIS"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440137",
+    "genericName": "X-Ray Joints",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "joint xray",
+      "x-ray",
+      "skeletal xray",
+      "bone xray",
+      "arthritis xray"
+    ],
+    "conditionTags": [
+      "ARTHRITIS",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440138",
+    "genericName": "Amiodarone",
+    "brandNames": [
+      "Cordarone",
+      "Pacerone",
+      "Amiodar"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "100mg",
+      "200mg",
+      "150mg/3mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C01BD01",
+    "synonyms": [
+      "amiodarone hcl",
+      "cordarone",
+      "pacerone",
+      "heart rhythm medicine",
+      "anti-arrhythmic"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440139",
+    "genericName": "Glyceryl Trinitrate",
+    "brandNames": [
+      "GTN",
+      "Nitrostat",
+      "Nitrolingual"
+    ],
+    "dosageForms": [
+      "sublingual tablet",
+      "spray",
+      "patch"
+    ],
+    "strengths": [
+      "0.3mg",
+      "0.4mg",
+      "0.6mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C01DA02",
+    "synonyms": [
+      "gtn",
+      "nitroglycerin",
+      "nitro",
+      "nitrostat",
+      "angina spray",
+      "under tongue tablet",
+      "chest pain spray"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440140",
+    "genericName": "Diltiazem",
+    "brandNames": [
+      "Cardizem",
+      "Dilzem",
+      "Tildiem"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet",
+      "capsule"
+    ],
+    "strengths": [
+      "30mg",
+      "60mg",
+      "90mg",
+      "120mg",
+      "180mg",
+      "240mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C08DB01",
+    "synonyms": [
+      "diltiazeme",
+      "cardizem",
+      "dilzem",
+      "tildiem",
+      "calcium channel blocker"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440141",
+    "genericName": "Verapamil",
+    "brandNames": [
+      "Isoptin",
+      "Calan",
+      "Verpamil"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release tablet",
+      "injection"
+    ],
+    "strengths": [
+      "40mg",
+      "80mg",
+      "120mg",
+      "180mg",
+      "240mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C08DA01",
+    "synonyms": [
+      "verapamile",
+      "isoptin",
+      "calan",
+      "verpamil",
+      "heart rate medicine"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440142",
+    "genericName": "Bisoprolol",
+    "brandNames": [
+      "Concor",
+      "Bisocard",
+      "Corbis"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1.25mg",
+      "2.5mg",
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C07AB07",
+    "synonyms": [
+      "bisoprolal",
+      "concor",
+      "bisocard",
+      "corbis",
+      "heart failure beta blocker"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "HYPERTENSION"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440143",
+    "genericName": "Ivabradine",
+    "brandNames": [
+      "Corlanor",
+      "Procoralan",
+      "Ivabid"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "7.5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C01EB17",
+    "synonyms": [
+      "ivabradene",
+      "corlanor",
+      "procoralan",
+      "heart rate reducer"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440144",
+    "genericName": "Sacubitril/Valsartan",
+    "brandNames": [
+      "Entresto",
+      "Sacuval"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "24/26mg",
+      "49/51mg",
+      "97/103mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C09DX04",
+    "synonyms": [
+      "entresto",
+      "sacubitril valsartan",
+      "arni",
+      "heart failure medicine",
+      "sacuval"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440145",
+    "genericName": "Ranolazine",
+    "brandNames": [
+      "Ranexa",
+      "Ranozex"
+    ],
+    "dosageForms": [
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "500mg",
+      "1000mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C01EB18",
+    "synonyms": [
+      "ranolazin",
+      "ranexa",
+      "ranozex",
+      "angina tablet"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440146",
+    "genericName": "ECG Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "ecg",
+      "electrocardiogram",
+      "ekg",
+      "heart trace",
+      "heart rhythm test"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440147",
+    "genericName": "Echocardiogram",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "echo",
+      "heart ultrasound",
+      "cardiac echo",
+      "heart scan",
+      "echocardiography"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440148",
+    "genericName": "Lipid Profile Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "lipid panel",
+      "cholesterol test",
+      "lipid test",
+      "ldl hdl test",
+      "fasting lipids"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440149",
+    "genericName": "Troponin Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "troponin",
+      "cardiac troponin",
+      "troponin i",
+      "troponin t",
+      "heart attack test"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440150",
+    "genericName": "BNP Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "bnp",
+      "brain natriuretic peptide",
+      "nt-probnp",
+      "heart failure test",
+      "cardiac marker"
+    ],
+    "conditionTags": [
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440151",
+    "genericName": "Cyclophosphamide",
+    "brandNames": [
+      "Endoxan",
+      "Cytoxan",
+      "Neosar"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "50mg",
+      "500mg",
+      "1000mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01AA01",
+    "synonyms": [
+      "cyclophosphamid",
+      "endoxan",
+      "cytoxan",
+      "chemo",
+      "alkylating agent"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440152",
+    "genericName": "Anastrozole",
+    "brandNames": [
+      "Arimidex",
+      "Anastrol",
+      "Anadex"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "1mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L02BG03",
+    "synonyms": [
+      "anastrozol",
+      "arimidex",
+      "anastrol",
+      "aromatase inhibitor",
+      "breast cancer tablet"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440153",
+    "genericName": "Letrozole",
+    "brandNames": [
+      "Femara",
+      "Letronat",
+      "Letara"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "2.5mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L02BG04",
+    "synonyms": [
+      "letrozol",
+      "femara",
+      "letronat",
+      "ai",
+      "breast cancer medicine"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440154",
+    "genericName": "Cisplatin",
+    "brandNames": [
+      "Platinol",
+      "Cisplat",
+      "Kemoplat"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "10mg",
+      "25mg",
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01XA01",
+    "synonyms": [
+      "cisplatine",
+      "platinol",
+      "platinum",
+      "chemo injection"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440155",
+    "genericName": "5-Fluorouracil",
+    "brandNames": [
+      "Adrucil",
+      "5-FU",
+      "Efudex"
+    ],
+    "dosageForms": [
+      "injection",
+      "cream"
+    ],
+    "strengths": [
+      "250mg/5mL",
+      "500mg/10mL",
+      "5%"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01BC02",
+    "synonyms": [
+      "5fu",
+      "fluorouracil",
+      "adrucil",
+      "efudex",
+      "chemo drip"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440156",
+    "genericName": "Doxorubicin",
+    "brandNames": [
+      "Adriamycin",
+      "Caelyx",
+      "Doxil"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "10mg",
+      "50mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01DB01",
+    "synonyms": [
+      "adriamycin",
+      "doxorubicine",
+      "red devil",
+      "chemo red"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440157",
+    "genericName": "Vincristine",
+    "brandNames": [
+      "Oncovin",
+      "Vincrisin"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "1mg/mL",
+      "2mg/2mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01CA02",
+    "synonyms": [
+      "vincristina",
+      "oncovin",
+      "vinca alkaloid"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440158",
+    "genericName": "Paclitaxel",
+    "brandNames": [
+      "Taxol",
+      "Intaxel",
+      "Paclitax"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "30mg",
+      "100mg",
+      "260mg",
+      "300mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01CD01",
+    "synonyms": [
+      "taxol",
+      "intaxel",
+      "paclitaxal",
+      "taxane"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440159",
+    "genericName": "Carboplatin",
+    "brandNames": [
+      "Paraplatin",
+      "Carbokem",
+      "Kemocarb"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "150mg",
+      "450mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01XA02",
+    "synonyms": [
+      "carboplatine",
+      "paraplatin",
+      "carbokem",
+      "platinum chemo"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440160",
+    "genericName": "Etoposide",
+    "brandNames": [
+      "Vepesid",
+      "Etosid",
+      "Lastet"
+    ],
+    "dosageForms": [
+      "capsule",
+      "injection"
+    ],
+    "strengths": [
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "L01CB01",
+    "synonyms": [
+      "etoposid",
+      "vepesid",
+      "etosid",
+      "vp-16"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440161",
+    "genericName": "Morphine",
+    "brandNames": [
+      "MST Continus",
+      "Sevredol",
+      "Oramorph"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral solution",
+      "injection",
+      "extended-release tablet"
+    ],
+    "strengths": [
+      "5mg",
+      "10mg",
+      "15mg",
+      "30mg",
+      "60mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N02AA01",
+    "synonyms": [
+      "morphene",
+      "mst",
+      "oramorph",
+      "sevredol",
+      "pain relief strong",
+      "palliative medicine"
+    ],
+    "conditionTags": [
+      "CANCER",
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440162",
+    "genericName": "Tramadol",
+    "brandNames": [
+      "Tramal",
+      "Ultram",
+      "Tramacet"
+    ],
+    "dosageForms": [
+      "capsule",
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "50mg",
+      "100mg",
+      "200mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "N02AX02",
+    "synonyms": [
+      "tramadole",
+      "tramal",
+      "ultram",
+      "moderate painkiller",
+      "tramacet"
+    ],
+    "conditionTags": [
+      "CANCER",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440163",
+    "genericName": "CT Scan",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "ct",
+      "cat scan",
+      "computed tomography",
+      "body scan",
+      "ct imaging"
+    ],
+    "conditionTags": [
+      "CANCER",
+      "STROKE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440164",
+    "genericName": "Biopsy",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "tissue biopsy",
+      "needle biopsy",
+      "core biopsy",
+      "cancer biopsy",
+      "sample collection"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440165",
+    "genericName": "Tumour Marker Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "tumor markers",
+      "cancer markers",
+      "cea",
+      "ca 125",
+      "ca 19-9",
+      "psa",
+      "afp",
+      "cancer blood test"
+    ],
+    "conditionTags": [
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440166",
+    "genericName": "CBC with Differential",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "cbc diff",
+      "complete blood count differential",
+      "blood count with diff",
+      "wbc differential"
+    ],
+    "conditionTags": [
+      "CANCER",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440167",
+    "genericName": "Ferrous Sulphate",
+    "brandNames": [
+      "Fefol",
+      "Iberet",
+      "Ferograd"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule",
+      "syrup"
+    ],
+    "strengths": [
+      "200mg",
+      "300mg",
+      "325mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B03AA07",
+    "synonyms": [
+      "ferrous sulfate",
+      "iron tablets",
+      "iron supplement",
+      "fefol",
+      "iberet",
+      "blood builder",
+      "iron medicine"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440168",
+    "genericName": "Alfacalcidol",
+    "brandNames": [
+      "One-Alpha",
+      "Alfacal",
+      "Alpha D3"
+    ],
+    "dosageForms": [
+      "capsule",
+      "oral drops"
+    ],
+    "strengths": [
+      "0.25mcg",
+      "0.5mcg",
+      "1mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A11CC03",
+    "synonyms": [
+      "alfacalcidole",
+      "one-alpha",
+      "alfa calcidol",
+      "vitamin d active",
+      "kidney vitamin d"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440169",
+    "genericName": "Sodium Bicarbonate",
+    "brandNames": [
+      "Baking Soda (medical)",
+      "Soda Bicarb"
+    ],
+    "dosageForms": [
+      "tablet",
+      "powder",
+      "injection"
+    ],
+    "strengths": [
+      "300mg",
+      "500mg",
+      "600mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B05CB04",
+    "synonyms": [
+      "bicarb",
+      "sodium bicarb",
+      "baking soda",
+      "nahco3",
+      "acid neutralizer"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440170",
+    "genericName": "Sodium Polystyrene Sulfonate",
+    "brandNames": [
+      "Kayexalate",
+      "Resonium",
+      "Kionex"
+    ],
+    "dosageForms": [
+      "powder",
+      "suspension"
+    ],
+    "strengths": [
+      "15g/60mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "V03AE01",
+    "synonyms": [
+      "kayexalate",
+      "resonium",
+      "kionex",
+      "potassium binder",
+      "high potassium medicine"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440171",
+    "genericName": "Sevelamer",
+    "brandNames": [
+      "Renagel",
+      "Renvela",
+      "Sevelamer Carbonate"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "400mg",
+      "800mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "V03AE02",
+    "synonyms": [
+      "sevelamere",
+      "renagel",
+      "renvela",
+      "phosphate binder",
+      "kidney phosphate medicine"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440172",
+    "genericName": "Darbepoetin",
+    "brandNames": [
+      "Aranesp",
+      "Darbepoetin Alfa"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "10mcg",
+      "20mcg",
+      "40mcg",
+      "60mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B03XA02",
+    "synonyms": [
+      "darbepoetin alfa",
+      "aranesp",
+      "long acting epo",
+      "kidney anaemia injection"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440173",
+    "genericName": "Peritoneal Dialysis Fluid",
+    "brandNames": [
+      "Dianeal",
+      "Baxter PD",
+      "Physioneal"
+    ],
+    "dosageForms": [
+      "solution"
+    ],
+    "strengths": [
+      "1.5%",
+      "2.5%",
+      "4.25%"
+    ],
+    "category": "SUPPLY",
+    "atcCode": null,
+    "synonyms": [
+      "pd fluid",
+      "dialysis fluid",
+      "peritoneal fluid",
+      "dianeal",
+      "baxter",
+      "tummy dialysis"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440174",
+    "genericName": "Haemodialysis Session",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "dialysis",
+      "haemodialysis",
+      "hemodialysis",
+      "kidney dialysis",
+      "dialysis session",
+      "blood cleaning"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440175",
+    "genericName": "Urea Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "bun",
+      "blood urea nitrogen",
+      "urea level",
+      "kidney urea",
+      "urea blood test"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440176",
+    "genericName": "Electrolyte Panel",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "electrolytes",
+      "sodium potassium",
+      "u&e",
+      "urea and electrolytes",
+      "lytes",
+      "metabolic panel"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440177",
+    "genericName": "Kidney Ultrasound",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "renal ultrasound",
+      "kidney scan",
+      "renal scan",
+      "kidney imaging",
+      "kub ultrasound"
+    ],
+    "conditionTags": [
+      "KIDNEY_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440178",
+    "genericName": "Azithromycin",
+    "brandNames": [
+      "Zithromax",
+      "Azee",
+      "Azithral"
+    ],
+    "dosageForms": [
+      "tablet",
+      "capsule",
+      "suspension"
+    ],
+    "strengths": [
+      "250mg",
+      "500mg",
+      "200mg/5mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J01FA10",
+    "synonyms": [
+      "azithromycine",
+      "zithromax",
+      "azee",
+      "azithral",
+      "z-pack",
+      "antibiotic"
+    ],
+    "conditionTags": [
+      "COPD",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440179",
+    "genericName": "Roflumilast",
+    "brandNames": [
+      "Daxas",
+      "Daliresp"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "250mcg",
+      "500mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "R03DX07",
+    "synonyms": [
+      "roflumilaste",
+      "daxas",
+      "daliresp",
+      "pde4 inhibitor",
+      "copd tablet"
+    ],
+    "conditionTags": [
+      "COPD"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440180",
+    "genericName": "Oxygen Concentrator",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "SUPPLY",
+    "atcCode": null,
+    "synonyms": [
+      "oxygen machine",
+      "o2 concentrator",
+      "home oxygen",
+      "portable oxygen",
+      "breathing machine"
+    ],
+    "conditionTags": [
+      "COPD",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440181",
+    "genericName": "Spirometry Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "spirometry",
+      "lung function test",
+      "fev1",
+      "fvc",
+      "pulmonary function",
+      "breathing capacity test"
+    ],
+    "conditionTags": [
+      "COPD",
+      "ASTHMA"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440182",
+    "genericName": "Sputum Culture",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "sputum test",
+      "phlegm test",
+      "sputum culture and sensitivity",
+      "chest infection test"
+    ],
+    "conditionTags": [
+      "COPD",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440183",
+    "genericName": "Propylthiouracil",
+    "brandNames": [
+      "PTU",
+      "Propylex"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "H03BA02",
+    "synonyms": [
+      "ptu",
+      "propylthiouracile",
+      "propylex",
+      "anti-thyroid",
+      "overactive thyroid"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440184",
+    "genericName": "Lugol's Iodine",
+    "brandNames": [
+      "Lugol's Solution",
+      "Potassium Iodide"
+    ],
+    "dosageForms": [
+      "oral solution"
+    ],
+    "strengths": [
+      "5%",
+      "10%"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "H03CA",
+    "synonyms": [
+      "lugols",
+      "iodine solution",
+      "potassium iodide",
+      "thyroid iodine",
+      "ki solution"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440185",
+    "genericName": "Radioactive Iodine Treatment",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "rai",
+      "radioactive iodine",
+      "iodine 131",
+      "thyroid ablation",
+      "nuclear medicine thyroid"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440186",
+    "genericName": "Thyroid Ultrasound",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "thyroid scan",
+      "thyroid imaging",
+      "neck ultrasound",
+      "thyroid us"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440187",
+    "genericName": "T3/T4 Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "t3 t4",
+      "free t3",
+      "free t4",
+      "thyroid hormones",
+      "ft3 ft4",
+      "triiodothyronine",
+      "thyroxine level"
+    ],
+    "conditionTags": [
+      "THYROID"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440188",
+    "genericName": "Dipyridamole",
+    "brandNames": [
+      "Persantin",
+      "Aggrenox"
+    ],
+    "dosageForms": [
+      "tablet",
+      "extended-release capsule"
+    ],
+    "strengths": [
+      "25mg",
+      "75mg",
+      "200mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B01AC07",
+    "synonyms": [
+      "dipyridamol",
+      "persantin",
+      "aggrenox",
+      "blood flow medicine",
+      "anti-platelet"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440189",
+    "genericName": "Nimodipine",
+    "brandNames": [
+      "Nimotop",
+      "Nimo"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "30mg",
+      "60mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "C08CA06",
+    "synonyms": [
+      "nimodepin",
+      "nimotop",
+      "brain blood flow",
+      "subarachnoid medicine"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440190",
+    "genericName": "Enoxaparin",
+    "brandNames": [
+      "Clexane",
+      "Lovenox",
+      "Enoxion"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "20mg",
+      "40mg",
+      "60mg",
+      "80mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B01AB05",
+    "synonyms": [
+      "enoxaparine",
+      "clexane",
+      "lovenox",
+      "blood thinner injection",
+      "lmwh",
+      "heparin injection"
+    ],
+    "conditionTags": [
+      "STROKE",
+      "HEART_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440191",
+    "genericName": "Alteplase",
+    "brandNames": [
+      "Actilyse",
+      "Activase",
+      "tPA"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "50mg",
+      "100mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B01AD02",
+    "synonyms": [
+      "tpa",
+      "actilyse",
+      "activase",
+      "clot buster",
+      "thrombolytic",
+      "stroke injection"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440192",
+    "genericName": "CT Brain Scan",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "brain ct",
+      "head ct",
+      "ct head",
+      "brain scan",
+      "stroke scan"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440193",
+    "genericName": "MRI Brain",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "brain mri",
+      "head mri",
+      "mri scan",
+      "magnetic resonance brain",
+      "brain imaging"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440194",
+    "genericName": "Carotid Doppler",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "carotid ultrasound",
+      "carotid duplex",
+      "neck artery scan",
+      "carotid scan"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440195",
+    "genericName": "Speech Therapy Session",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "speech therapy",
+      "speech rehab",
+      "slp",
+      "speech pathology",
+      "aphasia therapy",
+      "talking therapy"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440196",
+    "genericName": "Occupational Therapy Session",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "occupational therapy",
+      "ot session",
+      "ot rehab",
+      "daily living rehab",
+      "hand therapy"
+    ],
+    "conditionTags": [
+      "STROKE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440197",
+    "genericName": "Lactulose",
+    "brandNames": [
+      "Duphalac",
+      "Laevolac",
+      "Lactugal"
+    ],
+    "dosageForms": [
+      "oral solution",
+      "syrup"
+    ],
+    "strengths": [
+      "3.35g/5mL",
+      "10g/15mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A06AD11",
+    "synonyms": [
+      "lactulose syrup",
+      "duphalac",
+      "laevolac",
+      "laxative",
+      "liver laxative",
+      "encephalopathy medicine"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440198",
+    "genericName": "Rifaximin",
+    "brandNames": [
+      "Xifaxan",
+      "Rifagut",
+      "Rcifax"
+    ],
+    "dosageForms": [
+      "tablet"
+    ],
+    "strengths": [
+      "200mg",
+      "550mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "A07AA11",
+    "synonyms": [
+      "rifaximine",
+      "xifaxan",
+      "rifagut",
+      "gut antibiotic",
+      "liver antibiotic"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440199",
+    "genericName": "Vitamin K",
+    "brandNames": [
+      "Konakion",
+      "Phytonadione",
+      "Mephyton"
+    ],
+    "dosageForms": [
+      "tablet",
+      "injection"
+    ],
+    "strengths": [
+      "1mg",
+      "5mg",
+      "10mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B02BA01",
+    "synonyms": [
+      "phytomenadione",
+      "konakion",
+      "vitamin k1",
+      "clotting vitamin",
+      "bleeding medicine"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440200",
+    "genericName": "Albumin IV",
+    "brandNames": [
+      "Human Albumin",
+      "Albunorm",
+      "Alburel"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "5%",
+      "20%",
+      "25%"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "B05AA01",
+    "synonyms": [
+      "albumin",
+      "human albumin",
+      "iv albumin",
+      "albunorm",
+      "protein infusion"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440201",
+    "genericName": "Hepatitis B Vaccine",
+    "brandNames": [
+      "Engerix-B",
+      "Heplisav-B",
+      "Shanvac"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "10mcg",
+      "20mcg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J07BC01",
+    "synonyms": [
+      "hep b vaccine",
+      "hepatitis vaccine",
+      "engerix",
+      "hbv vaccine"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440202",
+    "genericName": "Abdominal Ultrasound",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "abdominal scan",
+      "liver ultrasound",
+      "hepatic ultrasound",
+      "liver scan",
+      "tummy scan"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE",
+      "GENERAL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440203",
+    "genericName": "AFP Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "alpha fetoprotein",
+      "afp",
+      "liver cancer marker",
+      "hepatoma marker"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE",
+      "CANCER"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440204",
+    "genericName": "Hepatitis B Surface Antigen Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "hbsag",
+      "hep b test",
+      "hepatitis b test",
+      "hbv test",
+      "surface antigen"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440205",
+    "genericName": "Hepatitis C Antibody Test",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "hcv test",
+      "hep c test",
+      "hepatitis c test",
+      "anti-hcv",
+      "hcv antibody"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440206",
+    "genericName": "Fibroscan",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "liver fibroscan",
+      "transient elastography",
+      "liver stiffness",
+      "fibrosis scan",
+      "liver elastography"
+    ],
+    "conditionTags": [
+      "LIVER_DISEASE"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440207",
+    "genericName": "Penicillin V",
+    "brandNames": [
+      "Pen VK",
+      "Ospen",
+      "Phenoxymethylpenicillin"
+    ],
+    "dosageForms": [
+      "tablet",
+      "oral solution"
+    ],
+    "strengths": [
+      "125mg",
+      "250mg",
+      "500mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J01CE02",
+    "synonyms": [
+      "penicillin vk",
+      "pen v",
+      "phenoxymethylpenicillin",
+      "ospen",
+      "sickle cell antibiotic",
+      "prophylactic penicillin"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440208",
+    "genericName": "L-Glutamine",
+    "brandNames": [
+      "Endari",
+      "Glutamine Powder"
+    ],
+    "dosageForms": [
+      "powder",
+      "capsule"
+    ],
+    "strengths": [
+      "5g",
+      "10g"
+    ],
+    "category": "MEDICATION",
+    "atcCode": null,
+    "synonyms": [
+      "glutamine",
+      "endari",
+      "l glutamine",
+      "amino acid supplement",
+      "sickle cell supplement"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440209",
+    "genericName": "Deferasirox",
+    "brandNames": [
+      "Exjade",
+      "Desirox",
+      "Asunra"
+    ],
+    "dosageForms": [
+      "tablet",
+      "dispersible tablet"
+    ],
+    "strengths": [
+      "125mg",
+      "250mg",
+      "500mg"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "V03AC03",
+    "synonyms": [
+      "deferasiroxe",
+      "exjade",
+      "desirox",
+      "iron chelator",
+      "iron remover",
+      "chelation tablet"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440210",
+    "genericName": "Blood Transfusion",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "CONSULTATION",
+    "atcCode": null,
+    "synonyms": [
+      "transfusion",
+      "blood transfusion",
+      "packed red cells",
+      "blood unit",
+      "prbc"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440211",
+    "genericName": "Pneumococcal Vaccine",
+    "brandNames": [
+      "Prevenar 13",
+      "Pneumovax 23"
+    ],
+    "dosageForms": [
+      "injection"
+    ],
+    "strengths": [
+      "0.5mL"
+    ],
+    "category": "MEDICATION",
+    "atcCode": "J07AL",
+    "synonyms": [
+      "pneumonia vaccine",
+      "prevenar",
+      "pneumovax",
+      "pcv",
+      "pneumococcal jab"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440212",
+    "genericName": "Reticulocyte Count",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "retic count",
+      "reticulocytes",
+      "young red blood cells",
+      "bone marrow response test"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440213",
+    "genericName": "Haemoglobin Electrophoresis",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "hb electrophoresis",
+      "hemoglobin electrophoresis",
+      "sickle cell test",
+      "hb genotype",
+      "sickling test"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
+    "isActive": true
+  },
+  {
+    "id": "550e8400-e29b-41d4-a716-446655440214",
+    "genericName": "Transcranial Doppler",
+    "brandNames": [],
+    "dosageForms": null,
+    "strengths": null,
+    "category": "LAB_TEST",
+    "atcCode": null,
+    "synonyms": [
+      "tcd",
+      "brain doppler",
+      "transcranial ultrasound",
+      "stroke risk test sickle cell"
+    ],
+    "conditionTags": [
+      "SICKLE_CELL"
+    ],
     "isActive": true
   }
 ]

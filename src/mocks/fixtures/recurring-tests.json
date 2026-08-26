@@ -1,0 +1,560 @@
+[
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000001",
+    "testName": "HbA1c Test",
+    "description": "Measures average blood sugar control over the past 2-3 months",
+    "conditionTags": ["DIABETES", "STROKE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000002",
+    "testName": "Fasting Blood Sugar",
+    "description": "Measures blood glucose after an overnight fast to assess diabetes control",
+    "conditionTags": ["DIABETES"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 300,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000003",
+    "testName": "Random Blood Sugar",
+    "description": "Measures blood glucose at any time of day regardless of meals",
+    "conditionTags": ["DIABETES"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 250,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000004",
+    "testName": "Oral Glucose Tolerance Test",
+    "description": "Measures how the body processes sugar over a 2-hour period after drinking a glucose solution",
+    "conditionTags": ["DIABETES"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 1200,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000005",
+    "testName": "Urine Microalbumin",
+    "description": "Detects early signs of kidney damage by measuring small amounts of protein in urine",
+    "conditionTags": ["DIABETES"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000006",
+    "testName": "Retinal Screening / Eye Exam",
+    "description": "Checks for diabetic retinopathy and other eye damage caused by high blood sugar",
+    "conditionTags": ["DIABETES"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 3000,
+    "category": "SPECIALIST_REVIEW"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000007",
+    "testName": "Foot Examination",
+    "description": "Checks for nerve damage, circulation problems, and wound healing in the feet",
+    "conditionTags": ["DIABETES"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 1500,
+    "category": "SPECIALIST_REVIEW"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000008",
+    "testName": "Lipid Profile",
+    "description": "Measures cholesterol and triglyceride levels to assess cardiovascular risk",
+    "conditionTags": ["DIABETES", "HYPERTENSION", "HEART_DISEASE", "STROKE", "HIV_AIDS"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 1200,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000009",
+    "testName": "Renal Function Panel",
+    "description": "Measures creatinine, eGFR, and other markers to assess how well your kidneys are working",
+    "conditionTags": ["DIABETES", "HYPERTENSION", "HEART_DISEASE", "SICKLE_CELL", "HIV_AIDS", "EPILEPSY", "ARTHRITIS", "MENTAL_HEALTH", "KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000010",
+    "testName": "Blood Pressure Monitoring",
+    "description": "Regular measurement of blood pressure to track hypertension control",
+    "conditionTags": ["HYPERTENSION"],
+    "defaultFrequencyMonths": 1,
+    "estimatedPriceKES": 200,
+    "category": "FUNCTIONAL_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000011",
+    "testName": "Electrolyte Panel",
+    "description": "Measures sodium, potassium, chloride, and bicarbonate levels in the blood",
+    "conditionTags": ["HYPERTENSION", "KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000012",
+    "testName": "Urinalysis",
+    "description": "Tests urine for protein, blood, glucose, and infection to assess kidney and metabolic health",
+    "conditionTags": ["HYPERTENSION", "KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000013",
+    "testName": "ECG (Electrocardiogram)",
+    "description": "Records the electrical activity of the heart to detect rhythm abnormalities and heart strain",
+    "conditionTags": ["HYPERTENSION", "HEART_DISEASE", "STROKE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 1500,
+    "category": "FUNCTIONAL_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000014",
+    "testName": "Echocardiogram",
+    "description": "Ultrasound of the heart to assess structure, pumping function, and valve health",
+    "conditionTags": ["HYPERTENSION", "HEART_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 8000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000015",
+    "testName": "Spirometry",
+    "description": "Measures how much and how fast you can breathe out to assess lung function",
+    "conditionTags": ["ASTHMA", "COPD"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 3000,
+    "category": "FUNCTIONAL_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000016",
+    "testName": "Chest X-ray",
+    "description": "Imaging of the chest to check the lungs, heart size, and surrounding structures",
+    "conditionTags": ["ASTHMA", "COPD", "CANCER", "HEART_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 2500,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000017",
+    "testName": "Allergy Testing",
+    "description": "Skin prick or blood tests to identify specific allergens that trigger asthma symptoms",
+    "conditionTags": ["ASTHMA"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 5000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000018",
+    "testName": "Blood Eosinophil Count",
+    "description": "Measures a type of white blood cell associated with allergic and asthma inflammation",
+    "conditionTags": ["ASTHMA"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 600,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000019",
+    "testName": "Complete Blood Count (CBC)",
+    "description": "Measures red cells, white cells, and platelets to assess overall health and detect disorders",
+    "conditionTags": ["CANCER", "KIDNEY_DISEASE", "SICKLE_CELL", "HIV_AIDS", "EPILEPSY", "COPD", "ARTHRITIS", "MENTAL_HEALTH", "LIVER_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000020",
+    "testName": "Tumour Marker Test",
+    "description": "Blood test measuring proteins produced by cancer cells to monitor treatment response",
+    "conditionTags": ["CANCER"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 3500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000021",
+    "testName": "CT Scan",
+    "description": "Detailed cross-sectional imaging to detect tumours, monitor treatment, and check for spread",
+    "conditionTags": ["CANCER"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 15000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000022",
+    "testName": "Liver Function Test",
+    "description": "Measures liver enzymes (ALT, AST, ALP), bilirubin, and albumin to assess liver health",
+    "conditionTags": ["CANCER", "SICKLE_CELL", "HIV_AIDS", "EPILEPSY", "ARTHRITIS", "MENTAL_HEALTH", "LIVER_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1200,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000023",
+    "testName": "Biopsy",
+    "description": "Removal and examination of tissue sample to diagnose or monitor cancer",
+    "conditionTags": ["CANCER"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 12000,
+    "category": "PROCEDURE"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000024",
+    "testName": "Creatinine / eGFR",
+    "description": "Key marker for kidney filtration rate — tracks progression of kidney disease",
+    "conditionTags": ["KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000025",
+    "testName": "Phosphate & Calcium",
+    "description": "Measures mineral balance affected by kidney disease — important for bone health",
+    "conditionTags": ["KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000026",
+    "testName": "Kidney Ultrasound",
+    "description": "Imaging to check kidney size, structure, and detect stones or blockages",
+    "conditionTags": ["KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 5000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000027",
+    "testName": "Urea Test",
+    "description": "Measures blood urea nitrogen to assess kidney function and protein metabolism",
+    "conditionTags": ["KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000028",
+    "testName": "Parathyroid Hormone (PTH)",
+    "description": "Measures PTH levels which regulate calcium and phosphate — often elevated in kidney disease",
+    "conditionTags": ["KIDNEY_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 3500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000029",
+    "testName": "Troponin Test",
+    "description": "Measures heart muscle protein released during damage — used to detect heart attacks",
+    "conditionTags": ["HEART_DISEASE"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 2500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000030",
+    "testName": "BNP Test",
+    "description": "Measures brain natriuretic peptide to assess heart failure severity and treatment response",
+    "conditionTags": ["HEART_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 3500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000031",
+    "testName": "Reticulocyte Count",
+    "description": "Measures young red blood cells to assess bone marrow response and anaemia management",
+    "conditionTags": ["SICKLE_CELL"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000032",
+    "testName": "Iron Studies / Ferritin",
+    "description": "Measures iron stores and transport — monitors iron overload from repeated transfusions",
+    "conditionTags": ["SICKLE_CELL"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000033",
+    "testName": "Transcranial Doppler",
+    "description": "Ultrasound of brain blood vessels to assess stroke risk in sickle cell patients",
+    "conditionTags": ["SICKLE_CELL"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 8000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000034",
+    "testName": "Haemoglobin Electrophoresis",
+    "description": "Identifies haemoglobin types to monitor sickle cell disease and treatment response",
+    "conditionTags": ["SICKLE_CELL"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 2500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000035",
+    "testName": "CD4 Count",
+    "description": "Measures immune system strength by counting CD4 T-cells — key HIV monitoring marker",
+    "conditionTags": ["HIV_AIDS"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000036",
+    "testName": "Viral Load",
+    "description": "Measures the amount of HIV in the blood to assess treatment effectiveness",
+    "conditionTags": ["HIV_AIDS"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 3500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000037",
+    "testName": "Drug Level Monitoring",
+    "description": "Measures anti-epileptic drug concentration in blood to ensure therapeutic levels",
+    "conditionTags": ["EPILEPSY"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 2000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000038",
+    "testName": "EEG (Electroencephalogram)",
+    "description": "Records brain electrical activity to monitor seizure control and medication effectiveness",
+    "conditionTags": ["EPILEPSY"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 5000,
+    "category": "FUNCTIONAL_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000039",
+    "testName": "Arterial Blood Gas",
+    "description": "Measures oxygen and carbon dioxide levels in blood to assess lung function",
+    "conditionTags": ["COPD"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 2000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000040",
+    "testName": "Sputum Culture",
+    "description": "Tests mucus from the lungs to identify bacterial infections common in COPD",
+    "conditionTags": ["COPD"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000041",
+    "testName": "ESR (Erythrocyte Sedimentation Rate)",
+    "description": "Measures inflammation levels — used to track arthritis disease activity",
+    "conditionTags": ["ARTHRITIS"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000042",
+    "testName": "CRP (C-Reactive Protein)",
+    "description": "Measures a protein that rises with inflammation — monitors arthritis flares and treatment",
+    "conditionTags": ["ARTHRITIS"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000043",
+    "testName": "Rheumatoid Factor",
+    "description": "Antibody test that helps diagnose and monitor rheumatoid arthritis",
+    "conditionTags": ["ARTHRITIS"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000044",
+    "testName": "Uric Acid Test",
+    "description": "Measures uric acid levels — elevated in gout and some forms of arthritis",
+    "conditionTags": ["ARTHRITIS"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 600,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000045",
+    "testName": "Joint X-ray",
+    "description": "Imaging to assess joint damage, erosion, and disease progression in arthritis",
+    "conditionTags": ["ARTHRITIS"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 3000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000046",
+    "testName": "Psychiatric Review",
+    "description": "Assessment by a psychiatrist to evaluate symptoms, medication response, and treatment plan",
+    "conditionTags": ["MENTAL_HEALTH"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 5000,
+    "category": "SPECIALIST_REVIEW"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000047",
+    "testName": "Thyroid Function Test (TSH)",
+    "description": "Measures thyroid-stimulating hormone — monitors thyroid conditions and effects of mood stabilizers",
+    "conditionTags": ["THYROID", "MENTAL_HEALTH"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000048",
+    "testName": "Lithium Level Test",
+    "description": "Measures lithium concentration in blood to maintain therapeutic range and avoid toxicity",
+    "conditionTags": ["MENTAL_HEALTH"],
+    "defaultFrequencyMonths": 1,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000049",
+    "testName": "T3/T4 Test",
+    "description": "Measures active thyroid hormones to assess thyroid function alongside TSH",
+    "conditionTags": ["THYROID"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 2000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000050",
+    "testName": "Thyroid Ultrasound",
+    "description": "Imaging to check thyroid gland size, nodules, and structural changes",
+    "conditionTags": ["THYROID"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 5000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000051",
+    "testName": "Thyroid Antibody Test",
+    "description": "Detects antibodies that attack the thyroid — helps diagnose autoimmune thyroid disease",
+    "conditionTags": ["THYROID"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 2500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000052",
+    "testName": "INR / PT Test",
+    "description": "Measures blood clotting time — essential for patients on warfarin or other blood thinners",
+    "conditionTags": ["STROKE", "HEART_DISEASE", "LIVER_DISEASE"],
+    "defaultFrequencyMonths": 1,
+    "estimatedPriceKES": 800,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000053",
+    "testName": "CT Brain Scan",
+    "description": "Cross-sectional brain imaging to monitor for new strokes or progression",
+    "conditionTags": ["STROKE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 12000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000054",
+    "testName": "Carotid Doppler",
+    "description": "Ultrasound of neck arteries to check for blockages that increase stroke risk",
+    "conditionTags": ["STROKE"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 8000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000055",
+    "testName": "MRI Brain",
+    "description": "Detailed brain imaging for stroke damage assessment and monitoring",
+    "conditionTags": ["STROKE"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 25000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000056",
+    "testName": "Coagulation Profile",
+    "description": "Measures PT, INR, and other clotting factors to assess bleeding risk in liver disease",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 1000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000057",
+    "testName": "Serum Albumin",
+    "description": "Measures the main protein made by the liver — low levels indicate poor liver function",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 3,
+    "estimatedPriceKES": 600,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000058",
+    "testName": "AFP Tumour Marker",
+    "description": "Alpha-fetoprotein test to screen for liver cancer in patients with chronic liver disease",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 2000,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000059",
+    "testName": "Hepatitis B Surface Antigen",
+    "description": "Detects active hepatitis B infection — monitors viral status in chronic carriers",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 1200,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000060",
+    "testName": "Hepatitis C Antibody",
+    "description": "Screens for hepatitis C infection which causes progressive liver damage",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 1500,
+    "category": "BLOOD_TEST"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000061",
+    "testName": "Abdominal Ultrasound",
+    "description": "Imaging to assess liver size, texture, bile ducts, and detect fluid or masses",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 6,
+    "estimatedPriceKES": 4000,
+    "category": "IMAGING"
+  },
+  {
+    "id": "a1b2c3d4-1111-4aaa-b111-000000000062",
+    "testName": "FibroScan",
+    "description": "Non-invasive scan that measures liver stiffness to assess fibrosis and cirrhosis",
+    "conditionTags": ["LIVER_DISEASE"],
+    "defaultFrequencyMonths": 12,
+    "estimatedPriceKES": 12000,
+    "category": "IMAGING"
+  }
+]

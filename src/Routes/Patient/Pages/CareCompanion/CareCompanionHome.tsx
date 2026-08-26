@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { lazy, Suspense, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
   Calendar,
@@ -16,31 +16,75 @@ import {
   Sparkles,
   UserCog,
   Eye,
+  Plus,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { SectionErrorBoundary } from "./components/SectionErrorBoundary"
 import { EmergencyCardStaticFallback } from "./components/EmergencyCardStaticFallback"
 import { MedicationCardDrawer } from "./components/MedicationCardDrawer"
+import { AddMedicationDrawer } from "./components/AddMedicationDrawer"
 import { useCareCompanionHome } from "./hooks/useCareCompanionHome"
+import { useIntakeProfile } from "./hooks/useIntakeProfile"
+
+const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
 import type { CareCompanionHome as CareCompanionHomeData } from "@/types/care-companion"
 
+const CHALLENGE_LABELS: Record<string, string> = {
+  COST: "managing costs",
+  UNDERSTANDING_MEDICATION: "understanding your medication",
+  DIET: "eating well on a budget",
+  EXERCISE: "staying active",
+  SIDE_EFFECTS: "managing side effects",
+  FINDING_PHARMACY: "finding your medication",
+  EMOTIONAL: "emotional wellbeing",
+  FAMILY_SUPPORT: "getting family support",
+  EMERGENCY_PREPAREDNESS: "emergency readiness",
+  NAVIGATING_SYSTEM: "navigating healthcare",
+  STIGMA: "acceptance",
+}
+
+const SECTION_ORDER_BY_CHALLENGE: Record<string, string[]> = {
+  COST: ["cost", "refill", "emergency", "education"],
+  UNDERSTANDING_MEDICATION: ["education", "refill", "cost", "emergency"],
+  DIET: ["education", "cost", "refill", "emergency"],
+  EXERCISE: ["education", "refill", "cost", "emergency"],
+  EMERGENCY_PREPAREDNESS: ["emergency", "refill", "cost", "education"],
+  FINDING_PHARMACY: ["refill", "cost", "emergency", "education"],
+}
+
 export default function CareCompanionHome() {
+  const { data: profile, isLoading: profileLoading } = useIntakeProfile()
   const { data, isLoading, error } = useCareCompanionHome()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [drawerMedicationId, setDrawerMedicationId] = useState<
     string | undefined
   >(undefined)
+  const [addMedOpen, setAddMedOpen] = useState(false)
 
   const openMedicationDrawer = (medicationId?: string) => {
     setDrawerMedicationId(medicationId)
     setDrawerOpen(true)
   }
 
-  if (isLoading) {
+  if (profileLoading || isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
+    )
+  }
+
+  if (!profile?.completedAt) {
+    return (
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        }
+      >
+        <CareCompanionIntake />
+      </Suspense>
     )
   }
 
@@ -55,29 +99,47 @@ export default function CareCompanionHome() {
     )
   }
 
-  return (
-    <div className="flex flex-col gap-4 p-4">
-      <SectionErrorBoundary sectionName="Refill Schedule">
+  const topChallenge = profile?.challenges?.topChallenge ?? null
+  const sectionOrder =
+    (topChallenge && SECTION_ORDER_BY_CHALLENGE[topChallenge]) ??
+    ["refill", "cost", "emergency", "education"]
+
+  const sections: Record<string, React.ReactNode> = {
+    refill: (
+      <SectionErrorBoundary key="refill" sectionName="Refill Schedule">
         <RefillScheduleCard
           data={data}
           onMedicationQuickView={openMedicationDrawer}
+          onAddMedication={() => setAddMedOpen(true)}
         />
       </SectionErrorBoundary>
-
-      <SectionErrorBoundary sectionName="Cost Tracker">
+    ),
+    cost: (
+      <SectionErrorBoundary key="cost" sectionName="Cost Tracker">
         <CostTrackerCard data={data} />
       </SectionErrorBoundary>
-
+    ),
+    emergency: (
       <SectionErrorBoundary
+        key="emergency"
         sectionName="Emergency Card"
         fallbackContent={<EmergencyCardStaticFallback />}
       >
         <EmergencyCardCard data={data} />
       </SectionErrorBoundary>
-
-      <SectionErrorBoundary sectionName="Education">
+    ),
+    education: (
+      <SectionErrorBoundary key="education" sectionName="Education">
         <EducationCard data={data} />
       </SectionErrorBoundary>
+    ),
+  }
+
+  return (
+    <div className="flex flex-col gap-4 p-4">
+      {profile?.completedAt && <ProfileGreeting profile={profile} />}
+
+      {sectionOrder.map((key) => sections[key])}
 
       <QuickActions />
 
@@ -88,6 +150,76 @@ export default function CareCompanionHome() {
         onOpenChange={setDrawerOpen}
         initialMedicationId={drawerMedicationId}
       />
+
+      <AddMedicationDrawer
+        open={addMedOpen}
+        onOpenChange={setAddMedOpen}
+        existingMedications={
+          profile?.treatment?.medicationNames ?? []
+        }
+      />
+    </div>
+  )
+}
+
+function ProfileGreeting({
+  profile,
+}: {
+  profile: {
+    conditions?: { type?: string[] }
+    challenges?: { topChallenge?: string | null }
+    userRole?: { role?: string }
+  }
+}) {
+  const conditions = profile.conditions?.type ?? []
+  const topChallenge = profile.challenges?.topChallenge
+  const isSelf = profile.userRole?.role === "SELF"
+
+  const conditionNames: Record<string, string> = {
+    DIABETES: "diabetes",
+    HYPERTENSION: "hypertension",
+    CANCER: "cancer",
+    ASTHMA: "asthma",
+    HEART_DISEASE: "heart disease",
+    KIDNEY_DISEASE: "kidney disease",
+    HIV: "HIV",
+    EPILEPSY: "epilepsy",
+    SICKLE_CELL: "sickle cell",
+    OTHER: "your condition",
+  }
+
+  const conditionText =
+    conditions.length > 0
+      ? conditions
+          .slice(0, 2)
+          .map((c) => conditionNames[c] ?? c.toLowerCase())
+          .join(" & ")
+      : null
+
+  const challengeText = topChallenge
+    ? CHALLENGE_LABELS[topChallenge]
+    : null
+
+  return (
+    <div className="rounded-xl bg-primary/5 px-4 py-3">
+      <p className="text-sm text-foreground">
+        {conditionText ? (
+          <>
+            Your dashboard is personalised for{" "}
+            {isSelf ? "your" : "your patient's"}{" "}
+            <span className="font-semibold">{conditionText}</span> care
+            {challengeText && (
+              <>
+                , focused on{" "}
+                <span className="font-semibold">{challengeText}</span>
+              </>
+            )}
+            .
+          </>
+        ) : (
+          <>Your care dashboard is ready.</>
+        )}
+      </p>
     </div>
   )
 }
@@ -95,9 +227,11 @@ export default function CareCompanionHome() {
 function RefillScheduleCard({
   data,
   onMedicationQuickView,
+  onAddMedication,
 }: {
   data: CareCompanionHomeData
   onMedicationQuickView?: (medicationId?: string) => void
+  onAddMedication?: () => void
 }) {
   const navigate = useNavigate()
   const { schedules, hasMore } = data.refillSchedule
@@ -193,6 +327,27 @@ function RefillScheduleCard({
             <p className="text-center text-[11px] text-muted-foreground">
               View all refills
             </p>
+          )}
+          {onAddMedication && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation()
+                onAddMedication()
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  onAddMedication()
+                }
+              }}
+              className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-muted-foreground/30 px-3 py-2 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              <span className="text-xs font-medium">Add medication</span>
+            </span>
           )}
         </div>
       )}

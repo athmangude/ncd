@@ -98,6 +98,7 @@ export default function PatientProfile() {
     }
     setIsSignOutOpen(false)
     signOut()
+    queryClient.clear()
     navigate("/patients/auth")
   }
 

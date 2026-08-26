@@ -21,6 +21,14 @@ const CONDITION_OPTIONS: { value: ConditionValue; label: string }[] = [
   { value: "KIDNEY_DISEASE", label: "Kidney Disease" },
   { value: "HEART_DISEASE", label: "Heart Disease" },
   { value: "SICKLE_CELL", label: "Sickle Cell Disease" },
+  { value: "HIV_AIDS", label: "HIV/AIDS" },
+  { value: "EPILEPSY", label: "Epilepsy" },
+  { value: "COPD", label: "Chronic Lung Disease (COPD)" },
+  { value: "ARTHRITIS", label: "Arthritis" },
+  { value: "MENTAL_HEALTH", label: "Depression, Anxiety, or Other Mental Health" },
+  { value: "THYROID", label: "Thyroid Disorder" },
+  { value: "STROKE", label: "Stroke" },
+  { value: "LIVER_DISEASE", label: "Liver Disease" },
   { value: "OTHER", label: "Other" },
 ]
 

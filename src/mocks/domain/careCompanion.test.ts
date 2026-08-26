@@ -36,11 +36,23 @@ const MOCK_PROFILE: CareCompanionProfile = {
   },
   treatment: {
     currentlyOnMedication: true,
-    medicationNames: ["Metformin 500mg", "Amlodipine 5mg"],
+    medicationNames: ["Metformin", "Amlodipine"],
     takingMedicationRegularly: "MOSTLY",
     reasonsForMissing: ["COST"],
     usingHerbalAlternatives: false,
     herbalDetails: null,
+  },
+  recurringTests: {
+    selectedTests: ["HbA1c Test"],
+  },
+  costEstimates: {
+    medications: [
+      { name: "Metformin", refillFrequencyDays: 30, estimatedCostPerRefill: 450 },
+      { name: "Amlodipine", refillFrequencyDays: 30, estimatedCostPerRefill: 380 },
+    ],
+    tests: [
+      { name: "HbA1c Test", frequencyMonths: 3, estimatedCostPerTest: 1800 },
+    ],
   },
   challenges: {
     selected: ["COST"],

@@ -44,15 +44,25 @@ export function Chip({
       <button type={type} {...props}>
         {children}
         {onRemove && (
-          <X
+          <span
             role="button"
+            tabIndex={0}
             aria-label={removeLabel}
-            className="ml-0.5 cursor-pointer"
+            className="-mr-1 ml-1 flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full hover:bg-foreground/10"
             onClick={(e) => {
               e.stopPropagation()
               onRemove()
             }}
-          />
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.stopPropagation()
+                e.preventDefault()
+                onRemove()
+              }
+            }}
+          >
+            <X className="h-3.5 w-3.5" />
+          </span>
         )}
       </button>
     </Badge>

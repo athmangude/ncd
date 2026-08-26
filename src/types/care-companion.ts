@@ -53,6 +53,19 @@ export const CONDITION_TYPE = {
   HYPERTENSION: "HYPERTENSION",
   DIABETES: "DIABETES",
   GENERAL: "GENERAL",
+  ASTHMA: "ASTHMA",
+  CANCER: "CANCER",
+  KIDNEY_DISEASE: "KIDNEY_DISEASE",
+  HEART_DISEASE: "HEART_DISEASE",
+  SICKLE_CELL: "SICKLE_CELL",
+  HIV_AIDS: "HIV_AIDS",
+  EPILEPSY: "EPILEPSY",
+  COPD: "COPD",
+  ARTHRITIS: "ARTHRITIS",
+  MENTAL_HEALTH: "MENTAL_HEALTH",
+  THYROID: "THYROID",
+  STROKE: "STROKE",
+  LIVER_DISEASE: "LIVER_DISEASE",
 } as const
 
 export type ConditionType =
@@ -876,6 +889,14 @@ export interface CareCompanionProfile {
       | "KIDNEY_DISEASE"
       | "HEART_DISEASE"
       | "SICKLE_CELL"
+      | "HIV_AIDS"
+      | "EPILEPSY"
+      | "COPD"
+      | "ARTHRITIS"
+      | "MENTAL_HEALTH"
+      | "THYROID"
+      | "STROKE"
+      | "LIVER_DISEASE"
       | "OTHER"
     )[]
     otherDescription: string | null
@@ -974,7 +995,26 @@ export interface CareCompanionProfile {
     )[]
   }
 
-  /** Step 6: Relationship to patient (addresses H11.0). */
+  /** Step 2b: Recurring medical tests the patient takes. */
+  recurringTests: {
+    selectedTests: string[]
+  }
+
+  /** Step 3: Cost estimation for medications and tests. */
+  costEstimates: {
+    medications: {
+      name: string
+      refillFrequencyDays: number
+      estimatedCostPerRefill: number
+    }[]
+    tests: {
+      name: string
+      frequencyMonths: number
+      estimatedCostPerTest: number
+    }[]
+  }
+
+  /** Step 8: Relationship to patient (addresses H11.0). */
   userRole: {
     role: "SELF" | "CAREGIVER" | "BOTH"
     patientRelationship:

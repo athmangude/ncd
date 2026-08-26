@@ -75,6 +75,14 @@ vi.mock("./hooks/useCareCompanionHome", () => ({
   })),
 }))
 
+vi.mock("./hooks/useIntakeProfile", () => ({
+  useIntakeProfile: vi.fn(() => ({
+    data: { completedAt: "2026-08-01T00:00:00Z" },
+    isLoading: false,
+  })),
+  intakeProfileQueryKey: "careCompanionIntakeProfile",
+}))
+
 vi.mock("./components/SectionErrorBoundary", () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const React = require("react")

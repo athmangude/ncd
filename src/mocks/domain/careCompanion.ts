@@ -113,7 +113,441 @@ export function saveCareCompanionProfile(
   profile: CareCompanionProfile,
 ): CareCompanionProfile {
   writeObject(PROFILE_KEY, profile)
+  if (profile.treatment?.medicationNames?.length) {
+    seedFromIntakeMedications(profile.treatment.medicationNames)
+  }
   return profile
+}
+
+const MONTHLY_PRICE_KES: Record<string, number> = {
+  // DIABETES
+  "metformin": 450,
+  "glibenclamide": 280,
+  "insulin glargine": 3200,
+  "gliclazide": 480,
+  "pioglitazone": 620,
+  "hba1c test": 1800,
+  // HYPERTENSION
+  "amlodipine": 380,
+  "losartan": 650,
+  "hydrochlorothiazide": 180,
+  "enalapril": 380,
+  "nifedipine": 420,
+  "lisinopril": 400,
+  "metoprolol": 320,
+  "furosemide": 200,
+  // GENERAL
+  "atorvastatin": 520,
+  "aspirin": 150,
+  "simvastatin": 380,
+  "omeprazole": 350,
+  // ASTHMA
+  "salbutamol": 650,
+  "beclomethasone": 850,
+  "montelukast": 720,
+  "peak flow test": 500,
+  // CANCER
+  "tamoxifen": 1200,
+  "capecitabine": 15000,
+  "imatinib": 45000,
+  // KIDNEY_DISEASE
+  "erythropoietin": 8500,
+  "calcium carbonate": 250,
+  "creatinine test": 800,
+  // HEART_DISEASE
+  "digoxin": 350,
+  "warfarin": 280,
+  "clopidogrel": 550,
+  "isosorbide mononitrate": 480,
+  // SICKLE_CELL
+  "hydroxyurea": 1800,
+  "folic acid": 120,
+  "full blood count": 600,
+  // HIV_AIDS
+  "tld (tenofovir/lamivudine/dolutegravir)": 0,
+  "nevirapine": 0,
+  "cd4 count test": 1500,
+  "viral load test": 3500,
+  // EPILEPSY
+  "carbamazepine": 350,
+  "sodium valproate": 650,
+  "phenytoin": 280,
+  "phenobarbital": 180,
+  // COPD
+  "tiotropium": 2200,
+  "ipratropium": 950,
+  "prednisolone": 300,
+  // ARTHRITIS
+  "diclofenac": 250,
+  "methotrexate": 800,
+  "ibuprofen": 200,
+  "celecoxib": 1200,
+  // MENTAL_HEALTH
+  "fluoxetine": 350,
+  "amitriptyline": 180,
+  "haloperidol": 250,
+  "diazepam": 200,
+  // THYROID
+  "levothyroxine": 350,
+  "carbimazole": 450,
+  "thyroid function test": 2500,
+  // STROKE
+  "physiotherapy session": 2000,
+  // LIVER_DISEASE
+  "tenofovir": 1500,
+  "ursodeoxycholic acid": 2800,
+  "liver function test": 1200,
+  // DIABETES (new)
+  "glimepiride": 380,
+  "insulin soluble": 1800,
+  "insulin nph": 1600,
+  "empagliflozin": 3500,
+  "dapagliflozin": 3200,
+  "sitagliptin": 2800,
+  "vildagliptin": 2500,
+  "insulin mixtard": 1900,
+  "repaglinide": 650,
+  "fasting blood sugar test": 300,
+  "random blood sugar test": 250,
+  "oral glucose tolerance test": 1200,
+  "renal function test": 1500,
+  // HYPERTENSION (new)
+  "valsartan": 750,
+  "telmisartan": 680,
+  "candesartan": 800,
+  "spironolactone": 450,
+  "atenolol": 250,
+  "propranolol": 200,
+  "prazosin": 350,
+  "carvedilol": 550,
+  "indapamide": 380,
+  "perindopril": 620,
+  "ramipril": 500,
+  "doxazosin": 480,
+  "bendroflumethiazide": 180,
+  "blood pressure monitor": 4500,
+  // HIV_AIDS (new)
+  "atazanavir/ritonavir": 0,
+  "lopinavir/ritonavir": 0,
+  "efavirenz": 0,
+  "abacavir/lamivudine": 0,
+  "zidovudine": 0,
+  "darunavir": 0,
+  "raltegravir": 0,
+  "cotrimoxazole": 120,
+  "fluconazole": 350,
+  // ASTHMA (new)
+  "budesonide": 1200,
+  "fluticasone": 1500,
+  "salmeterol": 1800,
+  "formoterol": 1600,
+  "aminophylline": 250,
+  "theophylline": 300,
+  "budesonide/formoterol": 2800,
+  "fluticasone/salmeterol": 3200,
+  "cromoglycate": 800,
+  "chest x-ray": 2500,
+  // EPILEPSY (new)
+  "levetiracetam": 2200,
+  "lamotrigine": 1500,
+  "clonazepam": 350,
+  "topiramate": 1800,
+  "gabapentin": 1200,
+  "clobazam": 450,
+  "eeg test": 5000,
+  // MENTAL_HEALTH (new)
+  "risperidone": 350,
+  "chlorpromazine": 180,
+  "sertraline": 450,
+  "escitalopram": 550,
+  "lorazepam": 280,
+  "olanzapine": 650,
+  "quetiapine": 800,
+  "lithium carbonate": 600,
+  "clomipramine": 450,
+  "trazodone": 500,
+  "paroxetine": 520,
+  "alprazolam": 300,
+  "fluphenazine decanoate": 1200,
+  "psychiatric consultation": 5000,
+  // ARTHRITIS (new)
+  "naproxen": 300,
+  "hydroxychloroquine": 850,
+  "sulfasalazine": 650,
+  "colchicine": 400,
+  "allopurinol": 280,
+  "indomethacin": 250,
+  "leflunomide": 2500,
+  "adalimumab": 65000,
+  "esr test": 500,
+  "uric acid test": 600,
+  "rheumatoid factor test": 1500,
+  "x-ray joints": 3000,
+  // HEART_DISEASE (new)
+  "amiodarone": 1200,
+  "glyceryl trinitrate": 850,
+  "diltiazem": 550,
+  "verapamil": 450,
+  "bisoprolol": 420,
+  "ivabradine": 3500,
+  "sacubitril/valsartan": 8500,
+  "ranolazine": 4200,
+  "ecg test": 1500,
+  "echocardiogram": 8000,
+  "lipid profile test": 1200,
+  "troponin test": 2500,
+  "bnp test": 3500,
+  // CANCER (new)
+  "cyclophosphamide": 2500,
+  "anastrozole": 3500,
+  "letrozole": 2800,
+  "cisplatin": 8000,
+  "5-fluorouracil": 3500,
+  "doxorubicin": 12000,
+  "vincristine": 5000,
+  "paclitaxel": 25000,
+  "carboplatin": 15000,
+  "etoposide": 4500,
+  "morphine": 800,
+  "tramadol": 450,
+  "ct scan": 15000,
+  "biopsy": 12000,
+  "tumour marker test": 3500,
+  "cbc with differential": 800,
+  // KIDNEY_DISEASE (new)
+  "ferrous sulphate": 150,
+  "alfacalcidol": 1200,
+  "sodium bicarbonate": 180,
+  "sodium polystyrene sulfonate": 2500,
+  "sevelamer": 8500,
+  "darbepoetin": 12000,
+  "peritoneal dialysis fluid": 3500,
+  "haemodialysis session": 8000,
+  "urea test": 500,
+  "electrolyte panel": 800,
+  "kidney ultrasound": 5000,
+  // COPD (new)
+  "azithromycin": 650,
+  "roflumilast": 3500,
+  "oxygen concentrator": 35000,
+  "spirometry test": 3000,
+  "sputum culture": 1500,
+  // THYROID (new)
+  "propylthiouracil": 500,
+  "lugol's iodine": 300,
+  "radioactive iodine treatment": 25000,
+  "thyroid ultrasound": 5000,
+  "t3/t4 test": 2000,
+  // STROKE (new)
+  "dipyridamole": 650,
+  "nimodipine": 2500,
+  "enoxaparin": 3500,
+  "alteplase": 180000,
+  "ct brain scan": 12000,
+  "mri brain": 25000,
+  "carotid doppler": 8000,
+  "speech therapy session": 3000,
+  "occupational therapy session": 3000,
+  // LIVER_DISEASE (new)
+  "lactulose": 450,
+  "rifaximin": 4500,
+  "vitamin k": 350,
+  "albumin iv": 8000,
+  "hepatitis b vaccine": 1500,
+  "abdominal ultrasound": 4000,
+  "afp test": 2000,
+  "hepatitis b surface antigen test": 1200,
+  "hepatitis c antibody test": 1500,
+  "fibroscan": 12000,
+  // SICKLE_CELL (new)
+  "penicillin v": 120,
+  "l-glutamine": 3500,
+  "deferasirox": 8000,
+  "blood transfusion": 15000,
+  "pneumococcal vaccine": 3500,
+  "reticulocyte count": 800,
+  "haemoglobin electrophoresis": 2500,
+  "transcranial doppler": 8000,
+}
+
+const FACILITIES = [
+  "Mombasa Hospital Pharmacy",
+  "City Chemist Mombasa",
+  "Likoni Health Centre",
+  "Aga Khan Pharmacy",
+  "Naivas Pharmacy Mombasa",
+]
+
+function seedFromIntakeMedications(medicationNames: string[]): void {
+  const taxonomy = readCollection<MedicationTaxonomyEntry>(
+    MEDICATION_TAXONOMY_KEY,
+    medicationTaxonomySeed as unknown as MedicationTaxonomyEntry[],
+  )
+
+  const now = Date.now()
+  const DAY_MS = 86_400_000
+  const todayStr = new Date(now).toISOString().slice(0, 10)
+
+  const schedules: RefillSchedule[] = []
+  const patientMeds: PatientMedication[] = []
+  const cards: MedicationCard[] = []
+  const timeline: TimelineEntry[] = []
+  const existingCards = readCollection<MedicationCard>(
+    MEDICATION_CARDS_KEY,
+    medicationCardsSeed as unknown as MedicationCard[],
+  )
+
+  medicationNames.forEach((name, i) => {
+    const taxEntry = taxonomy.find(
+      (t) => t.genericName.toLowerCase() === name.toLowerCase(),
+    )
+    const medId = taxEntry?.id ?? `custom-${name.toLowerCase().replace(/\s+/g, "-")}`
+    const isLabTest = taxEntry?.category === "LAB_TEST"
+    const monthlyPrice = MONTHLY_PRICE_KES[name.toLowerCase()] ?? 400
+    const strength = taxEntry?.strengths?.[0] ?? null
+    const refillInterval = isLabTest ? 90 : 30
+
+    const daysUntil = 7 + i * 10
+    schedules.push({
+      id: `refill-intake-${i}`,
+      medicationName: name,
+      expectedRefillDate: new Date(now + daysUntil * DAY_MS)
+        .toISOString()
+        .slice(0, 10),
+      status: "UPCOMING" as const,
+      daysUntilRefill: daysUntil,
+      estimatedDaysSupply: refillInterval,
+      escalatedToLoanOffer: false,
+    })
+
+    const monthsOfHistory = isLabTest ? 2 : 6
+    const firstPurchaseDate = new Date(now - monthsOfHistory * 30 * DAY_MS)
+    patientMeds.push({
+      id: `pm-intake-${i}`,
+      medication: {
+        id: medId,
+        genericName: taxEntry?.genericName ?? name,
+        brandNames: taxEntry?.brandNames ?? [],
+        strengths: taxEntry?.strengths ?? [],
+        category: taxEntry?.category ?? "MEDICATION",
+        conditionTags: taxEntry?.conditionTags ?? [],
+      },
+      firstPurchaseDate: firstPurchaseDate.toISOString().slice(0, 10),
+      lastPurchaseDate: todayStr,
+      totalPurchaseCount: monthsOfHistory,
+      averageRefillIntervalDays: refillInterval,
+      isActive: true,
+      inferredConditions: taxEntry?.conditionTags ?? [],
+    } as unknown as PatientMedication)
+
+    for (let m = 0; m < monthsOfHistory; m++) {
+      const purchaseDate = new Date(now - (monthsOfHistory - m) * refillInterval * DAY_MS)
+      const variation = 0.9 + (((i * 7 + m * 3) % 10) / 50)
+      const price = Math.round(monthlyPrice * variation)
+      timeline.push({
+        date: purchaseDate.toISOString().slice(0, 10),
+        medicationName: strength ? `${name} ${strength}` : name,
+        dosage: strength,
+        quantity: isLabTest ? 1 : 30,
+        lineTotal: `${price}.00`,
+        facilityName: FACILITIES[(i + m) % FACILITIES.length],
+        gapDaysFromPrevious: m === 0 ? null : refillInterval,
+        isGapAnomaly: false,
+      })
+    }
+
+    const hasCard = existingCards.some((c) => c.medicationId === medId)
+    if (!hasCard) {
+      cards.push({
+        id: `mc-intake-${i}`,
+        medicationId: medId,
+        locale: "EN" as ContentLocale,
+        description: `${name} is a medication prescribed for managing your condition.`,
+        howItWorks: `${name} works by helping control your symptoms. Ask your doctor or pharmacist for detailed information.`,
+        commonSideEffects: [
+          { effect: "Consult your doctor about possible side effects", frequency: "Varies", advice: "Your pharmacist can provide more information." },
+        ],
+        seriousSideEffects: [
+          { effect: "Seek medical attention if you experience severe symptoms", action: "Contact your doctor or go to the nearest hospital." },
+        ],
+        avoidanceWarnings: [],
+        whenToSeekHelp: "Contact your doctor if side effects persist or if you experience any unusual symptoms.",
+        storageInstructions: "Store at room temperature away from moisture and heat.",
+      } as unknown as MedicationCard)
+    }
+  })
+
+  timeline.sort((a, b) => b.date.localeCompare(a.date))
+
+  const ytdSpend = timeline.reduce((sum, e) => sum + parseFloat(e.lineTotal), 0)
+  const currentMonth = new Date(now).getMonth() + 1
+  const monthlyAverage = currentMonth > 0 ? Math.round(ytdSpend / currentMonth) : 0
+  const cashbackEarned = Math.round(ytdSpend * 0.05)
+  const annualProjection = Math.round(monthlyAverage * 12)
+
+  const medSpend = timeline
+    .filter((e) => !e.medicationName.toLowerCase().includes("test"))
+    .reduce((s, e) => s + parseFloat(e.lineTotal), 0)
+  const labSpend = ytdSpend - medSpend
+  const medTxns = timeline.filter(
+    (e) => !e.medicationName.toLowerCase().includes("test"),
+  ).length
+  const labTxns = timeline.length - medTxns
+
+  const monthlyBuckets: Record<number, number> = {}
+  for (const entry of timeline) {
+    const m = new Date(entry.date).getMonth() + 1
+    monthlyBuckets[m] = (monthlyBuckets[m] ?? 0) + parseFloat(entry.lineTotal)
+  }
+  const monthlyTrend: MonthlySpend[] = []
+  for (let m = 1; m <= currentMonth; m++) {
+    monthlyTrend.push({
+      month: m,
+      spend: `${Math.round(monthlyBuckets[m] ?? 0)}.00`,
+    })
+  }
+
+  const costSummary = {
+    year: new Date(now).getFullYear(),
+    ytdSpend: `${Math.round(ytdSpend)}`,
+    monthlyAverage: `${monthlyAverage}`,
+    cashbackEarned: `${cashbackEarned}`,
+    netSpend: `${Math.round(ytdSpend - cashbackEarned)}`,
+    annualProjection: `${annualProjection}`,
+    transactionCount: timeline.length,
+    currency: "KES" as const,
+    breakdown: [
+      { category: "MEDICATION", totalSpend: `${Math.round(medSpend)}`, percentage: Math.round((medSpend / ytdSpend) * 100) || 0, transactionCount: medTxns },
+      ...(labSpend > 0 ? [{ category: "LAB_TEST", totalSpend: `${Math.round(labSpend)}`, percentage: Math.round((labSpend / ytdSpend) * 100), transactionCount: labTxns }] : []),
+    ],
+    monthlyTrend,
+  }
+
+  const categories = costSummary.breakdown.map((b) => ({
+    category: b.category,
+    totalSpend: b.totalSpend + ".00",
+    percentage: b.percentage,
+    transactionCount: b.transactionCount,
+  }))
+
+  const costBreakdown = {
+    year: costSummary.year,
+    categories,
+    monthlyTrend,
+    pagination: { total: monthlyTrend.length, limit: 12, offset: 0 },
+  }
+
+  writeCollection(REFILL_SCHEDULES_KEY, schedules)
+  writeCollection(PATIENT_MEDICATIONS_KEY, patientMeds)
+  writeCollection(
+    MEDICATION_CARDS_KEY,
+    [...existingCards.filter((c) =>
+      patientMeds.some((pm) => pm.medication.id === c.medicationId),
+    ), ...cards],
+  )
+  writeCollection(CARE_COMPANION_TIMELINE_KEY, timeline)
+  writeObject(COST_SUMMARY_KEY, costSummary)
+  writeObject(COST_BREAKDOWN_KEY, costBreakdown)
 }
 
 /** Shallow-merge a partial update into the existing profile (PATCH). */
@@ -123,7 +557,11 @@ export function patchCareCompanionProfile(
   const current = getCareCompanionProfile()
   const seed = careCompanionProfileSeed as unknown as CareCompanionProfile
   const base = current ?? seed
-  return patchObject(PROFILE_KEY, base, patch)
+  const merged = patchObject(PROFILE_KEY, base, patch)
+  if (patch.treatment?.medicationNames?.length) {
+    seedFromIntakeMedications(patch.treatment.medicationNames)
+  }
+  return merged
 }
 
 // ---------------------------------------------------------------------------

@@ -1,20 +1,18 @@
 import { useState, useMemo, useCallback } from "react"
+import { Plus } from "lucide-react"
 import { Label } from "@/components/Label"
 import { Textarea } from "@/components/Textarea"
+import { Button } from "@/components/Button"
+import { Chip } from "@/components/Chip"
 import FormGroupWrapper from "@/components/form/FormGroupWrapper"
 import IntakeOption from "../components/IntakeOption"
-import ConditionTypeahead from "../components/ConditionTypeahead"
 import medicationTaxonomy from "@/mocks/fixtures/medication-taxonomy.json"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
 type TreatmentData = CareCompanionProfile["treatment"]
+type ConditionValue = CareCompanionProfile["conditions"]["type"][number]
 type Regularity = NonNullable<TreatmentData["takingMedicationRegularly"]>
 type MissingReason = TreatmentData["reasonsForMissing"][number]
-
-interface TreatmentStepProps {
-  data: TreatmentData
-  onUpdate: (data: TreatmentData) => void
-}
 
 interface MedicationEntry {
   id: string
@@ -25,7 +23,32 @@ interface MedicationEntry {
   conditionTags: string[]
 }
 
+interface TreatmentStepProps {
+  data: TreatmentData
+  conditions: ConditionValue[]
+  onUpdate: (data: TreatmentData) => void
+}
+
 const taxonomy = medicationTaxonomy as MedicationEntry[]
+
+const CONDITION_LABELS: Record<string, string> = {
+  DIABETES: "Diabetes",
+  HYPERTENSION: "High Blood Pressure",
+  ASTHMA: "Asthma",
+  CANCER: "Cancer",
+  KIDNEY_DISEASE: "Kidney Disease",
+  HEART_DISEASE: "Heart Disease",
+  SICKLE_CELL: "Sickle Cell Disease",
+  HIV_AIDS: "HIV/AIDS",
+  EPILEPSY: "Epilepsy",
+  COPD: "Chronic Lung Disease (COPD)",
+  ARTHRITIS: "Arthritis",
+  MENTAL_HEALTH: "Mental Health",
+  THYROID: "Thyroid Disorder",
+  STROKE: "Stroke",
+  LIVER_DISEASE: "Liver Disease",
+  OTHER: "Other",
+}
 
 const REGULARITY_OPTIONS: { value: Regularity; label: string }[] = [
   { value: "ALWAYS", label: "Always" },
@@ -46,36 +69,55 @@ const REASONS_FOR_MISSING_OPTIONS: {
   { value: "OTHER", label: "Other" },
 ]
 
-function nameToEntry(name: string): MedicationEntry {
-  const found = taxonomy.find(
-    (m) => m.genericName.toLowerCase() === name.toLowerCase()
-  )
-  if (found) return found
-  return {
-    id: `custom-${name.toLowerCase().replace(/\s+/g, "-")}`,
-    genericName: name,
-    brandNames: [],
-    strengths: [],
-    category: "MEDICATION",
-    conditionTags: [],
-  }
-}
-
 export default function TreatmentStep({
   data,
+  conditions,
   onUpdate,
 }: TreatmentStepProps) {
-  const selectedMedEntries = useMemo(
-    () => data.medicationNames.map(nameToEntry),
-    [data.medicationNames]
-  )
-
   const [localOnMedication, setLocalOnMedication] = useState<boolean | null>(
     data.currentlyOnMedication === false &&
       data.medicationNames.length === 0
       ? null
-      : data.currentlyOnMedication
+      : data.currentlyOnMedication,
   )
+  const [showOtherInput, setShowOtherInput] = useState(false)
+  const [customMedName, setCustomMedName] = useState("")
+
+  const allGenericNames = useMemo(
+    () => new Set(taxonomy.map((m) => m.genericName)),
+    [],
+  )
+
+  const customMedications = useMemo(
+    () => data.medicationNames.filter((n) => !allGenericNames.has(n)),
+    [data.medicationNames, allGenericNames],
+  )
+
+  const medicationsByCondition = useMemo(() => {
+    const medsOnly = taxonomy.filter((m) => m.category === "MEDICATION")
+    const assigned = new Set<string>()
+    const groups: { condition: string; medications: MedicationEntry[] }[] = []
+
+    for (const condition of conditions) {
+      if (condition === "OTHER") continue
+      const meds = medsOnly.filter(
+        (m) =>
+          !assigned.has(m.id) &&
+          m.conditionTags.includes(condition),
+      )
+      if (meds.length > 0) {
+        meds.forEach((m) => assigned.add(m.id))
+        groups.push({
+          condition,
+          medications: meds.sort((a, b) =>
+            a.genericName.localeCompare(b.genericName),
+          ),
+        })
+      }
+    }
+
+    return groups
+  }, [conditions])
 
   const handleMedicationToggle = useCallback(
     (value: boolean) => {
@@ -92,34 +134,36 @@ export default function TreatmentStep({
         })
       }
     },
-    [data, onUpdate]
+    [data, onUpdate],
   )
 
-  const handleSelectMedication = useCallback(
-    (med: MedicationEntry) => {
-      if (!data.medicationNames.includes(med.genericName)) {
-        onUpdate({
-          ...data,
-          medicationNames: [...data.medicationNames, med.genericName],
-        })
-      }
+  const toggleMedication = useCallback(
+    (genericName: string) => {
+      const current = data.medicationNames
+      const updated = current.includes(genericName)
+        ? current.filter((n) => n !== genericName)
+        : [...current, genericName]
+      onUpdate({ ...data, medicationNames: updated })
     },
-    [data, onUpdate]
+    [data, onUpdate],
   )
 
-  const handleRemoveMedication = useCallback(
-    (medId: string) => {
-      const entry = selectedMedEntries.find((m) => m.id === medId)
-      if (!entry) return
-      onUpdate({
-        ...data,
-        medicationNames: data.medicationNames.filter(
-          (n) => n !== entry.genericName
-        ),
-      })
-    },
-    [data, selectedMedEntries, onUpdate]
-  )
+  function addCustomMedication() {
+    const trimmed = customMedName.trim()
+    if (!trimmed || data.medicationNames.includes(trimmed)) return
+    onUpdate({
+      ...data,
+      medicationNames: [...data.medicationNames, trimmed],
+    })
+    setCustomMedName("")
+  }
+
+  function removeCustomMedication(name: string) {
+    onUpdate({
+      ...data,
+      medicationNames: data.medicationNames.filter((n) => n !== name),
+    })
+  }
 
   function setRegularity(value: Regularity) {
     const showReasons = value === "SOMETIMES" || value === "RARELY"
@@ -154,17 +198,14 @@ export default function TreatmentStep({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <h2 >
-          Your current treatment
-        </h2>
+        <h2>Your current treatment</h2>
         <p className="text-sm text-muted-foreground">
           Tell us about your medications and treatment
         </p>
       </div>
 
-      {/* Medication yes/no */}
       <div className="flex flex-col gap-3">
-        <h3 >
+        <h3>
           Are you currently taking any medication for your condition?
         </h3>
         <div
@@ -189,23 +230,95 @@ export default function TreatmentStep({
         </div>
       </div>
 
-      {/* Conditional medication sub-questions */}
       {showMedicationSubQuestions && (
         <>
-          {/* Medication typeahead */}
-          <ConditionTypeahead
-            selectedMedications={selectedMedEntries}
-            onSelect={handleSelectMedication}
-            onRemove={handleRemoveMedication}
-            label="What medications are you taking?"
-            placeholder="Type a medication name..."
-          />
+          <div className="flex flex-col gap-4">
+            <h3>Which medications are you taking?</h3>
+            <p className="text-sm text-muted-foreground">
+              Select all that apply
+            </p>
+            {medicationsByCondition.map(({ condition, medications }) => (
+              <div key={condition} className="flex flex-col gap-2">
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  {CONDITION_LABELS[condition] ?? condition}
+                </p>
+                <div className="flex flex-col gap-2">
+                  {medications.map((med) => (
+                    <IntakeOption
+                      key={med.id}
+                      label={med.genericName}
+                      description={
+                        med.brandNames.length > 0
+                          ? med.brandNames.join(", ")
+                          : undefined
+                      }
+                      selected={data.medicationNames.includes(
+                        med.genericName,
+                      )}
+                      onToggle={() => toggleMedication(med.genericName)}
+                      mode="checkbox"
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
 
-          {/* Regularity */}
+            <div className="flex flex-col gap-2">
+              <IntakeOption
+                label="Other"
+                description="Add a medication not listed above"
+                selected={showOtherInput || customMedications.length > 0}
+                onToggle={() => setShowOtherInput((v) => !v)}
+                mode="checkbox"
+              />
+
+              {(showOtherInput || customMedications.length > 0) && (
+                <div className="ml-2 flex flex-col gap-3 border-l-2 border-muted pl-4">
+                  {customMedications.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {customMedications.map((name) => (
+                        <Chip
+                          key={name}
+                          onRemove={() => removeCustomMedication(name)}
+                          removeLabel={`Remove ${name}`}
+                        >
+                          {name}
+                        </Chip>
+                      ))}
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={customMedName}
+                      onChange={(e) => setCustomMedName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault()
+                          addCustomMedication()
+                        }
+                      }}
+                      placeholder="Type medication name..."
+                      className="h-10 flex-1 rounded-md border border-input bg-background px-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sensitive-data"
+                    />
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      onClick={addCustomMedication}
+                      disabled={!customMedName.trim()}
+                    >
+                      <Plus className="mr-1 h-4 w-4" />
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex flex-col gap-3">
-            <h3 >
-              How regularly do you take your medication?
-            </h3>
+            <h3>How regularly do you take your medication?</h3>
             <div
               role="radiogroup"
               aria-label="Medication regularity"
@@ -224,10 +337,9 @@ export default function TreatmentStep({
             </div>
           </div>
 
-          {/* Conditional reasons for missing */}
           {showReasonsForMissing && (
             <div className="flex flex-col gap-3">
-              <h3 >
+              <h3>
                 What makes it hard to take your medication regularly?
               </h3>
               <div
@@ -250,10 +362,10 @@ export default function TreatmentStep({
         </>
       )}
 
-      {/* Herbal alternatives */}
       <div className="flex flex-col gap-3">
-        <h3 >
-          Do you use any herbal or traditional remedies for your condition?
+        <h3>
+          Do you use any herbal or traditional remedies for your
+          condition?
         </h3>
         <div
           role="radiogroup"
