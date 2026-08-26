@@ -191,6 +191,7 @@ interface GeminiResponse {
     content?: {
       parts?: { text?: string }[]
     }
+    finishReason?: string
   }[]
 }
 
@@ -249,7 +250,7 @@ export async function callLlmApi(
   }
 
   try {
-    const model = "gemini-2.5-flash"
+    const model = "gemini-3.6-flash"
     const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
 
     const res = await fetch(url, {
@@ -266,7 +267,7 @@ export async function callLlmApi(
           },
         ],
         generationConfig: {
-          maxOutputTokens: 2048,
+          maxOutputTokens: 8192,
           temperature: 0.3,
           responseMimeType: "application/json",
         },
@@ -279,6 +280,11 @@ export async function callLlmApi(
     }
 
     const data = (await res.json()) as GeminiResponse
+    const finishReason = data.candidates?.[0]?.finishReason
+    if (finishReason === "MAX_TOKENS") {
+      console.warn("[ai-pipeline] Response truncated (MAX_TOKENS) — output incomplete, skipping")
+      return []
+    }
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]"
     const jsonStr = text.replace(/```json\n?/g, "").replace(/```/g, "").trim()
     const parsed: unknown = JSON.parse(jsonStr)

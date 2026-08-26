@@ -76,7 +76,8 @@ import medicationLoanPreapprovalSeed from "../fixtures/medication-loan-preapprov
 import emergencyTransportCreditSeed from "../fixtures/emergency-transport-credit.json"
 import aiConversationsSeed from "../fixtures/ai-assistant-conversations.json"
 import careCompanionProfileSeed from "../fixtures/care-companion-profile.json"
-import careCompanionNotificationsSeed from "../fixtures/care-companion-notifications.json"
+// Static fixture no longer used — notifications are seeded dynamically from intake profile
+// import careCompanionNotificationsSeed from "../fixtures/care-companion-notifications.json"
 
 // ---------------------------------------------------------------------------
 // localStorage keys
@@ -129,6 +130,7 @@ export function saveCareCompanionProfile(
   if (profile.treatment?.medicationNames?.length) {
     seedFromIntakeMedications(profile.treatment.medicationNames)
   }
+  seedNotificationsFromIntake(profile)
   return profile
 }
 
@@ -1532,6 +1534,212 @@ export function getCareCompanionHome(): CareCompanionHome {
 
 const CC_NOTIFICATIONS_KEY = "care-companion-notifications"
 
+const CONDITION_LABELS: Record<string, string> = {
+  DIABETES: "diabetes",
+  HYPERTENSION: "blood pressure",
+  ASTHMA: "asthma",
+  CANCER: "cancer",
+  KIDNEY_DISEASE: "kidney health",
+  HEART_DISEASE: "heart health",
+  SICKLE_CELL: "sickle cell",
+  HIV_AIDS: "HIV",
+  EPILEPSY: "epilepsy",
+  COPD: "COPD",
+  ARTHRITIS: "arthritis",
+  MENTAL_HEALTH: "mental health",
+  THYROID: "thyroid",
+  STROKE: "stroke recovery",
+  LIVER_DISEASE: "liver health",
+  OTHER: "your condition",
+}
+
+/**
+ * Generate profile-aware notifications from the user's intake data.
+ * Called once when the intake profile is saved.
+ */
+function seedNotificationsFromIntake(profile: CareCompanionProfile): void {
+  const now = Date.now()
+  const notifications: CareCompanionNotification[] = []
+  const meds = profile.treatment?.medicationNames ?? []
+  const tests = profile.recurringTests?.selectedTests ?? []
+  const conditions = profile.conditions?.type ?? []
+  const conditionLabel = conditions.length > 0
+    ? CONDITION_LABELS[conditions[0]] ?? "your condition"
+    : "your health"
+
+  // REFILL_REMINDER for the first medication (due in 3 days)
+  if (meds.length > 0) {
+    notifications.push({
+      id: `notif-refill-reminder-${Date.now()}`,
+      type: "REFILL_REMINDER",
+      title: `${meds[0]} refill due soon`,
+      body: `Your ${meds[0]} supply is expected to run out in 3 days. Refill now to stay on track.`,
+      deepLink: "/patients/companion/refill-schedule",
+      scheduledAt: new Date(now - 1 * DAY_MS).toISOString(),
+      sentAt: new Date(now - 1 * DAY_MS).toISOString(),
+      readAt: null,
+      metadata: { medicationName: meds[0], daysUntilRefill: "3" },
+    })
+  }
+
+  // REFILL_OVERDUE for the second medication (5 days overdue)
+  if (meds.length > 1) {
+    notifications.push({
+      id: `notif-refill-overdue-${Date.now()}`,
+      type: "REFILL_OVERDUE",
+      title: `${meds[1]} refill overdue`,
+      body: `Your ${meds[1]} refill is 5 days overdue. Missing doses can affect your ${conditionLabel} management.`,
+      deepLink: "/patients/companion/refill-schedule",
+      scheduledAt: new Date(now - 6 * DAY_MS).toISOString(),
+      sentAt: new Date(now - 6 * DAY_MS).toISOString(),
+      readAt: new Date(now - 5 * DAY_MS).toISOString(),
+      metadata: { medicationName: meds[1], daysOverdue: "5" },
+    })
+
+    // REFILL_LOAN_OFFER for the overdue medication
+    const costEst = profile.costEstimates?.medications?.find(
+      (m) => m.name.toLowerCase() === meds[1].toLowerCase(),
+    )
+    const loanAmount = costEst?.estimatedCostPerRefill ?? 450
+    notifications.push({
+      id: `notif-refill-loan-${Date.now()}`,
+      type: "REFILL_LOAN_OFFER",
+      title: `Medication loan available for ${meds[1]}`,
+      body: `Your ${meds[1]} is overdue. You are pre-approved for a KES ${loanAmount.toLocaleString()} medication loan to cover this refill.`,
+      deepLink: "/patients/companion/medication-loan",
+      scheduledAt: new Date(now - 5 * DAY_MS).toISOString(),
+      sentAt: new Date(now - 5 * DAY_MS).toISOString(),
+      readAt: null,
+      metadata: { medicationName: meds[1], loanAmount: String(loanAmount), currency: "KES" },
+    })
+  }
+
+  // PREDICTIVE_CREDIT_OFFER based on total medication costs
+  if (meds.length > 0) {
+    const totalCost = (profile.costEstimates?.medications ?? [])
+      .reduce((sum, m) => sum + m.estimatedCostPerRefill, 0) || 1850
+    notifications.push({
+      id: `notif-predictive-credit-${Date.now()}`,
+      type: "PREDICTIVE_CREDIT_OFFER",
+      title: "Pre-approved credit for upcoming refills",
+      body: `Based on your medication schedule, you may need KES ${totalCost.toLocaleString()} for refills this month. A medication loan is ready for you.`,
+      deepLink: "/patients/companion/medication-loan",
+      scheduledAt: new Date(now - 8 * DAY_MS).toISOString(),
+      sentAt: new Date(now - 8 * DAY_MS).toISOString(),
+      readAt: new Date(now - 7 * DAY_MS).toISOString(),
+      metadata: { preApprovedAmount: String(totalCost), currency: "KES", medicationCount: String(meds.length) },
+    })
+  }
+
+  // EDUCATION_WEEKLY relevant to the user's condition
+  const educationTopics: Record<string, { title: string; body: string }> = {
+    DIABETES: {
+      title: "This week: Managing blood sugar with local foods",
+      body: "Learn how everyday Kenyan foods like sukuma wiki and githeri can help keep your blood sugar stable.",
+    },
+    HYPERTENSION: {
+      title: "This week: Reducing salt without losing flavour",
+      body: "Tips for preparing tasty Kenyan meals while keeping your blood pressure in check.",
+    },
+    ASTHMA: {
+      title: "This week: Managing asthma triggers at home",
+      body: "Learn how to identify and reduce common asthma triggers in your home environment.",
+    },
+    CANCER: {
+      title: "This week: Nutrition during treatment",
+      body: "Practical food choices that can help you stay strong during your cancer treatment journey.",
+    },
+    KIDNEY_DISEASE: {
+      title: "This week: Kidney-friendly meal planning",
+      body: "Simple tips for managing potassium and sodium in your daily meals.",
+    },
+    HEART_DISEASE: {
+      title: "This week: Heart-healthy living on a budget",
+      body: "Affordable ways to keep your heart strong with local foods and daily movement.",
+    },
+    HIV_AIDS: {
+      title: "This week: Staying strong on ARVs",
+      body: "Nutrition and lifestyle tips to support your immune system alongside your medication.",
+    },
+    EPILEPSY: {
+      title: "This week: Seizure safety at home",
+      body: "Practical steps your family can take to keep you safe and supported.",
+    },
+    COPD: {
+      title: "This week: Breathing exercises for COPD",
+      body: "Simple daily techniques to improve your lung function and manage breathlessness.",
+    },
+    ARTHRITIS: {
+      title: "This week: Joint-friendly movement",
+      body: "Gentle exercises and stretches to keep your joints mobile and reduce stiffness.",
+    },
+    MENTAL_HEALTH: {
+      title: "This week: Coping with stress",
+      body: "Practical strategies for managing stress and building emotional resilience.",
+    },
+    THYROID: {
+      title: "This week: Understanding your thyroid medication",
+      body: "When to take it, what to avoid, and how to tell if your dose is right.",
+    },
+    STROKE: {
+      title: "This week: Recovery milestones after stroke",
+      body: "What to expect in your recovery journey and exercises that can help.",
+    },
+    LIVER_DISEASE: {
+      title: "This week: Liver-friendly nutrition",
+      body: "Foods that support liver health and what to avoid in your daily diet.",
+    },
+  }
+  const eduTopic = conditions.length > 0
+    ? educationTopics[conditions[0]] ?? { title: "This week: Living well with a chronic condition", body: "Practical tips for staying on top of your health every day." }
+    : { title: "This week: Living well with a chronic condition", body: "Practical tips for staying on top of your health every day." }
+
+  notifications.push({
+    id: `notif-education-weekly-${Date.now()}`,
+    type: "EDUCATION_WEEKLY",
+    title: eduTopic.title,
+    body: eduTopic.body,
+    deepLink: "/patients/companion/education",
+    scheduledAt: new Date(now - 1 * DAY_MS).toISOString(),
+    sentAt: new Date(now - 1 * DAY_MS).toISOString(),
+    readAt: null,
+    metadata: { contentType: "EDUCATION", conditionType: conditions[0] ?? "GENERAL" },
+  })
+
+  // MEDICATION_CARD_AVAILABLE for a medication
+  if (meds.length > 0) {
+    const cardMed = meds[meds.length > 1 ? 1 : 0]
+    notifications.push({
+      id: `notif-medication-card-${Date.now()}`,
+      type: "MEDICATION_CARD_AVAILABLE",
+      title: `New medication card: ${cardMed}`,
+      body: `A detailed guide for your ${cardMed} is now available. Learn about side effects, storage, and what to avoid.`,
+      deepLink: "/patients/companion/medication-cards",
+      scheduledAt: new Date(now - 4 * DAY_MS).toISOString(),
+      sentAt: new Date(now - 4 * DAY_MS).toISOString(),
+      readAt: new Date(now - 3 * DAY_MS).toISOString(),
+      metadata: { medicationName: cardMed },
+    })
+  }
+
+  // LAB_REMINDER for the first recurring test
+  if (tests.length > 0) {
+    notifications.push({
+      id: `notif-lab-reminder-${Date.now()}`,
+      type: "LAB_REMINDER",
+      title: `${tests[0]} test due this month`,
+      body: `Regular ${tests[0]} monitoring helps you and your doctor manage your ${conditionLabel} effectively.`,
+      deepLink: "/patients/companion",
+      scheduledAt: new Date(now - 2 * DAY_MS).toISOString(),
+      sentAt: new Date(now - 2 * DAY_MS).toISOString(),
+      readAt: null,
+      metadata: { labTestName: tests[0], conditionType: conditions[0] ?? "GENERAL" },
+    })
+  }
+
+  writeCollection(CC_NOTIFICATIONS_KEY, notifications)
+}
+
 /**
  * Returns all care companion notifications sorted by scheduledAt descending.
  * Optionally filters to unread-only (readAt === null).
@@ -1541,7 +1749,7 @@ export function getCareCompanionNotifications(
 ): CareCompanionNotification[] {
   const all = readCollection<CareCompanionNotification>(
     CC_NOTIFICATIONS_KEY,
-    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+    [] as CareCompanionNotification[],
   )
 
   const filtered = unreadOnly ? all.filter((n) => n.readAt === null) : all
@@ -1562,7 +1770,7 @@ export function markCareCompanionNotificationRead(
 ): CareCompanionNotification | undefined {
   const all = readCollection<CareCompanionNotification>(
     CC_NOTIFICATIONS_KEY,
-    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+    [] as CareCompanionNotification[],
   )
 
   const index = all.findIndex((n) => n.id === id)
@@ -1595,7 +1803,7 @@ export function createCareCompanionNotification(
 
   const all = readCollection<CareCompanionNotification>(
     CC_NOTIFICATIONS_KEY,
-    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+    [] as CareCompanionNotification[],
   )
   all.push(notification)
   writeCollection(CC_NOTIFICATIONS_KEY, all)
@@ -1612,7 +1820,7 @@ export function addCareCompanionNotification(
 ): CareCompanionNotification {
   const all = readCollection<CareCompanionNotification>(
     CC_NOTIFICATIONS_KEY,
-    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+    [] as CareCompanionNotification[],
   )
   all.push(notification)
   writeCollection(CC_NOTIFICATIONS_KEY, all)
