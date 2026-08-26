@@ -849,9 +849,22 @@ export interface EmergencyTransportCredit {
  *
  * @deprecated Prefer CareCompanionHomeResponse for new code.
  */
+export interface TestScheduleItem {
+  id: string
+  testName: string
+  expectedDate: string
+  status: RefillStatus
+  daysUntilTest: number
+  frequencyMonths: number
+}
+
 export interface CareCompanionHome {
   refillSchedule: {
     schedules: RefillScheduleItem[]
+    hasMore: boolean
+  }
+  testSchedule: {
+    schedules: TestScheduleItem[]
     hasMore: boolean
   }
   costSummary: CostSummary
@@ -863,6 +876,303 @@ export interface CareCompanionHome {
   } | null
   emergencyTransportCredit: EmergencyTransportCredit | null
 }
+
+// ---------------------------------------------------------------------------
+// Care Companion Events Log
+// ---------------------------------------------------------------------------
+
+export interface RefillScheduleChangeEvent {
+  id: string
+  type: "REFILL_SCHEDULE_CHANGE"
+  timestamp: string
+  source: "user" | "system" | "provider"
+  scheduleId: string
+  medicationName: string
+  conditions: string[]
+  statusAtChange: RefillStatus
+  daysUntilRefillAtChange: number
+  previousFrequencyDays: number
+  newFrequencyDays: number
+  previousNextDate: string
+  newNextDate: string
+  reason: string
+  reasonCategory: string
+  estimatedCostPerRefill: number | null
+}
+
+export interface TestScheduleChangeEvent {
+  id: string
+  type: "TEST_SCHEDULE_CHANGE"
+  timestamp: string
+  source: "user" | "system" | "provider"
+  scheduleId: string
+  testName: string
+  conditions: string[]
+  statusAtChange: RefillStatus
+  daysUntilTestAtChange: number
+  previousFrequencyMonths: number
+  newFrequencyMonths: number
+  previousNextDate: string
+  newNextDate: string
+  reason: string
+  reasonCategory: string
+  estimatedCostPerTest: number | null
+}
+
+export interface RefillScheduleRemoveEvent {
+  id: string
+  type: "REFILL_SCHEDULE_REMOVE"
+  timestamp: string
+  source: "user" | "system" | "provider"
+  scheduleId: string
+  medicationName: string
+  conditions: string[]
+  statusAtChange: RefillStatus
+  daysUntilRefillAtChange: number
+  reason: string
+  reasonCategory: string
+  estimatedCostPerRefill: number | null
+}
+
+export interface TestScheduleRemoveEvent {
+  id: string
+  type: "TEST_SCHEDULE_REMOVE"
+  timestamp: string
+  source: "user" | "system" | "provider"
+  scheduleId: string
+  testName: string
+  conditions: string[]
+  statusAtChange: RefillStatus
+  daysUntilTestAtChange: number
+  reason: string
+  reasonCategory: string
+  estimatedCostPerTest: number | null
+}
+
+// ---------------------------------------------------------------------------
+// Payment & Cashback Events
+// ---------------------------------------------------------------------------
+
+export interface PaymentEvent {
+  id: string
+  type: "PAYMENT"
+  timestamp: string
+  source: "user"
+  facilityName: string
+  facilityType: "PHARMACY" | "LAB" | "HOSPITAL" | "CLINIC"
+  totalAmount: number
+  currency: "KES"
+  lineItems: {
+    name: string
+    category: "MEDICATION" | "LAB_TEST" | "CONSULTATION" | "SUPPLY"
+    quantity: number
+    unitPrice: number
+    lineTotal: number
+  }[]
+  fundingSources: {
+    type: "WALLET" | "MPESA" | "CASHBACK" | "LOAN" | "CARE_SAVER"
+    amount: number
+  }[]
+  isInNetwork: boolean
+}
+
+export interface CashbackEarnedEvent {
+  id: string
+  type: "CASHBACK_EARNED"
+  timestamp: string
+  source: "system"
+  paymentEventId: string
+  amount: number
+  currency: "KES"
+  rate: number
+  newBalance: number
+}
+
+// ---------------------------------------------------------------------------
+// Circle Membership Events
+// ---------------------------------------------------------------------------
+
+export interface CircleInviteSentEvent {
+  id: string
+  type: "CIRCLE_INVITE_SENT"
+  timestamp: string
+  source: "user"
+  inviteeFirstName: string
+  inviteeLastName: string
+  inviteePhone: string
+  relationship: string
+  slotType: "ACCOUNTABLE" | "AUXILIARY"
+}
+
+export interface CircleInviteAcceptedEvent {
+  id: string
+  type: "CIRCLE_INVITE_ACCEPTED"
+  timestamp: string
+  source: "system" | "llm"
+  memberId: string
+  memberFirstName: string
+  memberLastName: string
+  relationship: string
+  slotType: "ACCOUNTABLE" | "AUXILIARY"
+}
+
+export interface CashbackSharedEvent {
+  id: string
+  type: "CASHBACK_SHARED"
+  timestamp: string
+  source: "user" | "system"
+  recipientMemberId: string
+  recipientName: string
+  amount: number
+  currency: "KES"
+  reason: string | null
+}
+
+// ---------------------------------------------------------------------------
+// Drug Interaction & Jireh Plus Events
+// ---------------------------------------------------------------------------
+
+export interface DrugInteractionDetectedEvent {
+  id: string
+  type: "DRUG_INTERACTION_DETECTED"
+  timestamp: string
+  source: "system"
+  medicationA: string
+  medicationB: string | null
+  herbName: string | null
+  severity: InteractionSeverity
+  clinicalEffect: string
+  recommendation: string
+}
+
+export interface JirehPlusStatusChangeEvent {
+  id: string
+  type: "JIREH_PLUS_STATUS_CHANGE"
+  timestamp: string
+  source: "user" | "system"
+  newStatus: "ACTIVE" | "INACTIVE"
+  previousStatus: "ACTIVE" | "INACTIVE" | null
+}
+
+// ---------------------------------------------------------------------------
+// Loan Events
+// ---------------------------------------------------------------------------
+
+export interface LoanDisbursedEvent {
+  id: string
+  type: "LOAN_DISBURSED"
+  timestamp: string
+  source: "user"
+  loanId: string
+  amount: number
+  currency: "KES"
+  purpose: string
+  targetFacility: string
+  medications: string[]
+  repaymentSchedule: {
+    totalRepayments: number
+    amountPerRepayment: number
+    cadence: "DAILY" | "WEEKLY" | "MONTHLY"
+    firstDueDate: string
+  }
+}
+
+export interface LoanRepaymentEvent {
+  id: string
+  type: "LOAN_REPAYMENT"
+  timestamp: string
+  source: "user"
+  loanId: string
+  amount: number
+  currency: "KES"
+  method: "MPESA" | "M_RATIBA" | "MANUAL"
+  outstandingBalance: number
+  isOnTime: boolean
+  repaymentNumber: number
+  totalRepayments: number
+}
+
+export interface LoanOverdueEvent {
+  id: string
+  type: "LOAN_OVERDUE"
+  timestamp: string
+  source: "system"
+  loanId: string
+  daysOverdue: number
+  outstandingBalance: number
+  nextDeductionDate: string | null
+}
+
+// ---------------------------------------------------------------------------
+// LLM Action Events (AI pipeline output)
+// ---------------------------------------------------------------------------
+
+export const LLM_ACTION_TYPE = {
+  REFILL_NUDGE: "REFILL_NUDGE",
+  MISSED_TEST_FLAG: "MISSED_TEST_FLAG",
+  COST_SAVING_SUGGESTION: "COST_SAVING_SUGGESTION",
+  DRUG_INTERACTION_WARNING: "DRUG_INTERACTION_WARNING",
+  PROVIDER_FLAG: "PROVIDER_FLAG",
+  ADHERENCE_PATTERN: "ADHERENCE_PATTERN",
+  CIRCLE_PROMPT: "CIRCLE_PROMPT",
+  INVOICE_POPULATE: "INVOICE_POPULATE",
+  DRUG_INFO_SURFACE: "DRUG_INFO_SURFACE",
+  TEST_RESULT_PROMPT: "TEST_RESULT_PROMPT",
+  LOAN_REPAYMENT_PRAISE: "LOAN_REPAYMENT_PRAISE",
+  LOAN_REPAYMENT_REMINDER: "LOAN_REPAYMENT_REMINDER",
+  LOAN_REPAYMENT_OVERDUE: "LOAN_REPAYMENT_OVERDUE",
+  LOAN_OFFER: "LOAN_OFFER",
+  JIREH_PLUS_RECOMMEND: "JIREH_PLUS_RECOMMEND",
+  NO_ACTION: "NO_ACTION",
+} as const
+
+export type LlmActionType =
+  (typeof LLM_ACTION_TYPE)[keyof typeof LLM_ACTION_TYPE]
+
+export interface LlmActionEvent {
+  id: string
+  type: "LLM_ACTION"
+  timestamp: string
+  source: "llm"
+  actionType: LlmActionType
+  title: string
+  body: string
+  severity: "INFO" | "WARNING" | "CRITICAL"
+  relatedMedication: string | null
+  relatedScheduleId: string | null
+  inputHash: string
+  dismissed: boolean
+  invoiceLineItems?: {
+    name: string
+    category: "MEDICATION" | "LAB_TEST" | "CONSULTATION" | "SUPPLY" | "OTHER"
+    quantity: number
+    unitPrice: number
+    lineTotal: number
+  }[]
+}
+
+// ---------------------------------------------------------------------------
+// Union of all event types
+// ---------------------------------------------------------------------------
+
+export type CareCompanionEvent =
+  | RefillScheduleChangeEvent
+  | TestScheduleChangeEvent
+  | RefillScheduleRemoveEvent
+  | TestScheduleRemoveEvent
+  | PaymentEvent
+  | CashbackEarnedEvent
+  | CircleInviteSentEvent
+  | CircleInviteAcceptedEvent
+  | CashbackSharedEvent
+  | DrugInteractionDetectedEvent
+  | JirehPlusStatusChangeEvent
+  | LoanDisbursedEvent
+  | LoanRepaymentEvent
+  | LoanOverdueEvent
+  | LlmActionEvent
+
+export type CareCompanionEventType = CareCompanionEvent["type"]
 
 // ---------------------------------------------------------------------------
 // Care Companion Profile (intake questionnaire responses)
@@ -1025,4 +1335,42 @@ export interface CareCompanionProfile {
       | "OTHER"
       | null
   }
+
+  /** Extended profile data beyond intake (populated from account state). */
+  accountData: {
+    cashbackBalance: number
+    jirehPlusStatus: "ACTIVE" | "INACTIVE" | "TRIAL"
+    jirehPlusSince: string | null
+    circleMembers: {
+      id: string
+      firstName: string
+      lastName: string
+      relationship: string
+      status: "ACTIVE" | "PENDING" | "REJECTED"
+      slotType: "ACCOUNTABLE" | "AUXILIARY"
+      joinedAt: string | null
+    }[]
+    totalCashbackEarned: number
+    totalCashbackShared: number
+    projectedMonthlyCosts: {
+      month: string
+      medications: number
+      tests: number
+      consultations: number
+      total: number
+    }[]
+    activeLoan: {
+      loanId: string
+      originalAmount: number
+      outstandingBalance: number
+      nextRepaymentDate: string
+      nextRepaymentAmount: number
+      repaymentsCompleted: number
+      totalRepayments: number
+      isOverdue: boolean
+    } | null
+    creditLimit: number
+    repaymentStreak: number
+    totalLoansCompleted: number
+  } | null
 }

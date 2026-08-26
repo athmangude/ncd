@@ -65,6 +65,15 @@ export default defineConfig(({ command }) => ({
   esbuild: {
     drop: ["console", "debugger"],
   },
+  server: {
+    proxy: {
+      "/api/anthropic": {
+        target: "https://api.anthropic.com",
+        changeOrigin: true,
+        rewrite: (p: string) => p.replace(/^\/api\/anthropic/, ""),
+      },
+    },
+  },
   plugins: [react()],
   // Single source of truth for the Vitest config too (this file imports from
   // "vitest/config"). Tests share the resolve aliases + define above, so the

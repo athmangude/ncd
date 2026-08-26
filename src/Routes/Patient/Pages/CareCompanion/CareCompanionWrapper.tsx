@@ -1,9 +1,23 @@
 import { lazy, Suspense } from "react"
-import { Route, Routes, useNavigate } from "react-router-dom"
+import { Route, Routes, useNavigate, useLocation } from "react-router-dom"
 import RouteMetadata from "@/components/RouteMetadata"
 import AppShell from "@/Routes/AppShell"
 import { BackTitleHeader } from "@/Routes/shell/headers"
 import { DashboardTabFallback } from "@/Routes/Patient/Pages/Dashboard/components/DashboardTabFallback"
+
+const PAGE_TITLES: Record<string, string> = {
+  "/intake": "Health Profile",
+  "/cost-tracker": "Cost Tracker",
+  "/emergency-card": "Emergency Card",
+  "/medication-timeline": "Medication Timeline",
+  "/medication-cards": "Medication Cards",
+  "/refill-schedule": "Medication & Test Schedule",
+  "/education": "Health Education",
+  "/pharmacy-stock": "Pharmacy Stock Finder",
+  "/medication-loan": "Medication Loan",
+  "/notifications": "Notifications",
+  "/assistant": "Care Assistant",
+}
 
 const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
 const CostTrackerPage = lazy(() => import("./CostTrackerPage"))
@@ -21,10 +35,17 @@ const NotificationFeedPage = lazy(
 
 export default function CareCompanionWrapper() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const subPath = location.pathname.replace(
+    /^\/patients\/care-companion/,
+    "",
+  )
+  const pageTitle = PAGE_TITLES[subPath] ?? "Care Companion"
 
   const header = (
     <BackTitleHeader
-      title="Care Companion"
+      title={pageTitle}
       onBack={() => navigate("/patients/care")}
     />
   )
@@ -76,7 +97,7 @@ export default function CareCompanionWrapper() {
           <Route
             path="/refill-schedule"
             element={
-              <RouteMetadata title="Refill Schedule">
+              <RouteMetadata title="Medication & Test Schedule">
                 <RefillSchedulePage />
               </RouteMetadata>
             }

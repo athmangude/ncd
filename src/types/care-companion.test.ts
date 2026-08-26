@@ -1799,11 +1799,24 @@ describe("care-companion enum const objects", () => {
   })
 
   describe("CONDITION_TYPE", () => {
-    it("contains exactly the 3 spec-defined members", () => {
+    it("contains all spec-defined members", () => {
       assertEnumShape(CONDITION_TYPE, [
         "HYPERTENSION",
         "DIABETES",
         "GENERAL",
+        "ASTHMA",
+        "CANCER",
+        "KIDNEY_DISEASE",
+        "HEART_DISEASE",
+        "SICKLE_CELL",
+        "HIV_AIDS",
+        "EPILEPSY",
+        "COPD",
+        "ARTHRITIS",
+        "MENTAL_HEALTH",
+        "THYROID",
+        "STROKE",
+        "LIVER_DISEASE",
       ])
     })
 

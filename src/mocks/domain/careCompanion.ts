@@ -45,6 +45,17 @@ import type {
   PaginatedResponse,
   ConditionType,
   ContentLocale,
+  CareCompanionEvent,
+  PaymentEvent,
+  CashbackEarnedEvent,
+  CircleInviteSentEvent,
+  CircleInviteAcceptedEvent,
+  DrugInteractionDetectedEvent,
+  JirehPlusStatusChangeEvent,
+  LoanDisbursedEvent,
+  LoanRepaymentEvent,
+  LlmActionEvent,
+  InteractionSeverity,
 } from "@/types/care-companion"
 
 import patientMedicationsSeed from "../fixtures/patient-medications.json"
@@ -89,6 +100,8 @@ const PATIENT_MEDICATION_RECORDS_KEY = "care-companion-patient-medication-record
 const COST_BREAKDOWN_KEY = "care-companion-cost-breakdown"
 const CARE_COMPANION_TIMELINE_KEY = "care-companion-timeline"
 const EMERGENCY_REFERENCE_CARDS_KEY = "care-companion-emergency-reference-cards"
+
+const DAY_MS = 86_400_000
 
 // ---------------------------------------------------------------------------
 // Profile CRUD
@@ -378,6 +391,73 @@ const FACILITIES = [
   "Naivas Pharmacy Mombasa",
 ]
 
+const MIN_CONSULTATION_FEE = 500
+const MAX_CONSULTATION_FEE = 3000
+
+function facilityConsultationFee(facilityName: string): number {
+  let hash = 0
+  for (let c = 0; c < facilityName.length; c++) {
+    hash = ((hash << 5) - hash + facilityName.charCodeAt(c)) | 0
+  }
+  return (
+    MIN_CONSULTATION_FEE +
+    (Math.abs(hash) % (MAX_CONSULTATION_FEE - MIN_CONSULTATION_FEE + 1))
+  )
+}
+
+function computeProjectedMonthlyCosts(
+  profile: CareCompanionProfile,
+): { month: string; medications: number; tests: number; consultations: number; total: number }[] {
+  const projections: { month: string; medications: number; tests: number; consultations: number; total: number }[] = []
+  const today = new Date()
+
+  for (let i = 0; i < 6; i++) {
+    const targetDate = new Date(today.getFullYear(), today.getMonth() + i, 1)
+    const monthStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth() + 1).padStart(2, "0")}`
+    const monthStart = targetDate.getTime()
+    const monthEnd = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0).getTime()
+
+    let medTotal = 0
+    for (const med of profile.costEstimates?.medications ?? []) {
+      const freqMs = med.refillFrequencyDays * DAY_MS
+      if (freqMs <= 0) continue
+      let cursor = today.getTime()
+      while (cursor <= monthEnd) {
+        if (cursor >= monthStart && cursor <= monthEnd) {
+          medTotal += med.estimatedCostPerRefill
+        }
+        cursor += freqMs
+      }
+    }
+
+    let testTotal = 0
+    let testCount = 0
+    for (const test of profile.costEstimates?.tests ?? []) {
+      const freqMs = test.frequencyMonths * 30 * DAY_MS
+      if (freqMs <= 0) continue
+      let cursor = today.getTime()
+      while (cursor <= monthEnd) {
+        if (cursor >= monthStart && cursor <= monthEnd) {
+          testTotal += test.estimatedCostPerTest
+          testCount += 1
+        }
+        cursor += freqMs
+      }
+    }
+
+    const consultTotal = testCount * facilityConsultationFee("Nairobi Hospital")
+    projections.push({
+      month: monthStr,
+      medications: Math.round(medTotal),
+      tests: Math.round(testTotal),
+      consultations: Math.round(consultTotal),
+      total: Math.round(medTotal + testTotal + consultTotal),
+    })
+  }
+
+  return projections
+}
+
 function seedFromIntakeMedications(medicationNames: string[]): void {
   const taxonomy = readCollection<MedicationTaxonomyEntry>(
     MEDICATION_TAXONOMY_KEY,
@@ -385,13 +465,14 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
   )
 
   const now = Date.now()
-  const DAY_MS = 86_400_000
   const todayStr = new Date(now).toISOString().slice(0, 10)
 
   const schedules: RefillSchedule[] = []
   const patientMeds: PatientMedication[] = []
   const cards: MedicationCard[] = []
   const timeline: TimelineEntry[] = []
+  let consultSpend = 0
+  let consultTxns = 0
   const existingCards = readCollection<MedicationCard>(
     MEDICATION_CARDS_KEY,
     medicationCardsSeed as unknown as MedicationCard[],
@@ -420,7 +501,8 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
       escalatedToLoanOffer: false,
     })
 
-    const monthsOfHistory = isLabTest ? 2 : 6
+    const monthsOfHistory = 6
+    const purchaseCount = Math.max(1, Math.floor((monthsOfHistory * 30) / refillInterval))
     const firstPurchaseDate = new Date(now - monthsOfHistory * 30 * DAY_MS)
     patientMeds.push({
       id: `pm-intake-${i}`,
@@ -434,26 +516,43 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
       },
       firstPurchaseDate: firstPurchaseDate.toISOString().slice(0, 10),
       lastPurchaseDate: todayStr,
-      totalPurchaseCount: monthsOfHistory,
+      totalPurchaseCount: purchaseCount,
       averageRefillIntervalDays: refillInterval,
       isActive: true,
       inferredConditions: taxEntry?.conditionTags ?? [],
     } as unknown as PatientMedication)
 
-    for (let m = 0; m < monthsOfHistory; m++) {
-      const purchaseDate = new Date(now - (monthsOfHistory - m) * refillInterval * DAY_MS)
+    for (let m = 0; m < purchaseCount; m++) {
+      const purchaseDate = new Date(now - (purchaseCount - m) * refillInterval * DAY_MS)
       const variation = 0.9 + (((i * 7 + m * 3) % 10) / 50)
       const price = Math.round(monthlyPrice * variation)
+      const facility = FACILITIES[(i + m) % FACILITIES.length]
       timeline.push({
         date: purchaseDate.toISOString().slice(0, 10),
         medicationName: strength ? `${name} ${strength}` : name,
         dosage: strength,
         quantity: isLabTest ? 1 : 30,
         lineTotal: `${price}.00`,
-        facilityName: FACILITIES[(i + m) % FACILITIES.length],
+        facilityName: facility,
         gapDaysFromPrevious: m === 0 ? null : refillInterval,
         isGapAnomaly: false,
       })
+
+      if (isLabTest) {
+        const consultFee = facilityConsultationFee(facility)
+        consultSpend += consultFee
+        consultTxns += 1
+        timeline.push({
+          date: purchaseDate.toISOString().slice(0, 10),
+          medicationName: "Doctor consultation",
+          dosage: null,
+          quantity: 1,
+          lineTotal: `${consultFee}.00`,
+          facilityName: facility,
+          gapDaysFromPrevious: null,
+          isGapAnomaly: false,
+        })
+      }
     }
 
     const hasCard = existingCards.some((c) => c.medicationId === medId)
@@ -486,13 +585,19 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
   const annualProjection = Math.round(monthlyAverage * 12)
 
   const medSpend = timeline
-    .filter((e) => !e.medicationName.toLowerCase().includes("test"))
+    .filter(
+      (e) =>
+        !e.medicationName.toLowerCase().includes("test") &&
+        e.medicationName !== "Doctor consultation",
+    )
     .reduce((s, e) => s + parseFloat(e.lineTotal), 0)
-  const labSpend = ytdSpend - medSpend
+  const labSpend = ytdSpend - medSpend - consultSpend
   const medTxns = timeline.filter(
-    (e) => !e.medicationName.toLowerCase().includes("test"),
+    (e) =>
+      !e.medicationName.toLowerCase().includes("test") &&
+      e.medicationName !== "Doctor consultation",
   ).length
-  const labTxns = timeline.length - medTxns
+  const labTxns = timeline.length - medTxns - consultTxns
 
   const monthlyBuckets: Record<number, number> = {}
   for (const entry of timeline) {
@@ -519,6 +624,7 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
     breakdown: [
       { category: "MEDICATION", totalSpend: `${Math.round(medSpend)}`, percentage: Math.round((medSpend / ytdSpend) * 100) || 0, transactionCount: medTxns },
       ...(labSpend > 0 ? [{ category: "LAB_TEST", totalSpend: `${Math.round(labSpend)}`, percentage: Math.round((labSpend / ytdSpend) * 100), transactionCount: labTxns }] : []),
+      ...(consultSpend > 0 ? [{ category: "CONSULTATION", totalSpend: `${Math.round(consultSpend)}`, percentage: Math.round((consultSpend / ytdSpend) * 100), transactionCount: consultTxns }] : []),
     ],
     monthlyTrend,
   }
@@ -537,6 +643,274 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
     pagination: { total: monthlyTrend.length, limit: 12, offset: 0 },
   }
 
+  // -------------------------------------------------------------------------
+  // Generate payment + cashback events from the timeline
+  // -------------------------------------------------------------------------
+  const FUNDING_SOURCES: PaymentEvent["fundingSources"][0]["type"][] = [
+    "WALLET", "MPESA", "CASHBACK", "CARE_SAVER",
+  ]
+  const events: CareCompanionEvent[] = []
+  let runningCashback = 0
+
+  const timelineByDate: Record<string, TimelineEntry[]> = {}
+  for (const entry of timeline) {
+    ;(timelineByDate[entry.date] ??= []).push(entry)
+  }
+
+  for (const [date, entries] of Object.entries(timelineByDate)) {
+    const facility = entries[0].facilityName
+    const total = entries.reduce((s, e) => s + parseFloat(e.lineTotal), 0)
+    const paymentId = `pay-${date}-${facility.slice(0, 8).replace(/\s/g, "")}`
+
+    const lineItems: PaymentEvent["lineItems"] = entries.map((e) => {
+      const isConsult = e.medicationName === "Doctor consultation"
+      const isTest = e.medicationName.toLowerCase().includes("test")
+      const cat = isConsult
+        ? "CONSULTATION" as const
+        : isTest
+          ? "LAB_TEST" as const
+          : "MEDICATION" as const
+      return {
+        name: e.medicationName,
+        category: cat,
+        quantity: e.quantity ?? 1,
+        unitPrice: parseFloat(e.lineTotal) / (e.quantity ?? 1),
+        lineTotal: parseFloat(e.lineTotal),
+      }
+    })
+
+    const primaryIdx = (date.charCodeAt(8) + date.charCodeAt(9)) % FUNDING_SOURCES.length
+    const primaryType = FUNDING_SOURCES[primaryIdx]
+    const fundingSources: PaymentEvent["fundingSources"] = [
+      { type: primaryType, amount: Math.round(total * 0.8) },
+      { type: "MPESA" as const, amount: Math.round(total * 0.2) },
+    ]
+    if (primaryType === "MPESA") {
+      fundingSources.length = 0
+      fundingSources.push({ type: "MPESA", amount: total })
+    }
+
+    const payEvent: PaymentEvent = {
+      id: paymentId,
+      type: "PAYMENT",
+      timestamp: new Date(date + "T10:00:00").toISOString(),
+      source: "user",
+      facilityName: facility,
+      facilityType: facility.toLowerCase().includes("hospital")
+        ? "HOSPITAL"
+        : facility.toLowerCase().includes("lab") || facility.toLowerCase().includes("pathol")
+          ? "LAB"
+          : "PHARMACY",
+      totalAmount: total,
+      currency: "KES",
+      lineItems,
+      fundingSources,
+      isInNetwork: (date.charCodeAt(9) % 3) !== 0,
+    }
+    events.push(payEvent)
+
+    const cbRate = 0.05
+    const cbAmount = Math.round(total * cbRate)
+    runningCashback += cbAmount
+    const cbEvent: CashbackEarnedEvent = {
+      id: `cb-${paymentId}`,
+      type: "CASHBACK_EARNED",
+      timestamp: new Date(date + "T10:05:00").toISOString(),
+      source: "system",
+      paymentEventId: paymentId,
+      amount: cbAmount,
+      currency: "KES",
+      rate: cbRate,
+      newBalance: runningCashback,
+    }
+    events.push(cbEvent)
+  }
+
+  // -------------------------------------------------------------------------
+  // Generate circle membership events from existing network data
+  // -------------------------------------------------------------------------
+  const CIRCLE_NAMES = [
+    { first: "Sarah", last: "Wanjiku", rel: "Sister", phone: "+254712345001" },
+    { first: "James", last: "Omondi", rel: "Brother", phone: "+254712345002" },
+    { first: "Grace", last: "Achieng", rel: "Friend", phone: "+254712345003" },
+  ]
+  const circleMembers: CareCompanionProfile["accountData"] extends infer T
+    ? T extends { circleMembers: infer C } ? C : never : never = []
+
+  CIRCLE_NAMES.forEach((person, idx) => {
+    const inviteDate = new Date(now - (90 + idx * 15) * DAY_MS)
+    const acceptDate = new Date(inviteDate.getTime() + (2 + idx) * DAY_MS)
+    const slotType = idx < 2
+      ? "ACCOUNTABLE" as const
+      : "AUXILIARY" as const
+
+    const inviteEvent: CircleInviteSentEvent = {
+      id: `circle-invite-${idx}`,
+      type: "CIRCLE_INVITE_SENT",
+      timestamp: inviteDate.toISOString(),
+      source: "user",
+      inviteeFirstName: person.first,
+      inviteeLastName: person.last,
+      inviteePhone: person.phone,
+      relationship: person.rel,
+      slotType,
+    }
+    events.push(inviteEvent)
+
+    const acceptEvent: CircleInviteAcceptedEvent = {
+      id: `circle-accept-${idx}`,
+      type: "CIRCLE_INVITE_ACCEPTED",
+      timestamp: acceptDate.toISOString(),
+      source: idx === 2 ? "llm" : "system",
+      memberId: `member-${idx}`,
+      memberFirstName: person.first,
+      memberLastName: person.last,
+      relationship: person.rel,
+      slotType,
+    }
+    events.push(acceptEvent)
+
+    circleMembers.push({
+      id: `member-${idx}`,
+      firstName: person.first,
+      lastName: person.last,
+      relationship: person.rel,
+      status: "ACTIVE",
+      slotType,
+      joinedAt: acceptDate.toISOString().slice(0, 10),
+    })
+  })
+
+  // -------------------------------------------------------------------------
+  // Drug interaction events from fixture data
+  // -------------------------------------------------------------------------
+  const currentProfile = getCareCompanionProfile()
+  const interactionFixtures = getMedicationInteractions()
+  const patientMedNamesLower = new Set(medicationNames.map((n) => n.toLowerCase()))
+  const taxLookup = readCollection<MedicationTaxonomyEntry>(
+    MEDICATION_TAXONOMY_KEY,
+    medicationTaxonomySeed as unknown as MedicationTaxonomyEntry[],
+  )
+
+  let ixIdx = 0
+  for (const ix of interactionFixtures) {
+    const medA = taxLookup.find((t) => t.id === ix.medicationAId)
+    const medB = ix.medicationBId
+      ? taxLookup.find((t) => t.id === ix.medicationBId)
+      : null
+    const nameA = medA?.genericName?.toLowerCase()
+    const nameB = medB?.genericName?.toLowerCase()
+    const matchA = nameA && patientMedNamesLower.has(nameA)
+    const matchB = nameB && patientMedNamesLower.has(nameB)
+    const matchHerb = ix.herbName && currentProfile?.treatment.usingHerbalAlternatives
+
+    if ((matchA && matchB) || (matchA && matchHerb)) {
+      events.push({
+        id: `evt-ix-${ixIdx++}`,
+        type: "DRUG_INTERACTION_DETECTED",
+        timestamp: new Date(now - 7 * DAY_MS).toISOString(),
+        source: "system",
+        medicationA: medA?.genericName ?? ix.medicationAId,
+        medicationB: medB?.genericName ?? null,
+        herbName: ix.herbName,
+        severity: ix.severity as InteractionSeverity,
+        clinicalEffect: ix.clinicalEffect,
+        recommendation: ix.recommendation,
+      } satisfies DrugInteractionDetectedEvent)
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Jireh Plus activation event
+  // -------------------------------------------------------------------------
+  events.push({
+    id: "evt-plus-activate",
+    type: "JIREH_PLUS_STATUS_CHANGE",
+    timestamp: new Date(now - 120 * DAY_MS).toISOString(),
+    source: "user",
+    newStatus: "ACTIVE",
+    previousStatus: null,
+  } satisfies JirehPlusStatusChangeEvent)
+
+  // -------------------------------------------------------------------------
+  // Loan events: 1 disbursement + 2 on-time repayments
+  // -------------------------------------------------------------------------
+  const loanDisbursedAt = new Date(now - 30 * DAY_MS)
+  const loanId = "loan-001"
+  const loanAmount = 5000
+  const totalRepayments = 30
+  const repaymentAmount = Math.ceil(loanAmount / totalRepayments)
+
+  events.push({
+    id: "evt-loan-disbursed",
+    type: "LOAN_DISBURSED",
+    timestamp: loanDisbursedAt.toISOString(),
+    source: "user",
+    loanId,
+    amount: loanAmount,
+    currency: "KES",
+    purpose: "Medication refill",
+    targetFacility: "Kenyatta National Hospital",
+    medications: medicationNames.slice(0, 2),
+    repaymentSchedule: {
+      totalRepayments,
+      amountPerRepayment: repaymentAmount,
+      cadence: "DAILY",
+      firstDueDate: new Date(loanDisbursedAt.getTime() + DAY_MS)
+        .toISOString()
+        .slice(0, 10),
+    },
+  } satisfies LoanDisbursedEvent)
+
+  const loanRepaymentsMade = 2
+  for (let rIdx = 0; rIdx < loanRepaymentsMade; rIdx++) {
+    const repayDate = new Date(
+      loanDisbursedAt.getTime() + (rIdx + 1) * DAY_MS,
+    )
+    events.push({
+      id: `evt-loan-repay-${rIdx}`,
+      type: "LOAN_REPAYMENT",
+      timestamp: repayDate.toISOString(),
+      source: "user",
+      loanId,
+      amount: repaymentAmount,
+      currency: "KES",
+      method: rIdx === 0 ? "MPESA" : "M_RATIBA",
+      outstandingBalance:
+        loanAmount - repaymentAmount * (rIdx + 1),
+      isOnTime: true,
+      repaymentNumber: rIdx + 1,
+      totalRepayments,
+    } satisfies LoanRepaymentEvent)
+  }
+
+  // -------------------------------------------------------------------------
+  // Recent payments with empty lineItems (for LLM invoice population)
+  // -------------------------------------------------------------------------
+  const recentPaymentFacilities = [
+    { name: "Nairobi Hospital Pharmacy", type: "PHARMACY" as const, amount: 4200 },
+    { name: "Lancet Pathologists", type: "LAB" as const, amount: 2800 },
+  ]
+  recentPaymentFacilities.forEach((f, idx) => {
+    const daysAgo = idx === 0 ? 2 : 5
+    const payId = `pay-recent-${idx}`
+    events.push({
+      id: payId,
+      type: "PAYMENT",
+      timestamp: new Date(now - daysAgo * DAY_MS).toISOString(),
+      source: "user",
+      facilityName: f.name,
+      facilityType: f.type,
+      totalAmount: f.amount,
+      currency: "KES",
+      lineItems: [],
+      fundingSources: [{ type: "MPESA", amount: f.amount }],
+      isInNetwork: true,
+    } satisfies PaymentEvent)
+  })
+
+  events.sort((a, b) => a.timestamp.localeCompare(b.timestamp))
+
   writeCollection(REFILL_SCHEDULES_KEY, schedules)
   writeCollection(PATIENT_MEDICATIONS_KEY, patientMeds)
   writeCollection(
@@ -548,6 +922,45 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
   writeCollection(CARE_COMPANION_TIMELINE_KEY, timeline)
   writeObject(COST_SUMMARY_KEY, costSummary)
   writeObject(COST_BREAKDOWN_KEY, costBreakdown)
+  writeCollection(EVENTS_LOG_KEY, events)
+
+  // Patch accountData onto the profile
+  const savedProfile = getCareCompanionProfile()
+  if (savedProfile) {
+    const withAccount: CareCompanionProfile = {
+      ...savedProfile,
+      accountData: {
+        cashbackBalance: runningCashback,
+        jirehPlusStatus: "ACTIVE",
+        jirehPlusSince: new Date(now - 120 * DAY_MS).toISOString().slice(0, 10),
+        circleMembers,
+        totalCashbackEarned: runningCashback,
+        totalCashbackShared: 0,
+        projectedMonthlyCosts: [],
+        activeLoan: {
+          loanId,
+          originalAmount: loanAmount,
+          outstandingBalance:
+            loanAmount - repaymentAmount * loanRepaymentsMade,
+          nextRepaymentDate: new Date(
+            loanDisbursedAt.getTime() + (loanRepaymentsMade + 1) * DAY_MS,
+          )
+            .toISOString()
+            .slice(0, 10),
+          nextRepaymentAmount: repaymentAmount,
+          repaymentsCompleted: loanRepaymentsMade,
+          totalRepayments,
+          isOverdue: false,
+        },
+        creditLimit: 10000,
+        repaymentStreak: loanRepaymentsMade,
+        totalLoansCompleted: 0,
+      },
+    }
+    withAccount.accountData!.projectedMonthlyCosts =
+      computeProjectedMonthlyCosts(withAccount)
+    writeObject(PROFILE_KEY, withAccount)
+  }
 }
 
 /** Shallow-merge a partial update into the existing profile (PATCH). */
@@ -557,11 +970,89 @@ export function patchCareCompanionProfile(
   const current = getCareCompanionProfile()
   const seed = careCompanionProfileSeed as unknown as CareCompanionProfile
   const base = current ?? seed
+
+  if (patch.costEstimates && base.costEstimates) {
+    const existingMeds = base.costEstimates.medications ?? []
+    const existingTests = base.costEstimates.tests ?? []
+    const patchMeds = patch.costEstimates.medications ?? []
+    const patchTests = patch.costEstimates.tests ?? []
+
+    const isMerge = patchMeds.length < existingMeds.length
+    if (isMerge) {
+      const existingMedNames = new Set(
+        existingMeds.map((m) => m.name.toLowerCase()),
+      )
+      const existingTestNames = new Set(
+        existingTests.map((t) => t.name.toLowerCase()),
+      )
+      const newMeds = patchMeds.filter(
+        (m) => !existingMedNames.has(m.name.toLowerCase()),
+      )
+      const newTests = patchTests.filter(
+        (t) => !existingTestNames.has(t.name.toLowerCase()),
+      )
+      patch = {
+        ...patch,
+        costEstimates: {
+          medications: [...existingMeds, ...newMeds],
+          tests: [...existingTests, ...newTests],
+        },
+      }
+    } else {
+      const patchMedNames = new Set(
+        patchMeds.map((m) => m.name.toLowerCase()),
+      )
+      const patchTestNames = new Set(
+        patchTests.map((t) => t.name.toLowerCase()),
+      )
+      patch = {
+        ...patch,
+        costEstimates: {
+          medications: patchMeds.map((m) => {
+            const existing = existingMeds.find(
+              (e) => e.name.toLowerCase() === m.name.toLowerCase(),
+            )
+            return existing ? { ...existing, ...m } : m
+          }),
+          tests: patchTests.map((t) => {
+            const existing = existingTests.find(
+              (e) => e.name.toLowerCase() === t.name.toLowerCase(),
+            )
+            return existing ? { ...existing, ...t } : t
+          }),
+        },
+      }
+    }
+  }
+
   const merged = patchObject(PROFILE_KEY, base, patch)
   if (patch.treatment?.medicationNames?.length) {
     seedFromIntakeMedications(patch.treatment.medicationNames)
   }
+  if (patch.costEstimates?.medications) {
+    syncRefillFrequencies(patch.costEstimates.medications)
+  }
   return merged
+}
+
+function syncRefillFrequencies(
+  medications: { name: string; refillFrequencyDays?: number }[],
+): void {
+  const schedules = getRefillSchedules()
+  let changed = false
+  for (const med of medications) {
+    if (med.refillFrequencyDays == null) continue
+    const match = schedules.find(
+      (s) => s.medicationName.toLowerCase() === med.name.toLowerCase(),
+    )
+    if (match && match.estimatedDaysSupply !== med.refillFrequencyDays) {
+      match.estimatedDaysSupply = med.refillFrequencyDays
+      changed = true
+    }
+  }
+  if (changed) {
+    writeCollection(REFILL_SCHEDULES_KEY, schedules)
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -975,6 +1466,7 @@ export function buildCareCompanionHome(): CareCompanionHome {
   const educationCard = getNextEducationCard()
   const emergencyCard = getMatchedEmergencyCard()
   const transportCredit = getEmergencyTransportCredit()
+  const profile = getCareCompanionProfile()
 
   // Sort refill schedules by urgency: overdue first, then due, then upcoming
   const statusPriority: Record<string, number> = {
@@ -987,10 +1479,20 @@ export function buildCareCompanionHome(): CareCompanionHome {
     (a, b) => (statusPriority[a.status] ?? 9) - (statusPriority[b.status] ?? 9),
   )
 
+  ensureTestSchedulesSeeded()
+  const testSchedules = getTestSchedules()
+  const sortedTests = [...testSchedules].sort(
+    (a, b) => (statusPriority[a.status] ?? 9) - (statusPriority[b.status] ?? 9),
+  )
+
   return {
     refillSchedule: {
       schedules: sorted.slice(0, 3),
       hasMore: sorted.length > 3,
+    },
+    testSchedule: {
+      schedules: sortedTests.slice(0, 3),
+      hasMore: sortedTests.length > 3,
     },
     costSummary: {
       year: costSummary.year,
@@ -1099,6 +1601,132 @@ export function createCareCompanionNotification(
   writeCollection(CC_NOTIFICATIONS_KEY, all)
 
   return notification
+}
+
+// ---------------------------------------------------------------------------
+// Schedule item updates
+// ---------------------------------------------------------------------------
+
+function computeStatus(daysUntil: number): import("@/types/care-companion").RefillStatus {
+  if (daysUntil < 0) return "OVERDUE"
+  if (daysUntil <= 14) return "DUE"
+  return "UPCOMING"
+}
+
+function daysBetween(dateStr: string): number {
+  const target = new Date(dateStr + "T00:00:00")
+  const now = new Date()
+  now.setHours(0, 0, 0, 0)
+  return Math.round((target.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
+}
+
+export function updateRefillScheduleItem(
+  id: string,
+  nextDate: string,
+  frequencyDays: number,
+): RefillSchedule | undefined {
+  const schedules = getRefillSchedules()
+  const index = schedules.findIndex((s) => s.id === id)
+  if (index === -1) return undefined
+
+  const days = daysBetween(nextDate)
+  schedules[index] = {
+    ...schedules[index],
+    expectedRefillDate: nextDate,
+    daysUntilRefill: days,
+    status: computeStatus(days),
+    estimatedDaysSupply: frequencyDays,
+  }
+  writeCollection(REFILL_SCHEDULES_KEY, schedules)
+  return schedules[index]
+}
+
+const TEST_SCHEDULES_KEY = "care-companion-test-schedules"
+
+export function getTestSchedules(): import("@/types/care-companion").TestScheduleItem[] {
+  return readCollection<import("@/types/care-companion").TestScheduleItem>(
+    TEST_SCHEDULES_KEY,
+    [],
+  )
+}
+
+export function ensureTestSchedulesSeeded(): void {
+  const existing = getTestSchedules()
+  if (existing.length > 0) return
+  const profile = getCareCompanionProfile()
+  if (!profile?.costEstimates?.tests) return
+  const now = Date.now()
+  const items: import("@/types/care-companion").TestScheduleItem[] = []
+  for (const t of profile.costEstimates.tests) {
+    const freqMs = t.frequencyMonths * 30 * 24 * 60 * 60 * 1000
+    const nextDate = new Date(now + freqMs * 0.4)
+    const daysUntil = Math.round(
+      (nextDate.getTime() - now) / (24 * 60 * 60 * 1000),
+    )
+    items.push({
+      id: `test-sched-${t.name.replace(/\s+/g, "-").toLowerCase()}`,
+      testName: t.name,
+      expectedDate: nextDate.toISOString().split("T")[0],
+      status: computeStatus(daysUntil),
+      daysUntilTest: daysUntil,
+      frequencyMonths: t.frequencyMonths,
+    })
+  }
+  writeCollection(TEST_SCHEDULES_KEY, items)
+}
+
+export function updateTestScheduleItem(
+  testName: string,
+  nextDate: string,
+  frequencyMonths: number,
+): import("@/types/care-companion").TestScheduleItem | undefined {
+  ensureTestSchedulesSeeded()
+  const schedules = getTestSchedules()
+  const index = schedules.findIndex(
+    (s) => s.testName.toLowerCase() === testName.toLowerCase(),
+  )
+  if (index === -1) return undefined
+
+  const days = daysBetween(nextDate)
+  schedules[index] = {
+    ...schedules[index],
+    expectedDate: nextDate,
+    daysUntilTest: days,
+    status: computeStatus(days),
+    frequencyMonths,
+  }
+  writeCollection(TEST_SCHEDULES_KEY, schedules)
+  return schedules[index]
+}
+
+// ---------------------------------------------------------------------------
+// Events log
+// ---------------------------------------------------------------------------
+
+const EVENTS_LOG_KEY = "care-companion-events"
+
+export function getEventsLog(): CareCompanionEvent[] {
+  return readCollection<CareCompanionEvent>(EVENTS_LOG_KEY, [])
+}
+
+export function appendEvent(event: CareCompanionEvent): CareCompanionEvent {
+  const all = getEventsLog()
+  all.push(event)
+  writeCollection(EVENTS_LOG_KEY, all)
+  return event
+}
+
+export function updateEventById(
+  id: string,
+  patch: Partial<CareCompanionEvent>,
+): CareCompanionEvent | null {
+  const all = getEventsLog()
+  const idx = all.findIndex((e) => e.id === id)
+  if (idx === -1) return null
+  const updated = { ...all[idx], ...patch } as CareCompanionEvent
+  all[idx] = updated
+  writeCollection(EVENTS_LOG_KEY, all)
+  return updated
 }
 
 // ---------------------------------------------------------------------------

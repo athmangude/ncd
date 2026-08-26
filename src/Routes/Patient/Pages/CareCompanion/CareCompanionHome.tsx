@@ -15,16 +15,20 @@ import {
   Bell,
   Sparkles,
   UserCog,
-  Eye,
   Plus,
+  ClipboardCheck,
+  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
 import { SectionErrorBoundary } from "./components/SectionErrorBoundary"
 import { EmergencyCardStaticFallback } from "./components/EmergencyCardStaticFallback"
 import { MedicationCardDrawer } from "./components/MedicationCardDrawer"
 import { AddMedicationDrawer } from "./components/AddMedicationDrawer"
 import { useCareCompanionHome } from "./hooks/useCareCompanionHome"
 import { useIntakeProfile } from "./hooks/useIntakeProfile"
+import { useAiPipeline } from "./hooks/useAiPipeline"
+import type { LlmActionEvent } from "@/types/care-companion"
 
 const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
 import type { CareCompanionHome as CareCompanionHomeData } from "@/types/care-companion"
@@ -60,6 +64,11 @@ export default function CareCompanionHome() {
     string | undefined
   >(undefined)
   const [addMedOpen, setAddMedOpen] = useState(false)
+  const {
+    insights,
+    isRunning: aiRunning,
+    dismissInsight,
+  } = useAiPipeline(profile ?? null)
 
   const openMedicationDrawer = (medicationId?: string) => {
     setDrawerMedicationId(medicationId)
@@ -101,15 +110,37 @@ export default function CareCompanionHome() {
 
   const topChallenge = profile?.challenges?.topChallenge ?? null
   const sectionOrder =
-    (topChallenge && SECTION_ORDER_BY_CHALLENGE[topChallenge]) ??
+    (topChallenge && SECTION_ORDER_BY_CHALLENGE[topChallenge]) ||
     ["refill", "cost", "emergency", "education"]
+
+  const medPriceMap: Record<string, number> = {}
+  for (const m of profile?.costEstimates?.medications ?? []) {
+    medPriceMap[m.name.toLowerCase()] = m.estimatedCostPerRefill
+  }
+  for (const s of data.refillSchedule?.schedules ?? []) {
+    const key = s.medicationName.toLowerCase()
+    if (medPriceMap[key] == null) {
+      medPriceMap[key] = getMedicationPriceKES(s.medicationName)
+    }
+  }
+  const testPriceMap: Record<string, number> = {}
+  for (const t of profile?.costEstimates?.tests ?? []) {
+    testPriceMap[t.name.toLowerCase()] = t.estimatedCostPerTest
+  }
+  for (const t of data.testSchedule?.schedules ?? []) {
+    const key = t.testName.toLowerCase()
+    if (testPriceMap[key] == null) {
+      testPriceMap[key] = getMedicationPriceKES(t.testName)
+    }
+  }
 
   const sections: Record<string, React.ReactNode> = {
     refill: (
       <SectionErrorBoundary key="refill" sectionName="Refill Schedule">
         <RefillScheduleCard
           data={data}
-          onMedicationQuickView={openMedicationDrawer}
+          medicationPrices={medPriceMap}
+          testPrices={testPriceMap}
           onAddMedication={() => setAddMedOpen(true)}
         />
       </SectionErrorBoundary>
@@ -138,6 +169,14 @@ export default function CareCompanionHome() {
   return (
     <div className="flex flex-col gap-4 p-4">
       {profile?.completedAt && <ProfileGreeting profile={profile} />}
+
+      {(insights.length > 0 || aiRunning) && (
+        <AiInsightsSection
+          insights={insights}
+          isRunning={aiRunning}
+          onDismiss={dismissInsight}
+        />
+      )}
 
       {sectionOrder.map((key) => sections[key])}
 
@@ -171,6 +210,7 @@ function ProfileGreeting({
     userRole?: { role?: string }
   }
 }) {
+  const navigate = useNavigate()
   const conditions = profile.conditions?.type ?? []
   const topChallenge = profile.challenges?.topChallenge
   const isSelf = profile.userRole?.role === "SELF"
@@ -218,25 +258,169 @@ function ProfileGreeting({
           </>
         ) : (
           <>Your care dashboard is ready.</>
-        )}
+        )}{" "}
+        <button
+          type="button"
+          onClick={() => navigate("/patients/care-companion/intake")}
+          className="inline text-xs font-medium text-primary hover:underline"
+        >
+          Update profile
+        </button>
       </p>
     </div>
   )
 }
 
+// ---------------------------------------------------------------------------
+// AI Insights Section
+// ---------------------------------------------------------------------------
+
+const SEVERITY_STYLES: Record<string, string> = {
+  CRITICAL: "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30",
+  WARNING:
+    "border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30",
+  INFO: "border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/30",
+}
+
+const SEVERITY_ICON_STYLES: Record<string, string> = {
+  CRITICAL: "text-red-600 dark:text-red-400",
+  WARNING: "text-amber-600 dark:text-amber-400",
+  INFO: "text-blue-600 dark:text-blue-400",
+}
+
+const ACTION_TYPE_LABELS: Record<string, string> = {
+  REFILL_NUDGE: "Refill",
+  MISSED_TEST_FLAG: "Lab test",
+  COST_SAVING_SUGGESTION: "Cost saving",
+  DRUG_INTERACTION_WARNING: "Interaction",
+  PROVIDER_FLAG: "Attention",
+  ADHERENCE_PATTERN: "Adherence",
+  CIRCLE_PROMPT: "Circle",
+  DRUG_INFO_SURFACE: "Drug info",
+  TEST_RESULT_PROMPT: "Test results",
+  JIREH_PLUS_RECOMMEND: "Jireh Plus",
+  LOAN_REPAYMENT_PRAISE: "Repayment",
+  LOAN_REPAYMENT_REMINDER: "Due soon",
+  LOAN_REPAYMENT_OVERDUE: "Overdue",
+  LOAN_OFFER: "Loan offer",
+  NO_ACTION: "All clear",
+}
+
+const ACTION_TYPE_ICONS: Record<string, typeof AlertTriangle> = {
+  DRUG_INFO_SURFACE: Pill,
+  TEST_RESULT_PROMPT: ClipboardCheck,
+  INVOICE_POPULATE: FileText,
+  JIREH_PLUS_RECOMMEND: Shield,
+  LOAN_OFFER: CreditCard,
+  LOAN_REPAYMENT_PRAISE: TrendingUp,
+  LOAN_REPAYMENT_REMINDER: Clock,
+  LOAN_REPAYMENT_OVERDUE: Bell,
+}
+
+function AiInsightsSection({
+  insights,
+  isRunning,
+  onDismiss,
+}: {
+  insights: LlmActionEvent[]
+  isRunning: boolean
+  onDismiss: (id: string) => void
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-4 w-4 text-primary" />
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          AI Insights
+        </h3>
+        {isRunning && (
+          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+        )}
+      </div>
+      {insights.map((insight) => (
+        <div
+          key={insight.id}
+          className={cn(
+            "rounded-lg border p-3",
+            SEVERITY_STYLES[insight.severity] ?? SEVERITY_STYLES.INFO,
+          )}
+        >
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex items-start gap-2">
+              {(() => {
+                const Icon = ACTION_TYPE_ICONS[insight.actionType] ?? AlertTriangle
+                return (
+                  <Icon
+                    className={cn(
+                      "mt-0.5 h-4 w-4 shrink-0",
+                      SEVERITY_ICON_STYLES[insight.severity] ??
+                        SEVERITY_ICON_STYLES.INFO,
+                    )}
+                  />
+                )
+              })()}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                    {ACTION_TYPE_LABELS[insight.actionType] ??
+                      insight.actionType}
+                  </span>
+                  {insight.relatedMedication && (
+                    <span className="rounded-full bg-background/80 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                      {insight.relatedMedication}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm font-medium leading-tight">
+                  {insight.title}
+                </p>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {insight.body}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => onDismiss(insight.id)}
+              className="shrink-0 rounded p-1 text-muted-foreground hover:bg-background/50"
+              aria-label="Dismiss"
+            >
+              <span className="text-xs">✕</span>
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Refill Schedule Card
+// ---------------------------------------------------------------------------
+
 function RefillScheduleCard({
   data,
-  onMedicationQuickView,
+  medicationPrices,
+  testPrices,
   onAddMedication,
 }: {
   data: CareCompanionHomeData
-  onMedicationQuickView?: (medicationId?: string) => void
+  medicationPrices: Record<string, number>
+  testPrices: Record<string, number>
   onAddMedication?: () => void
 }) {
   const navigate = useNavigate()
   const { schedules, hasMore } = data.refillSchedule
-  const overdueCount = schedules.filter((s) => s.status === "OVERDUE").length
-  const dueCount = schedules.filter((s) => s.status === "DUE").length
+  const { schedules: testSchedules } = data.testSchedule ?? { schedules: [] }
+  const allOverdue = [
+    ...schedules.filter((s) => s.status === "OVERDUE"),
+    ...testSchedules.filter((s) => s.status === "OVERDUE"),
+  ]
+  const allDue = [
+    ...schedules.filter((s) => s.status === "DUE"),
+    ...testSchedules.filter((s) => s.status === "DUE"),
+  ]
+  const overdueCount = allOverdue.length
+  const dueCount = allDue.length
 
   return (
     <button
@@ -258,7 +442,7 @@ function RefillScheduleCard({
           </div>
           <div>
             <h3 className="text-sm font-semibold text-foreground">
-              Refill Schedule
+              Medication & Test Schedule
             </h3>
             {overdueCount > 0 ? (
               <p className="text-xs font-medium text-red-600">
@@ -271,7 +455,7 @@ function RefillScheduleCard({
               </p>
             ) : (
               <p className="text-xs text-muted-foreground">
-                All refills on track
+                All on track
               </p>
             )}
           </div>
@@ -279,53 +463,77 @@ function RefillScheduleCard({
         <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
       </div>
 
-      {schedules.length > 0 && (
+      {(schedules.length > 0 || testSchedules.length > 0) && (
         <div className="mt-3 space-y-2">
-          {schedules.map((s) => (
-            <div
-              key={s.id}
-              className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-medium text-foreground">
-                  {s.medicationName}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  {s.status === "OVERDUE"
-                    ? `${Math.abs(s.daysUntilRefill)} days overdue`
-                    : s.status === "DUE"
-                      ? `Due in ${s.daysUntilRefill} days`
-                      : `In ${s.daysUntilRefill} days`}
-                </p>
+          {schedules.map((s) => {
+            const price = medicationPrices[s.medicationName.toLowerCase()]
+            return (
+              <div
+                key={s.id}
+                className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-medium text-foreground">
+                    {s.medicationName}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {s.status === "OVERDUE"
+                      ? `${Math.abs(s.daysUntilRefill)} days overdue`
+                      : s.status === "DUE"
+                        ? `Due in ${s.daysUntilRefill} days`
+                        : `In ${s.daysUntilRefill} days`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-end gap-1">
+                    <StatusBadge status={s.status} />
+                    {price != null && (
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        KES {price.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </div>
               </div>
-              <div className="flex items-center gap-1.5">
-                {onMedicationQuickView && (
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      onMedicationQuickView()
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.stopPropagation()
-                        e.preventDefault()
-                        onMedicationQuickView()
-                      }
-                    }}
-                    className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                  </span>
-                )}
-                <StatusBadge status={s.status} />
+            )
+          })}
+          {testSchedules.map((t) => {
+            const price = testPrices[t.testName.toLowerCase()]
+            return (
+              <div
+                key={t.id}
+                className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-medium text-foreground">
+                    {t.testName}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {t.status === "OVERDUE"
+                      ? `${Math.abs(t.daysUntilTest)} days overdue`
+                      : t.status === "DUE"
+                        ? `Due in ${t.daysUntilTest} days`
+                        : `In ${t.daysUntilTest} days`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-end gap-1">
+                    <StatusBadge status={t.status} />
+                    {price != null && (
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        KES {price.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
           {hasMore && (
             <p className="text-center text-[11px] text-muted-foreground">
-              View all refills
+              View all schedules
             </p>
           )}
           {onAddMedication && (
@@ -346,7 +554,7 @@ function RefillScheduleCard({
               className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-muted-foreground/30 px-3 py-2 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span className="text-xs font-medium">Add medication</span>
+              <span className="text-xs font-medium">Add medication or test</span>
             </span>
           )}
         </div>

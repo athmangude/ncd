@@ -24,9 +24,17 @@ import {
   getPharmacyStock,
   getMedicationLoanPreApproval,
   matchAssistantResponse,
+  getEventsLog,
+  appendEvent,
+  updateEventById,
+  updateRefillScheduleItem,
+  updateTestScheduleItem,
 } from "../domain/careCompanion"
 
-import type { CareCompanionProfile } from "@/types/care-companion"
+import type {
+  CareCompanionProfile,
+  CareCompanionEvent,
+} from "@/types/care-companion"
 
 /**
  * Care Companion MSW handlers.
@@ -371,6 +379,79 @@ export const careCompanionHandlers = [
     const body = (await request.json()) as CareCompanionProfile
     const saved = saveCareCompanionProfile(body)
     return HttpResponse.json(saved, { status: 201 })
+  }),
+
+  // -- Events GET -------------------------------------------------------------
+  http.get("/care-companion/events", ({ request }) => {
+    const url = new URL(request.url)
+    const type = url.searchParams.get("type")
+    const limit = Number(url.searchParams.get("limit")) || 50
+    const offset = Number(url.searchParams.get("offset")) || 0
+
+    let events = getEventsLog()
+    if (type) {
+      events = events.filter((e) => e.type === type)
+    }
+    events.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    )
+    const total = events.length
+    const paged = events.slice(offset, offset + limit)
+    return HttpResponse.json({
+      data: paged,
+      pagination: { total, limit, offset },
+    })
+  }),
+
+  // -- Events POST ------------------------------------------------------------
+  http.post("/care-companion/events", async ({ request }) => {
+    const body = (await request.json()) as CareCompanionEvent
+    const saved = appendEvent(body)
+    return HttpResponse.json(saved, { status: 201 })
+  }),
+
+  // -- Events PATCH (update in place) ----------------------------------------
+  http.patch("/care-companion/events/:id", async ({ params, request }) => {
+    const { id } = params as { id: string }
+    const body = (await request.json()) as Partial<CareCompanionEvent>
+    const updated = updateEventById(id, body)
+    if (!updated) {
+      return HttpResponse.json({ error: "Event not found" }, { status: 404 })
+    }
+    return HttpResponse.json(updated)
+  }),
+
+  // -- Refill schedule item PATCH ---------------------------------------------
+  http.patch("/care-companion/refill-schedules/:id", async ({ params, request }) => {
+    const { id } = params as { id: string }
+    const body = (await request.json()) as {
+      nextDate: string
+      frequencyDays: number
+    }
+    const updated = updateRefillScheduleItem(id, body.nextDate, body.frequencyDays)
+    if (!updated) {
+      return HttpResponse.json({ error: "Schedule not found" }, { status: 404 })
+    }
+    return HttpResponse.json(updated)
+  }),
+
+  // -- Test schedule item PATCH -----------------------------------------------
+  http.patch("/care-companion/test-schedules/:testName", async ({ params, request }) => {
+    const { testName } = params as { testName: string }
+    const body = (await request.json()) as {
+      nextDate: string
+      frequencyMonths: number
+    }
+    const updated = updateTestScheduleItem(
+      decodeURIComponent(testName),
+      body.nextDate,
+      body.frequencyMonths,
+    )
+    if (!updated) {
+      return HttpResponse.json({ error: "Test schedule not found" }, { status: 404 })
+    }
+    return HttpResponse.json(updated)
   }),
 
   // =========================================================================

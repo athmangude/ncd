@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
+import { ChevronLeft } from "lucide-react"
 import {
   Drawer,
   DrawerContent,
@@ -11,6 +12,8 @@ import ConditionTypeahead from "../Intake/components/ConditionTypeahead"
 import { Button } from "@/components/Button"
 import { medicationCardsQueryKey } from "../hooks/useMedicationCards"
 import { intakeProfileQueryKey } from "../hooks/useIntakeProfile"
+import { refillScheduleQueryKey } from "../hooks/useRefillSchedule"
+import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
 import medicationTaxonomy from "@/mocks/fixtures/medication-taxonomy.json"
 
 interface MedicationEntry {
@@ -39,6 +42,28 @@ function nameToEntry(name: string): MedicationEntry {
   }
 }
 
+const REFILL_FREQUENCY_OPTIONS = [
+  { value: 14, label: "Every 2 weeks" },
+  { value: 30, label: "Every 30 days" },
+  { value: 60, label: "Every 60 days" },
+  { value: 90, label: "Every 90 days" },
+]
+
+const TEST_FREQUENCY_OPTIONS = [
+  { value: 1, label: "Monthly" },
+  { value: 3, label: "Every 3 months" },
+  { value: 6, label: "Every 6 months" },
+  { value: 12, label: "Yearly" },
+]
+
+interface ItemDetails {
+  name: string
+  category: string
+  frequencyDays: number
+  frequencyMonths: number
+  cost: number
+}
+
 interface AddMedicationDrawerProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -52,6 +77,8 @@ export function AddMedicationDrawer({
 }: AddMedicationDrawerProps) {
   const queryClient = useQueryClient()
   const [newMeds, setNewMeds] = useState<MedicationEntry[]>([])
+  const [step, setStep] = useState<"select" | "details">("select")
+  const [itemDetails, setItemDetails] = useState<ItemDetails[]>([])
 
   const allSelected = useMemo(
     () => [
@@ -80,15 +107,48 @@ export function AddMedicationDrawer({
     [],
   )
 
+  function goToDetails() {
+    const details = newMeds.map((m) => {
+      const isTest = m.category === "LAB_TEST"
+      const defaultPrice = getMedicationPriceKES(m.genericName)
+      return {
+        name: m.genericName,
+        category: m.category,
+        frequencyDays: 30,
+        frequencyMonths: isTest ? 6 : 3,
+        cost: defaultPrice,
+      }
+    })
+    setItemDetails(details)
+    setStep("details")
+  }
+
+  function updateDetail(
+    index: number,
+    field: keyof ItemDetails,
+    value: number,
+  ) {
+    setItemDetails((prev) =>
+      prev.map((d, i) => (i === index ? { ...d, [field]: value } : d)),
+    )
+  }
+
   const saveMedications = useMutation({
-    mutationFn: async (medicationNames: string[]) => {
+    mutationFn: async (payload: {
+      medicationNames: string[]
+      costEstimates: {
+        medications: { name: string; refillFrequencyDays: number; estimatedCostPerRefill: number }[]
+        tests: { name: string; frequencyMonths: number; estimatedCostPerTest: number }[]
+      }
+    }) => {
       const response = await axios.patch(
         `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
         {
           treatment: {
             currentlyOnMedication: true,
-            medicationNames,
+            medicationNames: payload.medicationNames,
           },
+          costEstimates: payload.costEstimates,
         },
       )
       return response.data
@@ -103,42 +163,163 @@ export function AddMedicationDrawer({
       queryClient.invalidateQueries({
         queryKey: [medicationCardsQueryKey],
       })
+      queryClient.invalidateQueries({
+        queryKey: [refillScheduleQueryKey],
+      })
       setNewMeds([])
+      setItemDetails([])
+      setStep("select")
       onOpenChange(false)
     },
   })
 
   function handleSave() {
-    const allNames = [
+    const allMedNames = [
       ...existingMedications,
-      ...newMeds.map((m) => m.genericName),
+      ...itemDetails
+        .filter((d) => d.category !== "LAB_TEST")
+        .map((d) => d.name),
     ]
-    saveMedications.mutate(allNames)
+
+    const newMedCosts = itemDetails
+      .filter((d) => d.category !== "LAB_TEST")
+      .map((d) => ({
+        name: d.name,
+        refillFrequencyDays: d.frequencyDays,
+        estimatedCostPerRefill: d.cost,
+      }))
+
+    const newTestCosts = itemDetails
+      .filter((d) => d.category === "LAB_TEST")
+      .map((d) => ({
+        name: d.name,
+        frequencyMonths: d.frequencyMonths,
+        estimatedCostPerTest: d.cost,
+      }))
+
+    saveMedications.mutate({
+      medicationNames: allMedNames,
+      costEstimates: {
+        medications: newMedCosts,
+        tests: newTestCosts,
+      },
+    })
+  }
+
+  function handleClose(isOpen: boolean) {
+    if (!isOpen) {
+      setNewMeds([])
+      setItemDetails([])
+      setStep("select")
+    }
+    onOpenChange(isOpen)
   }
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
+    <Drawer open={open} onOpenChange={handleClose}>
       <DrawerContent className="min-h-[70dvh]">
         <DrawerHeader>
-          <DrawerTitle>Add medication</DrawerTitle>
+          {step === "details" && (
+            <button
+              type="button"
+              onClick={() => setStep("select")}
+              className="absolute left-4 top-4 flex items-center gap-1 text-sm text-muted-foreground"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              Back
+            </button>
+          )}
+          <DrawerTitle>
+            {step === "select" ? "Add medication or test" : "Set frequency & cost"}
+          </DrawerTitle>
         </DrawerHeader>
         <div className="flex flex-col gap-4 px-4 pb-6">
-          <ConditionTypeahead
-            selectedMedications={allSelected}
-            onSelect={handleSelect}
-            onRemove={handleRemove}
-            label="Search for your medication"
-            placeholder="Type a medication name..."
-          />
-          {newMeds.length > 0 && (
-            <Button
-              onClick={handleSave}
-              disabled={saveMedications.isPending}
-            >
-              {saveMedications.isPending
-                ? "Saving..."
-                : `Add ${newMeds.length} medication${newMeds.length > 1 ? "s" : ""}`}
-            </Button>
+          {step === "select" && (
+            <>
+              <ConditionTypeahead
+                selectedMedications={allSelected}
+                onSelect={handleSelect}
+                onRemove={handleRemove}
+                label="Search for medication or test"
+                placeholder="Type a name..."
+              />
+              {newMeds.length > 0 && (
+                <Button onClick={goToDetails}>
+                  Next: Set frequency & cost
+                </Button>
+              )}
+            </>
+          )}
+
+          {step === "details" && (
+            <>
+              <div className="space-y-4">
+                {itemDetails.map((detail, i) => {
+                  const isTest = detail.category === "LAB_TEST"
+                  return (
+                    <div
+                      key={detail.name}
+                      className="rounded-lg border bg-card p-3 space-y-3"
+                    >
+                      <p className="text-sm font-semibold text-foreground">
+                        {detail.name}
+                        {isTest && (
+                          <span className="ml-2 text-[10px] font-medium text-blue-600 bg-blue-50 rounded-full px-2 py-0.5">
+                            Test
+                          </span>
+                        )}
+                      </p>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[11px] font-medium text-muted-foreground">
+                          {isTest ? "Test frequency" : "Refill frequency"}
+                        </label>
+                        <select
+                          value={isTest ? detail.frequencyMonths : detail.frequencyDays}
+                          onChange={(e) =>
+                            updateDetail(
+                              i,
+                              isTest ? "frequencyMonths" : "frequencyDays",
+                              Number(e.target.value),
+                            )
+                          }
+                          className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+                        >
+                          {(isTest ? TEST_FREQUENCY_OPTIONS : REFILL_FREQUENCY_OPTIONS).map(
+                            (opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <label className="text-[11px] font-medium text-muted-foreground">
+                          Estimated cost (KES)
+                        </label>
+                        <input
+                          type="number"
+                          value={detail.cost}
+                          onChange={(e) =>
+                            updateDetail(i, "cost", Number(e.target.value))
+                          }
+                          className="h-9 rounded-md border border-input bg-background px-3 text-sm font-mono"
+                          min={0}
+                        />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <Button
+                onClick={handleSave}
+                disabled={saveMedications.isPending}
+              >
+                {saveMedications.isPending
+                  ? "Saving..."
+                  : `Save ${itemDetails.length} item${itemDetails.length > 1 ? "s" : ""}`}
+              </Button>
+            </>
           )}
         </div>
       </DrawerContent>

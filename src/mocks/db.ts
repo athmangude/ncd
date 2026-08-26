@@ -16,7 +16,7 @@ const PREFIX = "mock:"
  * participant keeps an outdated object forever. On a version mismatch we drop
  * all `mock:*` keys so every collection re-seeds from its current fixture.
  */
-export const SEED_VERSION = "2026-08-26-intake-9-steps"
+export const SEED_VERSION = "2026-08-26-payment-intelligence"
 const SEED_VERSION_KEY = PREFIX + "__seed_version__"
 
 // Session + returning-user flags live outside the `mock:` namespace; a version
