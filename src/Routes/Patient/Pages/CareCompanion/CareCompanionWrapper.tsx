@@ -38,7 +38,7 @@ export default function CareCompanionWrapper() {
   const location = useLocation()
 
   const subPath = location.pathname.replace(
-    /^\/patients\/care-companion/,
+    /^\/patients\/companion/,
     "",
   )
   const pageTitle = PAGE_TITLES[subPath] ?? "Care Companion"
@@ -46,7 +46,7 @@ export default function CareCompanionWrapper() {
   const header = (
     <BackTitleHeader
       title={pageTitle}
-      onBack={() => navigate("/patients/care")}
+      onBack={() => navigate("/patients/companion")}
     />
   )
 

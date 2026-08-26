@@ -67,10 +67,10 @@ export default defineConfig(({ command }) => ({
   },
   server: {
     proxy: {
-      "/api/anthropic": {
-        target: "https://api.anthropic.com",
+      "/api/gemini": {
+        target: "https://generativelanguage.googleapis.com",
         changeOrigin: true,
-        rewrite: (p: string) => p.replace(/^\/api\/anthropic/, ""),
+        rewrite: (p: string) => p.replace(/^\/api\/gemini/, ""),
       },
     },
   },

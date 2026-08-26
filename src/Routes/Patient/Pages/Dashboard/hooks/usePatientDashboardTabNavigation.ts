@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
-const VALID_TABS = ["home", "circle", "care", "explore", "profile"] as const
+const VALID_TABS = ["home", "circle", "companion", "explore", "profile"] as const
 
 export function usePatientDashboardTabNavigation() {
   const location = useLocation()

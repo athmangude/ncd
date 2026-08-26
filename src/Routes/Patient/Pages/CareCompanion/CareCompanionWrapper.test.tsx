@@ -116,12 +116,12 @@ import CareCompanionWrapper from "./CareCompanionWrapper"
 // Helpers
 // ---------------------------------------------------------------------------
 
-function renderWrapper(initialPath = "/patients/care-companion") {
+function renderWrapper(initialPath = "/patients/companion") {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route
-          path="/patients/care-companion/*"
+          path="/patients/companion/*"
           element={<CareCompanionWrapper />}
         />
       </Routes>
@@ -154,7 +154,7 @@ describe("CareCompanionWrapper", () => {
 
     it("does NOT block the intake route with the loading guard even while loading", async () => {
       profileReturn.isLoading = true
-      renderWrapper("/patients/care-companion/intake")
+      renderWrapper("/patients/companion/intake")
       // The loading guard (line 45) does not fire because isIntakeRoute is
       // true. The component falls through to <Suspense> which initially shows
       // DashboardTabFallback, but the mocked lazy import resolves immediately.
@@ -185,7 +185,7 @@ describe("CareCompanionWrapper", () => {
 
     it("does NOT show error state on the intake route", () => {
       profileReturn.isError = true
-      renderWrapper("/patients/care-companion/intake")
+      renderWrapper("/patients/companion/intake")
       expect(screen.queryByTestId("error-block")).not.toBeInTheDocument()
     })
 
@@ -215,7 +215,7 @@ describe("CareCompanionWrapper", () => {
     })
 
     it("does NOT redirect when on the intake route", () => {
-      renderWrapper("/patients/care-companion/intake")
+      renderWrapper("/patients/companion/intake")
       expect(screen.getByTestId("care-companion-intake")).toBeInTheDocument()
     })
   })
@@ -248,7 +248,7 @@ describe("CareCompanionWrapper", () => {
 
   describe("intake route detection precision", () => {
     it("matches exactly /care-companion/intake", () => {
-      renderWrapper("/patients/care-companion/intake")
+      renderWrapper("/patients/companion/intake")
       // Should pass through to routes (not redirect or error)
       expect(screen.getByTestId("care-companion-intake")).toBeInTheDocument()
     })
@@ -265,61 +265,61 @@ describe("CareCompanionWrapper", () => {
 
     it("renders CostTrackerPage on /cost-tracker", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/cost-tracker")
+      renderWrapper("/patients/companion/cost-tracker")
       expect(await screen.findByText("CostTracker")).toBeInTheDocument()
     })
 
     it("renders EmergencyCardPage on /emergency-card", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/emergency-card")
+      renderWrapper("/patients/companion/emergency-card")
       expect(await screen.findByText("EmergencyCard")).toBeInTheDocument()
     })
 
     it("renders MedicationTimelinePage on /medication-timeline", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/medication-timeline")
+      renderWrapper("/patients/companion/medication-timeline")
       expect(await screen.findByText("MedicationTimeline")).toBeInTheDocument()
     })
 
     it("renders MedicationCardsPage on /medication-cards", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/medication-cards")
+      renderWrapper("/patients/companion/medication-cards")
       expect(await screen.findByText("MedicationCards")).toBeInTheDocument()
     })
 
     it("renders RefillSchedulePage on /refill-schedule", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/refill-schedule")
+      renderWrapper("/patients/companion/refill-schedule")
       expect(await screen.findByText("RefillSchedule")).toBeInTheDocument()
     })
 
     it("renders EducationFeedPage on /education", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/education")
+      renderWrapper("/patients/companion/education")
       expect(await screen.findByText("EducationFeed")).toBeInTheDocument()
     })
 
     it("renders PharmacyStockFinderPage on /pharmacy-stock", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/pharmacy-stock")
+      renderWrapper("/patients/companion/pharmacy-stock")
       expect(await screen.findByText("PharmacyStock")).toBeInTheDocument()
     })
 
     it("renders MedicationLoanPage on /medication-loan", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/medication-loan")
+      renderWrapper("/patients/companion/medication-loan")
       expect(await screen.findByText("MedicationLoan")).toBeInTheDocument()
     })
 
     it("renders AiAssistantPage on /assistant", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/assistant")
+      renderWrapper("/patients/companion/assistant")
       expect(await screen.findByText("AiAssistant")).toBeInTheDocument()
     })
 
     it("renders NotificationFeedPage on /notifications", async () => {
       withProfile()
-      renderWrapper("/patients/care-companion/notifications")
+      renderWrapper("/patients/companion/notifications")
       expect(await screen.findByText("NotificationFeed")).toBeInTheDocument()
     })
   })

@@ -69,7 +69,7 @@ function renderPage() {
   return render(
     <QueryClientProvider client={queryClient}>
       <MemoryRouter
-        initialEntries={["/patients/care-companion/notifications"]}
+        initialEntries={["/patients/companion/notifications"]}
       >
         <NotificationFeedPage />
       </MemoryRouter>
@@ -280,7 +280,7 @@ describe("NotificationFeedPage", () => {
               type: "REFILL_REMINDER",
               title: "Not yet delivered",
               body: "This should never render.",
-              deepLink: "/patients/care-companion",
+              deepLink: "/patients/companion",
               scheduledAt: "2026-08-25T06:00:00Z",
               sentAt: null,
               readAt: null,

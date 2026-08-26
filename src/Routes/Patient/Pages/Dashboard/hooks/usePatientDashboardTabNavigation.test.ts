@@ -38,10 +38,10 @@ describe("usePatientDashboardTabNavigation", () => {
       expect(result.current.currentTab).toBe("circle")
     })
 
-    it("resolves 'care' from /patients/care", () => {
-      mockPathname = "/patients/care"
+    it("resolves 'companion' from /patients/companion", () => {
+      mockPathname = "/patients/companion"
       const { result } = renderHook(() => usePatientDashboardTabNavigation())
-      expect(result.current.currentTab).toBe("care")
+      expect(result.current.currentTab).toBe("companion")
     })
 
     it("resolves 'explore' from /patients/explore", () => {
@@ -69,26 +69,26 @@ describe("usePatientDashboardTabNavigation", () => {
     })
   })
 
-  describe("tab ordering — care sits between circle and explore", () => {
-    it("moving from circle to care yields direction = 1 (forward)", () => {
+  describe("tab ordering — companion sits between circle and explore", () => {
+    it("moving from circle to companion yields direction = 1 (forward)", () => {
       mockPathname = "/patients/circle"
       const { result, rerender } = renderHook(() =>
         usePatientDashboardTabNavigation()
       )
       expect(result.current.currentTab).toBe("circle")
 
-      mockPathname = "/patients/care"
+      mockPathname = "/patients/companion"
       rerender()
-      expect(result.current.currentTab).toBe("care")
+      expect(result.current.currentTab).toBe("companion")
       expect(result.current.direction).toBe(1)
     })
 
-    it("moving from care to circle yields direction = -1 (backward)", () => {
-      mockPathname = "/patients/care"
+    it("moving from companion to circle yields direction = -1 (backward)", () => {
+      mockPathname = "/patients/companion"
       const { result, rerender } = renderHook(() =>
         usePatientDashboardTabNavigation()
       )
-      expect(result.current.currentTab).toBe("care")
+      expect(result.current.currentTab).toBe("companion")
 
       mockPathname = "/patients/circle"
       rerender()
@@ -96,8 +96,8 @@ describe("usePatientDashboardTabNavigation", () => {
       expect(result.current.direction).toBe(-1)
     })
 
-    it("moving from care to explore yields direction = 1 (forward)", () => {
-      mockPathname = "/patients/care"
+    it("moving from companion to explore yields direction = 1 (forward)", () => {
+      mockPathname = "/patients/companion"
       const { result, rerender } = renderHook(() =>
         usePatientDashboardTabNavigation()
       )
@@ -107,24 +107,24 @@ describe("usePatientDashboardTabNavigation", () => {
       expect(result.current.direction).toBe(1)
     })
 
-    it("moving from home to care yields direction = 1 (forward)", () => {
+    it("moving from home to companion yields direction = 1 (forward)", () => {
       mockPathname = "/patients/home"
       const { result, rerender } = renderHook(() =>
         usePatientDashboardTabNavigation()
       )
 
-      mockPathname = "/patients/care"
+      mockPathname = "/patients/companion"
       rerender()
       expect(result.current.direction).toBe(1)
     })
 
-    it("moving from profile to care yields direction = -1 (backward)", () => {
+    it("moving from profile to companion yields direction = -1 (backward)", () => {
       mockPathname = "/patients/profile"
       const { result, rerender } = renderHook(() =>
         usePatientDashboardTabNavigation()
       )
 
-      mockPathname = "/patients/care"
+      mockPathname = "/patients/companion"
       rerender()
       expect(result.current.direction).toBe(-1)
     })
@@ -136,10 +136,10 @@ describe("usePatientDashboardTabNavigation", () => {
       const { result } = renderHook(() => usePatientDashboardTabNavigation())
 
       act(() => {
-        result.current.handleTabChange("care")
+        result.current.handleTabChange("companion")
       })
 
-      expect(mockNavigate).toHaveBeenCalledWith("care")
+      expect(mockNavigate).toHaveBeenCalledWith("companion")
     })
 
     it("calls navigate with any string passed to it", () => {
@@ -156,9 +156,9 @@ describe("usePatientDashboardTabNavigation", () => {
 
   describe("pathname passthrough", () => {
     it("exposes the current pathname from location", () => {
-      mockPathname = "/patients/care"
+      mockPathname = "/patients/companion"
       const { result } = renderHook(() => usePatientDashboardTabNavigation())
-      expect(result.current.pathname).toBe("/patients/care")
+      expect(result.current.pathname).toBe("/patients/companion")
     })
   })
 })

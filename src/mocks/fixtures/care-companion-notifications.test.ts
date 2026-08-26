@@ -23,13 +23,13 @@ const VALID_NOTIFICATION_TYPES = new Set<string>(
 // the routes registered for the care companion feature — a drift here means
 // a push notification would deep-link a caregiver to a broken/blank route.
 const EXPECTED_DEEP_LINKS: Record<string, string> = {
-  REFILL_REMINDER: "/patients/care-companion/refill-schedule",
-  REFILL_OVERDUE: "/patients/care-companion/refill-schedule",
-  REFILL_LOAN_OFFER: "/patients/care-companion/medication-loan",
-  PREDICTIVE_CREDIT_OFFER: "/patients/care-companion/medication-loan",
-  EDUCATION_WEEKLY: "/patients/care-companion/education",
-  MEDICATION_CARD_AVAILABLE: "/patients/care-companion/medication-cards",
-  LAB_REMINDER: "/patients/care-companion",
+  REFILL_REMINDER: "/patients/companion/refill-schedule",
+  REFILL_OVERDUE: "/patients/companion/refill-schedule",
+  REFILL_LOAN_OFFER: "/patients/companion/medication-loan",
+  PREDICTIVE_CREDIT_OFFER: "/patients/companion/medication-loan",
+  EDUCATION_WEEKLY: "/patients/companion/education",
+  MEDICATION_CARD_AVAILABLE: "/patients/companion/medication-cards",
+  LAB_REMINDER: "/patients/companion",
 }
 
 // ---------------------------------------------------------------------------
@@ -86,10 +86,10 @@ describe("care-companion-notifications.json", () => {
       }
     })
 
-    it("every notification has a non-empty deepLink starting with /patients/care-companion", () => {
+    it("every notification has a non-empty deepLink starting with /patients/companion", () => {
       for (const n of notifications) {
         expect(n.deepLink.trim()).not.toBe("")
-        expect(n.deepLink.startsWith("/patients/care-companion")).toBe(true)
+        expect(n.deepLink.startsWith("/patients/companion")).toBe(true)
       }
     })
 
@@ -186,9 +186,9 @@ describe("care-companion-notifications.json", () => {
 
     it("LAB_REMINDER deep-links to the care-companion home, not a sub-route", () => {
       const labReminder = notifications.find((n) => n.type === "LAB_REMINDER")!
-      expect(labReminder.deepLink).toBe("/patients/care-companion")
+      expect(labReminder.deepLink).toBe("/patients/companion")
       // Guard against accidental trailing sub-path such as
-      // /patients/care-companion/lab-reminder which does not exist as a route.
+      // /patients/companion/lab-reminder which does not exist as a route.
       expect(labReminder.deepLink.split("/")).toHaveLength(3)
     })
   })

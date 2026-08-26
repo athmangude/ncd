@@ -183,11 +183,15 @@ function buildUserMessage(
 }
 
 // ---------------------------------------------------------------------------
-// Claude API call via Vite proxy
+// Gemini API call via Vite proxy
 // ---------------------------------------------------------------------------
 
-interface ClaudeResponse {
-  content: { type: string; text: string }[]
+interface GeminiResponse {
+  candidates?: {
+    content?: {
+      parts?: { text?: string }[]
+    }
+  }[]
 }
 
 interface RawAction {
@@ -234,42 +238,47 @@ function validateActions(raw: unknown): RawAction[] {
   })
 }
 
-// Route through Vite dev proxy — key stays server-side in production
-export async function callClaudeApi(
+export async function callLlmApi(
   profile: CareCompanionProfile,
   events: CareCompanionEvent[],
 ): Promise<RawAction[]> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
   if (!apiKey) {
     return generateFallbackActions(profile, events)
   }
 
   try {
-    const res = await fetch("/api/anthropic/v1/messages", {
+    const model = "gemini-2.5-flash"
+    const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
+
+    const res = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 1024,
-        system: buildSystemPrompt(),
-        messages: [
-          { role: "user", content: buildUserMessage(profile, events) },
+        systemInstruction: {
+          parts: [{ text: buildSystemPrompt() }],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: buildUserMessage(profile, events) }],
+          },
         ],
+        generationConfig: {
+          maxOutputTokens: 2048,
+          temperature: 0.3,
+          responseMimeType: "application/json",
+        },
       }),
     })
 
     if (!res.ok) {
-      console.error("[ai-pipeline] Claude API error:", res.status)
+      console.error("[ai-pipeline] Gemini API error:", res.status)
       return generateFallbackActions(profile, events)
     }
 
-    const data = (await res.json()) as ClaudeResponse
-    const text = data.content?.[0]?.text ?? "[]"
+    const data = (await res.json()) as GeminiResponse
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]"
     const jsonStr = text.replace(/```json\n?/g, "").replace(/```/g, "").trim()
     const parsed: unknown = JSON.parse(jsonStr)
     const validated = validateActions(parsed)
@@ -279,7 +288,7 @@ export async function callClaudeApi(
     }
     return validated
   } catch (err) {
-    console.error("[ai-pipeline] Claude API call failed:", err)
+    console.error("[ai-pipeline] Gemini API call failed:", err)
     return generateFallbackActions(profile, events)
   }
 }
@@ -571,7 +580,7 @@ export async function runPipeline(
     return []
   }
 
-  const actions = await callClaudeApi(profile, events)
+  const actions = await callLlmApi(profile, events)
   const now = new Date().toISOString()
 
   return actions.map((action) => {

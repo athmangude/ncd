@@ -36,24 +36,24 @@ describe("DashboardTabBar", () => {
     expect(tabs).toHaveLength(5)
 
     const tabNames = tabs.map((tab) => tab.textContent?.trim().toLowerCase())
-    expect(tabNames).toEqual(["home", "circle", "care", "explore", "profile"])
+    expect(tabNames).toEqual(["home", "circle", "companion", "explore", "profile"])
   })
 
-  it("renders the care tab with the correct label text", () => {
+  it("renders the companion tab with the correct label text", () => {
     render(<TabBarHarness />)
-    expect(screen.getByRole("tab", { name: /care/i })).toBeInTheDocument()
+    expect(screen.getByRole("tab", { name: /companion/i })).toBeInTheDocument()
   })
 
-  it("places the care tab between circle and explore", () => {
+  it("places the companion tab between circle and explore", () => {
     render(<TabBarHarness />)
     const tabs = screen.getAllByRole("tab")
     const names = tabs.map((t) => t.textContent?.trim().toLowerCase())
     const circleIndex = names.indexOf("circle")
-    const careIndex = names.indexOf("care")
+    const companionIndex = names.indexOf("companion")
     const exploreIndex = names.indexOf("explore")
 
-    expect(careIndex).toBe(circleIndex + 1)
-    expect(exploreIndex).toBe(careIndex + 1)
+    expect(companionIndex).toBe(circleIndex + 1)
+    expect(exploreIndex).toBe(companionIndex + 1)
   })
 
   it("marks the home tab as active by default", () => {
@@ -62,15 +62,15 @@ describe("DashboardTabBar", () => {
       "data-state",
       "active"
     )
-    expect(screen.getByRole("tab", { name: /care/i })).toHaveAttribute(
+    expect(screen.getByRole("tab", { name: /companion/i })).toHaveAttribute(
       "data-state",
       "inactive"
     )
   })
 
-  it("marks the care tab as active when defaultValue is care", () => {
-    render(<TabBarHarness defaultValue="care" />)
-    expect(screen.getByRole("tab", { name: /care/i })).toHaveAttribute(
+  it("marks the companion tab as active when defaultValue is companion", () => {
+    render(<TabBarHarness defaultValue="companion" />)
+    expect(screen.getByRole("tab", { name: /companion/i })).toHaveAttribute(
       "data-state",
       "active"
     )

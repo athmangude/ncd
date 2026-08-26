@@ -1586,7 +1586,7 @@ export function createCareCompanionNotification(
     type,
     title: `Simulated ${type.toLowerCase().replace(/_/g, " ")} notification`,
     body: `This is a simulated ${type} notification created for testing.`,
-    deepLink: "/patients/care-companion",
+    deepLink: "/patients/companion",
     scheduledAt: now,
     sentAt: now,
     readAt: null,

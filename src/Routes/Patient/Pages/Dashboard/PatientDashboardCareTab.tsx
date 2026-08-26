@@ -9,7 +9,7 @@ const CareCompanionHome = lazy(
 
 export default function PatientDashboardCareTab() {
   return (
-    <TabsContent value="care" className="flex flex-col gap-7">
+    <TabsContent value="companion" className="flex flex-col gap-7">
       <DashboardSection mode="switch">
         <Suspense fallback={<DashboardSkeleton />}>
           <CareCompanionHome />

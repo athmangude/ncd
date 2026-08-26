@@ -31,7 +31,7 @@ export function MedicationNudgeCard() {
         <button
           type="button"
           onClick={() =>
-            navigate("/patients/care-companion/medication-cards")
+            navigate("/patients/companion/medication-cards")
           }
           className="flex w-full items-center gap-3 text-left"
         >

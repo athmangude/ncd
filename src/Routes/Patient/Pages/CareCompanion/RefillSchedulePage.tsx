@@ -393,7 +393,7 @@ function RefillItemCard({
               EVENTS.CARE_COMPANION.REFILL_SCHEDULE.APPLY_CREDIT_TAP,
               { medicationName: item.medicationName },
             )
-            navigate("/patients/care-companion/medication-loan")
+            navigate("/patients/companion/medication-loan")
           }}
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-xs font-medium text-primary transition-colors active:bg-primary/20"
         >
@@ -1003,7 +1003,7 @@ export default function RefillSchedulePage() {
             trackEvent(
               EVENTS.CARE_COMPANION.REFILL_SCHEDULE.FIND_PHARMACY_TAP,
             )
-            navigate("/patients/care-companion/pharmacy-stock")
+            navigate("/patients/companion/pharmacy-stock")
           }}
           className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90"
         >

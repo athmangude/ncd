@@ -48,7 +48,7 @@ const mockAxiosGet = vi.fn().mockResolvedValue({
       type: "REFILL_REMINDER",
       title: "Refill due soon",
       body: "Your Metformin refill is coming up.",
-      deepLink: "/patients/care-companion/refill-schedule",
+      deepLink: "/patients/companion/refill-schedule",
       scheduledAt: "2026-08-25T06:00:00Z",
       sentAt: "2026-08-25T06:00:00Z",
       readAt: null,

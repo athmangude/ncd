@@ -234,7 +234,7 @@ export default function CareCompanionIntake() {
     }
     saveProfile.mutate(completed)
     setIntakeCompleted(true)
-    navigate("/patients/care")
+    navigate("/patients/companion")
   }
 
   if (profileLoading || !initialized) {

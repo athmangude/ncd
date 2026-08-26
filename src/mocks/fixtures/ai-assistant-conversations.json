@@ -19,7 +19,7 @@
           {
             "type": "VIEW_CARD",
             "label": "View Enalapril medication card",
-            "deepLink": "/patients/care-companion/medication-cards"
+            "deepLink": "/patients/companion/medication-cards"
           }
         ],
         "timestamp": "2026-08-20T09:15:05Z"
@@ -41,7 +41,7 @@
           {
             "type": "CHECK_STOCK",
             "label": "Find pharmacies near you",
-            "deepLink": "/patients/care-companion/pharmacy-stock"
+            "deepLink": "/patients/companion/pharmacy-stock"
           }
         ],
         "timestamp": "2026-08-20T09:16:35Z"
@@ -105,12 +105,12 @@
           {
             "type": "VIEW_CARD",
             "label": "View your refill schedule",
-            "deepLink": "/patients/care-companion/refill-schedule"
+            "deepLink": "/patients/companion/refill-schedule"
           },
           {
             "type": "VIEW_CARD",
             "label": "Check medication interactions",
-            "deepLink": "/patients/care-companion/medication-cards"
+            "deepLink": "/patients/companion/medication-cards"
           }
         ],
         "timestamp": "2026-08-22T07:30:07Z"
@@ -145,12 +145,12 @@
           {
             "type": "CHECK_STOCK",
             "label": "Find Metformin near me",
-            "deepLink": "/patients/care-companion/pharmacy-stock?medication=med-metformin"
+            "deepLink": "/patients/companion/pharmacy-stock?medication=med-metformin"
           },
           {
             "type": "VIEW_CARD",
             "label": "View refill schedule",
-            "deepLink": "/patients/care-companion/refill-schedule"
+            "deepLink": "/patients/companion/refill-schedule"
           }
         ],
         "timestamp": "2026-08-25T08:00:00Z"
@@ -172,12 +172,12 @@
           {
             "type": "APPLY_LOAN",
             "label": "View loan pre-approval",
-            "deepLink": "/patients/care-companion/medication-loan"
+            "deepLink": "/patients/companion/medication-loan"
           },
           {
             "type": "CHECK_STOCK",
             "label": "Compare pharmacy prices",
-            "deepLink": "/patients/care-companion/pharmacy-stock?medication=med-metformin"
+            "deepLink": "/patients/companion/pharmacy-stock?medication=med-metformin"
           },
           {
             "type": "PAY",
@@ -209,12 +209,12 @@
           {
             "type": "VIEW_CARD",
             "label": "View your medication cards",
-            "deepLink": "/patients/care-companion/medication-cards"
+            "deepLink": "/patients/companion/medication-cards"
           },
           {
             "type": "CHECK_STOCK",
             "label": "Find a nearby pharmacy",
-            "deepLink": "/patients/care-companion/pharmacy-stock"
+            "deepLink": "/patients/companion/pharmacy-stock"
           }
         ],
         "timestamp": "2026-08-25T10:04:00Z"

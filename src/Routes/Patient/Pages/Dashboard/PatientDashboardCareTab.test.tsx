@@ -6,7 +6,7 @@ import PatientDashboardCareTab from "./PatientDashboardCareTab"
 describe("PatientDashboardCareTab", () => {
   it("renders the Care Companion heading when tab is active", () => {
     render(
-      <Tabs value="care">
+      <Tabs value="companion">
         <PatientDashboardCareTab />
       </Tabs>
     )
@@ -17,7 +17,7 @@ describe("PatientDashboardCareTab", () => {
 
   it("renders the description text", () => {
     render(
-      <Tabs value="care">
+      <Tabs value="companion">
         <PatientDashboardCareTab />
       </Tabs>
     )

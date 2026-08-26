@@ -261,7 +261,7 @@ function ProfileGreeting({
         )}{" "}
         <button
           type="button"
-          onClick={() => navigate("/patients/care-companion/intake")}
+          onClick={() => navigate("/patients/companion/intake")}
           className="inline text-xs font-medium text-primary hover:underline"
         >
           Update profile
@@ -425,7 +425,7 @@ function RefillScheduleCard({
   return (
     <button
       type="button"
-      onClick={() => navigate("/patients/care-companion/refill-schedule")}
+      onClick={() => navigate("/patients/companion/refill-schedule")}
       className="w-full rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted/50"
     >
       <div className="flex items-start justify-between">
@@ -604,7 +604,7 @@ function CostTrackerCard({ data }: { data: CareCompanionHomeData }) {
   return (
     <button
       type="button"
-      onClick={() => navigate("/patients/care-companion/cost-tracker")}
+      onClick={() => navigate("/patients/companion/cost-tracker")}
       className="w-full rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted/50"
     >
       <div className="flex items-start justify-between">
@@ -663,7 +663,7 @@ function EmergencyCardCard({ data }: { data: CareCompanionHomeData }) {
   return (
     <button
       type="button"
-      onClick={() => navigate("/patients/care-companion/emergency-card")}
+      onClick={() => navigate("/patients/companion/emergency-card")}
       className="w-full rounded-xl border border-red-200 bg-red-50 p-4 text-left transition-colors active:bg-red-100/50"
     >
       <div className="flex items-start justify-between">
@@ -705,37 +705,37 @@ const QUICK_ACTIONS = [
   {
     label: "My Medications",
     icon: Pill,
-    path: "/patients/care-companion/medication-cards",
+    path: "/patients/companion/medication-cards",
     color: "bg-violet-100 text-violet-600",
   },
   {
     label: "Purchase History",
     icon: Clock,
-    path: "/patients/care-companion/medication-timeline",
+    path: "/patients/companion/medication-timeline",
     color: "bg-sky-100 text-sky-600",
   },
   {
     label: "Find Pharmacy",
     icon: MapPin,
-    path: "/patients/care-companion/pharmacy-stock",
+    path: "/patients/companion/pharmacy-stock",
     color: "bg-teal-100 text-teal-600",
   },
   {
     label: "Medication Loan",
     icon: CreditCard,
-    path: "/patients/care-companion/medication-loan",
+    path: "/patients/companion/medication-loan",
     color: "bg-amber-100 text-amber-600",
   },
   {
     label: "Notifications",
     icon: Bell,
-    path: "/patients/care-companion/notifications",
+    path: "/patients/companion/notifications",
     color: "bg-rose-100 text-rose-600",
   },
   {
     label: "Update Profile",
     icon: UserCog,
-    path: "/patients/care-companion/intake",
+    path: "/patients/companion/intake",
     color: "bg-slate-100 text-slate-600",
   },
 ]
@@ -780,7 +780,7 @@ function AiAssistantFab() {
   return (
     <button
       type="button"
-      onClick={() => navigate("/patients/care-companion/assistant")}
+      onClick={() => navigate("/patients/companion/assistant")}
       className="fixed bottom-20 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform active:scale-95"
     >
       <Sparkles className="h-6 w-6" />
@@ -796,7 +796,7 @@ function EducationCard({ data }: { data: CareCompanionHomeData }) {
     return (
       <button
         type="button"
-        onClick={() => navigate("/patients/care-companion/education")}
+        onClick={() => navigate("/patients/companion/education")}
         className="w-full rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted/50"
       >
         <div className="flex items-center justify-between">
@@ -832,7 +832,7 @@ function EducationCard({ data }: { data: CareCompanionHomeData }) {
   return (
     <button
       type="button"
-      onClick={() => navigate("/patients/care-companion/education")}
+      onClick={() => navigate("/patients/companion/education")}
       className="w-full rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted/50"
     >
       <div className="flex items-start justify-between">

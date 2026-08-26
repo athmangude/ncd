@@ -67,9 +67,9 @@ export function DashboardTabBar({
             setRef={(el) => (tabRefs.current["circle"] = el)}
           />
           <PatientTabTrigger
-            value="care"
+            value="companion"
             icon={<HeartPulse className="w-5 h-5" />}
-            setRef={(el) => (tabRefs.current["care"] = el)}
+            setRef={(el) => (tabRefs.current["companion"] = el)}
           />
           <PatientTabTrigger
             value="explore"

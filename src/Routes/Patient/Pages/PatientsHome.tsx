@@ -111,7 +111,7 @@ const PatientDashboardProfileTab = lazy(
 function PatientDashboardRedirect() {
   const location = useLocation()
   const tab = location.state?.tab || "home"
-  const validTabs = ["home", "circle", "care", "explore", "profile"]
+  const validTabs = ["home", "circle", "companion", "explore", "profile"]
   const target = validTabs.includes(tab) ? tab : "home"
 
   return <Navigate to={target} replace state={location.state} />
@@ -173,7 +173,7 @@ export default function PatientsHome() {
             }
           />
           <Route
-            path="care"
+            path="companion"
             element={
               <Suspense fallback={<DashboardTabFallback />}>
                 <PatientDashboardCareTab />
@@ -200,7 +200,7 @@ export default function PatientsHome() {
 
         {/* Care Companion deep routes */}
         <Route
-          path="/care-companion/*"
+          path="/companion/*"
           element={
             <RouteMetadata title="Care Companion">
               <Suspense fallback={<DashboardTabFallback />}>
