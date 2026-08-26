@@ -16,7 +16,7 @@ vi.mock("@tanstack/react-query", () => ({
 const mockAxiosGet = vi.fn().mockResolvedValue({
   data: {
     isAvailable: true,
-    preApprovedAmount: "2000",
+    preApprovedAmount: "500",
     expiresAt: "2026-12-31T23:59:59Z",
   },
 })
@@ -83,7 +83,7 @@ describe("useEmergencyTransportCredit", () => {
     }
 
     expect(result.isAvailable).toBe(true)
-    expect(result.preApprovedAmount).toBe("2000")
+    expect(result.preApprovedAmount).toBe("500")
     expect(result.expiresAt).toBe("2026-12-31T23:59:59Z")
   })
 })

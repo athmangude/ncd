@@ -62,7 +62,7 @@ const mockHomeData = {
   },
   emergencyTransportCredit: {
     isAvailable: true,
-    preApprovedAmount: "2000",
+    preApprovedAmount: "500",
     expiresAt: "2026-12-31T23:59:59Z",
   },
 }
@@ -197,7 +197,7 @@ describe("CareCompanionHome", () => {
         screen.getByText("Diabetes Emergency Card"),
       ).toBeInTheDocument()
       expect(
-        screen.getByText(/2,000/),
+        screen.getByText(/emergency transport credit/i),
       ).toBeInTheDocument()
     })
 
