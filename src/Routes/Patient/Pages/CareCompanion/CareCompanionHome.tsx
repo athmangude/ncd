@@ -16,8 +16,6 @@ import {
   Sparkles,
   UserCog,
   Plus,
-  ClipboardCheck,
-  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
@@ -28,7 +26,7 @@ import { AddMedicationDrawer } from "./components/AddMedicationDrawer"
 import { useCareCompanionHome } from "./hooks/useCareCompanionHome"
 import { useIntakeProfile } from "./hooks/useIntakeProfile"
 import { useAiPipeline } from "./hooks/useAiPipeline"
-import type { LlmActionEvent } from "@/types/care-companion"
+import { useNotifications } from "./hooks/useNotifications"
 
 const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
 import type { CareCompanionHome as CareCompanionHomeData } from "@/types/care-companion"
@@ -64,11 +62,11 @@ export default function CareCompanionHome() {
     string | undefined
   >(undefined)
   const [addMedOpen, setAddMedOpen] = useState(false)
-  const {
-    insights,
-    isRunning: aiRunning,
-    dismissInsight,
-  } = useAiPipeline(profile ?? null)
+  const { isRunning: aiRunning } = useAiPipeline(profile ?? null)
+  const { data: notifications = [] } = useNotifications()
+  const unreadInsights = notifications.filter(
+    (n) => n.type === "AI_INSIGHT" && !n.readAt,
+  )
 
   const openMedicationDrawer = (medicationId?: string) => {
     setDrawerMedicationId(medicationId)
@@ -170,12 +168,35 @@ export default function CareCompanionHome() {
     <div className="flex flex-col gap-4 p-4">
       {profile?.completedAt && <ProfileGreeting profile={profile} />}
 
-      {(insights.length > 0 || aiRunning) && (
-        <AiInsightsSection
-          insights={insights}
-          isRunning={aiRunning}
-          onDismiss={dismissInsight}
-        />
+      {(unreadInsights.length > 0 || aiRunning) && (
+        <button
+          type="button"
+          onClick={() => navigate("/patients/notifications")}
+          className="flex w-full items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-left transition-colors active:bg-primary/10"
+        >
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+            {aiRunning ? (
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            ) : (
+              <Sparkles className="h-4 w-4 text-primary" />
+            )}
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium">
+              {aiRunning
+                ? "Analyzing your health data..."
+                : `${unreadInsights.length} new insight${unreadInsights.length === 1 ? "" : "s"}`}
+            </p>
+            {!aiRunning && (
+              <p className="text-xs text-muted-foreground">
+                Tap to view in notifications
+              </p>
+            )}
+          </div>
+          {!aiRunning && (
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+          )}
+        </button>
       )}
 
       {sectionOrder.map((key) => sections[key])}
@@ -267,128 +288,6 @@ function ProfileGreeting({
           Update profile
         </button>
       </p>
-    </div>
-  )
-}
-
-// ---------------------------------------------------------------------------
-// AI Insights Section
-// ---------------------------------------------------------------------------
-
-const SEVERITY_STYLES: Record<string, string> = {
-  CRITICAL: "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950/30",
-  WARNING:
-    "border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/30",
-  INFO: "border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-950/30",
-}
-
-const SEVERITY_ICON_STYLES: Record<string, string> = {
-  CRITICAL: "text-red-600 dark:text-red-400",
-  WARNING: "text-amber-600 dark:text-amber-400",
-  INFO: "text-blue-600 dark:text-blue-400",
-}
-
-const ACTION_TYPE_LABELS: Record<string, string> = {
-  REFILL_NUDGE: "Refill",
-  MISSED_TEST_FLAG: "Lab test",
-  COST_SAVING_SUGGESTION: "Cost saving",
-  DRUG_INTERACTION_WARNING: "Interaction",
-  PROVIDER_FLAG: "Attention",
-  ADHERENCE_PATTERN: "Adherence",
-  CIRCLE_PROMPT: "Circle",
-  DRUG_INFO_SURFACE: "Drug info",
-  TEST_RESULT_PROMPT: "Test results",
-  JIREH_PLUS_RECOMMEND: "Jireh Plus",
-  LOAN_REPAYMENT_PRAISE: "Repayment",
-  LOAN_REPAYMENT_REMINDER: "Due soon",
-  LOAN_REPAYMENT_OVERDUE: "Overdue",
-  LOAN_OFFER: "Loan offer",
-  NO_ACTION: "All clear",
-}
-
-const ACTION_TYPE_ICONS: Record<string, typeof AlertTriangle> = {
-  DRUG_INFO_SURFACE: Pill,
-  TEST_RESULT_PROMPT: ClipboardCheck,
-  INVOICE_POPULATE: FileText,
-  JIREH_PLUS_RECOMMEND: Shield,
-  LOAN_OFFER: CreditCard,
-  LOAN_REPAYMENT_PRAISE: TrendingUp,
-  LOAN_REPAYMENT_REMINDER: Clock,
-  LOAN_REPAYMENT_OVERDUE: Bell,
-}
-
-function AiInsightsSection({
-  insights,
-  isRunning,
-  onDismiss,
-}: {
-  insights: LlmActionEvent[]
-  isRunning: boolean
-  onDismiss: (id: string) => void
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <div className="flex items-center gap-2">
-        <Sparkles className="h-4 w-4 text-primary" />
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          AI Insights
-        </h3>
-        {isRunning && (
-          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-        )}
-      </div>
-      {insights.map((insight) => (
-        <div
-          key={insight.id}
-          className={cn(
-            "rounded-lg border p-3",
-            SEVERITY_STYLES[insight.severity] ?? SEVERITY_STYLES.INFO,
-          )}
-        >
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-start gap-2">
-              {(() => {
-                const Icon = ACTION_TYPE_ICONS[insight.actionType] ?? AlertTriangle
-                return (
-                  <Icon
-                    className={cn(
-                      "mt-0.5 h-4 w-4 shrink-0",
-                      SEVERITY_ICON_STYLES[insight.severity] ??
-                        SEVERITY_ICON_STYLES.INFO,
-                    )}
-                  />
-                )
-              })()}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                    {ACTION_TYPE_LABELS[insight.actionType] ??
-                      insight.actionType}
-                  </span>
-                  {insight.relatedMedication && (
-                    <span className="rounded-full bg-background/80 px-1.5 py-0.5 text-[10px] text-muted-foreground">
-                      {insight.relatedMedication}
-                    </span>
-                  )}
-                </div>
-                <p className="text-sm font-medium leading-tight">
-                  {insight.title}
-                </p>
-                <p className="text-xs leading-relaxed text-muted-foreground">
-                  {insight.body}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => onDismiss(insight.id)}
-              className="shrink-0 rounded p-1 text-muted-foreground hover:bg-background/50"
-              aria-label="Dismiss"
-            >
-              <span className="text-xs">✕</span>
-            </button>
-          </div>
-        </div>
-      ))}
     </div>
   )
 }
@@ -729,7 +628,7 @@ const QUICK_ACTIONS = [
   {
     label: "Notifications",
     icon: Bell,
-    path: "/patients/companion/notifications",
+    path: "/patients/notifications",
     color: "bg-rose-100 text-rose-600",
   },
   {

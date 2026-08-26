@@ -13,6 +13,7 @@ import PatientDashboardTabs from "./Dashboard/PatientDashboardTabs"
 import { usePatientLoginDetails } from "@/hooks/usePatientLoginDetails"
 import { useSetAmplitudeUserProperties } from "@/hooks/useSetAmplitudeUserId"
 import { CloudOff } from "lucide-react"
+import { useNotifications as useCareNotifications } from "./CareCompanion/hooks/useNotifications"
 import { SetPinCTA } from "../components/CallToActions"
 import {
   Drawer,
@@ -83,19 +84,23 @@ function Dashboard({ data }: { data: any }) {
   const location = useLocation()
   const { data: patientData, isOffline } = usePatientLoginDetails()
 
-  const { data: unreadCount = 0 } = useQuery({
+  const { data: generalUnread = 0 } = useQuery({
     queryKey: ["notifications", "unreadCount"],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications`
+        `${import.meta.env.VITE_API_BASE_URL}/notifications`,
       )
       const notifications = response.data.notifications || []
       return notifications.filter((n: any) => n.readStatus === "UNREAD").length
     },
     enabled: !isOffline,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 60 * 1000,
     initialData: 0,
   })
+
+  const { data: careNotifications = [] } = useCareNotifications()
+  const careUnread = careNotifications.filter((n) => !n.readAt && n.sentAt).length
+  const unreadCount = generalUnread + careUnread
 
   useEffect(() => {
     try {

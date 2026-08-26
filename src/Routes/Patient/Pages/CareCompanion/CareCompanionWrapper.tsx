@@ -15,7 +15,6 @@ const PAGE_TITLES: Record<string, string> = {
   "/education": "Health Education",
   "/pharmacy-stock": "Pharmacy Stock Finder",
   "/medication-loan": "Medication Loan",
-  "/notifications": "Notifications",
   "/assistant": "Care Assistant",
 }
 
@@ -29,9 +28,6 @@ const EducationFeedPage = lazy(() => import("./EducationFeedPage"))
 const PharmacyStockFinderPage = lazy(() => import("./PharmacyStockFinderPage"))
 const MedicationLoanPage = lazy(() => import("./MedicationLoanPage"))
 const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
-const NotificationFeedPage = lazy(
-  () => import("./Notifications/NotificationFeedPage")
-)
 
 export default function CareCompanionWrapper() {
   const navigate = useNavigate()
@@ -46,7 +42,7 @@ export default function CareCompanionWrapper() {
   const header = (
     <BackTitleHeader
       title={pageTitle}
-      onBack={() => navigate("/patients/companion")}
+      onBack={() => navigate(-1)}
     />
   )
 
@@ -123,14 +119,6 @@ export default function CareCompanionWrapper() {
             element={
               <RouteMetadata title="Medication Loan">
                 <MedicationLoanPage />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/notifications"
-            element={
-              <RouteMetadata title="Notifications">
-                <NotificationFeedPage />
               </RouteMetadata>
             }
           />

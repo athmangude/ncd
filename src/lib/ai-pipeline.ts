@@ -244,7 +244,8 @@ export async function callLlmApi(
 ): Promise<RawAction[]> {
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY
   if (!apiKey) {
-    return generateFallbackActions(profile, events)
+    // Fallback disabled — return empty when no API key
+    return []
   }
 
   try {
@@ -274,7 +275,7 @@ export async function callLlmApi(
 
     if (!res.ok) {
       console.error("[ai-pipeline] Gemini API error:", res.status)
-      return generateFallbackActions(profile, events)
+      return []
     }
 
     const data = (await res.json()) as GeminiResponse
@@ -283,13 +284,13 @@ export async function callLlmApi(
     const parsed: unknown = JSON.parse(jsonStr)
     const validated = validateActions(parsed)
     if (validated.length === 0) {
-      console.warn("[ai-pipeline] LLM response failed validation, using fallback")
-      return generateFallbackActions(profile, events)
+      console.warn("[ai-pipeline] LLM response failed validation")
+      return []
     }
     return validated
   } catch (err) {
     console.error("[ai-pipeline] Gemini API call failed:", err)
-    return generateFallbackActions(profile, events)
+    return []
   }
 }
 

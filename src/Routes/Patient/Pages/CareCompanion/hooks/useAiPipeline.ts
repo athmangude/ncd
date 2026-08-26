@@ -3,12 +3,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import type {
   CareCompanionEvent,
+  CareCompanionNotification,
   CareCompanionProfile,
   LlmActionEvent,
 } from "@/types/care-companion"
 import { runPipeline } from "@/lib/ai-pipeline"
 
 const EVENTS_QUERY_KEY = ["care-companion", "events"]
+const NOTIFICATIONS_QUERY_KEY = "careCompanionNotifications"
 
 async function fetchEvents(): Promise<CareCompanionEvent[]> {
   const res = await fetch("/care-companion/events?limit=200")
@@ -32,23 +34,56 @@ async function postEventsBatch(
   return results
 }
 
-async function updateEvent(
-  event: CareCompanionEvent,
-): Promise<CareCompanionEvent> {
-  const res = await fetch(`/care-companion/events/${event.id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(event),
-  })
-  if (!res.ok) {
-    const res2 = await fetch("/care-companion/events", {
+const ACTION_TYPE_DEEP_LINKS: Record<string, string> = {
+  REFILL_NUDGE: "/patients/companion/refill-schedule",
+  MISSED_TEST_FLAG: "/patients/companion/refill-schedule",
+  COST_SAVING_SUGGESTION: "/patients/companion/cost-tracker",
+  DRUG_INTERACTION_WARNING: "/patients/companion/medication-cards",
+  PROVIDER_FLAG: "/patients/companion",
+  ADHERENCE_PATTERN: "/patients/companion/refill-schedule",
+  CIRCLE_PROMPT: "/patients/companion",
+  INVOICE_POPULATE: "/patients/companion/cost-tracker",
+  DRUG_INFO_SURFACE: "/patients/companion/medication-cards",
+  TEST_RESULT_PROMPT: "/patients/companion",
+  LOAN_REPAYMENT_PRAISE: "/patients/companion/medication-loan",
+  LOAN_REPAYMENT_REMINDER: "/patients/companion/medication-loan",
+  LOAN_REPAYMENT_OVERDUE: "/patients/companion/medication-loan",
+  LOAN_OFFER: "/patients/companion/medication-loan",
+  JIREH_PLUS_RECOMMEND: "/patients/companion",
+  NO_ACTION: "/patients/companion",
+}
+
+function actionToNotification(action: LlmActionEvent): CareCompanionNotification {
+  const now = new Date().toISOString()
+  return {
+    id: action.id,
+    type: "AI_INSIGHT",
+    title: action.title,
+    body: action.body,
+    deepLink: ACTION_TYPE_DEEP_LINKS[action.actionType] ?? "/patients/companion",
+    scheduledAt: now,
+    sentAt: now,
+    readAt: null,
+    metadata: {
+      actionType: action.actionType,
+      severity: action.severity,
+      ...(action.relatedMedication
+        ? { relatedMedication: action.relatedMedication }
+        : {}),
+    },
+  }
+}
+
+async function postNotificationsBatch(
+  notifications: CareCompanionNotification[],
+): Promise<void> {
+  for (const n of notifications) {
+    await fetch("/api/care-companion/notifications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(event),
+      body: JSON.stringify(n),
     })
-    return res2.json()
   }
-  return res.json()
 }
 
 export function useAiPipeline(profile: CareCompanionProfile | null) {
@@ -56,9 +91,6 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
   const hasRunRef = useRef(false)
   const isRunningRef = useRef(false)
   const [isPipelineRunning, setIsPipelineRunning] = useState(false)
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(
-    () => new Set(),
-  )
 
   const { data: events = [] } = useQuery({
     queryKey: EVENTS_QUERY_KEY,
@@ -72,12 +104,6 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
       queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY })
     },
   })
-
-  const llmInsights = events
-    .filter((e): e is LlmActionEvent => e.type === "LLM_ACTION")
-    .filter((e) => !e.dismissed && !dismissedIds.has(e.id))
-    .filter((e) => e.actionType !== "INVOICE_POPULATE")
-    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
 
   const triggerPipeline = useCallback(async () => {
     if (!profile || isRunningRef.current) return
@@ -97,6 +123,16 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
       if (newActions.length === 0) return
 
       await saveBatchMutation.mutateAsync(newActions)
+
+      const notifications = newActions
+        .filter((a): a is LlmActionEvent => a.type === "LLM_ACTION")
+        .filter((a) => a.actionType !== "NO_ACTION" && a.actionType !== "INVOICE_POPULATE")
+        .map(actionToNotification)
+
+      if (notifications.length > 0) {
+        await postNotificationsBatch(notifications)
+        queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] })
+      }
     } catch (err) {
       console.error("[useAiPipeline] Pipeline run failed:", err)
     } finally {
@@ -125,28 +161,8 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
     prevNonLlmCountRef.current = nonLlmCount
   }, [events, profile, triggerPipeline])
 
-  const dismissInsight = useCallback(
-    (insightId: string) => {
-      setDismissedIds((prev) => new Set(prev).add(insightId))
-      const cached =
-        queryClient.getQueryData<CareCompanionEvent[]>(EVENTS_QUERY_KEY)
-      const insight = (cached ?? events).find(
-        (e): e is LlmActionEvent =>
-          e.type === "LLM_ACTION" && e.id === insightId,
-      )
-      if (insight) {
-        updateEvent({ ...insight, dismissed: true }).then(() => {
-          queryClient.invalidateQueries({ queryKey: EVENTS_QUERY_KEY })
-        })
-      }
-    },
-    [events, queryClient],
-  )
-
   return {
-    insights: llmInsights,
     isRunning: isPipelineRunning,
     triggerPipeline,
-    dismissInsight,
   }
 }

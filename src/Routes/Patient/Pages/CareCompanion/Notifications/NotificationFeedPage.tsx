@@ -1,15 +1,31 @@
 import { useNavigate } from "react-router-dom"
-import { Bell } from "lucide-react"
+import { Bell, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/Skeleton"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
-import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import type { CareCompanionNotification } from "@/types/care-companion"
 import {
   useNotifications,
   useMarkNotificationRead,
 } from "@/Routes/Patient/Pages/CareCompanion/hooks/useNotifications"
+
+const AI_INSIGHT_LABELS: Record<string, string> = {
+  REFILL_NUDGE: "Refill Reminder",
+  MISSED_TEST_FLAG: "Lab Test",
+  COST_SAVING_SUGGESTION: "Cost Saving",
+  DRUG_INTERACTION_WARNING: "Drug Interaction",
+  PROVIDER_FLAG: "Attention",
+  ADHERENCE_PATTERN: "Adherence",
+  CIRCLE_PROMPT: "Circle",
+  DRUG_INFO_SURFACE: "Drug Info",
+  TEST_RESULT_PROMPT: "Test Results",
+  JIREH_PLUS_RECOMMEND: "Jireh Plus",
+  LOAN_REPAYMENT_PRAISE: "Repayment",
+  LOAN_REPAYMENT_REMINDER: "Due Soon",
+  LOAN_REPAYMENT_OVERDUE: "Overdue",
+  LOAN_OFFER: "Loan Offer",
+}
 
 // ---------------------------------------------------------------------------
 // Date grouping helpers
@@ -128,6 +144,12 @@ function NotificationCard({
       />
 
       <div className="flex flex-1 flex-col gap-1">
+        {notification.type === "AI_INSIGHT" && (
+          <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
+            <Sparkles className="h-3 w-3" />
+            {AI_INSIGHT_LABELS[notification.metadata?.actionType ?? ""] ?? "AI Insight"}
+          </span>
+        )}
         <span
           className={cn(
             "text-sm leading-snug",
@@ -172,72 +194,46 @@ export default function NotificationFeedPage() {
     navigate(notification.deepLink)
   }
 
-  // -- Loading state -------------------------------------------------------
-  if (isLoading) {
-    return (
-      <PatientPageWrapper title="Notifications" onBack={() => navigate(-1)}>
-        <NotificationSkeleton />
-      </PatientPageWrapper>
-    )
-  }
+  if (isLoading) return <NotificationSkeleton />
 
-  // -- Error state --------------------------------------------------------
   if (isError) {
     return (
-      <PatientPageWrapper title="Notifications" onBack={() => navigate(-1)}>
-        <ErrorBlock
-          message="We couldn't load your notifications. Check your connection and try again."
-          action={
-            <Button variant="outline" onClick={() => refetch()}>
-              Try again
-            </Button>
-          }
-        />
-      </PatientPageWrapper>
+      <ErrorBlock
+        message="We couldn't load your notifications. Check your connection and try again."
+        action={
+          <Button variant="outline" onClick={() => refetch()}>
+            Try again
+          </Button>
+        }
+      />
     )
   }
 
-  // Filter out notifications that have not been sent yet
-  // (sentAt === null means scheduled but not yet delivered).
   const sent = notifications?.filter((n) => n.sentAt !== null)
 
-  // -- Empty state --------------------------------------------------------
-  if (!sent || sent.length === 0) {
-    return (
-      <PatientPageWrapper title="Notifications" onBack={() => navigate(-1)}>
-        <EmptyState />
-      </PatientPageWrapper>
-    )
-  }
+  if (!sent || sent.length === 0) return <EmptyState />
 
-  // -- Grouped feed -------------------------------------------------------
   const groups = groupNotifications(sent)
 
   return (
-    <PatientPageWrapper
-      title="Notifications"
-      onBack={() => navigate(-1)}
-      bodyPadding="none"
-    >
-      <div className="flex flex-col gap-6 p-4 pb-tabbar">
-        {groups.map((group) => (
-          <section
-            key={group.label}
-            aria-label={`${group.label} notifications`}
-          >
-            <h2 className="mb-3 text-muted-foreground">{group.label}</h2>
-            <div className="flex flex-col gap-2">
-              {group.items.map((notification) => (
-                <NotificationCard
-                  key={notification.id}
-                  notification={notification}
-                  onTap={handleTap}
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
-    </PatientPageWrapper>
+    <div className="flex flex-col gap-6 p-4">
+      {groups.map((group) => (
+        <section
+          key={group.label}
+          aria-label={`${group.label} notifications`}
+        >
+          <h2 className="mb-3 text-muted-foreground">{group.label}</h2>
+          <div className="flex flex-col gap-2">
+            {group.items.map((notification) => (
+              <NotificationCard
+                key={notification.id}
+                notification={notification}
+                onTap={handleTap}
+              />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
   )
 }

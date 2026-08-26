@@ -1603,6 +1603,22 @@ export function createCareCompanionNotification(
   return notification
 }
 
+/**
+ * Add a fully-formed notification to the store. Used by the AI pipeline to
+ * route LLM-generated insights into the notification feed.
+ */
+export function addCareCompanionNotification(
+  notification: CareCompanionNotification,
+): CareCompanionNotification {
+  const all = readCollection<CareCompanionNotification>(
+    CC_NOTIFICATIONS_KEY,
+    careCompanionNotificationsSeed as unknown as CareCompanionNotification[],
+  )
+  all.push(notification)
+  writeCollection(CC_NOTIFICATIONS_KEY, all)
+  return notification
+}
+
 // ---------------------------------------------------------------------------
 // Schedule item updates
 // ---------------------------------------------------------------------------

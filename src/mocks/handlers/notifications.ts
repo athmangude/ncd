@@ -5,6 +5,7 @@ import {
   getCareCompanionNotifications,
   markCareCompanionNotificationRead,
   createCareCompanionNotification,
+  addCareCompanionNotification,
 } from "../domain/careCompanion"
 import notificationsSeed from "../fixtures/notifications.json"
 
@@ -89,6 +90,17 @@ export const notificationsHandlers = [
     async ({ request }) => {
       const body = (await request.json()) as { type: NotificationType }
       const notification = createCareCompanionNotification(body.type)
+      return HttpResponse.json(notification, { status: 201 })
+    },
+  ),
+
+  // POST: Add a fully-formed notification (used by AI pipeline).
+  http.post(
+    "/api/care-companion/notifications",
+    async ({ request }) => {
+      const body =
+        (await request.json()) as import("@/types/care-companion").CareCompanionNotification
+      const notification = addCareCompanionNotification(body)
       return HttpResponse.json(notification, { status: 201 })
     },
   ),

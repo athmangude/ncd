@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import { Bell, Settings, Check, Copy } from "lucide-react"
+import { Bell, Settings, Check, Copy, Sparkles } from "lucide-react"
 import { Button } from "@/components/Button"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
@@ -16,6 +16,42 @@ import {
   CircleInviteReminderCard,
   type CircleInviteSubType,
 } from "./CircleInviteReminderCard"
+import {
+  useNotifications as useCareNotifications,
+  useMarkNotificationRead,
+} from "@/Routes/Patient/Pages/CareCompanion/hooks/useNotifications"
+import type { CareCompanionNotification } from "@/types/care-companion"
+
+const COMPANION_TYPE_LABELS: Record<string, string> = {
+  REFILL_NUDGE: "Refill Reminder",
+  MISSED_TEST_FLAG: "Lab Test",
+  COST_SAVING_SUGGESTION: "Cost Saving",
+  DRUG_INTERACTION_WARNING: "Drug Interaction",
+  PROVIDER_FLAG: "Attention",
+  ADHERENCE_PATTERN: "Adherence",
+  CIRCLE_PROMPT: "Circle",
+  DRUG_INFO_SURFACE: "Drug Info",
+  TEST_RESULT_PROMPT: "Test Results",
+  JIREH_PLUS_RECOMMEND: "Jireh Plus",
+  LOAN_REPAYMENT_PRAISE: "Repayment",
+  LOAN_REPAYMENT_REMINDER: "Due Soon",
+  LOAN_REPAYMENT_OVERDUE: "Overdue",
+  LOAN_OFFER: "Loan Offer",
+  REFILL_REMINDER: "Refill Reminder",
+  REFILL_OVERDUE: "Refill Overdue",
+  REFILL_LOAN_OFFER: "Loan Offer",
+  PREDICTIVE_CREDIT_OFFER: "Credit Offer",
+  EDUCATION_WEEKLY: "Education",
+  MEDICATION_CARD_AVAILABLE: "Medication Info",
+  LAB_REMINDER: "Lab Test",
+}
+
+function getCompanionTypeLabel(n: CareCompanionNotification): string {
+  if (n.type === "AI_INSIGHT" && n.metadata?.actionType) {
+    return COMPANION_TYPE_LABELS[n.metadata.actionType] ?? "AI Insight"
+  }
+  return COMPANION_TYPE_LABELS[n.type] ?? n.type
+}
 
 interface Notification {
   id: number
@@ -31,6 +67,12 @@ interface Notification {
   metadata?: { inviteeFirstName?: string } | null
 }
 
+type FilterType = "ALL" | "CIRCLE" | "LOANS" | "SAVINGS" | "COMPANION"
+
+type DisplayItem =
+  | { source: "general"; data: Notification }
+  | { source: "companion"; data: CareCompanionNotification }
+
 export default function PatientNotificationsPage() {
   const navigate = useNavigate()
   const user = usePatientAuthStore((state: any) => state.user)
@@ -39,15 +81,22 @@ export default function PatientNotificationsPage() {
   const [error, setError] = useState<string | null>(null)
   const [showHelp, setShowHelp] = useState(false)
   const [isRequesting, setIsRequesting] = useState(false)
-  const [activeFilter, setActiveFilter] = useState<
-    "ALL" | "CIRCLE" | "LOANS" | "SAVINGS"
-  >("ALL")
+  const [activeFilter, setActiveFilter] = useState<FilterType>("ALL")
   const { toast } = useToast()
   const {
     notificationPermission,
     requestPermission,
     error: permissionError,
   } = usePushNotifications(user?.id, "PATIENT")
+
+  const { data: careNotifications = [], isLoading: careLoading } =
+    useCareNotifications()
+  const markCareReadMutation = useMarkNotificationRead()
+
+  const sentCareNotifications = useMemo(
+    () => careNotifications.filter((n) => n.sentAt !== null),
+    [careNotifications],
+  )
 
   useEffect(() => {
     if (permissionError) {
@@ -60,7 +109,7 @@ export default function PatientNotificationsPage() {
       try {
         setIsLoading(true)
         const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/notifications`
+          `${import.meta.env.VITE_API_BASE_URL}/notifications`,
         )
         setNotifications(response.data.notifications)
       } catch (err: any) {
@@ -89,18 +138,48 @@ export default function PatientNotificationsPage() {
     }
   }
 
+  const displayItems: DisplayItem[] = useMemo(() => {
+    const items: DisplayItem[] = [
+      ...notifications.map(
+        (n): DisplayItem => ({ source: "general", data: n }),
+      ),
+      ...sentCareNotifications.map(
+        (n): DisplayItem => ({ source: "companion", data: n }),
+      ),
+    ]
+    items.sort(
+      (a, b) =>
+        new Date(b.data.sentAt).getTime() -
+        new Date(a.data.sentAt).getTime(),
+    )
+    return items
+  }, [notifications, sentCareNotifications])
+
+  const filteredItems = useMemo(() => {
+    if (activeFilter === "ALL") return displayItems
+    if (activeFilter === "COMPANION")
+      return displayItems.filter((item) => item.source === "companion")
+    return displayItems.filter(
+      (item) =>
+        item.source === "general" && item.data.type === activeFilter,
+    )
+  }, [displayItems, activeFilter])
+
   const handleMarkAllAsRead = async () => {
-    // Optimistic update
     const previousNotifications = [...notifications]
-    const updatedNotifications = notifications.map((n) => ({
-      ...n,
-      readStatus: "READ" as const,
-    }))
-    setNotifications(updatedNotifications)
+    setNotifications(
+      notifications.map((n) => ({ ...n, readStatus: "READ" as const })),
+    )
+
+    for (const n of sentCareNotifications) {
+      if (!n.readAt) {
+        markCareReadMutation.mutate(n.id)
+      }
+    }
 
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`
+        `${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`,
       )
       toast({
         title: "Success",
@@ -159,13 +238,18 @@ export default function PatientNotificationsPage() {
     )
   }
 
-  const filteredNotifications = notifications.filter((n) => {
-    if (activeFilter === "ALL") return true
-    return n.type === activeFilter
-  })
+  function handleTapCareNotification(n: CareCompanionNotification) {
+    if (!n.readAt) {
+      markCareReadMutation.mutate(n.id)
+    }
+    navigate(n.deepLink)
+  }
 
-  // State A: Permission not granted
-  if (notificationPermission !== "granted") {
+  // State A: No push permission AND no care notifications to show
+  if (
+    notificationPermission !== "granted" &&
+    sentCareNotifications.length === 0
+  ) {
     return (
       <PatientPageWrapper
         title="Notifications"
@@ -234,11 +318,11 @@ export default function PatientNotificationsPage() {
     )
   }
 
-  if (isLoading) {
+  if (isLoading || careLoading) {
     return <LoadingPage />
   }
 
-  if (error) {
+  if (error && sentCareNotifications.length === 0) {
     return (
       <PatientPageWrapper
         title="Notifications"
@@ -251,7 +335,7 @@ export default function PatientNotificationsPage() {
   }
 
   // State B: Empty State
-  if (notifications.length === 0) {
+  if (displayItems.length === 0) {
     return (
       <PatientPageWrapper
         title="Notifications (0)"
@@ -274,7 +358,7 @@ export default function PatientNotificationsPage() {
   // State C: List State
   return (
     <PatientPageWrapper
-      title={`Notifications (${notifications.length})`}
+      title={`Notifications (${displayItems.length})`}
       onBack={() => navigate(-1)}
       footer={
         <div className="border-t bg-card dark:bg-neutral-950 flex items-center p-4">
@@ -293,63 +377,92 @@ export default function PatientNotificationsPage() {
     >
       <div className="px-4 py-4 overflow-x-auto whitespace-nowrap scrollbar-hide border-b border-border [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <div className="flex gap-2">
-          <Button
-            variant={activeFilter === "ALL" ? "default" : "ghost"}
-            className={
-              activeFilter === "ALL"
-                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
-                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
-            }
-            onClick={() => setActiveFilter("ALL")}
-          >
-            All
-          </Button>
-          <Button
-            variant={activeFilter === "CIRCLE" ? "default" : "ghost"}
-            className={
-              activeFilter === "CIRCLE"
-                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
-                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
-            }
-            onClick={() => setActiveFilter("CIRCLE")}
-          >
-            Circle
-          </Button>
-          <Button
-            variant={activeFilter === "LOANS" ? "default" : "ghost"}
-            className={
-              activeFilter === "LOANS"
-                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
-                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
-            }
-            onClick={() => setActiveFilter("LOANS")}
-          >
-            Loan
-          </Button>
-          <Button
-            variant={activeFilter === "SAVINGS" ? "default" : "ghost"}
-            className={
-              activeFilter === "SAVINGS"
-                ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
-                : "rounded-full bg-muted hover:bg-border text-foreground px-6"
-            }
-            onClick={() => setActiveFilter("SAVINGS")}
-          >
-            Savings
-          </Button>
+          {(
+            [
+              { key: "ALL", label: "All" },
+              { key: "COMPANION", label: "Companion" },
+              { key: "CIRCLE", label: "Circle" },
+              { key: "LOANS", label: "Loan" },
+              { key: "SAVINGS", label: "Savings" },
+            ] as const
+          ).map(({ key, label }) => (
+            <Button
+              key={key}
+              variant={activeFilter === key ? "default" : "ghost"}
+              className={
+                activeFilter === key
+                  ? "rounded-full bg-primary hover:bg-primary/90 text-white px-6"
+                  : "rounded-full bg-muted hover:bg-border text-foreground px-6"
+              }
+              onClick={() => setActiveFilter(key)}
+            >
+              {label}
+            </Button>
+          ))}
         </div>
       </div>
 
       <div>
-        {filteredNotifications.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center p-10 text-center text-muted-foreground">
             <p>No notifications found in this category.</p>
           </div>
         ) : (
-          filteredNotifications.map((notification) => {
+          filteredItems.map((item) => {
+            if (item.source === "companion") {
+              const n = item.data
+              const isUnread = n.readAt === null
+              return (
+                <button
+                  key={`care-${n.id}`}
+                  type="button"
+                  onClick={() => handleTapCareNotification(n)}
+                  className={cn(
+                    "flex w-full items-start gap-4 p-4 text-left transition-colors hover:bg-muted active:bg-muted/60",
+                    isUnread && "bg-blue-50/30",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "mt-2 h-2 w-2 shrink-0 rounded-full",
+                      isUnread ? "bg-primary" : "bg-transparent",
+                    )}
+                    aria-hidden
+                  />
+                  <div className="flex-1">
+                    <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
+                      {n.type === "AI_INSIGHT" && (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      {getCompanionTypeLabel(n)}
+                    </span>
+                    <p
+                      className={cn(
+                        "mt-0.5 text-sm",
+                        isUnread
+                          ? "font-medium text-foreground"
+                          : "text-foreground",
+                      )}
+                    >
+                      {n.title}
+                    </p>
+                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      {n.body}
+                    </p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {formatDate(n.sentAt!)}
+                    </p>
+                  </div>
+                </button>
+              )
+            }
+
+            const notification = item.data
             const isCircleReminder =
-              notification.notificationSubType === "CIRCLE_INVITE_4H_OWNER" ||
-              notification.notificationSubType === "CIRCLE_INVITE_24H_OWNER"
+              notification.notificationSubType ===
+                "CIRCLE_INVITE_4H_OWNER" ||
+              notification.notificationSubType ===
+                "CIRCLE_INVITE_24H_OWNER"
 
             if (
               isCircleReminder &&
@@ -363,7 +476,9 @@ export default function PatientNotificationsPage() {
                       notification.notificationSubType as CircleInviteSubType
                     }
                     invitationId={notification.relatedEntityId}
-                    inviteeFirstName={notification.metadata.inviteeFirstName}
+                    inviteeFirstName={
+                      notification.metadata.inviteeFirstName
+                    }
                     sentAt={notification.sentAt}
                     readStatus={notification.readStatus}
                   />
@@ -377,7 +492,7 @@ export default function PatientNotificationsPage() {
                 key={notification.id}
                 className={cn(
                   "flex items-start gap-4 p-4 hover:bg-muted transition-colors cursor-pointer group relative",
-                  notification.readStatus === "UNREAD" ? "bg-blue-50/30" : ""
+                  notification.readStatus === "UNREAD" ? "bg-blue-50/30" : "",
                 )}
               >
                 {notification.readStatus === "UNREAD" && (
@@ -393,7 +508,7 @@ export default function PatientNotificationsPage() {
                       "text-sm",
                       notification.readStatus === "UNREAD"
                         ? "font-medium text-foreground"
-                        : "text-foreground"
+                        : "text-foreground",
                     )}
                   >
                     {renderMessageWithLink(notification.message)}
