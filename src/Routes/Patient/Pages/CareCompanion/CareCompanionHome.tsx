@@ -12,7 +12,6 @@ import {
   Clock,
   MapPin,
   CreditCard,
-  Bell,
   Sparkles,
   UserCog,
   Plus,
@@ -63,6 +62,7 @@ export default function CareCompanionHome() {
   >(undefined)
   const [addMedOpen, setAddMedOpen] = useState(false)
   const { isRunning: aiRunning } = useAiPipeline(profile ?? null)
+  const navigate = useNavigate()
   const { data: notifications = [] } = useNotifications()
   const unreadInsights = notifications.filter(
     (n) => n.type === "AI_INSIGHT" && !n.readAt,
@@ -624,12 +624,6 @@ const QUICK_ACTIONS = [
     icon: CreditCard,
     path: "/patients/companion/medication-loan",
     color: "bg-amber-100 text-amber-600",
-  },
-  {
-    label: "Notifications",
-    icon: Bell,
-    path: "/patients/notifications",
-    color: "bg-rose-100 text-rose-600",
   },
   {
     label: "Update Profile",

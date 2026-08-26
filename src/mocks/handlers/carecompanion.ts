@@ -29,6 +29,7 @@ import {
   updateEventById,
   updateRefillScheduleItem,
   updateTestScheduleItem,
+  populatePaymentLineItems,
 } from "../domain/careCompanion"
 
 import type {
@@ -421,6 +422,31 @@ export const careCompanionHandlers = [
     }
     return HttpResponse.json(updated)
   }),
+
+  // -- Payment line items PATCH (invoice population) ---------------------------
+  http.patch(
+    "/care-companion/events/:id/line-items",
+    async ({ params, request }) => {
+      const { id } = params as { id: string }
+      const body = (await request.json()) as {
+        lineItems: {
+          name: string
+          category: "MEDICATION" | "LAB_TEST" | "CONSULTATION" | "SUPPLY"
+          quantity: number
+          unitPrice: number
+          lineTotal: number
+        }[]
+      }
+      const updated = populatePaymentLineItems(id, body.lineItems)
+      if (!updated) {
+        return HttpResponse.json(
+          { error: "Payment event not found" },
+          { status: 404 },
+        )
+      }
+      return HttpResponse.json(updated)
+    },
+  ),
 
   // -- Refill schedule item PATCH ---------------------------------------------
   http.patch("/care-companion/refill-schedules/:id", async ({ params, request }) => {

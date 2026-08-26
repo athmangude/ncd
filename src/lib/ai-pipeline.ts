@@ -225,7 +225,7 @@ function validateActions(raw: unknown): RawAction[] {
   return arr.filter((item): item is RawAction => {
     if (typeof item !== "object" || item === null) return false
     const obj = item as Record<string, unknown>
-    if ("__proto__" in obj || "constructor" in obj) return false
+    if (Object.hasOwn(obj, "__proto__") || Object.hasOwn(obj, "constructor")) return false
     return (
       typeof obj.actionType === "string" &&
       VALID_ACTION_TYPES.has(obj.actionType) &&
@@ -584,6 +584,7 @@ export async function runPipeline(
   const inputHash = await computeInputHash(profile, events)
 
   if (shouldSkipPipeline(events, inputHash)) {
+    console.info("[ai-pipeline] Skipping — input hash unchanged since last LLM run")
     return []
   }
 

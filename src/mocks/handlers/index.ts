@@ -1,4 +1,4 @@
-import type { RequestHandler } from "msw"
+import { http, passthrough, type RequestHandler } from "msw"
 import { profileHandlers } from "./profile"
 import { discoveryHandlers } from "./discovery"
 import { loansHandlers } from "./loans"
@@ -17,6 +17,7 @@ import { careCompanionHandlers } from "./carecompanion"
  * via src/mocks/db.ts.
  */
 export const handlers: RequestHandler[] = [
+  http.post("/api/gemini/*", () => passthrough()),
   ...profileHandlers,
   ...discoveryHandlers,
   ...loansHandlers,

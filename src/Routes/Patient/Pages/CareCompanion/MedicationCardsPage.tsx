@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import { useSearchParams } from "react-router-dom"
 import {
   AlertTriangle,
   ChevronDown,
@@ -70,13 +71,34 @@ function getMaxSeverity(
 
 export default function MedicationCardsPage() {
   const { data, isLoading, error } = useMedicationCards()
+  const [searchParams] = useSearchParams()
+  const highlightMed = searchParams.get("highlight")
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null)
   const [expandedInteractionCardId, setExpandedInteractionCardId] =
     useState<string | null>(null)
+  const highlightRef = useRef<HTMLDivElement>(null)
+  const hasAutoExpanded = useRef(false)
 
   useEffect(() => {
     trackEvent(EVENTS.CARE_COMPANION.MEDICATION_CARDS.VIEW)
   }, [])
+
+  useEffect(() => {
+    if (!highlightMed || !data || hasAutoExpanded.current) return
+    const match = data.cards.find((c) =>
+      c.genericName.toLowerCase().includes(highlightMed.toLowerCase()),
+    )
+    if (match) {
+      hasAutoExpanded.current = true
+      setExpandedCardId(match.card.id)
+      requestAnimationFrame(() => {
+        highlightRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        })
+      })
+    }
+  }, [highlightMed, data])
 
   if (isLoading) {
     return (
@@ -133,13 +155,20 @@ export default function MedicationCardsPage() {
         const borderClass = maxSeverity
           ? SEVERITY_CONFIG[maxSeverity].borderClass
           : "border-l-transparent"
+        const isHighlighted =
+          highlightMed &&
+          annotatedCard.genericName
+            .toLowerCase()
+            .includes(highlightMed.toLowerCase())
 
         return (
           <div
             key={annotatedCard.card.id}
+            ref={isHighlighted ? highlightRef : undefined}
             className={cn(
               "rounded-xl border border-l-4 bg-card transition-all",
               borderClass,
+              isHighlighted && "ring-2 ring-primary/40",
             )}
           >
             <CollapsedView

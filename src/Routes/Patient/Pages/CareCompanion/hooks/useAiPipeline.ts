@@ -6,6 +6,7 @@ import type {
   CareCompanionNotification,
   CareCompanionProfile,
   LlmActionEvent,
+  PaymentEvent,
 } from "@/types/care-companion"
 import { runPipeline } from "@/lib/ai-pipeline"
 
@@ -55,12 +56,19 @@ const ACTION_TYPE_DEEP_LINKS: Record<string, string> = {
 
 function actionToNotification(action: LlmActionEvent): CareCompanionNotification {
   const now = new Date().toISOString()
+  let deepLink =
+    ACTION_TYPE_DEEP_LINKS[action.actionType] ?? "/patients/companion"
+
+  if (action.actionType === "DRUG_INFO_SURFACE" && action.relatedMedication) {
+    deepLink += `?highlight=${encodeURIComponent(action.relatedMedication)}`
+  }
+
   return {
     id: action.id,
     type: "AI_INSIGHT",
     title: action.title,
     body: action.body,
-    deepLink: ACTION_TYPE_DEEP_LINKS[action.actionType] ?? "/patients/companion",
+    deepLink,
     scheduledAt: now,
     sentAt: now,
     readAt: null,
@@ -84,6 +92,65 @@ async function postNotificationsBatch(
       body: JSON.stringify(n),
     })
   }
+}
+
+async function applyInvoicePopulations(
+  actions: LlmActionEvent[],
+  events: CareCompanionEvent[],
+): Promise<CareCompanionNotification[]> {
+  const invoiceActions = actions.filter(
+    (a) => a.actionType === "INVOICE_POPULATE" && a.invoiceLineItems?.length,
+  )
+  if (invoiceActions.length === 0) return []
+
+  const emptyPayments = events
+    .filter(
+      (e): e is PaymentEvent =>
+        e.type === "PAYMENT" && e.lineItems.length === 0,
+    )
+    .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+
+  const notifications: CareCompanionNotification[] = []
+
+  for (const action of invoiceActions) {
+    const matched = emptyPayments.find((p) =>
+      action.body.includes(p.facilityName) ||
+      action.title.includes(p.facilityName),
+    )
+    if (!matched || !action.invoiceLineItems) continue
+
+    const lineItems = action.invoiceLineItems.map((item) => ({
+      name: item.name,
+      category: item.category === "OTHER" ? ("SUPPLY" as const) : item.category,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      lineTotal: item.lineTotal,
+    }))
+
+    await fetch(`/care-companion/events/${matched.id}/line-items`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ lineItems }),
+    })
+
+    const now = new Date().toISOString()
+    notifications.push({
+      id: `inv-${action.id}`,
+      type: "AI_INSIGHT",
+      title: action.title,
+      body: action.body,
+      deepLink: "/patients/companion/cost-tracker",
+      scheduledAt: now,
+      sentAt: now,
+      readAt: null,
+      metadata: {
+        actionType: "INVOICE_POPULATE",
+        severity: action.severity,
+      },
+    })
+  }
+
+  return notifications
 }
 
 export function useAiPipeline(profile: CareCompanionProfile | null) {
@@ -124,10 +191,20 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
 
       await saveBatchMutation.mutateAsync(newActions)
 
-      const notifications = newActions
-        .filter((a): a is LlmActionEvent => a.type === "LLM_ACTION")
+      const llmActions = newActions.filter(
+        (a): a is LlmActionEvent => a.type === "LLM_ACTION",
+      )
+
+      const invoiceNotifications = await applyInvoicePopulations(
+        llmActions,
+        freshEvents,
+      )
+
+      const insightNotifications = llmActions
         .filter((a) => a.actionType !== "NO_ACTION" && a.actionType !== "INVOICE_POPULATE")
         .map(actionToNotification)
+
+      const notifications = [...invoiceNotifications, ...insightNotifications]
 
       if (notifications.length > 0) {
         await postNotificationsBatch(notifications)

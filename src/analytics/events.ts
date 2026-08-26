@@ -271,6 +271,7 @@ export const EVENTS = {
       SHARE_TAP: "CARE_COMPANION:CostTracker:share-tap",
       CATEGORY_TAP: "CARE_COMPANION:CostTracker:category-tap",
       TREND_SCROLL: "CARE_COMPANION:CostTracker:trend-scroll",
+      PAYMENT_EXPAND: "CARE_COMPANION:CostTracker:payment-expand",
     },
     MEDICATION_TIMELINE: {
       VIEW: "CARE_COMPANION:MedicationTimeline:view",

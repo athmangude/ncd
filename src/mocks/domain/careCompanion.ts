@@ -1953,6 +1953,19 @@ export function updateEventById(
   return updated
 }
 
+export function populatePaymentLineItems(
+  paymentId: string,
+  lineItems: PaymentEvent["lineItems"],
+): CareCompanionEvent | null {
+  const all = getEventsLog()
+  const idx = all.findIndex((e) => e.id === paymentId && e.type === "PAYMENT")
+  if (idx === -1) return null
+  const payment = all[idx] as PaymentEvent
+  all[idx] = { ...payment, lineItems }
+  writeCollection(EVENTS_LOG_KEY, all)
+  return all[idx]
+}
+
 // ---------------------------------------------------------------------------
 // AI assistant: keyword matching
 // ---------------------------------------------------------------------------

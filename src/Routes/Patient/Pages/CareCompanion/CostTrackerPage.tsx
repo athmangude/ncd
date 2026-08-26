@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react"
+import { useEffect, useRef, useCallback, useState } from "react"
 import {
   Loader2,
   AlertTriangle,
@@ -8,13 +8,18 @@ import {
   BadgeDollarSign,
   Target,
   Receipt,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  Store,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { trackEvent } from "@/analytics"
 import { EVENTS } from "@/analytics"
 import { useCostSummary } from "./hooks/useCostSummary"
 import { useCostBreakdown } from "./hooks/useCostBreakdown"
-import type { CostSummary } from "@/types/care-companion"
+import { useRecentPayments } from "./hooks/useRecentPayments"
+import type { CostSummary, PaymentEvent } from "@/types/care-companion"
 import type {
   CostCategoryBreakdown,
   MonthlySpend,
@@ -66,6 +71,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function CostTrackerPage() {
   const summary = useCostSummary()
   const breakdown = useCostBreakdown()
+  const recentPayments = useRecentPayments()
 
   useEffect(() => {
     trackEvent(EVENTS.CARE_COMPANION.COST_TRACKER.VIEW)
@@ -93,6 +99,10 @@ export default function CostTrackerPage() {
   return (
     <div className="flex flex-col gap-5 p-4">
       <AnnualSummarySection data={summary.data} />
+
+      {recentPayments.data && recentPayments.data.length > 0 && (
+        <RecentPaymentsSection payments={recentPayments.data} />
+      )}
 
       {breakdown.data && breakdown.data.categories.length > 0 && (
         <CategoryBreakdownSection categories={breakdown.data.categories} />
@@ -254,6 +264,155 @@ function CategoryBreakdownSection({
             </p>
           </button>
         ))}
+      </div>
+    </section>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Recent Payments — expandable cards with AI-populated line items
+// ---------------------------------------------------------------------------
+
+function RecentPaymentsSection({
+  payments,
+}: {
+  payments: PaymentEvent[]
+}) {
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  return (
+    <section aria-label="Recent payments">
+      <h2 className="mb-3 text-sm font-semibold text-foreground">
+        Recent Payments
+      </h2>
+      <div className="flex flex-col gap-2">
+        {payments.slice(0, 6).map((payment) => {
+          const isExpanded = expandedId === payment.id
+          const hasLineItems = payment.lineItems.length > 0
+          const date = new Date(payment.timestamp)
+          const dateStr = date.toLocaleDateString("en-KE", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+
+          return (
+            <div
+              key={payment.id}
+              className="rounded-xl border bg-card overflow-hidden"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  const nextId = isExpanded ? null : payment.id
+                  setExpandedId(nextId)
+                  if (nextId) {
+                    trackEvent(
+                      EVENTS.CARE_COMPANION.COST_TRACKER.PAYMENT_EXPAND,
+                      {
+                        paymentId: payment.id,
+                        facilityName: payment.facilityName,
+                        hasLineItems,
+                      },
+                    )
+                  }
+                }}
+                className="flex w-full items-center gap-3 p-3 text-left transition-colors active:bg-muted/50"
+              >
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                  <Store className="h-4 w-4 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {payment.facilityName}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground">
+                    {dateStr}
+                    {payment.isInNetwork && (
+                      <span className="ml-1.5 text-emerald-600">
+                        In-network
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-sm font-semibold text-foreground">
+                    {formatKES(String(payment.totalAmount))}
+                  </span>
+                  {isExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                  )}
+                </div>
+              </button>
+
+              {isExpanded && (
+                <div className="border-t px-3 pb-3 pt-2">
+                  {hasLineItems ? (
+                    <>
+                      <div className="mb-2 flex items-center gap-1.5">
+                        <Sparkles className="h-3 w-3 text-primary" />
+                        <span className="text-[10px] font-medium uppercase tracking-wider text-primary">
+                          Invoice details
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        {payment.lineItems.map((item, idx) => (
+                          <div
+                            key={`${item.name}-${idx}`}
+                            className="flex items-start justify-between gap-2"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-medium text-foreground">
+                                {item.name}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {CATEGORY_LABELS[item.category] ?? item.category}
+                                {item.quantity > 1 && ` · Qty ${item.quantity}`}
+                              </p>
+                            </div>
+                            <span className="shrink-0 font-mono text-xs text-foreground">
+                              {formatKES(String(item.lineTotal))}
+                            </span>
+                          </div>
+                        ))}
+                        <div className="mt-1 flex items-center justify-between border-t pt-1.5">
+                          <span className="text-[11px] font-medium text-muted-foreground">
+                            Total
+                          </span>
+                          <span className="font-mono text-xs font-semibold text-foreground">
+                            {formatKES(String(payment.totalAmount))}
+                          </span>
+                        </div>
+                      </div>
+                      {payment.fundingSources.length > 0 && (
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          {payment.fundingSources.map((fs) => (
+                            <span
+                              key={fs.type}
+                              className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                            >
+                              {fs.type.replace("_", " ")} · {formatKES(String(fs.amount))}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-2 py-2">
+                      <Receipt className="h-4 w-4 text-muted-foreground" />
+                      <p className="text-xs text-muted-foreground italic">
+                        Invoice details pending — itemization will appear once
+                        processed by your care companion
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
     </section>
   )
