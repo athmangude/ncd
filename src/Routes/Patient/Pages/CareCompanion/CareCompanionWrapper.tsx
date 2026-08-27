@@ -15,6 +15,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/education": "Health Education",
   "/medication-loan": "Medication Loan",
   "/assistant": "Care Assistant",
+  "/test-results": "Test Results",
 }
 
 const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
@@ -26,6 +27,7 @@ const RefillSchedulePage = lazy(() => import("./RefillSchedulePage"))
 const EducationFeedPage = lazy(() => import("./EducationFeedPage"))
 const MedicationLoanPage = lazy(() => import("./MedicationLoanPage"))
 const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
+const TestResultsUploadPage = lazy(() => import("./TestResultsUploadPage"))
 
 export default function CareCompanionWrapper() {
   const navigate = useNavigate()
@@ -117,6 +119,14 @@ export default function CareCompanionWrapper() {
             element={
               <RouteMetadata title="Care Assistant">
                 <AiAssistantPage />
+              </RouteMetadata>
+            }
+          />
+          <Route
+            path="/test-results"
+            element={
+              <RouteMetadata title="Test Results">
+                <TestResultsUploadPage />
               </RouteMetadata>
             }
           />

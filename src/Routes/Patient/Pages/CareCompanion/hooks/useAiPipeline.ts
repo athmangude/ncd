@@ -36,8 +36,8 @@ async function postEventsBatch(
 }
 
 const ACTION_TYPE_DEEP_LINKS: Record<string, string> = {
-  REFILL_NUDGE: "/patients/companion/refill-schedule",
-  MISSED_TEST_FLAG: "/patients/companion/refill-schedule",
+  REFILL_NUDGE: "/patients/search",
+  MISSED_TEST_FLAG: "/patients/search",
   COST_SAVING_SUGGESTION: "/patients/companion/cost-tracker",
   DRUG_INTERACTION_WARNING: "/patients/companion/medication-cards",
   PROVIDER_FLAG: "/patients/companion",
@@ -45,7 +45,7 @@ const ACTION_TYPE_DEEP_LINKS: Record<string, string> = {
   CIRCLE_PROMPT: "/patients/companion",
   INVOICE_POPULATE: "/patients/companion/cost-tracker",
   DRUG_INFO_SURFACE: "/patients/companion/medication-cards",
-  TEST_RESULT_PROMPT: "/patients/companion",
+  TEST_RESULT_PROMPT: "/patients/companion/test-results",
   LOAN_REPAYMENT_PRAISE: "/patients/companion/medication-loan",
   LOAN_REPAYMENT_REMINDER: "/patients/companion/medication-loan",
   LOAN_REPAYMENT_OVERDUE: "/patients/companion/medication-loan",
@@ -61,6 +61,21 @@ function actionToNotification(action: LlmActionEvent): CareCompanionNotification
 
   if (action.actionType === "DRUG_INFO_SURFACE" && action.relatedMedication) {
     deepLink += `?highlight=${encodeURIComponent(action.relatedMedication)}`
+  }
+
+  if (
+    (action.actionType === "REFILL_NUDGE" ||
+      action.actionType === "MISSED_TEST_FLAG") &&
+    action.relatedMedication
+  ) {
+    deepLink += `?q=${encodeURIComponent(action.relatedMedication)}`
+  }
+
+  if (action.actionType === "TEST_RESULT_PROMPT") {
+    const testMatch = action.title.match(/Upload (.+?) results/i)
+    if (testMatch) {
+      deepLink += `?test=${encodeURIComponent(testMatch[1])}`
+    }
   }
 
   return {

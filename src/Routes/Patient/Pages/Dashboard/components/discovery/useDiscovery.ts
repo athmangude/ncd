@@ -53,8 +53,9 @@ export function useDiscovery(enabled: boolean = true) {
   // searchQuery is intentionally NOT persisted in sessionStorage: leaving
   // SearchPage should clear the term so it does not leak into the next API
   // call (e.g. when the Explore tab remounts useDiscovery). A query passed
-  // via route state is still honored for explicit deep-links.
-  const initialSearchQuery = location.state?.searchQuery || ""
+  // via route state or URL ?q= param is honored for explicit deep-links.
+  const urlQ = new URLSearchParams(location.search).get("q")
+  const initialSearchQuery = location.state?.searchQuery || urlQ || ""
 
   const [viewState, setViewState] = useState(
     savedState.viewState || DEFAULT_VIEW_STATE

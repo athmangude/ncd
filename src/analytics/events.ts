@@ -344,6 +344,12 @@ export const EVENTS = {
       GUARDRAIL_TRIGGERED: "CARE_COMPANION:AiAssistant:guardrail-triggered",
       REPORT_INACCURATE: "CARE_COMPANION:AiAssistant:report-inaccurate",
     },
+    TEST_RESULTS: {
+      VIEW: "CARE_COMPANION:TestResults:view",
+      UPLOAD_START: "CARE_COMPANION:TestResults:upload-start",
+      UPLOAD_SUCCESS: "CARE_COMPANION:TestResults:upload-success",
+      UPLOAD_ERROR: "CARE_COMPANION:TestResults:upload-error",
+    },
     ERROR: {
       BOUNDARY_HIT: "CARE_COMPANION:Error:boundary-hit",
       RETRY_TAP: "CARE_COMPANION:Error:retry-tap",
