@@ -76,6 +76,7 @@ import emergencyTransportCreditSeed from "../fixtures/emergency-transport-credit
 import aiConversationsSeed from "../fixtures/ai-assistant-conversations.json"
 import careCompanionProfileSeed from "../fixtures/care-companion-profile.json"
 import facilitiesSeed from "../fixtures/facilities.json"
+import { getMedicationPriceKES } from "../fixtures/medication-prices"
 // Static fixture no longer used — notifications are seeded dynamically from intake profile
 // import careCompanionNotificationsSeed from "../fixtures/care-companion-notifications.json"
 
@@ -1334,6 +1335,10 @@ export function getProfileAwarePharmacyStock(
         now.getTime() - hoursAgo * 60 * 60 * 1000,
       ).toISOString()
 
+      const basePrice = getMedicationPriceKES(med)
+      const variance = 1 + ((hash % 30) - 15) / 100
+      const priceKES = Math.round(basePrice * variance)
+
       results.push({
         facilityId: Number(fac.id),
         facilityName: fac.name,
@@ -1343,6 +1348,7 @@ export function getProfileAwarePharmacyStock(
         distance: null,
         lat: parseFloat(fac.latitude),
         lng: parseFloat(fac.longitude),
+        priceKES,
       })
     }
   }
@@ -1358,9 +1364,12 @@ export function getFacilityMedicationStock(
   facilityId: string,
 ): PharmacyStock[] {
   const profile = getCareCompanionProfile()
-  if (!profile?.treatment?.medicationNames?.length) return []
+  const meds = profile?.treatment?.medicationNames ?? []
+  const tests = profile?.recurringTests?.selectedTests ?? []
+  const allItems = [...meds, ...tests]
+  if (allItems.length === 0) return []
 
-  const all = getProfileAwarePharmacyStock(profile.treatment.medicationNames)
+  const all = getProfileAwarePharmacyStock(allItems)
   return all.filter((s) => s.facilityId === Number(facilityId))
 }
 

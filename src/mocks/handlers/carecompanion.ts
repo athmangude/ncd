@@ -299,12 +299,13 @@ export const careCompanionHandlers = [
   // -- Profile-aware pharmacy stock ------------------------------------------
   http.get("/companion/pharmacy-stock/profile", () => {
     const profile = getCareCompanionProfile()
-    if (!profile?.treatment?.medicationNames?.length) {
+    const meds = profile?.treatment?.medicationNames ?? []
+    const tests = profile?.recurringTests?.selectedTests ?? []
+    const allItems = [...meds, ...tests]
+    if (allItems.length === 0) {
       return HttpResponse.json([])
     }
-    const stock = getProfileAwarePharmacyStock(
-      profile.treatment.medicationNames,
-    )
+    const stock = getProfileAwarePharmacyStock(allItems)
     return HttpResponse.json(stock)
   }),
 

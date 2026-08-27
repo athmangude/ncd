@@ -139,6 +139,7 @@ export default function PatientDashboardExploreTab({
       animationMode={animationMode}
       medicationSummaries={medicationSummaries}
       medicationStock={medicationStock}
+      userLocation={userLocation}
     />
   )
 }

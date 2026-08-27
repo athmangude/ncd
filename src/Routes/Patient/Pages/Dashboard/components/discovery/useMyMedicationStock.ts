@@ -22,17 +22,19 @@ async function fetchProfileStock(): Promise<PharmacyStock[]> {
 export function useMyMedicationStock(enabled = true) {
   const { data: profile } = useIntakeProfile()
   const hasMeds = (profile?.treatment?.medicationNames?.length ?? 0) > 0
+  const hasTests = (profile?.recurringTests?.selectedTests?.length ?? 0) > 0
+  const hasItems = hasMeds || hasTests
 
   const { data: rawStock = [], isLoading } = useQuery({
     queryKey: ["care-companion", "pharmacy-stock", "profile"],
     queryFn: fetchProfileStock,
-    enabled: enabled && hasMeds,
+    enabled: enabled && hasItems,
     staleTime: 5 * 60 * 1000,
   })
 
   const summaries: MedicationStockSummary[] = []
 
-  if (hasMeds && rawStock.length > 0) {
+  if (hasItems && rawStock.length > 0) {
     const byMed = new Map<string, PharmacyStock[]>()
     for (const entry of rawStock) {
       const existing = byMed.get(entry.medicationName)
@@ -67,5 +69,6 @@ export function useMyMedicationStock(enabled = true) {
     rawStock,
     isLoading,
     hasMedications: hasMeds,
+    hasItems,
   }
 }

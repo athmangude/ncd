@@ -8,6 +8,7 @@ import {
   Percent,
   Pill,
   TrendingUp,
+  Car,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { format } from "date-fns"
@@ -46,6 +47,7 @@ interface DiscoveryHomeViewProps {
   animationMode: DashboardAnimationMode
   medicationSummaries?: MedicationStockSummary[]
   medicationStock?: PharmacyStock[]
+  userLocation?: { lat: number; lng: number } | null
 }
 
 export function DiscoveryHomeView({
@@ -59,6 +61,7 @@ export function DiscoveryHomeView({
   animationMode,
   medicationSummaries = [],
   medicationStock = [],
+  userLocation,
 }: DiscoveryHomeViewProps) {
   const navigate = useNavigate()
   const verifiedOnly = activeTab === "jireh"
@@ -235,6 +238,7 @@ export function DiscoveryHomeView({
               summaries={medicationSummaries}
               selectedMedication={selectedMedication}
               onSelectMedication={setSelectedMedication}
+              userLocation={userLocation}
             />
             {selectedMedication && verifiedFacilities.length === 0 && (
               <p className="text-xs text-muted-foreground text-center py-3">
@@ -382,6 +386,18 @@ function formatServiceCategory(slug: string): string {
     .join(" ")
 }
 
+const AVG_SPEED_KMH = 28
+const ROAD_INFLATE = 1.3
+
+function formatDriveMinutes(straightLineKm: number) {
+  const roadKm = straightLineKm * ROAD_INFLATE
+  const minutes = Math.max(1, Math.round((roadKm / AVG_SPEED_KMH) * 60))
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m > 0 ? `${h}h ${m}m` : `${h}h`
+}
+
 const VISIBLE_CATEGORY_PILLS = 2
 
 function PartnerCard({
@@ -410,9 +426,17 @@ function PartnerCard({
         </p>
 
         <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-1.5 text-sm text-foreground">
-            <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.75} />
-            <span>{distance != null ? `${distance.toFixed(1)} km` : "—"}</span>
+          <div className="flex items-center gap-3 text-sm text-foreground">
+            <div className="flex items-center gap-1.5">
+              <MapPin className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+              <span>{distance != null ? `${distance.toFixed(1)} km` : "—"}</span>
+            </div>
+            {distance != null && (
+              <div className="flex items-center gap-1 text-muted-foreground">
+                <Car className="h-3.5 w-3.5 shrink-0" />
+                <span>{formatDriveMinutes(distance)}</span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-1.5 text-sm font-medium text-green-600">
             <TrendingUp className="h-4 w-4 shrink-0" strokeWidth={2} />

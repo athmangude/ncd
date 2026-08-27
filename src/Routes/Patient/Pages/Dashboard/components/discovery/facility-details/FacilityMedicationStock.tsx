@@ -50,15 +50,17 @@ export function FacilityMedicationStock({
 }: FacilityMedicationStockProps) {
   const { data: profile } = useIntakeProfile()
   const hasMeds = (profile?.treatment?.medicationNames?.length ?? 0) > 0
+  const hasTests = (profile?.recurringTests?.selectedTests?.length ?? 0) > 0
+  const hasItems = hasMeds || hasTests
 
   const { data: stock = [], isLoading } = useQuery({
     queryKey: ["care-companion", "pharmacy-stock", "facility", facilityId],
     queryFn: () => fetchFacilityStock(facilityId),
-    enabled: hasMeds,
+    enabled: hasItems,
     staleTime: 5 * 60 * 1000,
   })
 
-  if (!hasMeds) return null
+  if (!hasItems) return null
 
   if (isLoading) {
     return (
@@ -72,6 +74,8 @@ export function FacilityMedicationStock({
   }
 
   const medications = profile?.treatment?.medicationNames ?? []
+  const tests = profile?.recurringTests?.selectedTests ?? []
+  const allItems = [...medications, ...tests]
   const stockMap = new Map(stock.map((s) => [s.medicationName, s]))
 
   return (
@@ -79,18 +83,19 @@ export function FacilityMedicationStock({
       <div className="flex items-center gap-2">
         <Pill className="h-4 w-4 text-foreground" />
         <h3 className="text-sm font-semibold text-foreground">
-          Your medication availability
+          Your medications & tests
         </h3>
       </div>
 
       <div className="space-y-2">
-        {medications.map((med) => {
-          const entry = stockMap.get(med)
+        {allItems.map((item) => {
+          const entry = stockMap.get(item)
           return (
             <MedicationRow
-              key={med}
-              name={med}
+              key={item}
+              name={item}
               status={entry?.status ?? null}
+              priceKES={entry?.priceKES}
             />
           )
         })}
@@ -99,12 +104,20 @@ export function FacilityMedicationStock({
   )
 }
 
+function formatPrice(price: number | undefined) {
+  if (price == null) return null
+  if (price === 0) return "Free"
+  return `KES ${price.toLocaleString()}`
+}
+
 function MedicationRow({
   name,
   status,
+  priceKES,
 }: {
   name: string
   status: StockStatus | null
+  priceKES?: number
 }) {
   if (!status) {
     return (
@@ -119,19 +132,29 @@ function MedicationRow({
 
   const config = STATUS_CONFIG[status]
   const Icon = config.icon
+  const price = formatPrice(priceKES)
 
   return (
-    <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2.5">
-      <span className="text-sm text-foreground">{name}</span>
-      <span
-        className={cn(
-          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
-          config.className,
+    <div className="flex items-center justify-between gap-2 rounded-lg bg-muted/50 px-3 py-2.5">
+      <div className="flex-1 min-w-0">
+        <span className="text-sm text-foreground">{name}</span>
+      </div>
+      <div className="flex items-center gap-2 shrink-0">
+        {price && (
+          <span className="text-xs font-semibold text-foreground font-mono tabular-nums">
+            {price}
+          </span>
         )}
-      >
-        <Icon className="h-3 w-3" />
-        {config.label}
-      </span>
+        <span
+          className={cn(
+            "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium",
+            config.className,
+          )}
+        >
+          <Icon className="h-3 w-3" />
+          {config.label}
+        </span>
+      </div>
     </div>
   )
 }
