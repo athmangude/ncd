@@ -55,9 +55,6 @@ export default function CareCompanionHome() {
   const { data: profile, isLoading: profileLoading } = useIntakeProfile()
   const { data, isLoading, error } = useCareCompanionHome()
   const [drawerOpen, setDrawerOpen] = useState(false)
-  const [drawerMedicationId, setDrawerMedicationId] = useState<
-    string | undefined
-  >(undefined)
   const [addMedOpen, setAddMedOpen] = useState(false)
   const { isRunning: aiRunning } = useAiPipeline(profile ?? null)
   const navigate = useNavigate()
@@ -65,11 +62,6 @@ export default function CareCompanionHome() {
   const unreadInsights = notifications.filter(
     (n) => n.type === "AI_INSIGHT" && !n.readAt,
   )
-
-  const openMedicationDrawer = (medicationId?: string) => {
-    setDrawerMedicationId(medicationId)
-    setDrawerOpen(true)
-  }
 
   if (profileLoading || isLoading) {
     return (
@@ -206,7 +198,7 @@ export default function CareCompanionHome() {
       <MedicationCardDrawer
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
-        initialMedicationId={drawerMedicationId}
+        initialMedicationId={undefined}
       />
 
       <AddMedicationDrawer

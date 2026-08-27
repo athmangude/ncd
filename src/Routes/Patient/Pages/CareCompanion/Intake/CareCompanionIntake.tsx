@@ -32,6 +32,7 @@ const DEFAULT_PROFILE: CareCompanionProfile = {
     otherDescription: null,
     diagnosisRecency: null,
   },
+  accountData: null,
   treatment: {
     currentlyOnMedication: false,
     medicationNames: [],
@@ -217,13 +218,6 @@ export default function CareCompanionIntake() {
   function handleBack() {
     setCurrentStep((prev) => Math.max(prev - 1, 0))
     scrollToTop()
-  }
-
-  function handleSkip() {
-    trackEvent(EVENTS.CARE_COMPANION.INTAKE.SKIP)
-    saveProfile.mutate({ ...profile, completedAt: null })
-    setIntakeCompleted(false)
-    navigate("/patients/home")
   }
 
   function handleComplete() {

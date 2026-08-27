@@ -251,6 +251,10 @@ const careCompanionHome: CareCompanionHome = {
     schedules: [refillSchedule],
     hasMore: false,
   },
+  testSchedule: {
+    schedules: [],
+    hasMore: false,
+  },
   costSummary,
   educationFeed: educationContentCard,
   emergencyCard: {
@@ -299,6 +303,18 @@ const careCompanionProfile: CareCompanionProfile = {
     role: "CAREGIVER",
     patientRelationship: "PARENT",
   },
+  recurringTests: {
+    selectedTests: ["HbA1c", "Lipid Panel"],
+  },
+  costEstimates: {
+    medications: [
+      { name: "Metformin", refillFrequencyDays: 30, estimatedCostPerRefill: 450 },
+    ],
+    tests: [
+      { name: "HbA1c", frequencyMonths: 3, estimatedCostPerTest: 1500 },
+    ],
+  },
+  accountData: null,
 }
 
 // -- New spec-aligned types ------------------------------------------------

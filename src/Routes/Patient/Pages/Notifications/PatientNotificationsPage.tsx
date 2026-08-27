@@ -149,8 +149,8 @@ export default function PatientNotificationsPage() {
     ]
     items.sort(
       (a, b) =>
-        new Date(b.data.sentAt).getTime() -
-        new Date(a.data.sentAt).getTime(),
+        new Date(b.data.sentAt ?? 0).getTime() -
+        new Date(a.data.sentAt ?? 0).getTime(),
     )
     return items
   }, [notifications, sentCareNotifications])

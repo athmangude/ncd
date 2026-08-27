@@ -54,7 +54,6 @@ import type {
   JirehPlusStatusChangeEvent,
   LoanDisbursedEvent,
   LoanRepaymentEvent,
-  LlmActionEvent,
   InteractionSeverity,
 } from "@/types/care-companion"
 
@@ -1002,12 +1001,6 @@ export function patchCareCompanionProfile(
         },
       }
     } else {
-      const patchMedNames = new Set(
-        patchMeds.map((m) => m.name.toLowerCase()),
-      )
-      const patchTestNames = new Set(
-        patchTests.map((t) => t.name.toLowerCase()),
-      )
       patch = {
         ...patch,
         costEstimates: {
@@ -1552,7 +1545,6 @@ export function buildCareCompanionHome(): CareCompanionHome {
   const educationCard = getNextEducationCard()
   const emergencyCard = getMatchedEmergencyCard()
   const transportCredit = getEmergencyTransportCredit()
-  const profile = getCareCompanionProfile()
 
   // Sort refill schedules by urgency: overdue first, then due, then upcoming
   const statusPriority: Record<string, number> = {

@@ -75,7 +75,7 @@ function StatusBadge({ status }: { status: RefillStatus }) {
   )
 }
 
-function DaysLabel({ days, type }: { days: number; type: "refill" | "test" }) {
+function DaysLabel({ days }: { days: number }) {
   if (days < 0) {
     const overdueDays = Math.abs(days)
     return (
@@ -205,7 +205,7 @@ function RefillItemCard({
             </p>
             <div className="mt-0.5 flex items-center gap-2">
               <Clock className="h-3 w-3 shrink-0 text-muted-foreground" />
-              <DaysLabel days={item.daysUntilRefill} type="refill" />
+              <DaysLabel days={item.daysUntilRefill} />
             </div>
           </div>
         </div>
@@ -481,7 +481,7 @@ function TestItemCard({
             </p>
             <div className="mt-0.5 flex items-center gap-2">
               <Clock className="h-3 w-3 shrink-0 text-muted-foreground" />
-              <DaysLabel days={item.daysUntilTest} type="test" />
+              <DaysLabel days={item.daysUntilTest} />
             </div>
           </div>
         </div>

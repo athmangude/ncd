@@ -304,7 +304,7 @@ export async function callLlmApi(
 // Fallback: deterministic actions when no API key is available
 // ---------------------------------------------------------------------------
 
-function generateFallbackActions(
+export function generateFallbackActions(
   profile: CareCompanionProfile,
   events: CareCompanionEvent[],
 ): RawAction[] {

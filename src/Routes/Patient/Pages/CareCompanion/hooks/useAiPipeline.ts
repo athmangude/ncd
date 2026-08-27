@@ -186,7 +186,7 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
           queryFn: fetchEvents,
         }))
 
-      const newActions = await runPipeline(profile, freshEvents)
+      const newActions = await runPipeline(profile, freshEvents ?? [])
       if (newActions.length === 0) return
 
       await saveBatchMutation.mutateAsync(newActions)
@@ -197,7 +197,7 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
 
       const invoiceNotifications = await applyInvoicePopulations(
         llmActions,
-        freshEvents,
+        freshEvents ?? [],
       )
 
       const insightNotifications = llmActions
