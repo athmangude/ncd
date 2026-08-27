@@ -22,26 +22,26 @@ beforeEach(() => localStorage.clear())
 
 const getNotifications = async (query = "") =>
   fetch(
-    `${ORIGIN}/api/care-companion/notifications${query ? "?" + query : ""}`,
+    `${ORIGIN}/api/companion/notifications${query ? "?" + query : ""}`,
   )
 
 const patchRead = async (id: string) =>
-  fetch(`${ORIGIN}/api/care-companion/notifications/${id}/read`, {
+  fetch(`${ORIGIN}/api/companion/notifications/${id}/read`, {
     method: "PATCH",
   })
 
 const simulate = async (type: string) =>
-  fetch(`${ORIGIN}/api/care-companion/notifications/simulate`, {
+  fetch(`${ORIGIN}/api/companion/notifications/simulate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ type }),
   })
 
 // ---------------------------------------------------------------------------
-// GET /api/care-companion/notifications
+// GET /api/companion/notifications
 // ---------------------------------------------------------------------------
 
-describe("GET /api/care-companion/notifications", () => {
+describe("GET /api/companion/notifications", () => {
   it("returns all seeded notifications sorted by scheduledAt descending", async () => {
     const res = await getNotifications()
     expect(res.status).toBe(200)
@@ -102,10 +102,10 @@ describe("GET /api/care-companion/notifications", () => {
 })
 
 // ---------------------------------------------------------------------------
-// PATCH /api/care-companion/notifications/:id/read
+// PATCH /api/companion/notifications/:id/read
 // ---------------------------------------------------------------------------
 
-describe("PATCH /api/care-companion/notifications/:id/read", () => {
+describe("PATCH /api/companion/notifications/:id/read", () => {
   it("marks the notification as read with a current ISO timestamp", async () => {
     const before = Date.now()
     const res = await patchRead("notif-refill-reminder-001")
@@ -164,10 +164,10 @@ describe("PATCH /api/care-companion/notifications/:id/read", () => {
 })
 
 // ---------------------------------------------------------------------------
-// POST /api/care-companion/notifications/simulate
+// POST /api/companion/notifications/simulate
 // ---------------------------------------------------------------------------
 
-describe("POST /api/care-companion/notifications/simulate", () => {
+describe("POST /api/companion/notifications/simulate", () => {
   it("creates a notification of the requested type and returns 201", async () => {
     const res = await simulate("REFILL_OVERDUE")
     expect(res.status).toBe(201)

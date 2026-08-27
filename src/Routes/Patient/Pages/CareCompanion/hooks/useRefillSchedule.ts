@@ -13,7 +13,7 @@ export function useRefillSchedule() {
     queryKey: [refillScheduleQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/refill-schedule`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/refill-schedule`
       )
       return response.data as RefillScheduleData
     },

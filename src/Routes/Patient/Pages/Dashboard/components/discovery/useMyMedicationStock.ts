@@ -14,7 +14,7 @@ export interface MedicationStockSummary {
 }
 
 async function fetchProfileStock(): Promise<PharmacyStock[]> {
-  const res = await fetch("/care-companion/pharmacy-stock/profile")
+  const res = await fetch("/companion/pharmacy-stock/profile")
   if (!res.ok) return []
   return res.json()
 }

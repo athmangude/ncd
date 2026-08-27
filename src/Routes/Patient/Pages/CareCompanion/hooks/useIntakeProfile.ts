@@ -9,7 +9,7 @@ export function useIntakeProfile() {
     queryKey: [intakeProfileQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
       )
       return response.data as CareCompanionProfile | null
     },

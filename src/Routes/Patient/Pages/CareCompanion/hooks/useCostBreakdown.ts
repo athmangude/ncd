@@ -11,7 +11,7 @@ export function useCostBreakdown() {
     queryKey: [costBreakdownQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/cost-breakdown`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/cost-breakdown`
       )
       return response.data as CostBreakdownResponse
     },

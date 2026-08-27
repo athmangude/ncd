@@ -11,7 +11,7 @@ export function useEmergencyCard() {
     queryKey: [emergencyCardQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/emergency-card`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/emergency-card`
       )
       return response.data as EmergencyCardData
     },

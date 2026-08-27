@@ -82,7 +82,7 @@ describe("useCostBreakdown", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/cost-breakdown")
+      expect.stringContaining("/companion/cost-breakdown")
     )
   })
 

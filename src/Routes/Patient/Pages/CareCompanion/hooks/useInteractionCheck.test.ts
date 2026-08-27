@@ -76,7 +76,7 @@ describe("useInteractionCheck", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/interaction-check")
+      expect.stringContaining("/companion/interaction-check")
     )
   })
 

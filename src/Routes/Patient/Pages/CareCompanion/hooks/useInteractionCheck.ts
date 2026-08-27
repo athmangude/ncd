@@ -23,7 +23,7 @@ export function useInteractionCheck() {
     queryKey: [interactionCheckQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/interaction-check`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/interaction-check`
       )
       return response.data as InteractionCheckData
     },

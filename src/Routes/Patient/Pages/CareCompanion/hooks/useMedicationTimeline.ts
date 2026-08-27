@@ -44,7 +44,7 @@ export function useMedicationTimeline({
         params.medicationId = medicationId
       }
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/medication-timeline`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/medication-timeline`,
         { params }
       )
       return response.data as MedicationTimelineData

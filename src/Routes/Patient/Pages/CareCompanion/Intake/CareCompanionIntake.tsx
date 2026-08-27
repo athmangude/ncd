@@ -95,7 +95,7 @@ export default function CareCompanionIntake() {
   const saveProfile = useMutation({
     mutationFn: async (data: CareCompanionProfile) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
         data,
       )
       return response.data as CareCompanionProfile

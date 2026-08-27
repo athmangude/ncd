@@ -254,7 +254,7 @@ export function useIntakeForm() {
   const skipIntake = useMutation({
     mutationFn: async () => {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
         { skippedAt: new Date().toISOString() }
       )
       return response.data
@@ -269,7 +269,7 @@ export function useIntakeForm() {
   const submitIntake = useMutation({
     mutationFn: async (data: IntakeFormData) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/intake`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/intake`,
         { formData: data }
       )
       return response.data

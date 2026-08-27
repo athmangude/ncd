@@ -90,7 +90,7 @@ describe("useCareCompanionHome", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/home")
+      expect.stringContaining("/companion/home")
     )
   })
 

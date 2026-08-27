@@ -46,7 +46,7 @@ function clearChatStorage(): void {
 
 async function fetchEvents(): Promise<CareCompanionEvent[]> {
   try {
-    const res = await fetch("/care-companion/events?limit=200")
+    const res = await fetch("/companion/events?limit=200")
     const data = (await res.json()) as { events: CareCompanionEvent[] }
     return data.events ?? []
   } catch {

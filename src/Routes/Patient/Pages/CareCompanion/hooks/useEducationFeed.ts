@@ -21,7 +21,7 @@ export function useEducationFeed() {
     queryKey: [educationFeedQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/education-cards`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/education-cards`
       )
       return response.data as EducationFeedData
     },
@@ -31,7 +31,7 @@ export function useEducationFeed() {
   const markViewed = useMutation({
     mutationFn: async (cardId: string) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/education-feed/${cardId}/viewed`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/education-feed/${cardId}/viewed`
       )
       return response.data
     },

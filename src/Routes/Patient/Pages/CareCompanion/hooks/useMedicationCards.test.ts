@@ -14,7 +14,7 @@ vi.mock("@tanstack/react-query", () => ({
 }))
 
 const mockAxiosGet = vi.fn().mockImplementation((url: string) => {
-  if (url.includes("/care-companion/medication-cards")) {
+  if (url.includes("/companion/medication-cards")) {
     return Promise.resolve({
       data: {
         cards: [
@@ -138,7 +138,7 @@ describe("useMedicationCards", () => {
 
     expect(mockAxiosGet).toHaveBeenCalledTimes(2)
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/medication-cards"),
+      expect.stringContaining("/companion/medication-cards"),
     )
     expect(mockAxiosGet).toHaveBeenCalledWith(
       expect.stringContaining("/api/medications/taxonomy"),
@@ -181,7 +181,7 @@ describe("useMedicationCards", () => {
 
   it("queryFn falls back gracefully when taxonomy entry is missing", async () => {
     mockAxiosGet.mockImplementation((url: string) => {
-      if (url.includes("/care-companion/medication-cards")) {
+      if (url.includes("/companion/medication-cards")) {
         return Promise.resolve({
           data: {
             cards: [

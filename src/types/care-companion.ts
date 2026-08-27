@@ -665,7 +665,7 @@ export interface InteractionCheckResult {
  * Aggregated BFF response for the care companion home page.
  * Single request replaces 4 parallel API calls on 3G networks.
  *
- * Response shape for GET /api/patients/:id/care-companion/home (API-021).
+ * Response shape for GET /api/patients/:id/companion/home (API-021).
  *
  * @see ncd-care-companion-technical-architecture.md Section 3 BFF Endpoint
  */
@@ -1105,6 +1105,29 @@ export interface LoanOverdueEvent {
 }
 
 // ---------------------------------------------------------------------------
+// Test Result Events (simulated lab results with AI insights)
+// ---------------------------------------------------------------------------
+
+export interface TestResultMetric {
+  name: string
+  value: number
+  unit: string
+  referenceRange: string
+  status: "NORMAL" | "LOW" | "HIGH" | "CRITICAL"
+}
+
+export interface TestResultEvent {
+  id: string
+  type: "TEST_RESULT"
+  timestamp: string
+  source: "user"
+  testName: string
+  scheduleId: string | null
+  metrics: TestResultMetric[]
+  aiInsights: string | null
+}
+
+// ---------------------------------------------------------------------------
 // LLM Action Events (AI pipeline output)
 // ---------------------------------------------------------------------------
 
@@ -1172,6 +1195,7 @@ export type CareCompanionEvent =
   | LoanRepaymentEvent
   | LoanOverdueEvent
   | LlmActionEvent
+  | TestResultEvent
 
 export type CareCompanionEventType = CareCompanionEvent["type"]
 

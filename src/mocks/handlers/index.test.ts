@@ -65,9 +65,9 @@ describe("handlers array export", () => {
 // ---------------------------------------------------------------------------
 
 describe("care companion endpoints reachable through aggregated handlers", () => {
-  it("GET /api/patients/:id/care-companion/home resolves 200", async () => {
+  it("GET /api/patients/:id/companion/home resolves 200", async () => {
     const res = await fetch(
-      `${ORIGIN}/api/patients/${PATIENT_ID}/care-companion/home`,
+      `${ORIGIN}/api/patients/${PATIENT_ID}/companion/home`,
     )
     expect(res.status).toBe(200)
     const data = await res.json()
@@ -84,9 +84,9 @@ describe("care companion endpoints reachable through aggregated handlers", () =>
     expect(Array.isArray(data.medications)).toBe(true)
   })
 
-  it("GET /api/patients/:id/care-companion/profile resolves 200", async () => {
+  it("GET /api/patients/:id/companion/profile resolves 200", async () => {
     const res = await fetch(
-      `${ORIGIN}/api/patients/${PATIENT_ID}/care-companion/profile`,
+      `${ORIGIN}/api/patients/${PATIENT_ID}/companion/profile`,
     )
     expect(res.status).toBe(200)
   })

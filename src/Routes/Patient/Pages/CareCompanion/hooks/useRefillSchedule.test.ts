@@ -82,7 +82,7 @@ describe("useRefillSchedule", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/refill-schedule")
+      expect.stringContaining("/companion/refill-schedule")
     )
   })
 

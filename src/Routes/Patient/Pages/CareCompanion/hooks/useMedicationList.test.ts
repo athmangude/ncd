@@ -80,7 +80,7 @@ describe("useMedicationList", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/medications")
+      expect.stringContaining("/companion/medications")
     )
   })
 

@@ -78,7 +78,7 @@ describe("useMedicationLoanPreApproval", () => {
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
       expect.stringContaining(
-        "/care-companion/medication-loan-pre-approval"
+        "/companion/medication-loan-pre-approval"
       )
     )
   })

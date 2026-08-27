@@ -79,7 +79,7 @@ function renderPage() {
 
 const getBackendNotifications = async () =>
   (
-    await fetch(`${ORIGIN}/api/care-companion/notifications`)
+    await fetch(`${ORIGIN}/api/companion/notifications`)
   ).json() as Promise<CareCompanionNotification[]>
 
 /** Accessible name the page assigns to a notification's tap target. */
@@ -97,7 +97,7 @@ describe("NotificationFeedPage", () => {
   describe("loading state", () => {
     it("shows the notifications skeleton while the request is in flight", async () => {
       server.use(
-        http.get("/api/care-companion/notifications", async () => {
+        http.get("/api/companion/notifications", async () => {
           await delay(50)
           return HttpResponse.json([])
         })
@@ -250,7 +250,7 @@ describe("NotificationFeedPage", () => {
   describe("empty state", () => {
     it("renders the empty state when there are no notifications", async () => {
       server.use(
-        http.get("/api/care-companion/notifications", () =>
+        http.get("/api/companion/notifications", () =>
           HttpResponse.json([])
         )
       )
@@ -273,7 +273,7 @@ describe("NotificationFeedPage", () => {
 
     it("renders the empty state when every notification has sentAt === null (scheduled but not yet delivered)", async () => {
       server.use(
-        http.get("/api/care-companion/notifications", () =>
+        http.get("/api/companion/notifications", () =>
           HttpResponse.json([
             {
               id: "notif-not-sent",
@@ -327,7 +327,7 @@ describe("NotificationFeedPage", () => {
   describe("error state", () => {
     it("shows an error message with a retry action when the request fails", async () => {
       server.use(
-        http.get("/api/care-companion/notifications", () =>
+        http.get("/api/companion/notifications", () =>
           HttpResponse.json({ error: "Server error" }, { status: 500 })
         )
       )
@@ -347,7 +347,7 @@ describe("NotificationFeedPage", () => {
     it("reloads the feed when Try again succeeds after a failure", async () => {
       let shouldFail = true
       server.use(
-        http.get("/api/care-companion/notifications", () => {
+        http.get("/api/companion/notifications", () => {
           if (shouldFail) {
             return HttpResponse.json({ error: "Server error" }, { status: 500 })
           }

@@ -240,7 +240,7 @@ const assistantMessage: AssistantMessage = {
     {
       type: "CHECK_STOCK",
       label: "Check pharmacy stock",
-      deepLink: "/care-companion/pharmacy-stock/metformin",
+      deepLink: "/companion/pharmacy-stock/metformin",
     },
   ],
   timestamp: "2026-08-25T08:30:00Z",
@@ -432,7 +432,7 @@ const aiMessage: AiAssistantMessage = {
     {
       type: "CHECK_STOCK",
       label: "Check pharmacy stock",
-      deepLink: "/care-companion/pharmacy-stock/metformin",
+      deepLink: "/companion/pharmacy-stock/metformin",
     },
   ],
 }

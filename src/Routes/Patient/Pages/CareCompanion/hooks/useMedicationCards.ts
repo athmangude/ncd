@@ -48,7 +48,7 @@ export function useMedicationCards() {
       const baseUrl = import.meta.env.VITE_API_BASE_URL
 
       const [cardsRes, taxonomyRes] = await Promise.all([
-        axios.get(`${baseUrl}/care-companion/medication-cards`),
+        axios.get(`${baseUrl}/companion/medication-cards`),
         axios.get(`${baseUrl}/api/medications/taxonomy`),
       ])
 

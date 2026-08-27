@@ -84,7 +84,7 @@ describe("useEmergencyCard", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/emergency-card")
+      expect.stringContaining("/companion/emergency-card")
     )
   })
 

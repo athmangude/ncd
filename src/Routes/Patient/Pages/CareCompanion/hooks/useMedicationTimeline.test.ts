@@ -110,7 +110,7 @@ describe("useMedicationTimeline", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/medication-timeline"),
+      expect.stringContaining("/companion/medication-timeline"),
       { params: { limit: 15, offset: 30 } }
     )
   })
@@ -125,7 +125,7 @@ describe("useMedicationTimeline", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/medication-timeline"),
+      expect.stringContaining("/companion/medication-timeline"),
       { params: { limit: 20, offset: 0, medicationId: "Aspirin" } }
     )
   })

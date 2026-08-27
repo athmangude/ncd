@@ -11,7 +11,7 @@ export function useCostSummary() {
     queryKey: [costSummaryQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/cost-summary`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/cost-summary`
       )
       return response.data as CostSummary
     },

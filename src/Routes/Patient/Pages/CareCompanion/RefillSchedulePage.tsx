@@ -673,7 +673,7 @@ export default function RefillSchedulePage() {
   const patchProfile = useMutation({
     mutationFn: async (patch: Record<string, unknown>) => {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
         patch,
       )
       return response.data
@@ -688,7 +688,7 @@ export default function RefillSchedulePage() {
   const logEvent = useMutation({
     mutationFn: async (event: Record<string, unknown>) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/events`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/events`,
         event,
       )
       return response.data
@@ -741,7 +741,7 @@ export default function RefillSchedulePage() {
         frequencyDays,
       })
       axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/refill-schedules/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/refill-schedules/${id}`,
         { nextDate, frequencyDays },
       ).then(() => {
         patchProfile.mutate({ costEstimates: updatedCostEstimates })
@@ -795,7 +795,7 @@ export default function RefillSchedulePage() {
         frequencyMonths,
       })
       axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/test-schedules/${encodeURIComponent(testName)}`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/test-schedules/${encodeURIComponent(testName)}`,
         { nextDate, frequencyMonths },
       ).then(() => {
         patchProfile.mutate({ costEstimates: updatedCostEstimates })
@@ -843,7 +843,7 @@ export default function RefillSchedulePage() {
         reason: reasonLabel,
       })
       axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/refill-schedules/${id}`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/refill-schedules/${id}`,
         { status: "CANCELLED" },
       ).then(() => {
         patchProfile.mutate({ costEstimates: updatedCostEstimates })
@@ -890,7 +890,7 @@ export default function RefillSchedulePage() {
         reason: reasonLabel,
       })
       axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/test-schedules/${encodeURIComponent(testName)}`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/test-schedules/${encodeURIComponent(testName)}`,
         { status: "CANCELLED" },
       ).then(() => {
         patchProfile.mutate({ costEstimates: updatedCostEstimates })

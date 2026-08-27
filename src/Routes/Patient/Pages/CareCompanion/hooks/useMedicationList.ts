@@ -29,7 +29,7 @@ export function useMedicationList() {
     queryKey: [medicationListQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/medications`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/medications`
       )
       return response.data as MedicationListData
     },

@@ -10,7 +10,7 @@ export function useRecentPayments() {
   return useQuery({
     queryKey: ["care-companion", "recent-payments"],
     queryFn: async () => {
-      const res = await fetch("/care-companion/events?type=PAYMENT&limit=10")
+      const res = await fetch("/companion/events?type=PAYMENT&limit=10")
       if (!res.ok) return []
       const json = (await res.json()) as RecentPaymentsResponse
       const payments = (json.data ?? json) as PaymentEvent[]

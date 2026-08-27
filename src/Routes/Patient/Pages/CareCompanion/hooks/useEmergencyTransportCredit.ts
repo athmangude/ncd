@@ -12,7 +12,7 @@ export function useEmergencyTransportCredit() {
     queryKey: [emergencyTransportCreditQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/emergency-transport-credit`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/emergency-transport-credit`
       )
       return response.data as EmergencyTransportCreditData
     },

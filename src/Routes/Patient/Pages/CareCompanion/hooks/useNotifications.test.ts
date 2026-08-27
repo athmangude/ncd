@@ -129,7 +129,7 @@ describe("useNotifications", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/api/care-companion/notifications"),
+      expect.stringContaining("/api/companion/notifications"),
       expect.objectContaining({ params: undefined })
     )
   })
@@ -142,7 +142,7 @@ describe("useNotifications", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/api/care-companion/notifications"),
+      expect.stringContaining("/api/companion/notifications"),
       expect.objectContaining({ params: { unreadOnly: true } })
     )
   })
@@ -173,7 +173,7 @@ describe("useNotifications", () => {
 
     expect(mockAxiosPatch).toHaveBeenCalledWith(
       expect.stringContaining(
-        "/api/care-companion/notifications/notif-42/read"
+        "/api/companion/notifications/notif-42/read"
       )
     )
   })

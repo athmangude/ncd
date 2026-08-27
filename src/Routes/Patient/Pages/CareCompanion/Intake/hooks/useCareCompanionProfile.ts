@@ -52,7 +52,7 @@ export function useCareCompanionProfile() {
     queryKey: [careCompanionProfileQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`
       )
       return response.data as CareCompanionProfileData
     },
@@ -62,7 +62,7 @@ export function useCareCompanionProfile() {
   const createProfile = useMutation({
     mutationFn: async (payload: CreateCareCompanionProfilePayload) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
         payload
       )
       return response.data as CareCompanionProfileData
@@ -77,7 +77,7 @@ export function useCareCompanionProfile() {
   const updateProfile = useMutation({
     mutationFn: async (payload: UpdateCareCompanionProfilePayload) => {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
         payload
       )
       return response.data as CareCompanionProfileData

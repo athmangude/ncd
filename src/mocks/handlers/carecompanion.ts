@@ -32,6 +32,8 @@ import {
   updateRefillScheduleItem,
   updateTestScheduleItem,
   populatePaymentLineItems,
+  ensureTestSchedulesSeeded,
+  getTestSchedules,
 } from "../domain/careCompanion"
 
 import type {
@@ -55,30 +57,30 @@ export const careCompanionHandlers = [
   // -------------------------------------------------------------------------
   // 1. BFF: Aggregated home page data
   // -------------------------------------------------------------------------
-  http.get("/api/patients/:id/care-companion/home", () => {
+  http.get("/api/patients/:id/companion/home", () => {
     return HttpResponse.json(buildCareCompanionHome())
   }),
 
-  http.get("/care-companion/home", () => {
+  http.get("/companion/home", () => {
     return HttpResponse.json(buildCareCompanionHome())
   }),
 
   // =========================================================================
-  // /care-companion/* shortcut handlers
+  // /companion/* shortcut handlers
   //
-  // The Care Companion hooks fetch from /care-companion/* URLs (no patient id
+  // The Care Companion hooks fetch from /companion/* URLs (no patient id
   // prefix) while the canonical handlers listen on /api/patients/:id/*.
   // Each shortcut below mirrors the response logic of its canonical handler.
   // =========================================================================
 
   // -- Refill schedule -------------------------------------------------------
-  http.get("/care-companion/refill-schedule", () => {
+  http.get("/companion/refill-schedule", () => {
     const schedules = getRefillSchedules()
     return HttpResponse.json({ schedules })
   }),
 
   // -- Cost summary ----------------------------------------------------------
-  http.get("/care-companion/cost-summary", ({ request }) => {
+  http.get("/companion/cost-summary", ({ request }) => {
     const url = new URL(request.url)
     const year =
       Number(url.searchParams.get("year")) || new Date().getFullYear()
@@ -110,7 +112,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Cost breakdown --------------------------------------------------------
-  http.get("/care-companion/cost-breakdown", ({ request }) => {
+  http.get("/companion/cost-breakdown", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 12
     const offset = Number(url.searchParams.get("offset")) || 0
@@ -129,7 +131,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Emergency card --------------------------------------------------------
-  http.get("/care-companion/emergency-card", ({ request }) => {
+  http.get("/companion/emergency-card", ({ request }) => {
     const url = new URL(request.url)
     const locale = url.searchParams.get("locale") ?? "EN"
 
@@ -147,12 +149,12 @@ export const careCompanionHandlers = [
   }),
 
   // -- Emergency transport credit --------------------------------------------
-  http.get("/care-companion/emergency-transport-credit", () => {
+  http.get("/companion/emergency-transport-credit", () => {
     return HttpResponse.json(getEmergencyTransportCredit())
   }),
 
   // -- Education feed (all cards with viewed status) -------------------------
-  http.get("/care-companion/education-feed", () => {
+  http.get("/companion/education-feed", () => {
     const cards = getEducationCards()
     const viewed = getEducationViewedIds()
     return HttpResponse.json({
@@ -164,7 +166,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Medication timeline ---------------------------------------------------
-  http.get("/care-companion/medication-timeline", ({ request }) => {
+  http.get("/companion/medication-timeline", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 20
     const offset = Number(url.searchParams.get("offset")) || 0
@@ -201,7 +203,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Medication cards ------------------------------------------------------
-  http.get("/care-companion/medication-cards", ({ request }) => {
+  http.get("/companion/medication-cards", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 20
     const offset = Number(url.searchParams.get("offset")) || 0
@@ -250,7 +252,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Medications list ------------------------------------------------------
-  http.get("/care-companion/medications", () => {
+  http.get("/companion/medications", () => {
     const records = getPatientMedicationRecords()
     const taxonomy = getMedicationTaxonomy()
 
@@ -270,12 +272,12 @@ export const careCompanionHandlers = [
   }),
 
   // -- Medication loan pre-approval ------------------------------------------
-  http.get("/care-companion/medication-loan-pre-approval", () => {
+  http.get("/companion/medication-loan-pre-approval", () => {
     return HttpResponse.json(getMedicationLoanPreApproval())
   }),
 
   // -- Pharmacy stock --------------------------------------------------------
-  http.get("/care-companion/pharmacy-stock", ({ request }) => {
+  http.get("/companion/pharmacy-stock", ({ request }) => {
     const url = new URL(request.url)
     const medicationName = url.searchParams.get("medicationId") ?? ""
 
@@ -293,7 +295,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Profile-aware pharmacy stock ------------------------------------------
-  http.get("/care-companion/pharmacy-stock/profile", () => {
+  http.get("/companion/pharmacy-stock/profile", () => {
     const profile = getCareCompanionProfile()
     if (!profile?.treatment?.medicationNames?.length) {
       return HttpResponse.json([])
@@ -306,7 +308,7 @@ export const careCompanionHandlers = [
 
   // -- Facility-specific medication stock -----------------------------------
   http.get(
-    "/care-companion/pharmacy-stock/facility/:facilityId",
+    "/companion/pharmacy-stock/facility/:facilityId",
     ({ params }) => {
       const { facilityId } = params as { facilityId: string }
       const stock = getFacilityMedicationStock(facilityId)
@@ -315,7 +317,7 @@ export const careCompanionHandlers = [
   ),
 
   // -- Interaction check -----------------------------------------------------
-  http.get("/care-companion/interaction-check", ({ request }) => {
+  http.get("/companion/interaction-check", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 50
     const offset = Number(url.searchParams.get("offset")) || 0
@@ -335,7 +337,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- AI assistant chat -----------------------------------------------------
-  http.post("/care-companion/assistant/chat", async ({ request }) => {
+  http.post("/companion/assistant/chat", async ({ request }) => {
     const body = (await request.json()) as {
       message: string
       sessionId?: string
@@ -358,7 +360,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Education cards: all cards with viewed status -------------------------
-  http.get("/care-companion/education-cards", () => {
+  http.get("/companion/education-cards", () => {
     const cards = getEducationCards()
     const viewed = getEducationViewedIds()
     return HttpResponse.json({
@@ -370,7 +372,7 @@ export const careCompanionHandlers = [
   }),
 
   // -- Education feed: mark card viewed --------------------------------------
-  http.post("/care-companion/education-feed/:cardId/viewed", ({ params }) => {
+  http.post("/companion/education-feed/:cardId/viewed", ({ params }) => {
     const { cardId } = params as { cardId: string }
     markEducationViewed(cardId)
     return HttpResponse.json({
@@ -380,34 +382,34 @@ export const careCompanionHandlers = [
   }),
 
   // -- Profile GET -----------------------------------------------------------
-  http.get("/care-companion/profile", () => {
+  http.get("/companion/profile", () => {
     const profile = getCareCompanionProfile()
     return HttpResponse.json(profile)
   }),
 
   // -- Profile POST ----------------------------------------------------------
-  http.post("/care-companion/profile", async ({ request }) => {
+  http.post("/companion/profile", async ({ request }) => {
     const body = (await request.json()) as CareCompanionProfile
     const saved = saveCareCompanionProfile(body)
     return HttpResponse.json(saved, { status: 201 })
   }),
 
   // -- Profile PATCH ---------------------------------------------------------
-  http.patch("/care-companion/profile", async ({ request }) => {
+  http.patch("/companion/profile", async ({ request }) => {
     const body = (await request.json()) as Partial<CareCompanionProfile>
     const updated = patchCareCompanionProfile(body)
     return HttpResponse.json(updated)
   }),
 
   // -- Intake POST -----------------------------------------------------------
-  http.post("/care-companion/intake", async ({ request }) => {
+  http.post("/companion/intake", async ({ request }) => {
     const body = (await request.json()) as CareCompanionProfile
     const saved = saveCareCompanionProfile(body)
     return HttpResponse.json(saved, { status: 201 })
   }),
 
   // -- Events GET -------------------------------------------------------------
-  http.get("/care-companion/events", ({ request }) => {
+  http.get("/companion/events", ({ request }) => {
     const url = new URL(request.url)
     const type = url.searchParams.get("type")
     const limit = Number(url.searchParams.get("limit")) || 50
@@ -430,14 +432,14 @@ export const careCompanionHandlers = [
   }),
 
   // -- Events POST ------------------------------------------------------------
-  http.post("/care-companion/events", async ({ request }) => {
+  http.post("/companion/events", async ({ request }) => {
     const body = (await request.json()) as CareCompanionEvent
     const saved = appendEvent(body)
     return HttpResponse.json(saved, { status: 201 })
   }),
 
   // -- Events PATCH (update in place) ----------------------------------------
-  http.patch("/care-companion/events/:id", async ({ params, request }) => {
+  http.patch("/companion/events/:id", async ({ params, request }) => {
     const { id } = params as { id: string }
     const body = (await request.json()) as Partial<CareCompanionEvent>
     const updated = updateEventById(id, body)
@@ -449,7 +451,7 @@ export const careCompanionHandlers = [
 
   // -- Payment line items PATCH (invoice population) ---------------------------
   http.patch(
-    "/care-companion/events/:id/line-items",
+    "/companion/events/:id/line-items",
     async ({ params, request }) => {
       const { id } = params as { id: string }
       const body = (await request.json()) as {
@@ -473,7 +475,7 @@ export const careCompanionHandlers = [
   ),
 
   // -- Refill schedule item PATCH ---------------------------------------------
-  http.patch("/care-companion/refill-schedules/:id", async ({ params, request }) => {
+  http.patch("/companion/refill-schedules/:id", async ({ params, request }) => {
     const { id } = params as { id: string }
     const body = (await request.json()) as {
       nextDate: string
@@ -486,8 +488,15 @@ export const careCompanionHandlers = [
     return HttpResponse.json(updated)
   }),
 
+  // -- Test schedules GET (all) ------------------------------------------------
+  http.get("/companion/test-schedules", () => {
+    ensureTestSchedulesSeeded()
+    const schedules = getTestSchedules()
+    return HttpResponse.json({ data: schedules })
+  }),
+
   // -- Test schedule item PATCH -----------------------------------------------
-  http.patch("/care-companion/test-schedules/:testName", async ({ params, request }) => {
+  http.patch("/companion/test-schedules/:testName", async ({ params, request }) => {
     const { testName } = params as { testName: string }
     const body = (await request.json()) as {
       nextDate: string
@@ -505,7 +514,7 @@ export const careCompanionHandlers = [
   }),
 
   // =========================================================================
-  // End of /care-companion/* shortcut handlers
+  // End of /companion/* shortcut handlers
   // =========================================================================
 
   // -------------------------------------------------------------------------
@@ -650,7 +659,7 @@ export const careCompanionHandlers = [
   // -------------------------------------------------------------------------
   // 4b. Annual cost summary (BFF convenience path)
   // -------------------------------------------------------------------------
-  http.get("/care-companion/cost-summary", ({ request }) => {
+  http.get("/companion/cost-summary", ({ request }) => {
     const url = new URL(request.url)
     const year =
       Number(url.searchParams.get("year")) || new Date().getFullYear()
@@ -684,7 +693,7 @@ export const careCompanionHandlers = [
   // -------------------------------------------------------------------------
   // 5b. Cost breakdown (BFF convenience path)
   // -------------------------------------------------------------------------
-  http.get("/care-companion/cost-breakdown", ({ request }) => {
+  http.get("/companion/cost-breakdown", ({ request }) => {
     const url = new URL(request.url)
     const limit = Number(url.searchParams.get("limit")) || 12
     const offset = Number(url.searchParams.get("offset")) || 0
@@ -971,7 +980,7 @@ export const careCompanionHandlers = [
   // -------------------------------------------------------------------------
   // 19. Profile GET (returns null if not saved)
   // -------------------------------------------------------------------------
-  http.get("/api/patients/:id/care-companion/profile", () => {
+  http.get("/api/patients/:id/companion/profile", () => {
     const profile = getCareCompanionProfile()
     return HttpResponse.json(profile)
   }),
@@ -980,7 +989,7 @@ export const careCompanionHandlers = [
   // 20. Profile POST (save full profile from intake)
   // -------------------------------------------------------------------------
   http.post(
-    "/api/patients/:id/care-companion/profile",
+    "/api/patients/:id/companion/profile",
     async ({ request }) => {
       const body = (await request.json()) as CareCompanionProfile
       const saved = saveCareCompanionProfile(body)
@@ -992,7 +1001,7 @@ export const careCompanionHandlers = [
   // 21. Profile PATCH (partial update)
   // -------------------------------------------------------------------------
   http.patch(
-    "/api/patients/:id/care-companion/profile",
+    "/api/patients/:id/companion/profile",
     async ({ request }) => {
       const body = (await request.json()) as Partial<CareCompanionProfile>
       const updated = patchCareCompanionProfile(body)

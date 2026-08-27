@@ -67,7 +67,7 @@ describe("useEmergencyTransportCredit", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/emergency-transport-credit")
+      expect.stringContaining("/companion/emergency-transport-credit")
     )
   })
 

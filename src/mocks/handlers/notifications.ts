@@ -64,7 +64,7 @@ export const notificationsHandlers = [
 
   // GET: List all care companion notifications, sorted by scheduledAt desc.
   // Supports ?unreadOnly=true query param to filter to unread only.
-  http.get("/api/care-companion/notifications", ({ request }) => {
+  http.get("/api/companion/notifications", ({ request }) => {
     const url = new URL(request.url)
     const unreadOnly = url.searchParams.get("unreadOnly") === "true"
     const notifications = getCareCompanionNotifications(unreadOnly)
@@ -72,7 +72,7 @@ export const notificationsHandlers = [
   }),
 
   // PATCH: Mark a single care companion notification as read.
-  http.patch("/api/care-companion/notifications/:id/read", ({ params }) => {
+  http.patch("/api/companion/notifications/:id/read", ({ params }) => {
     const { id } = params as { id: string }
     const updated = markCareCompanionNotificationRead(id)
     if (!updated) {
@@ -86,7 +86,7 @@ export const notificationsHandlers = [
 
   // POST: Simulate creating a notification (dev-only).
   http.post(
-    "/api/care-companion/notifications/simulate",
+    "/api/companion/notifications/simulate",
     async ({ request }) => {
       const body = (await request.json()) as { type: NotificationType }
       const notification = createCareCompanionNotification(body.type)
@@ -96,7 +96,7 @@ export const notificationsHandlers = [
 
   // POST: Add a fully-formed notification (used by AI pipeline).
   http.post(
-    "/api/care-companion/notifications",
+    "/api/companion/notifications",
     async ({ request }) => {
       const body =
         (await request.json()) as import("@/types/care-companion").CareCompanionNotification

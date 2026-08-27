@@ -14,7 +14,7 @@ const EVENTS_QUERY_KEY = ["care-companion", "events"]
 const NOTIFICATIONS_QUERY_KEY = "careCompanionNotifications"
 
 async function fetchEvents(): Promise<CareCompanionEvent[]> {
-  const res = await fetch("/care-companion/events?limit=200")
+  const res = await fetch("/companion/events?limit=200")
   if (!res.ok) return []
   const json = await res.json()
   return json.data ?? json
@@ -25,7 +25,7 @@ async function postEventsBatch(
 ): Promise<CareCompanionEvent[]> {
   const results: CareCompanionEvent[] = []
   for (const event of events) {
-    const res = await fetch("/care-companion/events", {
+    const res = await fetch("/companion/events", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(event),
@@ -74,7 +74,8 @@ function actionToNotification(action: LlmActionEvent): CareCompanionNotification
   if (action.actionType === "TEST_RESULT_PROMPT") {
     const testMatch = action.title.match(/Upload (.+?) results/i)
     if (testMatch) {
-      deepLink += `?test=${encodeURIComponent(testMatch[1])}`
+      const testSlug = testMatch[1].replace(/\s+/g, "-").toLowerCase()
+      deepLink += `?test=${encodeURIComponent(testMatch[1])}&scheduleId=test-sched-${testSlug}`
     }
   }
 
@@ -101,7 +102,7 @@ async function postNotificationsBatch(
   notifications: CareCompanionNotification[],
 ): Promise<void> {
   for (const n of notifications) {
-    await fetch("/api/care-companion/notifications", {
+    await fetch("/api/companion/notifications", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(n),
@@ -142,7 +143,7 @@ async function applyInvoicePopulations(
       lineTotal: item.lineTotal,
     }))
 
-    await fetch(`/care-companion/events/${matched.id}/line-items`, {
+    await fetch(`/companion/events/${matched.id}/line-items`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ lineItems }),

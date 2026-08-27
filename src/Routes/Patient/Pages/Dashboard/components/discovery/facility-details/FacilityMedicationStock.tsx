@@ -35,7 +35,7 @@ async function fetchFacilityStock(
   facilityId: string,
 ): Promise<PharmacyStock[]> {
   const res = await fetch(
-    `/care-companion/pharmacy-stock/facility/${facilityId}`,
+    `/companion/pharmacy-stock/facility/${facilityId}`,
   )
   if (!res.ok) return []
   return res.json()

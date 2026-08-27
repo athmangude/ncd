@@ -142,7 +142,7 @@ export function AddMedicationDrawer({
       }
     }) => {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/profile`,
+        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
         {
           treatment: {
             currentlyOnMedication: true,

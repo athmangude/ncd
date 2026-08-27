@@ -17,7 +17,7 @@ export function useNotifications(unreadOnly?: boolean) {
     queryKey: [notificationsQueryKey, { unreadOnly }],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/care-companion/notifications`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications`,
         {
           params: unreadOnly ? { unreadOnly: true } : undefined,
         }
@@ -38,7 +38,7 @@ export function useMarkNotificationRead() {
   return useMutation({
     mutationFn: async (id: string) => {
       await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/care-companion/notifications/${id}/read`
+        `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications/${id}/read`
       )
     },
     onMutate: async (id: string) => {

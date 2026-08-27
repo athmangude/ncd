@@ -5,6 +5,7 @@ import type {
   LlmActionType,
   LoanRepaymentEvent,
   PaymentEvent,
+  TestResultMetric,
 } from "@/types/care-companion"
 import {
   CASHBACK_ACTIONABLE_MIN_KES,
@@ -787,5 +788,181 @@ Return ONLY a JSON array of exactly 4 strings. No markdown, no explanation.`,
   } catch (err) {
     console.error("[ai-assistant] Suggested questions failed:", err)
     return []
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Test Results — simulate lab results and generate AI insights
+// ---------------------------------------------------------------------------
+
+export async function generateSimulatedTestResults(
+  profile: CareCompanionProfile | null | undefined,
+  events: CareCompanionEvent[],
+  testName: string,
+): Promise<TestResultMetric[]> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  if (!apiKey) return []
+
+  try {
+    const model = "gemini-3.6-flash"
+    const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
+
+    const contextJson = profile
+      ? buildUserMessage(profile, events)
+      : JSON.stringify({ profile: null, recentEvents: [] })
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: `You are a medical lab results simulator for a healthcare prototype app. You generate realistic but fictional lab test results for NCD patients in Kenya.
+
+Given a patient's health profile and the name of a lab test, generate realistic test result metrics. The results should be plausible for a patient with their specific conditions and medications — include a mix of normal and slightly abnormal values to make the data interesting for demonstration purposes.
+
+For each metric, provide:
+- name: the specific measurement name (e.g., "Fasting Blood Glucose", "HbA1c", "Systolic Blood Pressure")
+- value: a numeric value (realistic for the patient's conditions)
+- unit: the measurement unit (e.g., "mg/dL", "%", "mmHg")
+- referenceRange: the normal range as a string (e.g., "70-100 mg/dL")
+- status: one of "NORMAL", "LOW", "HIGH", or "CRITICAL"
+
+Generate 3-6 metrics depending on the test type. Make values reflect someone actively managing their condition — not perfect, but not dangerous either. A few borderline or slightly out-of-range values make it realistic.
+
+Return ONLY a valid JSON array of metric objects. No markdown, no explanation.`,
+            },
+          ],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Patient context:\n${contextJson}\n\nGenerate simulated results for: ${testName}`,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 2048,
+          temperature: 0.5,
+          responseMimeType: "application/json",
+        },
+      }),
+    })
+
+    if (!res.ok) return []
+
+    const data = (await res.json()) as GeminiResponse
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ""
+    if (!text) return []
+
+    const cleaned = text
+      .replace(/```json\n?/g, "")
+      .replace(/```/g, "")
+      .trim()
+
+    const arrayMatch = cleaned.match(/\[[\s\S]*\]/)
+    if (!arrayMatch) return []
+
+    const parsed: unknown = JSON.parse(arrayMatch[0])
+    if (!Array.isArray(parsed)) return []
+
+    return parsed.filter(
+      (m): m is TestResultMetric =>
+        typeof m === "object" &&
+        m !== null &&
+        typeof (m as Record<string, unknown>).name === "string" &&
+        typeof (m as Record<string, unknown>).value === "number" &&
+        typeof (m as Record<string, unknown>).unit === "string" &&
+        typeof (m as Record<string, unknown>).referenceRange === "string" &&
+        ["NORMAL", "LOW", "HIGH", "CRITICAL"].includes(
+          (m as Record<string, unknown>).status as string,
+        ),
+    )
+  } catch (err) {
+    console.error("[test-results] Simulated results generation failed:", err)
+    return []
+  }
+}
+
+export async function generateTestResultInsights(
+  profile: CareCompanionProfile | null | undefined,
+  events: CareCompanionEvent[],
+  testName: string,
+  metrics: TestResultMetric[],
+): Promise<string> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  if (!apiKey) {
+    return "AI insights are not available right now."
+  }
+
+  try {
+    const model = "gemini-3.6-flash"
+    const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
+
+    const contextJson = profile
+      ? buildUserMessage(profile, events)
+      : JSON.stringify({ profile: null, recentEvents: [] })
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: `You are the Jireh Care Assistant, analyzing lab test results for an NCD patient in Kenya. Given the patient's health profile, their test results, and their conditions/medications, provide clear, actionable insights.
+
+STRICT RULES:
+- NO greetings, salutations, or niceties. Start directly with the insight.
+- NO filler phrases like "Great news!", "It's good that...", "Hello!", "Let's look at..."
+- Jump straight into what the results mean and what to do about them.
+
+GUIDELINES:
+- Speak in plain, direct language
+- Reference their specific medications and conditions
+- Explain what each abnormal value means in practical terms
+- Suggest specific actions they can take (diet changes with Kenyan foods, when to see their doctor, medication timing)
+- If values are in normal range, briefly note what's keeping them there
+- Use bold (**text**) for key values and important points
+- Use bullet points for action items
+- Keep it to 2-3 short paragraphs, max 200 words total
+- NEVER diagnose — frame as "discuss with your doctor"
+- Use KES for any monetary references`,
+            },
+          ],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: `Patient context:\n${contextJson}\n\nTest: ${testName}\nResults:\n${JSON.stringify(metrics, null, 2)}\n\nProvide insights on these results.`,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 4096,
+          temperature: 0.7,
+        },
+      }),
+    })
+
+    if (!res.ok) {
+      return "Unable to generate insights right now. Please try again later."
+    }
+
+    const data = (await res.json()) as GeminiResponse
+    return (
+      data.candidates?.[0]?.content?.parts?.[0]?.text ??
+      "Unable to generate insights for these results."
+    )
+  } catch (err) {
+    console.error("[test-results] Insights generation failed:", err)
+    return "Something went wrong generating insights. Please try again."
   }
 }

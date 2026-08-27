@@ -244,7 +244,7 @@ describe("CareCompanionWrapper", () => {
   })
 
   describe("intake route detection precision", () => {
-    it("matches exactly /care-companion/intake", () => {
+    it("matches exactly /companion/intake", () => {
       renderWrapper("/patients/companion/intake")
       // Should pass through to routes (not redirect or error)
       expect(screen.getByTestId("care-companion-intake")).toBeInTheDocument()

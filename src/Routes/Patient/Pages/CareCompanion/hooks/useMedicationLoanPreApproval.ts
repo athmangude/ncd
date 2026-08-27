@@ -10,7 +10,7 @@ export function useMedicationLoanPreApproval() {
     queryKey: [medicationLoanPreApprovalQueryKey],
     queryFn: async () => {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/medication-loan-pre-approval`
+        `${import.meta.env.VITE_API_BASE_URL}/companion/medication-loan-pre-approval`
       )
       return response.data as MedicationLoanPreApproval
     },

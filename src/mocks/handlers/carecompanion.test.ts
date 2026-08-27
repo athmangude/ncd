@@ -93,9 +93,9 @@ const MOCK_PROFILE: CareCompanionProfile = {
 // 1. BFF home endpoint
 // ---------------------------------------------------------------------------
 
-describe("GET /api/patients/:id/care-companion/home", () => {
+describe("GET /api/patients/:id/companion/home", () => {
   it("returns aggregated home data with all required sections", async () => {
-    const res = await get("/care-companion/home")
+    const res = await get("/companion/home")
     expect(res.status).toBe(200)
     const data = await res.json()
     expect(data).toHaveProperty("refillSchedule")
@@ -106,7 +106,7 @@ describe("GET /api/patients/:id/care-companion/home", () => {
   })
 
   it("sorts refill schedules by urgency with OVERDUE first", async () => {
-    const data = await (await get("/care-companion/home")).json()
+    const data = await (await get("/companion/home")).json()
     const statuses = data.refillSchedule.schedules.map(
       (s: { status: string }) => s.status,
     )
@@ -583,15 +583,15 @@ describe("POST /api/patients/:id/assistant/interaction-check", () => {
 // 19. Profile GET
 // ---------------------------------------------------------------------------
 
-describe("GET /api/patients/:id/care-companion/profile", () => {
+describe("GET /api/patients/:id/companion/profile", () => {
   it("returns null when no profile has been saved", async () => {
-    const data = await (await get("/care-companion/profile")).json()
+    const data = await (await get("/companion/profile")).json()
     expect(data).toBeNull()
   })
 
   it("returns the saved profile", async () => {
     saveCareCompanionProfile(MOCK_PROFILE)
-    const data = await (await get("/care-companion/profile")).json()
+    const data = await (await get("/companion/profile")).json()
     expect(data.id).toBe("profile-test-001")
   })
 })
@@ -600,17 +600,17 @@ describe("GET /api/patients/:id/care-companion/profile", () => {
 // 20. Profile POST
 // ---------------------------------------------------------------------------
 
-describe("POST /api/patients/:id/care-companion/profile", () => {
+describe("POST /api/patients/:id/companion/profile", () => {
   it("saves the profile and returns 201", async () => {
-    const res = await post("/care-companion/profile", MOCK_PROFILE)
+    const res = await post("/companion/profile", MOCK_PROFILE)
     expect(res.status).toBe(201)
     const data = await res.json()
     expect(data.id).toBe("profile-test-001")
   })
 
   it("persists so subsequent GET returns the profile", async () => {
-    await post("/care-companion/profile", MOCK_PROFILE)
-    const data = await (await get("/care-companion/profile")).json()
+    await post("/companion/profile", MOCK_PROFILE)
+    const data = await (await get("/companion/profile")).json()
     expect(data.id).toBe("profile-test-001")
   })
 })
@@ -619,10 +619,10 @@ describe("POST /api/patients/:id/care-companion/profile", () => {
 // 21. Profile PATCH
 // ---------------------------------------------------------------------------
 
-describe("PATCH /api/patients/:id/care-companion/profile", () => {
+describe("PATCH /api/patients/:id/companion/profile", () => {
   it("shallow-merges into the existing profile", async () => {
-    await post("/care-companion/profile", MOCK_PROFILE)
-    const res = await patch("/care-companion/profile", {
+    await post("/companion/profile", MOCK_PROFILE)
+    const res = await patch("/companion/profile", {
       completedAt: "2026-06-01T00:00:00Z",
     })
     expect(res.status).toBe(200)

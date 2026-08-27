@@ -1800,6 +1800,7 @@ function seedNotificationsFromIntake(profile: CareCompanionProfile): void {
 
   // LAB_REMINDER for the first recurring test
   if (tests.length > 0) {
+    const testScheduleId = `test-sched-${tests[0].replace(/\s+/g, "-").toLowerCase()}`
     notifications.push({
       id: `notif-lab-reminder-${Date.now()}`,
       type: "LAB_REMINDER",
@@ -1809,7 +1810,7 @@ function seedNotificationsFromIntake(profile: CareCompanionProfile): void {
       scheduledAt: new Date(now - 2 * DAY_MS).toISOString(),
       sentAt: new Date(now - 2 * DAY_MS).toISOString(),
       readAt: null,
-      metadata: { labTestName: tests[0], conditionType: conditions[0] ?? "GENERAL" },
+      metadata: { labTestName: tests[0], conditionType: conditions[0] ?? "GENERAL", scheduleId: testScheduleId },
     })
   }
 

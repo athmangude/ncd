@@ -108,7 +108,7 @@ describe("useEducationFeed", () => {
     await queryFn()
 
     expect(mockAxiosGet).toHaveBeenCalledWith(
-      expect.stringContaining("/care-companion/education-cards")
+      expect.stringContaining("/companion/education-cards")
     )
   })
 
@@ -137,7 +137,7 @@ describe("useEducationFeed", () => {
 
     expect(mockAxiosPost).toHaveBeenCalledWith(
       expect.stringContaining(
-        "/care-companion/education-feed/edu-dietary-001/viewed"
+        "/companion/education-feed/edu-dietary-001/viewed"
       )
     )
   })
