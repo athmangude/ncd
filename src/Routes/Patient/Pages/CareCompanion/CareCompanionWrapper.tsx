@@ -18,6 +18,13 @@ const PAGE_TITLES: Record<string, string> = {
   "/test-results": "Test Results",
 }
 
+function resolvePageTitle(subPath: string): string {
+  if (PAGE_TITLES[subPath]) return PAGE_TITLES[subPath]
+  if (subPath.startsWith("/medication-cards/")) return "Medication Card"
+  if (subPath.startsWith("/education/")) return "Lesson"
+  return "Care Companion"
+}
+
 const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
 const CostTrackerPage = lazy(() => import("./CostTrackerPage"))
 const EmergencyCardPage = lazy(() => import("./EmergencyCardPage"))
@@ -27,6 +34,8 @@ const RefillSchedulePage = lazy(() => import("./RefillSchedulePage"))
 const EducationFeedPage = lazy(() => import("./EducationFeedPage"))
 const MedicationLoanPage = lazy(() => import("./MedicationLoanPage"))
 const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
+const MedicationCardDetailPage = lazy(() => import("./MedicationCardDetailPage"))
+const EducationArticlePage = lazy(() => import("./EducationArticlePage"))
 const TestResultsUploadPage = lazy(() => import("./TestResultsUploadPage"))
 
 export default function CareCompanionWrapper() {
@@ -37,7 +46,7 @@ export default function CareCompanionWrapper() {
     /^\/patients\/companion/,
     "",
   )
-  const pageTitle = PAGE_TITLES[subPath] ?? "Care Companion"
+  const pageTitle = resolvePageTitle(subPath)
 
   const header = (
     <BackTitleHeader
@@ -91,6 +100,14 @@ export default function CareCompanionWrapper() {
             }
           />
           <Route
+            path="/medication-cards/:slug"
+            element={
+              <RouteMetadata title="Medication Card">
+                <MedicationCardDetailPage />
+              </RouteMetadata>
+            }
+          />
+          <Route
             path="/refill-schedule"
             element={
               <RouteMetadata title="Medication & Test Schedule">
@@ -103,6 +120,14 @@ export default function CareCompanionWrapper() {
             element={
               <RouteMetadata title="Health Education">
                 <EducationFeedPage />
+              </RouteMetadata>
+            }
+          />
+          <Route
+            path="/education/:slug"
+            element={
+              <RouteMetadata title="Health Article">
+                <EducationArticlePage />
               </RouteMetadata>
             }
           />

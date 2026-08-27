@@ -85,6 +85,7 @@ import facilitiesSeed from "../fixtures/facilities.json"
 
 const PROFILE_KEY = "care-companion-profile"
 const EDUCATION_VIEWED_KEY = "care-companion-education-viewed"
+const LESSON_PROGRESS_KEY = "care-companion-lesson-progress"
 const PATIENT_MEDICATIONS_KEY = "care-companion-patient-medications"
 const MEDICATION_TIMELINE_KEY = "care-companion-medication-timeline"
 const COST_SUMMARY_KEY = "care-companion-cost-summary"
@@ -559,9 +560,11 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
 
     const hasCard = existingCards.some((c) => c.medicationId === medId)
     if (!hasCard) {
+      const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
       cards.push({
         id: `mc-intake-${i}`,
         medicationId: medId,
+        slug,
         locale: "EN" as ContentLocale,
         description: `${name} is a medication prescribed for managing your condition.`,
         howItWorks: `${name} works by helping control your symptoms. Ask your doctor or pharmacist for detailed information.`,
@@ -1066,6 +1069,42 @@ export function markEducationViewed(cardId: string): void {
   if (!viewed.includes(cardId)) {
     writeObject(EDUCATION_VIEWED_KEY, [...viewed, cardId])
   }
+}
+
+export interface LessonProgress {
+  cardId: string
+  currentSection: number
+  completed: boolean
+  lastAccessedAt: string
+}
+
+export function getAllLessonProgress(): Record<string, LessonProgress> {
+  return readObject<Record<string, LessonProgress>>(LESSON_PROGRESS_KEY, {})
+}
+
+export function getLessonProgress(cardId: string): LessonProgress | null {
+  const all = getAllLessonProgress()
+  return all[cardId] ?? null
+}
+
+export function saveLessonProgress(
+  cardId: string,
+  currentSection: number,
+  completed: boolean,
+): LessonProgress {
+  const all = getAllLessonProgress()
+  const progress: LessonProgress = {
+    cardId,
+    currentSection,
+    completed,
+    lastAccessedAt: new Date().toISOString(),
+  }
+  all[cardId] = progress
+  writeObject(LESSON_PROGRESS_KEY, all)
+  if (completed) {
+    markEducationViewed(cardId)
+  }
+  return progress
 }
 
 // ---------------------------------------------------------------------------
@@ -1785,12 +1824,13 @@ function seedNotificationsFromIntake(profile: CareCompanionProfile): void {
   // MEDICATION_CARD_AVAILABLE for a medication
   if (meds.length > 0) {
     const cardMed = meds[meds.length > 1 ? 1 : 0]
+    const medSlug = cardMed.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
     notifications.push({
       id: `notif-medication-card-${Date.now()}`,
       type: "MEDICATION_CARD_AVAILABLE",
       title: `New medication card: ${cardMed}`,
       body: `A detailed guide for your ${cardMed} is now available. Learn about side effects, storage, and what to avoid.`,
-      deepLink: "/patients/companion/medication-cards",
+      deepLink: `/patients/companion/medication-cards/${medSlug}`,
       scheduledAt: new Date(now - 4 * DAY_MS).toISOString(),
       sentAt: new Date(now - 4 * DAY_MS).toISOString(),
       readAt: new Date(now - 3 * DAY_MS).toISOString(),

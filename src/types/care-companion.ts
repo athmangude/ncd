@@ -469,6 +469,7 @@ export interface EmergencyReferenceCard {
 export interface MedicationCard {
   id: string
   medicationId: string
+  slug: string
   locale: ContentLocale
   description: string
   howItWorks: string | null
@@ -536,6 +537,12 @@ export interface RefillScheduleItem {
 // Entity interface 10: EducationContentCard
 // ---------------------------------------------------------------------------
 
+export interface EducationSection {
+  id: string
+  title: string
+  body: string
+}
+
 /**
  * Weekly education content card for NCD patients. One card per condition
  * type, locale, and week number in the annual rotation.
@@ -544,11 +551,16 @@ export interface RefillScheduleItem {
  */
 export interface EducationContentCard {
   id: string
+  slug: string
   conditionType: ConditionType
   contentType: EducationContentType
   locale: ContentLocale
   title: string
+  summary: string
   body: string
+  sections: EducationSection[]
+  estimatedMinutes: number
+  learningObjectives: string[]
   weekNumber: number
   imageUrl: string | null
   isPublished: boolean
@@ -816,6 +828,7 @@ export interface PharmacyStock {
   distance: number | null
   lat: number
   lng: number
+  priceKES?: number
 }
 
 /**

@@ -20,6 +20,7 @@ export interface AnnotatedMedicationCard {
   interactions: AnnotatedInteraction[]
   /** Resolved from taxonomy for display */
   genericName: string
+  slug: string
   brandNames: string[]
   category: MedicationCategory
   strengths: string[]
@@ -62,6 +63,7 @@ export function useMedicationCards() {
             card,
             interactions,
             genericName: taxEntry?.genericName ?? "Unknown",
+            slug: card.slug,
             brandNames: taxEntry?.brandNames ?? [],
             category: taxEntry?.category ?? "MEDICATION",
             strengths: taxEntry?.strengths ?? [],

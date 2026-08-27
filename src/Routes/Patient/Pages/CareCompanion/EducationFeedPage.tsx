@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, useMemo } from "react"
+import { useState, useEffect, useMemo } from "react"
+import { Link } from "react-router-dom"
 import {
   BookOpen,
   Loader2,
@@ -14,13 +15,16 @@ import {
   HandHeart,
   Activity,
   Trophy,
+  PlayCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { trackEvent, EVENTS } from "@/analytics"
 import { useEducationFeed } from "./hooks/useEducationFeed"
 import { useIntakeProfile } from "./hooks/useIntakeProfile"
+import { useLessonProgress } from "./hooks/useLessonProgress"
 import type { EducationFeedCard } from "./hooks/useEducationFeed"
 import type { EducationContentType, ConditionType } from "@/types/care-companion"
+import type { LessonProgress } from "@/mocks/domain/careCompanion"
 
 const CONDITION_LABELS: Record<string, string> = {
   DIABETES: "Diabetes",
@@ -249,15 +253,15 @@ function estimateReadTime(body: string): number {
 }
 
 export default function EducationFeedPage() {
-  const { data, isLoading, error, markViewed } = useEducationFeed()
+  const { data, isLoading, error } = useEducationFeed()
   const { data: profile } = useIntakeProfile()
+  const { data: progressMap } = useLessonProgress()
   const [selectedCondition, setSelectedCondition] = useState<
     ConditionType | "ALL" | "FOR_YOU"
   >("FOR_YOU")
   const [selectedType, setSelectedType] = useState<
     EducationContentType | "ALL"
   >("ALL")
-  const [expandedCardId, setExpandedCardId] = useState<string | null>(null)
 
   useEffect(() => {
     trackEvent(EVENTS.CARE_COMPANION.EDUCATION.VIEW)
@@ -312,33 +316,6 @@ export default function EducationFeedPage() {
   )
 
   const featuredCard = unreadCards[0] ?? filteredCards[0] ?? null
-
-  const handleCardTap = useCallback(
-    (card: EducationFeedCard) => {
-      const isExpanding = expandedCardId !== card.id
-
-      if (isExpanding) {
-        setExpandedCardId(card.id)
-        trackEvent(EVENTS.CARE_COMPANION.EDUCATION.CARD_VIEWED, {
-          cardId: card.id,
-          contentType: card.contentType,
-          conditionType: card.conditionType,
-        })
-
-        if (!card.viewed) {
-          markViewed.mutate(card.id)
-        }
-
-        trackEvent(EVENTS.CARE_COMPANION.EDUCATION.CARD_COMPLETE, {
-          cardId: card.id,
-          contentType: card.contentType,
-        })
-      } else {
-        setExpandedCardId(null)
-      }
-    },
-    [expandedCardId, markViewed],
-  )
 
   if (isLoading) {
     return (
@@ -433,11 +410,8 @@ export default function EducationFeedPage() {
       </div>
 
       {/* Featured card */}
-      {featuredCard && expandedCardId !== featuredCard.id && (
-        <FeaturedCard
-          card={featuredCard}
-          onTap={() => handleCardTap(featuredCard)}
-        />
+      {featuredCard && (
+        <FeaturedCard card={featuredCard} progress={progressMap?.[featuredCard.id]} />
       )}
 
       {/* Unread articles */}
@@ -446,13 +420,8 @@ export default function EducationFeedPage() {
           <SectionLabel count={unreadCards.length} label="New for you" />
           <div className="flex flex-col gap-3 mt-2">
             {unreadCards.map((card) =>
-              card.id === featuredCard?.id && expandedCardId !== card.id ? null : (
-                <ArticleCard
-                  key={card.id}
-                  card={card}
-                  isExpanded={expandedCardId === card.id}
-                  onTap={handleCardTap}
-                />
+              card.id === featuredCard?.id ? null : (
+                <ArticleCard key={card.id} card={card} progress={progressMap?.[card.id]} />
               ),
             )}
           </div>
@@ -462,15 +431,10 @@ export default function EducationFeedPage() {
       {/* Read articles */}
       {readCards.length > 0 && (
         <div>
-          <SectionLabel count={readCards.length} label="Previously read" />
+          <SectionLabel count={readCards.length} label="Completed" />
           <div className="flex flex-col gap-3 mt-2">
             {readCards.map((card) => (
-              <ArticleCard
-                key={card.id}
-                card={card}
-                isExpanded={expandedCardId === card.id}
-                onTap={handleCardTap}
-              />
+              <ArticleCard key={card.id} card={card} progress={progressMap?.[card.id]} />
             ))}
           </div>
         </div>
@@ -614,20 +578,21 @@ function CardImageHeader({
 
 function FeaturedCard({
   card,
-  onTap,
+  progress,
 }: {
   card: EducationFeedCard
-  onTap: () => void
+  progress?: LessonProgress
 }) {
   const typeConfig = CONTENT_TYPE_CONFIG[card.contentType]
   const TypeIcon = typeConfig?.icon ?? BookOpen
-  const readTime = estimateReadTime(card.body)
+  const totalSections = card.sections?.length ?? 0
+  const hasProgress = progress && !progress.completed && progress.currentSection > 0
+  const estMinutes = card.estimatedMinutes ?? estimateReadTime(card.body)
 
   return (
-    <button
-      type="button"
-      onClick={onTap}
-      className="relative w-full rounded-2xl border border-primary/20 overflow-hidden text-left"
+    <Link
+      to={`/patients/companion/education/${card.slug}`}
+      className="relative block w-full rounded-2xl border border-primary/20 overflow-hidden"
     >
       <CardImageHeader
         imageUrl={card.imageUrl}
@@ -666,47 +631,79 @@ function FeaturedCard({
           {card.body}
         </p>
 
+        {totalSections > 0 && hasProgress && (
+          <div className="mt-3">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[10px] text-muted-foreground">
+                {progress.currentSection}/{totalSections} sections
+              </span>
+              <span className="text-[10px] font-medium text-primary">
+                {Math.round((progress.currentSection / totalSections) * 100)}%
+              </span>
+            </div>
+            <div className="h-1 w-full rounded-full bg-muted overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{
+                  width: `${(progress.currentSection / totalSections) * 100}%`,
+                }}
+              />
+            </div>
+          </div>
+        )}
+
         <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span>{readTime} min read</span>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {estMinutes} min
+            </span>
+            {totalSections > 0 && (
+              <span className="flex items-center gap-1">
+                <BookOpen className="h-3 w-3" />
+                {totalSections} sections
+              </span>
+            )}
           </div>
           <span className="inline-flex items-center gap-1 text-xs font-medium text-primary">
-            Read article
-            <ChevronRight className="h-3 w-3" />
+            {hasProgress ? (
+              <>
+                <PlayCircle className="h-3 w-3" />
+                Continue
+              </>
+            ) : (
+              <>
+                Start lesson
+                <ChevronRight className="h-3 w-3" />
+              </>
+            )}
           </span>
         </div>
       </div>
-    </button>
+    </Link>
   )
 }
 
 function ArticleCard({
   card,
-  isExpanded,
-  onTap,
+  progress,
 }: {
   card: EducationFeedCard
-  isExpanded: boolean
-  onTap: (card: EducationFeedCard) => void
+  progress?: LessonProgress
 }) {
   const typeConfig = CONTENT_TYPE_CONFIG[card.contentType]
   const TypeIcon = typeConfig?.icon ?? BookOpen
-  const readTime = estimateReadTime(card.body)
+  const totalSections = card.sections?.length ?? 0
+  const hasProgress = progress && !progress.completed && progress.currentSection > 0
+  const isCompleted = progress?.completed ?? card.viewed
+  const estMinutes = card.estimatedMinutes ?? estimateReadTime(card.body)
 
   return (
-    <button
-      type="button"
-      onClick={() => onTap(card)}
-      className={cn(
-        "w-full rounded-xl border bg-card text-left transition-all",
-        isExpanded
-          ? "border-primary/30 shadow-sm"
-          : "active:bg-muted/50",
-      )}
+    <Link
+      to={`/patients/companion/education/${card.slug}`}
+      className="flex items-start gap-3 rounded-xl border bg-card p-3.5 transition-all active:bg-muted/50"
     >
-      {/* Compact header */}
-      <div className="flex items-start gap-3 p-3.5">
+      <div className="relative">
         <div
           className={cn(
             "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
@@ -720,83 +717,80 @@ function ArticleCard({
             )}
           />
         </div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <h3
-              className={cn(
-                "text-sm font-medium leading-snug",
-                card.viewed
-                  ? "text-muted-foreground"
-                  : "text-foreground",
-              )}
-            >
-              {card.title}
-            </h3>
-            {card.viewed && (
-              <Check className="h-4 w-4 shrink-0 text-primary mt-0.5" />
-            )}
-          </div>
-
-          <div className="mt-1 flex items-center gap-2">
-            <span
-              className={cn(
-                "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
-                CONDITION_COLORS[card.conditionType] ??
-                  "bg-muted text-muted-foreground",
-              )}
-            >
-              {CONDITION_LABELS[card.conditionType] ?? card.conditionType}
-            </span>
-            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-              <Clock className="h-2.5 w-2.5" />
-              {readTime} min
-            </span>
-          </div>
-        </div>
+        {hasProgress && totalSections > 0 && (
+          <svg
+            className="absolute -inset-0.5"
+            viewBox="0 0 44 44"
+          >
+            <circle
+              cx="22"
+              cy="22"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              className="text-muted/50"
+            />
+            <circle
+              cx="22"
+              cy="22"
+              r="20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeDasharray={`${(progress.currentSection / totalSections) * 125.6} 125.6`}
+              strokeLinecap="round"
+              transform="rotate(-90 22 22)"
+              className="text-primary"
+            />
+          </svg>
+        )}
       </div>
 
-      {/* Expanded body */}
-      {isExpanded && (
-        <div className="border-t">
-          {card.imageUrl && (
-            <CardImageHeader
-              imageUrl={card.imageUrl}
-              contentType={card.contentType}
-              icon={TypeIcon}
-            />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2">
+          <h3
+            className={cn(
+              "text-sm font-medium leading-snug",
+              isCompleted ? "text-muted-foreground" : "text-foreground",
+            )}
+          >
+            {card.title}
+          </h3>
+          {isCompleted ? (
+            <Check className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+          ) : hasProgress ? (
+            <PlayCircle className="h-4 w-4 shrink-0 text-primary mt-0.5" />
+          ) : (
+            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground mt-0.5" />
           )}
-          <div className="px-4 pb-4 pt-3">
-            <p className="text-sm leading-relaxed text-foreground/90 whitespace-pre-line">
-              {card.body}
-            </p>
-
-            {/* Badges */}
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
-                  typeConfig?.bgColor ?? "bg-muted",
-                  typeConfig?.color ?? "text-muted-foreground",
-                )}
-              >
-                <TypeIcon className="h-2.5 w-2.5" />
-                {typeConfig?.label ?? card.contentType}
-              </span>
-              {card.householdCompatible && (
-                <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-teal-800">
-                  Family-friendly
-                </span>
-              )}
-              {card.costNeutral && (
-                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-800">
-                  No extra cost
-                </span>
-              )}
-            </div>
-          </div>
         </div>
-      )}
-    </button>
+
+        <div className="mt-1 flex items-center gap-2">
+          <span
+            className={cn(
+              "rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+              CONDITION_COLORS[card.conditionType] ??
+                "bg-muted text-muted-foreground",
+            )}
+          >
+            {CONDITION_LABELS[card.conditionType] ?? card.conditionType}
+          </span>
+          {totalSections > 0 ? (
+            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+              <BookOpen className="h-2.5 w-2.5" />
+              {hasProgress
+                ? `${progress.currentSection}/${totalSections}`
+                : `${totalSections} sections`}
+            </span>
+          ) : (
+            <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+              <Clock className="h-2.5 w-2.5" />
+              {estMinutes} min
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
   )
 }

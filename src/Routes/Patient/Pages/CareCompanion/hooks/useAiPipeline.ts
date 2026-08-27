@@ -59,8 +59,16 @@ function actionToNotification(action: LlmActionEvent): CareCompanionNotification
   let deepLink =
     ACTION_TYPE_DEEP_LINKS[action.actionType] ?? "/patients/companion"
 
-  if (action.actionType === "DRUG_INFO_SURFACE" && action.relatedMedication) {
-    deepLink += `?highlight=${encodeURIComponent(action.relatedMedication)}`
+  if (
+    (action.actionType === "DRUG_INFO_SURFACE" ||
+      action.actionType === "DRUG_INTERACTION_WARNING") &&
+    action.relatedMedication
+  ) {
+    const medSlug = action.relatedMedication
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "")
+    deepLink = `/patients/companion/medication-cards/${medSlug}`
   }
 
   if (

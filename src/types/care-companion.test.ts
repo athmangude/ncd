@@ -145,6 +145,7 @@ const emergencyCard: EmergencyCard = {
 const medicationCard: MedicationCard = {
   id: "mc-metformin-en",
   medicationId: "med-001",
+  slug: "metformin",
   locale: "EN",
   description: "Metformin helps control blood sugar levels in type 2 diabetes.",
   howItWorks: "Decreases glucose production in the liver.",
@@ -191,11 +192,22 @@ const refillSchedule: RefillSchedule = {
 
 const educationContentCard: EducationContentCard = {
   id: "edu-001",
+  slug: "understanding-carbohydrates",
   conditionType: "DIABETES",
   contentType: "DIETARY",
   locale: "EN",
   title: "Understanding Carbohydrates",
+  summary: "Learn how carbohydrates affect your blood sugar and which foods to watch out for in your daily diet.",
   body: "Carbohydrates have the greatest effect on blood sugar...",
+  sections: [
+    { id: "s1", title: "What are carbs?", body: "Carbohydrates are one of the main nutrients..." },
+    { id: "s2", title: "How carbs affect blood sugar", body: "When you eat carbs they break down into glucose..." },
+  ],
+  estimatedMinutes: 3,
+  learningObjectives: [
+    "Understand what carbohydrates are",
+    "Know which foods are high in carbs",
+  ],
   weekNumber: 3,
   imageUrl: null,
   isPublished: true,
@@ -1497,6 +1509,7 @@ describe("care-companion edge cases", () => {
       const minimal: MedicationCard = {
         id: "mc-minimal",
         medicationId: "med-safe",
+        slug: "minimal",
         locale: "EN",
         description: "A well-tolerated medication.",
         howItWorks: null,

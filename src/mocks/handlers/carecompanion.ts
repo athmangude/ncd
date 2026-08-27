@@ -34,6 +34,8 @@ import {
   populatePaymentLineItems,
   ensureTestSchedulesSeeded,
   getTestSchedules,
+  getAllLessonProgress,
+  saveLessonProgress,
 } from "../domain/careCompanion"
 
 import type {
@@ -379,6 +381,26 @@ export const careCompanionHandlers = [
       message: "Card marked as viewed",
       viewedIds: getEducationViewedIds(),
     })
+  }),
+
+  // -- Lesson progress: get all -----------------------------------------------
+  http.get("/companion/lesson-progress", () => {
+    return HttpResponse.json(getAllLessonProgress())
+  }),
+
+  // -- Lesson progress: save --------------------------------------------------
+  http.post("/companion/lesson-progress/:cardId", async ({ params, request }) => {
+    const { cardId } = params as { cardId: string }
+    const body = (await request.json()) as {
+      currentSection: number
+      completed: boolean
+    }
+    const progress = saveLessonProgress(
+      cardId,
+      body.currentSection,
+      body.completed,
+    )
+    return HttpResponse.json(progress)
   }),
 
   // -- Profile GET -----------------------------------------------------------
