@@ -611,3 +611,181 @@ export async function runPipeline(
     }
   })
 }
+
+// ---------------------------------------------------------------------------
+// AI Assistant — conversational chat backed by Gemini
+// ---------------------------------------------------------------------------
+
+function buildAssistantSystemPrompt(
+  profile: CareCompanionProfile | null | undefined,
+  events: CareCompanionEvent[],
+): string {
+  const contextJson = profile
+    ? buildUserMessage(profile, events)
+    : JSON.stringify({ profile: null, recentEvents: [] })
+
+  return `You are the Jireh Care Assistant, a warm and knowledgeable health companion for patients and caregivers managing chronic conditions in Kenya.
+
+CONTEXT:
+${contextJson}
+
+GUIDELINES:
+- Speak in plain, warm language — like a knowledgeable pharmacist friend. Use "you" and "your".
+- Be specific: reference the patient's actual medications, conditions, and recent activity from the context above.
+- Use KES for any monetary amounts. Reference Kenyan foods, facilities, and lifestyle when giving advice.
+- Keep answers concise — 2-4 short paragraphs max. Use bullet points for lists.
+- For medication questions: include dosage guidance, common side effects, food interactions, and storage tips when relevant.
+- For diet questions: suggest specific Kenyan foods (ugali, sukuma wiki, omena, etc.) and realistic meal ideas.
+- For cost questions: reference their cashback balance, Jireh Plus status, and circle if relevant.
+- NEVER diagnose conditions or prescribe medication. Always recommend consulting a doctor or pharmacist for clinical decisions.
+- If the question is outside your scope (emergency symptoms, mental health crisis), direct them to call 112 or visit the nearest hospital.
+- End with a brief, actionable takeaway when appropriate.`
+}
+
+export interface AssistantMessage {
+  role: "user" | "model"
+  content: string
+}
+
+export async function callAssistantChat(
+  profile: CareCompanionProfile | null | undefined,
+  events: CareCompanionEvent[],
+  history: AssistantMessage[],
+  userMessage: string,
+): Promise<string> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  if (!apiKey) {
+    return "I'm sorry, the AI assistant is not available right now. Please try again later."
+  }
+
+  try {
+    const model = "gemini-3.6-flash"
+    const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
+
+    const contents = [
+      ...history.map((m) => ({
+        role: m.role,
+        parts: [{ text: m.content }],
+      })),
+      { role: "user", parts: [{ text: userMessage }] },
+    ]
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: buildAssistantSystemPrompt(profile, events),
+            },
+          ],
+        },
+        contents,
+        generationConfig: {
+          maxOutputTokens: 2048,
+          temperature: 0.7,
+        },
+      }),
+    })
+
+    if (!res.ok) {
+      console.error("[ai-assistant] Gemini API error:", res.status)
+      return "I'm having trouble connecting right now. Please try again in a moment."
+    }
+
+    const data = (await res.json()) as GeminiResponse
+    return (
+      data.candidates?.[0]?.content?.parts?.[0]?.text ??
+      "I wasn't able to generate a response. Please try again."
+    )
+  } catch (err) {
+    console.error("[ai-assistant] Chat call failed:", err)
+    return "Something went wrong. Please try again."
+  }
+}
+
+// ---------------------------------------------------------------------------
+// AI Assistant — generate suggested questions from profile + events
+// ---------------------------------------------------------------------------
+
+export async function generateSuggestedQuestions(
+  profile: CareCompanionProfile,
+  events: CareCompanionEvent[],
+): Promise<string[]> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  if (!apiKey) return []
+
+  try {
+    const model = "gemini-3.6-flash"
+    const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
+
+    const contextJson = buildUserMessage(profile, events)
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: `You are the Jireh Care Assistant. Based on a patient's health profile and recent activity, generate exactly 4 personalized health questions that this specific patient would find most useful to ask right now.
+
+Consider:
+- Their specific conditions and medications
+- Recent events (payments, refills, lab tests, missed doses)
+- Upcoming schedule items
+- Their challenges and goals
+- Financial context (cashback, loans, Jireh Plus)
+
+Make questions specific to THEIR situation, not generic. For example, instead of "What should I eat?" prefer "What foods help manage blood sugar while taking Metformin?" if they have diabetes and take Metformin.
+
+Questions should be conversational — written as a patient would naturally ask them.
+
+Return ONLY a JSON array of exactly 4 strings. No markdown, no explanation.`,
+            },
+          ],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: contextJson }],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 512,
+          temperature: 0.8,
+          responseMimeType: "application/json",
+        },
+      }),
+    })
+
+    if (!res.ok) return []
+
+    const data = (await res.json()) as GeminiResponse
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? ""
+    if (!text) return []
+
+    const cleaned = text
+      .replace(/```json\n?/g, "")
+      .replace(/```/g, "")
+      .trim()
+
+    const arrayMatch = cleaned.match(/\[[\s\S]*\]/)
+    if (!arrayMatch) return []
+
+    const parsed: unknown = JSON.parse(arrayMatch[0])
+
+    if (
+      Array.isArray(parsed) &&
+      parsed.length >= 1 &&
+      parsed.every((q) => typeof q === "string")
+    ) {
+      return (parsed as string[]).slice(0, 4)
+    }
+    return []
+  } catch (err) {
+    console.error("[ai-assistant] Suggested questions failed:", err)
+    return []
+  }
+}

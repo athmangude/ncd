@@ -1,109 +1,143 @@
-import { useMutation } from "@tanstack/react-query"
-import { useState, useCallback } from "react"
-import axios from "axios"
-import { useCareCompanionStore } from "../store/careCompanionStore"
+import { useState, useCallback, useEffect } from "react"
+import { useIntakeProfile } from "./useIntakeProfile"
+import {
+  callAssistantChat,
+  type AssistantMessage,
+} from "@/lib/ai-pipeline"
+import type { CareCompanionEvent } from "@/types/care-companion"
 
 export interface ChatMessage {
   id: string
   role: "user" | "assistant"
   content: string
   timestamp: string
-  metadata?: {
-    interactionCheckTriggered?: boolean
-    medicationsReferenced?: string[]
+}
+
+interface ChatSession {
+  id: string
+  messages: ChatMessage[]
+  startedAt: string
+  lastMessageAt: string
+}
+
+const STORAGE_KEY = "jireh:assistant-chat"
+
+function loadChatSession(): ChatSession | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as ChatSession
+  } catch {
+    return null
   }
 }
 
-interface SendMessagePayload {
-  message: string
-  sessionId: string | null
-}
-
-interface SendMessageResponse {
-  sessionId: string
-  reply: string
-  metadata?: {
-    interactionCheckTriggered?: boolean
-    medicationsReferenced?: string[]
+function saveChatSession(session: ChatSession): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(session))
+  } catch {
+    // localStorage full or unavailable
   }
 }
 
-interface MutationContext {
-  previousMessages: ChatMessage[]
+function clearChatStorage(): void {
+  localStorage.removeItem(STORAGE_KEY)
+}
+
+async function fetchEvents(): Promise<CareCompanionEvent[]> {
+  try {
+    const res = await fetch("/care-companion/events?limit=200")
+    const data = (await res.json()) as { events: CareCompanionEvent[] }
+    return data.events ?? []
+  } catch {
+    return []
+  }
 }
 
 export function useAssistantChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const activeAiSessionId = useCareCompanionStore(
-    (state) => state.activeAiSessionId
-  )
-  const setActiveAiSessionId = useCareCompanionStore(
-    (state) => state.setActiveAiSessionId
-  )
-
-  const { mutate: sendMessageMutate, isPending, error } = useMutation({
-    mutationFn: async (payload: SendMessagePayload) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/care-companion/assistant/chat`,
-        {
-          message: payload.message,
-          sessionId: payload.sessionId,
-        }
-      )
-      return response.data as SendMessageResponse
-    },
-    onMutate: (variables): MutationContext => {
-      const previousMessages = [...messages]
-      const userMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: "user",
-        content: variables.message,
-        timestamp: new Date().toISOString(),
-      }
-      setMessages((prev) => [...prev, userMessage])
-      return { previousMessages }
-    },
-    onSuccess: (data) => {
-      if (data.sessionId) {
-        setActiveAiSessionId(data.sessionId)
-      }
-
-      const assistantMessage: ChatMessage = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        content: data.reply,
-        timestamp: new Date().toISOString(),
-        metadata: data.metadata,
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-    },
-    onError: (_error, _variables, context) => {
-      if (context?.previousMessages) {
-        setMessages(context.previousMessages)
-      }
-    },
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    const saved = loadChatSession()
+    return saved?.messages ?? []
   })
+  const [sessionId] = useState<string>(() => {
+    const saved = loadChatSession()
+    return saved?.id ?? crypto.randomUUID()
+  })
+  const [isSending, setIsSending] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
+  const { data: profile } = useIntakeProfile()
+
+  useEffect(() => {
+    if (messages.length === 0) {
+      clearChatStorage()
+      return
+    }
+    saveChatSession({
+      id: sessionId,
+      messages,
+      startedAt: messages[0].timestamp,
+      lastMessageAt: messages[messages.length - 1].timestamp,
+    })
+  }, [messages, sessionId])
 
   const send = useCallback(
-    (message: string) => {
-      sendMessageMutate({
-        message,
-        sessionId: activeAiSessionId,
-      })
+    async (message: string) => {
+      if (isSending) return
+      setError(null)
+      setIsSending(true)
+
+      const userMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: message,
+        timestamp: new Date().toISOString(),
+      }
+      setMessages((prev) => [...prev, userMsg])
+
+      try {
+        const events = await fetchEvents()
+
+        const history: AssistantMessage[] = messages.map((m) => ({
+          role: m.role === "user" ? "user" : "model",
+          content: m.content,
+        }))
+
+        const reply = await callAssistantChat(
+          profile,
+          events,
+          history,
+          message,
+        )
+
+        const assistantMsg: ChatMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: reply,
+          timestamp: new Date().toISOString(),
+        }
+        setMessages((prev) => [...prev, assistantMsg])
+      } catch (err) {
+        setError(
+          err instanceof Error ? err : new Error("Failed to send"),
+        )
+        setMessages((prev) => prev.filter((m) => m.id !== userMsg.id))
+      } finally {
+        setIsSending(false)
+      }
     },
-    [sendMessageMutate, activeAiSessionId]
+    [isSending, messages, profile],
   )
 
   const clearMessages = useCallback(() => {
     setMessages([])
-    setActiveAiSessionId(null)
-  }, [setActiveAiSessionId])
+    clearChatStorage()
+  }, [])
 
   return {
     messages,
     send,
     clearMessages,
-    isSending: isPending,
+    isSending,
     error,
   }
 }
