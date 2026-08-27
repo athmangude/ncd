@@ -225,7 +225,7 @@ function validateActions(raw: unknown): RawAction[] {
   return arr.filter((item): item is RawAction => {
     if (typeof item !== "object" || item === null) return false
     const obj = item as Record<string, unknown>
-    if (Object.hasOwn(obj, "__proto__") || Object.hasOwn(obj, "constructor")) return false
+    if (Object.prototype.hasOwnProperty.call(obj, "__proto__") || Object.prototype.hasOwnProperty.call(obj, "constructor")) return false
     return (
       typeof obj.actionType === "string" &&
       VALID_ACTION_TYPES.has(obj.actionType) &&
