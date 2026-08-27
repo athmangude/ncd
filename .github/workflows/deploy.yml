@@ -2,7 +2,7 @@ name: Deploy prototype to GitHub Pages
 
 on:
   push:
-    branches: [develop, main]
+    branches: [ncd-features, main]
   workflow_dispatch:
 
 permissions:
