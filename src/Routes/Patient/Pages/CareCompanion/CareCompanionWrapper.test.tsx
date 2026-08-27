@@ -59,9 +59,6 @@ vi.mock("./RefillSchedulePage", () => ({
 vi.mock("./EducationFeedPage", () => ({
   default: () => <div>EducationFeed</div>,
 }))
-vi.mock("./PharmacyStockFinderPage", () => ({
-  default: () => <div>PharmacyStock</div>,
-}))
 vi.mock("./MedicationLoanPage", () => ({
   default: () => <div>MedicationLoan</div>,
 }))
@@ -297,12 +294,6 @@ describe("CareCompanionWrapper", () => {
       withProfile()
       renderWrapper("/patients/companion/education")
       expect(await screen.findByText("EducationFeed")).toBeInTheDocument()
-    })
-
-    it("renders PharmacyStockFinderPage on /pharmacy-stock", async () => {
-      withProfile()
-      renderWrapper("/patients/companion/pharmacy-stock")
-      expect(await screen.findByText("PharmacyStock")).toBeInTheDocument()
     })
 
     it("renders MedicationLoanPage on /medication-loan", async () => {

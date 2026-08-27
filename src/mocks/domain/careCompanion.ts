@@ -76,6 +76,7 @@ import medicationLoanPreapprovalSeed from "../fixtures/medication-loan-preapprov
 import emergencyTransportCreditSeed from "../fixtures/emergency-transport-credit.json"
 import aiConversationsSeed from "../fixtures/ai-assistant-conversations.json"
 import careCompanionProfileSeed from "../fixtures/care-companion-profile.json"
+import facilitiesSeed from "../fixtures/facilities.json"
 // Static fixture no longer used — notifications are seeded dynamically from intake profile
 // import careCompanionNotificationsSeed from "../fixtures/care-companion-notifications.json"
 
@@ -1246,6 +1247,89 @@ export function getNearbyStock(medicationId: string): PharmacyStock[] {
   return matching.sort(
     (a, b) => (a.distance ?? Infinity) - (b.distance ?? Infinity),
   )
+}
+
+/**
+ * Generates pharmacy stock entries for the given medications across real
+ * facilities from the discovery fixture. Uses a simple hash to assign
+ * deterministic stock statuses so results are stable across reloads.
+ */
+export function getProfileAwarePharmacyStock(
+  medicationNames: string[],
+): PharmacyStock[] {
+  if (medicationNames.length === 0) return []
+
+  type SeedFacility = {
+    id: string
+    name: string
+    latitude: string
+    longitude: string
+    verificationStatus: string
+  }
+  const allFacilities = facilitiesSeed as SeedFacility[]
+  const pharmacyFacilities = allFacilities.filter(
+    (f) => f.verificationStatus === "APPROVED",
+  )
+
+  const statuses: PharmacyStock["status"][] = [
+    "IN_STOCK",
+    "IN_STOCK",
+    "IN_STOCK",
+    "LOW_STOCK",
+    "OUT_OF_STOCK",
+  ]
+
+  function simpleHash(s: string): number {
+    let h = 0
+    for (let i = 0; i < s.length; i++) {
+      h = ((h << 5) - h + s.charCodeAt(i)) | 0
+    }
+    return Math.abs(h)
+  }
+
+  const now = new Date()
+  const results: PharmacyStock[] = []
+
+  for (const med of medicationNames) {
+    for (const fac of pharmacyFacilities) {
+      const hash = simpleHash(`${med}:${fac.id}`)
+      const carry = hash % 10
+      if (carry >= 7) continue
+
+      const status = statuses[hash % statuses.length]
+      const hoursAgo = (hash % 48) + 1
+      const reportedAt = new Date(
+        now.getTime() - hoursAgo * 60 * 60 * 1000,
+      ).toISOString()
+
+      results.push({
+        facilityId: Number(fac.id),
+        facilityName: fac.name,
+        medicationName: med,
+        status,
+        lastReportedAt: reportedAt,
+        distance: null,
+        lat: parseFloat(fac.latitude),
+        lng: parseFloat(fac.longitude),
+      })
+    }
+  }
+
+  return results
+}
+
+/**
+ * Returns stock entries for a specific facility, generated from the user's
+ * profile medications. Returns empty array if no profile exists.
+ */
+export function getFacilityMedicationStock(
+  facilityId: string,
+): PharmacyStock[] {
+  const profile = getCareCompanionProfile()
+  if (!profile?.treatment?.medicationNames?.length) return []
+
+  const all = getProfileAwarePharmacyStock(profile.treatment.medicationNames)
+  return all.filter((s) => s.facilityId === Number(facilityId))
 }
 
 export function getMedicationLoanPreApproval(): MedicationLoanPreApproval {

@@ -213,6 +213,10 @@ export const EVENTS = {
     FACILITY_REVIEW_PROMPT_VIEW: "DISCOVERY:FacilityReview:prompt-view",
     FACILITY_REVIEW_PROMPT_TAP: "DISCOVERY:FacilityReview:prompt-tap",
     CATEGORY_TILE_TOGGLE: "DISCOVERY:CategoryTile:toggle",
+    MEDICATION_STOCK_VIEW: "DISCOVERY:MedicationStock:view",
+    MEDICATION_STOCK_SELECT: "DISCOVERY:MedicationStock:select",
+    MEDICATION_STOCK_EXPAND: "DISCOVERY:MedicationStock:expand",
+    FACILITY_MEDICATION_STOCK_VIEW: "DISCOVERY:FacilityMedicationStock:view",
   },
 
   // PWA_INSTALL Journey

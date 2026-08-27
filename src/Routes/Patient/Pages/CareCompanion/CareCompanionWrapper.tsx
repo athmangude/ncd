@@ -13,7 +13,6 @@ const PAGE_TITLES: Record<string, string> = {
   "/medication-cards": "Medication Cards",
   "/refill-schedule": "Medication & Test Schedule",
   "/education": "Health Education",
-  "/pharmacy-stock": "Pharmacy Stock Finder",
   "/medication-loan": "Medication Loan",
   "/assistant": "Care Assistant",
 }
@@ -25,7 +24,6 @@ const MedicationTimelinePage = lazy(() => import("./MedicationTimelinePage"))
 const MedicationCardsPage = lazy(() => import("./MedicationCardsPage"))
 const RefillSchedulePage = lazy(() => import("./RefillSchedulePage"))
 const EducationFeedPage = lazy(() => import("./EducationFeedPage"))
-const PharmacyStockFinderPage = lazy(() => import("./PharmacyStockFinderPage"))
 const MedicationLoanPage = lazy(() => import("./MedicationLoanPage"))
 const AiAssistantPage = lazy(() => import("./AiAssistantPage"))
 
@@ -103,14 +101,6 @@ export default function CareCompanionWrapper() {
             element={
               <RouteMetadata title="Health Education">
                 <EducationFeedPage />
-              </RouteMetadata>
-            }
-          />
-          <Route
-            path="/pharmacy-stock"
-            element={
-              <RouteMetadata title="Pharmacy Stock Finder">
-                <PharmacyStockFinderPage />
               </RouteMetadata>
             }
           />

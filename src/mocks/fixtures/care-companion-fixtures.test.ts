@@ -716,40 +716,24 @@ describe("refill-schedules.json", () => {
 describe("education-cards.json", () => {
   const cards = educationCards as EducationContentCard[]
 
-  it("contains exactly 12 education cards", () => {
-    expect(cards).toHaveLength(12)
+  it("contains at least 80 education cards covering all conditions", () => {
+    expect(cards.length).toBeGreaterThanOrEqual(80)
   })
 
-  it("has 4 dietary cards", () => {
-    const dietary = cards.filter((c) => c.contentType === "DIETARY")
-    expect(dietary).toHaveLength(4)
+  it("has cards for every content type", () => {
+    const types = new Set(cards.map((c) => c.contentType))
+    expect(types).toContain("DIETARY")
+    expect(types).toContain("EXERCISE")
+    expect(types).toContain("MYTH_BUSTING")
+    expect(types).toContain("EMOTIONAL")
+    expect(types).toContain("SELF_MONITORING")
+    expect(types).toContain("MILESTONE")
+    expect(types).toContain("ACCEPTANCE")
   })
 
-  it("has 2 exercise cards", () => {
-    const exercise = cards.filter((c) => c.contentType === "EXERCISE")
-    expect(exercise).toHaveLength(2)
-  })
-
-  it("has 2 myth-busting cards", () => {
-    const myths = cards.filter((c) => c.contentType === "MYTH_BUSTING")
-    expect(myths).toHaveLength(2)
-  })
-
-  it("has 2 emotional/acceptance cards", () => {
-    const emotional = cards.filter(
-      (c) => c.contentType === "EMOTIONAL" || c.contentType === "ACCEPTANCE",
-    )
-    expect(emotional).toHaveLength(2)
-  })
-
-  it("has 1 self-monitoring card", () => {
-    const selfMon = cards.filter((c) => c.contentType === "SELF_MONITORING")
-    expect(selfMon).toHaveLength(1)
-  })
-
-  it("has 1 milestone card", () => {
-    const milestone = cards.filter((c) => c.contentType === "MILESTONE")
-    expect(milestone).toHaveLength(1)
+  it("has cards for most NCD conditions", () => {
+    const conditions = new Set(cards.map((c) => c.conditionType))
+    expect(conditions.size).toBeGreaterThanOrEqual(10)
   })
 
   it("every card has required fields with content", () => {
@@ -780,7 +764,12 @@ describe("education-cards.json", () => {
   })
 
   it("conditionType values are all valid ConditionType", () => {
-    const valid = new Set(["HYPERTENSION", "DIABETES", "GENERAL"])
+    const valid = new Set([
+      "HYPERTENSION", "DIABETES", "GENERAL", "ASTHMA", "CANCER",
+      "KIDNEY_DISEASE", "HEART_DISEASE", "SICKLE_CELL", "HIV_AIDS",
+      "EPILEPSY", "COPD", "ARTHRITIS", "MENTAL_HEALTH", "THYROID",
+      "STROKE", "LIVER_DISEASE",
+    ])
     for (const card of cards) {
       expect(valid).toContain(card.conditionType)
     }

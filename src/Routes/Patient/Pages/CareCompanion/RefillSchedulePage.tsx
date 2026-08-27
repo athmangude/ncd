@@ -1003,7 +1003,7 @@ export default function RefillSchedulePage() {
             trackEvent(
               EVENTS.CARE_COMPANION.REFILL_SCHEDULE.FIND_PHARMACY_TAP,
             )
-            navigate("/patients/companion/pharmacy-stock")
+            navigate("/patients", { state: { tab: "explore" } })
           }}
           className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors active:bg-primary/90"
         >

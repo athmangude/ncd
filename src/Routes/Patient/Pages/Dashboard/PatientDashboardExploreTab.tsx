@@ -10,6 +10,7 @@ import { DashboardSkeleton } from "./components/DashboardSkeleton"
 import { Facility } from "./components/discovery/types"
 import { useEligibleDiscountCodes } from "./hooks/useEligibleDiscountCodes"
 import { useDashboardFirstLoad } from "./hooks/useDashboardFirstLoad"
+import { useMyMedicationStock } from "./components/discovery/useMyMedicationStock"
 import { trackEvent, EVENTS } from "@/analytics"
 
 /** Distance in km between two points (Haversine). */
@@ -67,11 +68,12 @@ export default function PatientDashboardExploreTab({
 
   const isOffline = useOffline()
 
-  // Patient-eligible discount codes — same source as the Payments tab so the
-  // two surfaces stay in sync. React Query dedupes via the shared queryKey.
   const { data: discountCodes = [] } = useEligibleDiscountCodes(
-    isActive && !isOffline
+    isActive && !isOffline,
   )
+
+  const { summaries: medicationSummaries, rawStock: medicationStock } =
+    useMyMedicationStock(isActive && !isOffline)
 
   useEffect(() => {
     if (!isActive) return
@@ -135,6 +137,8 @@ export default function PatientDashboardExploreTab({
       distanceByFacilityId={distanceByFacilityId}
       locationName={locationName}
       animationMode={animationMode}
+      medicationSummaries={medicationSummaries}
+      medicationStock={medicationStock}
     />
   )
 }

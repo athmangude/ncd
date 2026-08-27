@@ -26,6 +26,7 @@ import {
   Share2,
   Upload,
   Wrench,
+  UserCog,
 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
@@ -179,6 +180,12 @@ export default function PatientProfile() {
   }
 
   const menuOptions = [
+    {
+      title: "Update Health Profile",
+      description: "Update your conditions, medications, and allergies",
+      icon: <UserCog className="h-5 w-5 text-muted-foreground" />,
+      onClick: () => navigate("/patients/companion/intake"),
+    },
     {
       title: "Payment History",
       description: "View your treatments/invoices",

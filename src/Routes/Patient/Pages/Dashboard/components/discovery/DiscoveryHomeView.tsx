@@ -6,6 +6,7 @@ import {
   BadgeCheck,
   ChevronRight,
   Percent,
+  Pill,
   TrendingUp,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
@@ -24,10 +25,15 @@ import {
 } from "@/components/Item"
 import { SectionTitle } from "@/components/SectionTitle"
 import { DiscountDetailsDrawer } from "@/Routes/Patient/components/DiscountDetailsDrawer"
+import { MedicationStockSection } from "./MedicationStockSection"
 import { Facility } from "./types"
 import { DiscountCode } from "../DiscountsSection"
 import { DashboardStagger, DashboardSection } from "../DashboardStagger"
 import type { DashboardAnimationMode } from "../DashboardStagger"
+import type {
+  MedicationStockSummary,
+} from "./useMyMedicationStock"
+import type { PharmacyStock } from "@/types/care-companion"
 
 interface DiscoveryHomeViewProps {
   facilities: Facility[]
@@ -38,6 +44,8 @@ interface DiscoveryHomeViewProps {
   distanceByFacilityId: Map<string, number>
   locationName?: string | null
   animationMode: DashboardAnimationMode
+  medicationSummaries?: MedicationStockSummary[]
+  medicationStock?: PharmacyStock[]
 }
 
 export function DiscoveryHomeView({
@@ -49,14 +57,43 @@ export function DiscoveryHomeView({
   distanceByFacilityId,
   locationName,
   animationMode,
+  medicationSummaries = [],
+  medicationStock = [],
 }: DiscoveryHomeViewProps) {
   const navigate = useNavigate()
   const verifiedOnly = activeTab === "jireh"
-  const verifiedFacilities = facilities.filter(
-    (f) => f.verificationStatus === "APPROVED"
+  const [selectedMedication, setSelectedMedication] = useState<string | null>(
+    null,
   )
+
+  const stockByFacilityId = new Map<string, PharmacyStock[]>()
+  for (const entry of medicationStock) {
+    const fid = String(entry.facilityId)
+    const arr = stockByFacilityId.get(fid)
+    if (arr) arr.push(entry)
+    else stockByFacilityId.set(fid, [entry])
+  }
+
+  const facilityIdsWithMed = selectedMedication
+    ? new Set(
+        medicationStock
+          .filter(
+            (s) =>
+              s.medicationName === selectedMedication &&
+              s.status !== "OUT_OF_STOCK",
+          )
+          .map((s) => String(s.facilityId)),
+      )
+    : null
+
+  const verifiedFacilities = facilities.filter((f) => {
+    if (f.verificationStatus !== "APPROVED") return false
+    if (facilityIdsWithMed && !facilityIdsWithMed.has(f.id)) return false
+    return true
+  })
+
   const [selectedDiscount, setSelectedDiscount] = useState<DiscountCode | null>(
-    null
+    null,
   )
   const [isDiscountDrawerOpen, setIsDiscountDrawerOpen] = useState(false)
 
@@ -188,6 +225,25 @@ export function DiscoveryHomeView({
           </DashboardSection>
         )}
 
+        {/* Your medications nearby */}
+        {medicationSummaries.length > 0 && (
+          <DashboardSection
+            mode={animationMode}
+            className="flex flex-col w-full"
+          >
+            <MedicationStockSection
+              summaries={medicationSummaries}
+              selectedMedication={selectedMedication}
+              onSelectMedication={setSelectedMedication}
+            />
+            {selectedMedication && verifiedFacilities.length === 0 && (
+              <p className="text-xs text-muted-foreground text-center py-3">
+                No nearby facilities have {selectedMedication} available.
+              </p>
+            )}
+          </DashboardSection>
+        )}
+
         {/* Verified partners */}
         {verifiedFacilities.length > 0 && (
           <DashboardSection
@@ -200,14 +256,29 @@ export function DiscoveryHomeView({
               count={verifiedFacilities.length}
             />
             <div className="flex flex-col gap-2 w-full">
-              {verifiedFacilities.map((f) => (
-                <PartnerCard
-                  key={f.id}
-                  facility={f}
-                  distance={distanceByFacilityId.get(f.id) ?? null}
-                  onClick={() => onFacilitySelect(f)}
-                />
-              ))}
+              {verifiedFacilities.map((f) => {
+                const facilityStock = stockByFacilityId.get(f.id)
+                const inStockCount = facilityStock
+                  ? facilityStock.filter(
+                      (s) => s.status === "IN_STOCK" || s.status === "LOW_STOCK",
+                    ).length
+                  : 0
+                const totalMeds = medicationSummaries.length
+
+                return (
+                  <PartnerCard
+                    key={f.id}
+                    facility={f}
+                    distance={distanceByFacilityId.get(f.id) ?? null}
+                    onClick={() => onFacilitySelect(f)}
+                    medStockLabel={
+                      totalMeds > 0 && inStockCount > 0
+                        ? `${inStockCount} of ${totalMeds} meds`
+                        : undefined
+                    }
+                  />
+                )
+              })}
             </div>
           </DashboardSection>
         )}
@@ -317,10 +388,12 @@ function PartnerCard({
   facility,
   distance,
   onClick,
+  medStockLabel,
 }: {
   facility: Facility
   distance: number | null
   onClick: () => void
+  medStockLabel?: string
 }) {
   const categories = facility.serviceCategories ?? []
   const visibleCategories = categories.slice(0, VISIBLE_CATEGORY_PILLS)
@@ -347,23 +420,27 @@ function PartnerCard({
           </div>
         </div>
 
-        {categories.length > 0 && (
-          <div className="flex items-center gap-2 w-full">
-            {visibleCategories.map((cat) => (
-              <span
-                key={cat}
-                className="bg-secondary text-secondary-foreground text-sm font-medium px-3 py-1 rounded-md truncate max-w-[96px]"
-              >
-                {formatServiceCategory(cat)}
-              </span>
-            ))}
-            {overflowCount > 0 && (
-              <span className="text-sm text-muted-foreground shrink-0">
-                +{overflowCount} more
-              </span>
-            )}
-          </div>
-        )}
+        <div className="flex items-center gap-2 w-full">
+          {medStockLabel && (
+            <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-0.5 rounded-full">
+              <Pill className="h-3 w-3" />
+              {medStockLabel}
+            </span>
+          )}
+          {visibleCategories.map((cat) => (
+            <span
+              key={cat}
+              className="bg-secondary text-secondary-foreground text-sm font-medium px-3 py-1 rounded-md truncate max-w-[96px]"
+            >
+              {formatServiceCategory(cat)}
+            </span>
+          ))}
+          {overflowCount > 0 && (
+            <span className="text-sm text-muted-foreground shrink-0">
+              +{overflowCount} more
+            </span>
+          )}
+        </div>
       </button>
     </Item>
   )

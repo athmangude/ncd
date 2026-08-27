@@ -10,10 +10,8 @@ import {
   Loader2,
   Pill,
   Clock,
-  MapPin,
   CreditCard,
   Sparkles,
-  UserCog,
   Plus,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -614,22 +612,10 @@ const QUICK_ACTIONS = [
     color: "bg-sky-100 text-sky-600",
   },
   {
-    label: "Find Pharmacy",
-    icon: MapPin,
-    path: "/patients/companion/pharmacy-stock",
-    color: "bg-teal-100 text-teal-600",
-  },
-  {
     label: "Medication Loan",
     icon: CreditCard,
     path: "/patients/companion/medication-loan",
     color: "bg-amber-100 text-amber-600",
-  },
-  {
-    label: "Update Profile",
-    icon: UserCog,
-    path: "/patients/companion/intake",
-    color: "bg-slate-100 text-slate-600",
   },
 ]
 

@@ -22,6 +22,8 @@ import {
   getEducationViewedIds,
   markEducationViewed,
   getPharmacyStock,
+  getProfileAwarePharmacyStock,
+  getFacilityMedicationStock,
   getMedicationLoanPreApproval,
   matchAssistantResponse,
   getEventsLog,
@@ -289,6 +291,28 @@ export const careCompanionHandlers = [
 
     return HttpResponse.json(stock)
   }),
+
+  // -- Profile-aware pharmacy stock ------------------------------------------
+  http.get("/care-companion/pharmacy-stock/profile", () => {
+    const profile = getCareCompanionProfile()
+    if (!profile?.treatment?.medicationNames?.length) {
+      return HttpResponse.json([])
+    }
+    const stock = getProfileAwarePharmacyStock(
+      profile.treatment.medicationNames,
+    )
+    return HttpResponse.json(stock)
+  }),
+
+  // -- Facility-specific medication stock -----------------------------------
+  http.get(
+    "/care-companion/pharmacy-stock/facility/:facilityId",
+    ({ params }) => {
+      const { facilityId } = params as { facilityId: string }
+      const stock = getFacilityMedicationStock(facilityId)
+      return HttpResponse.json(stock)
+    },
+  ),
 
   // -- Interaction check -----------------------------------------------------
   http.get("/care-companion/interaction-check", ({ request }) => {

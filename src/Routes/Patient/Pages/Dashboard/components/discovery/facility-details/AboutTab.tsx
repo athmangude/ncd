@@ -2,6 +2,7 @@ import { FileSearch } from "lucide-react"
 import { FacilityDetail } from "../types"
 import { AvailablePromosSection } from "./AvailablePromosSection"
 import { ServicesOfferedSection } from "./ServicesOfferedSection"
+import { FacilityMedicationStock } from "./FacilityMedicationStock"
 
 interface AboutTabProps {
   facility: FacilityDetail
@@ -11,12 +12,9 @@ export function AboutTab({ facility }: AboutTabProps) {
   const hasPromos = facility.activeDiscounts.length > 0
   const hasServices = (facility.services?.length ?? 0) > 0
 
-  if (!hasPromos && !hasServices) {
-    return <EmptyState />
-  }
-
   return (
     <div className="flex flex-col gap-6 px-4 py-4">
+      <FacilityMedicationStock facilityId={facility.id} />
       {hasPromos && (
         <AvailablePromosSection
           facilityId={facility.id}
@@ -25,6 +23,7 @@ export function AboutTab({ facility }: AboutTabProps) {
         />
       )}
       {hasServices && <ServicesOfferedSection services={facility.services} />}
+      {!hasPromos && !hasServices && <EmptyState />}
     </div>
   )
 }
