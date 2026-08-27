@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { Switch } from "@/components/Switch"
@@ -13,11 +13,24 @@ import {
   ItemActions,
 } from "@/components/Item"
 import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/Drawer"
+import { cn } from "@/lib/utils"
+import {
   BadgeCheck,
   Building2,
+  Car,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
   Clock,
   History,
   MapPin,
+  Pill,
   Search,
   SlidersHorizontal,
   ChevronRight,
@@ -27,7 +40,10 @@ import { useDiscovery } from "./useDiscovery"
 import { useRecentSearches } from "./api/useRecentSearches"
 import { useLogRecentSearch } from "./api/useLogRecentSearch"
 import { usePreferredProviders } from "./api/usePreferredProviders"
+import { useStockSearch } from "./api/useStockSearch"
+import type { StockSearchGroup } from "./api/useStockSearch"
 import { Facility } from "./types"
+import type { PharmacyStock, StockStatus } from "@/types/care-companion"
 
 const URBAN_KMH = 30
 
@@ -91,6 +107,18 @@ export default function SearchPage() {
   const recentSearchesQuery = useRecentSearches()
   const preferredProvidersQuery = usePreferredProviders()
   const logRecentSearch = useLogRecentSearch()
+
+  const { data: stockResults = [] } = useStockSearch(searchQuery)
+  const [drawerGroup, setDrawerGroup] = useState<StockSearchGroup | null>(null)
+
+  const sortedDrawerEntries = useMemo(() => {
+    if (!drawerGroup || !userLocation) return drawerGroup?.entries ?? []
+    return [...drawerGroup.entries].sort((a, b) => {
+      const da = getStockDriveInfo(a, userLocation)
+      const db = getStockDriveInfo(b, userLocation)
+      return (da?.distanceKm ?? Infinity) - (db?.distanceKm ?? Infinity)
+    })
+  }, [drawerGroup, userLocation])
 
   useEffect(() => {
     trackEvent(EVENTS.DISCOVERY.SEARCH_PAGE_VIEW)
@@ -202,25 +230,76 @@ export default function SearchPage() {
         )}
 
         {isSearching && (
-          <div className="flex flex-col gap-3 w-full">
-            {filteredFacilities.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No facilities match.
-              </p>
-            ) : (
-              filteredFacilities.map((f) => (
-                <FacilityResultRow
-                  key={f.id}
-                  facility={f}
-                  km={kmById.get(f.id) ?? null}
-                  locationLoading={userLocation == null}
-                  onClick={() => onResultTap(f)}
-                />
-              ))
+          <div className="flex flex-col gap-4 w-full">
+            {stockResults.length > 0 && (
+              <StockResultsSection
+                groups={stockResults}
+                onGroupTap={setDrawerGroup}
+              />
             )}
+
+            <div className="flex flex-col gap-3 w-full">
+              {filteredFacilities.length === 0 && stockResults.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No results match your search.
+                </p>
+              ) : filteredFacilities.length === 0 ? null : (
+                <>
+                  {stockResults.length > 0 && (
+                    <SectionTitle level={3} className="pt-2">
+                      Facilities
+                    </SectionTitle>
+                  )}
+                  {filteredFacilities.map((f) => (
+                    <FacilityResultRow
+                      key={f.id}
+                      facility={f}
+                      km={kmById.get(f.id) ?? null}
+                      locationLoading={userLocation == null}
+                      onClick={() => onResultTap(f)}
+                    />
+                  ))}
+                </>
+              )}
+            </div>
           </div>
         )}
       </div>
+
+      <Drawer
+        open={drawerGroup !== null}
+        onOpenChange={(open) => {
+          if (!open) setDrawerGroup(null)
+        }}
+      >
+        <DrawerContent className="max-h-[85dvh]">
+          {drawerGroup && (
+            <>
+              <DrawerHeader className="pb-2">
+                <DrawerTitle className="text-base">
+                  {drawerGroup.name}
+                </DrawerTitle>
+                <DrawerDescription className="text-xs text-muted-foreground mt-0.5">
+                  Available at{" "}
+                  {drawerGroup.entries.filter((e) => e.status !== "OUT_OF_STOCK").length}{" "}
+                  {drawerGroup.entries.filter((e) => e.status !== "OUT_OF_STOCK").length === 1
+                    ? "facility"
+                    : "facilities"}
+                </DrawerDescription>
+              </DrawerHeader>
+              <div className="px-4 pb-6 space-y-2 overflow-y-auto">
+                {sortedDrawerEntries.map((entry) => (
+                  <StockFacilityRow
+                    key={`${entry.facilityId}-${entry.medicationName}`}
+                    entry={entry}
+                    userLocation={userLocation}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </DrawerContent>
+      </Drawer>
     </PatientPageWrapper>
   )
 }
@@ -249,7 +328,7 @@ function SearchControls({
       <div className="flex flex-col gap-1 items-center w-full text-center">
         <SectionTitle>Find care near you</SectionTitle>
         <p className="text-sm text-muted-foreground">
-          Search by name, area, or service.
+          Search facilities, medications, or lab tests.
         </p>
       </div>
 
@@ -257,7 +336,7 @@ function SearchControls({
         <Search className="h-4 w-4 text-muted-foreground shrink-0" />
         <input
           className="flex-1 min-w-0 text-base bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
-          placeholder="Search facilities"
+          placeholder="Search facilities, meds, or tests"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           autoFocus
@@ -502,5 +581,202 @@ function FacilityResultRow({
         )}
       </button>
     </Item>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Medication & test stock search results
+// ---------------------------------------------------------------------------
+
+const AVG_SPEED_KMH = 28
+const ROAD_INFLATE = 1.3
+
+function haversineKm(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number,
+): number {
+  const R = 6371
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const dLat = toRad(lat2 - lat1)
+  const dLng = toRad(lng2 - lng1)
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.sin(dLng / 2) ** 2 * Math.cos(toRad(lat1)) * Math.cos(toRad(lat2))
+  return 2 * R * Math.asin(Math.sqrt(a))
+}
+
+function getStockDriveInfo(
+  entry: PharmacyStock,
+  userLocation: { lat: number; lng: number } | null | undefined,
+) {
+  if (!userLocation || !entry.lat || !entry.lng) return null
+  const straightKm = haversineKm(
+    userLocation.lat,
+    userLocation.lng,
+    entry.lat,
+    entry.lng,
+  )
+  const roadKm = straightKm * ROAD_INFLATE
+  const driveMinutes = Math.max(1, Math.round((roadKm / AVG_SPEED_KMH) * 60))
+  return { distanceKm: roadKm, driveMinutes }
+}
+
+function formatStockDistance(km: number) {
+  if (km < 1) return `${Math.round(km * 1000)}m`
+  return `${km.toFixed(1)}km`
+}
+
+function formatStockDriveTime(minutes: number) {
+  if (minutes < 60) return `${minutes} min`
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  return m > 0 ? `${h}h ${m}m` : `${h}h`
+}
+
+function formatStockPrice(price: number | undefined) {
+  if (price == null) return null
+  if (price === 0) return "Free"
+  return `KES ${price.toLocaleString()}`
+}
+
+const STOCK_STATUS_CONFIG: Record<
+  StockStatus,
+  { label: string; className: string; icon: typeof CheckCircle2 }
+> = {
+  IN_STOCK: {
+    label: "In stock",
+    className: "bg-emerald-100 text-emerald-700",
+    icon: CheckCircle2,
+  },
+  LOW_STOCK: {
+    label: "Low stock",
+    className: "bg-amber-100 text-amber-700",
+    icon: AlertTriangle,
+  },
+  OUT_OF_STOCK: {
+    label: "Out of stock",
+    className: "bg-red-100 text-red-700",
+    icon: XCircle,
+  },
+}
+
+function StockResultsSection({
+  groups,
+  onGroupTap,
+}: {
+  groups: StockSearchGroup[]
+  onGroupTap: (g: StockSearchGroup) => void
+}) {
+  return (
+    <div className="flex flex-col w-full">
+      <div className="flex items-center gap-2 py-1.5">
+        <Pill className="h-4 w-4 text-foreground" />
+        <SectionTitle level={3}>Medications & tests</SectionTitle>
+      </div>
+      <div className="flex flex-col gap-2">
+        {groups.map((g) => {
+          const inStock = g.entries.filter(
+            (e) => e.status === "IN_STOCK" || e.status === "LOW_STOCK",
+          ).length
+          const prices = g.entries
+            .map((e) => e.priceKES)
+            .filter((p): p is number => p != null && p > 0)
+          const minPrice = prices.length > 0 ? Math.min(...prices) : null
+
+          return (
+            <Item
+              key={g.name}
+              asChild
+              size="sm"
+              className="bg-card text-left"
+            >
+              <button type="button" onClick={() => onGroupTap(g)}>
+                <ItemMedia>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
+                    <Pill className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                </ItemMedia>
+                <ItemContent className="min-w-0">
+                  <ItemTitle className="truncate">{g.name}</ItemTitle>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    {inStock > 0 ? (
+                      <span className="text-emerald-700">
+                        In stock at {inStock}{" "}
+                        {inStock === 1 ? "facility" : "facilities"}
+                      </span>
+                    ) : (
+                      <span className="text-red-600">Out of stock nearby</span>
+                    )}
+                    {minPrice != null && (
+                      <span>from KES {minPrice.toLocaleString()}</span>
+                    )}
+                  </div>
+                </ItemContent>
+                <ItemActions>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </ItemActions>
+              </button>
+            </Item>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function StockFacilityRow({
+  entry,
+  userLocation,
+}: {
+  entry: PharmacyStock
+  userLocation: { lat: number; lng: number } | null
+}) {
+  const config = STOCK_STATUS_CONFIG[entry.status]
+  const Icon = config.icon
+  const price = formatStockPrice(entry.priceKES)
+  const drive = getStockDriveInfo(entry, userLocation)
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+        <MapPin className="h-4 w-4 text-muted-foreground" />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-foreground truncate">
+          {entry.facilityName}
+        </p>
+        <div className="flex items-center gap-2 mt-0.5">
+          <span
+            className={cn(
+              "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+              config.className,
+            )}
+          >
+            <Icon className="h-2.5 w-2.5" />
+            {config.label}
+          </span>
+          {drive && (
+            <>
+              <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
+                <Car className="h-2.5 w-2.5" />
+                {formatStockDriveTime(drive.driveMinutes)}
+              </span>
+              <span className="text-[11px] text-muted-foreground">
+                {formatStockDistance(drive.distanceKm)}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {price && (
+        <span className="shrink-0 text-sm font-semibold text-foreground font-mono tabular-nums">
+          {price}
+        </span>
+      )}
+    </div>
   )
 }

@@ -111,7 +111,7 @@ export function DiscoveryHomeView({
         <div className="flex flex-col gap-1 items-center w-full text-center">
           <h1 className="text-foreground">Find care near you</h1>
           <p className="text-sm text-muted-foreground">
-            Search by name, area, or service.
+            Search facilities, medications, or lab tests.
           </p>
         </div>
 
@@ -125,7 +125,7 @@ export function DiscoveryHomeView({
           >
             <Search className="h-4 w-4 text-muted-foreground shrink-0" />
             <span className="flex-1 min-w-0 text-base text-muted-foreground truncate">
-              Search facilities
+              Search facilities, meds, or tests
             </span>
           </button>
           <Chip

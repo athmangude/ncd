@@ -1373,6 +1373,49 @@ export function getFacilityMedicationStock(
   return all.filter((s) => s.facilityId === Number(facilityId))
 }
 
+export function searchPharmacyStockByName(
+  term: string,
+): { name: string; entries: PharmacyStock[] }[] {
+  if (!term || term.trim().length < 2) return []
+
+  const lower = term.toLowerCase()
+
+  const taxonomyMatches = searchTaxonomy(term)
+  const matchedNames = new Set(
+    taxonomyMatches.map((t) => t.genericName),
+  )
+
+  const profileStock = (() => {
+    const profile = getCareCompanionProfile()
+    const meds = profile?.treatment?.medicationNames ?? []
+    const tests = profile?.recurringTests?.selectedTests ?? []
+    return [...meds, ...tests]
+  })()
+
+  for (const item of profileStock) {
+    if (item.toLowerCase().includes(lower)) {
+      matchedNames.add(item)
+    }
+  }
+
+  if (matchedNames.size === 0) return []
+
+  const allNames = Array.from(matchedNames)
+  const stock = getProfileAwarePharmacyStock(allNames)
+
+  const grouped = new Map<string, PharmacyStock[]>()
+  for (const entry of stock) {
+    const arr = grouped.get(entry.medicationName)
+    if (arr) arr.push(entry)
+    else grouped.set(entry.medicationName, [entry])
+  }
+
+  return Array.from(grouped.entries()).map(([name, entries]) => ({
+    name,
+    entries,
+  }))
+}
+
 export function getMedicationLoanPreApproval(): MedicationLoanPreApproval {
   return readObject<MedicationLoanPreApproval>(
     MEDICATION_LOAN_KEY,

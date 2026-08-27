@@ -24,6 +24,7 @@ import {
   getPharmacyStock,
   getProfileAwarePharmacyStock,
   getFacilityMedicationStock,
+  searchPharmacyStockByName,
   getMedicationLoanPreApproval,
   matchAssistantResponse,
   getEventsLog,
@@ -318,6 +319,14 @@ export const careCompanionHandlers = [
       return HttpResponse.json(stock)
     },
   ),
+
+  // -- Pharmacy stock search ---------------------------------------------------
+  http.get("/companion/pharmacy-stock/search", ({ request }) => {
+    const url = new URL(request.url)
+    const q = url.searchParams.get("q") ?? ""
+    const results = searchPharmacyStockByName(q)
+    return HttpResponse.json(results)
+  }),
 
   // -- Interaction check -----------------------------------------------------
   http.get("/companion/interaction-check", ({ request }) => {
