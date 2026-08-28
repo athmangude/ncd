@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect, useCallback, useRef } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import {
@@ -125,14 +125,18 @@ function RefillItemCard({
   price,
   onSave,
   onRemove,
+  initialEditing = false,
+  scrollRef,
 }: {
   item: RefillScheduleItem
   price: number | null
   onSave: (id: string, nextDate: string, frequencyDays: number, reason: string) => void
   onRemove: (id: string, reason: string) => void
+  initialEditing?: boolean
+  scrollRef?: React.Ref<HTMLDivElement>
 }) {
   const navigate = useNavigate()
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(initialEditing)
   const [confirmingRemove, setConfirmingRemove] = useState(false)
   const [nextDate, setNextDate] = useState(item.expectedRefillDate)
   const [frequency, setFrequency] = useState(
@@ -180,9 +184,11 @@ function RefillItemCard({
 
   return (
     <div
+      ref={scrollRef}
       className={cn(
         "rounded-xl border bg-card p-4 transition-colors",
         item.status === "OVERDUE" && "border-red-200",
+        initialEditing && "ring-2 ring-primary/40",
       )}
     >
       <div className="flex items-center justify-between gap-3">
@@ -410,13 +416,17 @@ function TestItemCard({
   price,
   onSave,
   onRemove,
+  initialEditing = false,
+  scrollRef,
 }: {
   item: TestScheduleItem
   price: number | null
   onSave: (testName: string, nextDate: string, frequencyMonths: number, reason: string) => void
   onRemove: (testName: string, reason: string) => void
+  initialEditing?: boolean
+  scrollRef?: React.Ref<HTMLDivElement>
 }) {
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(initialEditing)
   const [confirmingRemove, setConfirmingRemove] = useState(false)
   const [nextDate, setNextDate] = useState(item.expectedDate)
   const [frequency, setFrequency] = useState(item.frequencyMonths)
@@ -456,9 +466,11 @@ function TestItemCard({
 
   return (
     <div
+      ref={scrollRef}
       className={cn(
         "rounded-xl border bg-card p-4 transition-colors",
         item.status === "OVERDUE" && "border-red-200",
+        initialEditing && "ring-2 ring-primary/40",
       )}
     >
       <div className="flex items-center justify-between gap-3">
@@ -665,10 +677,27 @@ function TestItemCard({
 
 export default function RefillSchedulePage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const editTarget = searchParams.get("edit")
+  const editScrollRef = useRef<HTMLDivElement>(null)
+  const hasScrolled = useRef(false)
   const queryClient = useQueryClient()
   const { data, isLoading, error } = useRefillSchedule()
   const { data: homeData, isLoading: homeLoading } = useCareCompanionHome()
   const { data: profile } = useIntakeProfile()
+
+  useEffect(() => {
+    if (!editTarget || hasScrolled.current) return
+    if (editScrollRef.current) {
+      hasScrolled.current = true
+      requestAnimationFrame(() => {
+        editScrollRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        })
+      })
+    }
+  })
 
   const patchProfile = useMutation({
     mutationFn: async (patch: Record<string, unknown>) => {
@@ -979,9 +1008,21 @@ export default function RefillSchedulePage() {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Medications
           </p>
-          {sortedMeds.map((item) => (
-            <RefillItemCard key={item.id} item={item} price={medPriceMap[item.medicationName.toLowerCase()] ?? null} onSave={handleRefillSave} onRemove={handleRefillRemove} />
-          ))}
+          {sortedMeds.map((item) => {
+            const isEditTarget = editTarget != null &&
+              item.medicationName.toLowerCase() === decodeURIComponent(editTarget).toLowerCase()
+            return (
+              <RefillItemCard
+                key={item.id}
+                item={item}
+                price={medPriceMap[item.medicationName.toLowerCase()] ?? null}
+                onSave={handleRefillSave}
+                onRemove={handleRefillRemove}
+                initialEditing={isEditTarget}
+                scrollRef={isEditTarget ? editScrollRef : undefined}
+              />
+            )
+          })}
         </>
       )}
 
@@ -990,9 +1031,21 @@ export default function RefillSchedulePage() {
           <p className="mt-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Tests
           </p>
-          {sortedTests.map((item) => (
-            <TestItemCard key={item.id} item={item} price={testPriceMap[item.testName.toLowerCase()] ?? null} onSave={handleTestSave} onRemove={handleTestRemove} />
-          ))}
+          {sortedTests.map((item) => {
+            const isEditTarget = editTarget != null &&
+              item.testName.toLowerCase() === decodeURIComponent(editTarget).toLowerCase()
+            return (
+              <TestItemCard
+                key={item.id}
+                item={item}
+                price={testPriceMap[item.testName.toLowerCase()] ?? null}
+                onSave={handleTestSave}
+                onRemove={handleTestRemove}
+                initialEditing={isEditTarget}
+                scrollRef={isEditTarget ? editScrollRef : undefined}
+              />
+            )
+          })}
         </>
       )}
 

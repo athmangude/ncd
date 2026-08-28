@@ -31,7 +31,9 @@ import {
   appendEvent,
   updateEventById,
   updateRefillScheduleItem,
+  cancelRefillScheduleItem,
   updateTestScheduleItem,
+  cancelTestScheduleItem,
   populatePaymentLineItems,
   ensureTestSchedulesSeeded,
   getTestSchedules,
@@ -510,10 +512,18 @@ export const careCompanionHandlers = [
   http.patch("/companion/refill-schedules/:id", async ({ params, request }) => {
     const { id } = params as { id: string }
     const body = (await request.json()) as {
-      nextDate: string
-      frequencyDays: number
+      nextDate?: string
+      frequencyDays?: number
+      status?: string
     }
-    const updated = updateRefillScheduleItem(id, body.nextDate, body.frequencyDays)
+    if (body.status === "CANCELLED") {
+      const updated = cancelRefillScheduleItem(id)
+      if (!updated) {
+        return HttpResponse.json({ error: "Schedule not found" }, { status: 404 })
+      }
+      return HttpResponse.json(updated)
+    }
+    const updated = updateRefillScheduleItem(id, body.nextDate!, body.frequencyDays!)
     if (!updated) {
       return HttpResponse.json({ error: "Schedule not found" }, { status: 404 })
     }
@@ -531,13 +541,22 @@ export const careCompanionHandlers = [
   http.patch("/companion/test-schedules/:testName", async ({ params, request }) => {
     const { testName } = params as { testName: string }
     const body = (await request.json()) as {
-      nextDate: string
-      frequencyMonths: number
+      nextDate?: string
+      frequencyMonths?: number
+      status?: string
+    }
+    const decoded = decodeURIComponent(testName)
+    if (body.status === "CANCELLED") {
+      const updated = cancelTestScheduleItem(decoded)
+      if (!updated) {
+        return HttpResponse.json({ error: "Test schedule not found" }, { status: 404 })
+      }
+      return HttpResponse.json(updated)
     }
     const updated = updateTestScheduleItem(
-      decodeURIComponent(testName),
-      body.nextDate,
-      body.frequencyMonths,
+      decoded,
+      body.nextDate!,
+      body.frequencyMonths!,
     )
     if (!updated) {
       return HttpResponse.json({ error: "Test schedule not found" }, { status: 404 })

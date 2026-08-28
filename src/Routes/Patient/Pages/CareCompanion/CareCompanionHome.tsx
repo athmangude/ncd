@@ -1,7 +1,10 @@
-import { lazy, Suspense, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { lazy, Suspense, useCallback, useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import axios from "axios"
 import {
   Calendar,
+  Check,
   ChevronRight,
   TrendingUp,
   Shield,
@@ -12,17 +15,24 @@ import {
   Clock,
   CreditCard,
   Sparkles,
+  Pencil,
   Plus,
+  Trash2,
+  X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { trackEvent, EVENTS } from "@/analytics"
 import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
 import { SectionErrorBoundary } from "./components/SectionErrorBoundary"
 import { EmergencyCardStaticFallback } from "./components/EmergencyCardStaticFallback"
 import { MedicationCardDrawer } from "./components/MedicationCardDrawer"
 import { AddMedicationDrawer } from "./components/AddMedicationDrawer"
 import { useCareCompanionHome } from "./hooks/useCareCompanionHome"
-import { useIntakeProfile } from "./hooks/useIntakeProfile"
+import { useIntakeProfile, intakeProfileQueryKey } from "./hooks/useIntakeProfile"
+import { refillScheduleQueryKey } from "./hooks/useRefillSchedule"
 import { useAiPipeline } from "./hooks/useAiPipeline"
+import { useMedicationCards } from "./hooks/useMedicationCards"
+import type { AnnotatedMedicationCard } from "./hooks/useMedicationCards"
 import { useNotifications } from "./hooks/useNotifications"
 
 const CareCompanionIntake = lazy(() => import("./Intake/CareCompanionIntake"))
@@ -56,6 +66,7 @@ export default function CareCompanionHome() {
   const { data, isLoading, error } = useCareCompanionHome()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [addMedOpen, setAddMedOpen] = useState(false)
+  const { data: medCardsData } = useMedicationCards()
   useAiPipeline(profile ?? null)
   const navigate = useNavigate()
   const { data: notifications = [] } = useNotifications()
@@ -129,6 +140,8 @@ export default function CareCompanionHome() {
           data={data}
           medicationPrices={medPriceMap}
           testPrices={testPriceMap}
+          medicationCards={medCardsData?.cards ?? []}
+          profile={profile ?? null}
           onAddMedication={() => setAddMedOpen(true)}
         />
       </SectionErrorBoundary>
@@ -276,18 +289,626 @@ function ProfileGreeting({
 // Refill Schedule Card
 // ---------------------------------------------------------------------------
 
+function formatCategory(category: string): string {
+  const labels: Record<string, string> = {
+    MEDICATION: "Medication",
+    LAB_TEST: "Lab Test",
+    CONSULTATION: "Consultation",
+    SUPPLY: "Supply",
+  }
+  return labels[category] ?? category
+}
+
+function findMatchingCard(
+  name: string,
+  cards: AnnotatedMedicationCard[],
+): AnnotatedMedicationCard | undefined {
+  const lower = name.toLowerCase()
+  return (
+    cards.find((c) => c.genericName.toLowerCase() === lower) ??
+    cards.find((c) => c.genericName.toLowerCase().includes(lower)) ??
+    cards.find((c) => lower.includes(c.genericName.toLowerCase())) ??
+    cards.find(
+      (c) => c.slug === lower.replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, ""),
+    )
+  )
+}
+
+const FREQUENCY_OPTIONS = [
+  { value: 14, label: "Every 2 weeks" },
+  { value: 30, label: "Every 30 days" },
+  { value: 60, label: "Every 60 days" },
+  { value: 90, label: "Every 90 days" },
+]
+
+const TEST_FREQUENCY_OPTIONS = [
+  { value: 1, label: "Monthly" },
+  { value: 3, label: "Every 3 months" },
+  { value: 6, label: "Every 6 months" },
+  { value: 12, label: "Yearly" },
+]
+
+const CHANGE_REASONS = [
+  { value: "doctor_recommendation", label: "Doctor recommended" },
+  { value: "side_effects", label: "Side effects" },
+  { value: "cost_concerns", label: "Cost concerns" },
+  { value: "out_of_stock", label: "Medication out of stock" },
+  { value: "feeling_better", label: "Feeling better" },
+  { value: "schedule_conflict", label: "Schedule conflict" },
+  { value: "other", label: "Other" },
+]
+
+function MedScheduleItem({
+  item,
+  price,
+  card,
+  onSave,
+  onRemove,
+}: {
+  item: CareCompanionHomeData["refillSchedule"]["schedules"][number]
+  price: number | undefined
+  card: AnnotatedMedicationCard | undefined
+  onSave: (id: string, nextDate: string, frequencyDays: number, reason: string) => void
+  onRemove: (id: string, reason: string) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
+  const [nextDate, setNextDate] = useState(item.expectedRefillDate)
+  const [frequency, setFrequency] = useState(
+    item.estimatedDaysSupply ?? 30,
+  )
+  const [reason, setReason] = useState("")
+  const [customReason, setCustomReason] = useState("")
+  const [removeReason, setRemoveReason] = useState("")
+  const [customRemoveReason, setCustomRemoveReason] = useState("")
+  const detailPath = card
+    ? `/patients/companion/medication-cards/${card.slug}`
+    : null
+
+  useEffect(() => {
+    setNextDate(item.expectedRefillDate)
+    setFrequency(item.estimatedDaysSupply ?? 30)
+  }, [item.expectedRefillDate, item.estimatedDaysSupply])
+
+  function handleSave() {
+    const finalReason = reason === "other" ? customReason : reason
+    if (!finalReason) return
+    onSave(item.id, nextDate, frequency, finalReason)
+    trackEvent(EVENTS.CARE_COMPANION.REFILL_SCHEDULE.ITEM_TAP, {
+      medicationName: item.medicationName,
+      status: item.status,
+      action: "edit_schedule",
+      reason: finalReason,
+    })
+    setEditing(false)
+    setReason("")
+    setCustomReason("")
+  }
+
+  const canSave = reason === "other" ? customReason.trim().length > 0 : reason.length > 0
+  const canRemove = removeReason === "other"
+    ? customRemoveReason.trim().length > 0
+    : removeReason.length > 0
+
+  function handleRemove() {
+    const finalReason = removeReason === "other" ? customRemoveReason : removeReason
+    if (!finalReason) return
+    onRemove(item.id, finalReason)
+    setEditing(false)
+    setConfirmingRemove(false)
+    setRemoveReason("")
+    setCustomRemoveReason("")
+  }
+
+  const summaryRow = (
+    <div className="flex items-center justify-between">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-xs font-medium text-foreground">
+            {card?.genericName ?? item.medicationName}
+          </p>
+          {card && (
+            <span className="shrink-0 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-medium text-foreground">
+              {formatCategory(card.category)}
+            </span>
+          )}
+        </div>
+        {card && card.brandNames.length > 0 && (
+          <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+            {card.brandNames.join(", ")}
+          </p>
+        )}
+        {card && card.strengths.length > 0 && (
+          <p className="mt-0.5 truncate font-mono text-[11px] text-muted-foreground">
+            {card.strengths.join(" / ")}
+          </p>
+        )}
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          {item.status === "OVERDUE"
+            ? `${Math.abs(item.daysUntilRefill)} days overdue`
+            : item.status === "DUE"
+              ? `Due in ${item.daysUntilRefill} days`
+              : `In ${item.daysUntilRefill} days`}
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-col items-end gap-1">
+          <StatusBadge status={item.status} />
+          {price != null && (
+            <span className="text-[11px] font-mono text-muted-foreground">
+              KES {price.toLocaleString()}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setEditing((v) => !v)
+            setConfirmingRemove(false)
+            setRemoveReason("")
+            setCustomRemoveReason("")
+          }}
+          className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+        >
+          {editing ? (
+            <X className="h-3.5 w-3.5" />
+          ) : (
+            <Pencil className="h-3.5 w-3.5" />
+          )}
+        </button>
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="rounded-lg bg-muted/50 px-3 py-2">
+      {detailPath && !editing ? (
+        <Link to={detailPath} className="block no-underline">
+          {summaryRow}
+        </Link>
+      ) : (
+        summaryRow
+      )}
+
+      {editing && !confirmingRemove && (
+        <div className="mt-3 space-y-3 border-t pt-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium text-muted-foreground">
+              Next refill date
+            </label>
+            <input
+              type="date"
+              value={nextDate}
+              onChange={(e) => setNextDate(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium text-muted-foreground">
+              Refill frequency
+            </label>
+            <select
+              value={frequency}
+              onChange={(e) => setFrequency(Number(e.target.value))}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              {FREQUENCY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium text-muted-foreground">
+              Reason for change
+            </label>
+            <select
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="" disabled>
+                Select a reason
+              </option>
+              {CHANGE_REASONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {reason === "other" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-medium text-muted-foreground">
+                Specify reason
+              </label>
+              <input
+                type="text"
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                placeholder="Enter your reason"
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium",
+              canSave
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground cursor-not-allowed",
+            )}
+          >
+            <Check className="h-3.5 w-3.5" />
+            Save changes
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmingRemove(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Remove from schedule
+          </button>
+        </div>
+      )}
+
+      {editing && confirmingRemove && (
+        <div className="mt-3 space-y-3 border-t pt-3">
+          <p className="text-xs font-medium text-foreground">
+            Why are you removing this medication?
+          </p>
+          <div className="flex flex-col gap-1">
+            <select
+              value={removeReason}
+              onChange={(e) => setRemoveReason(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="" disabled>
+                Select a reason
+              </option>
+              {CHANGE_REASONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {removeReason === "other" && (
+            <div className="flex flex-col gap-1">
+              <input
+                type="text"
+                value={customRemoveReason}
+                onChange={(e) => setCustomRemoveReason(e.target.value)}
+                placeholder="Enter your reason"
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={!canRemove}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium",
+              canRemove
+                ? "bg-red-600 text-white"
+                : "bg-muted text-muted-foreground cursor-not-allowed",
+            )}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Confirm removal
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setConfirmingRemove(false)
+              setRemoveReason("")
+              setCustomRemoveReason("")
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TestScheduleItem({
+  item,
+  price,
+  card,
+  onSave,
+  onRemove,
+}: {
+  item: CareCompanionHomeData["testSchedule"] extends
+    | { schedules: (infer I)[] }
+    | undefined
+    ? I
+    : never
+  price: number | undefined
+  card: AnnotatedMedicationCard | undefined
+  onSave: (testName: string, nextDate: string, frequencyMonths: number, reason: string) => void
+  onRemove: (testName: string, reason: string) => void
+}) {
+  const [editing, setEditing] = useState(false)
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
+  const [nextDate, setNextDate] = useState(item.expectedDate)
+  const [frequency, setFrequency] = useState(item.frequencyMonths)
+  const [reason, setReason] = useState("")
+  const [customReason, setCustomReason] = useState("")
+  const [removeReason, setRemoveReason] = useState("")
+  const [customRemoveReason, setCustomRemoveReason] = useState("")
+  const detailPath = card
+    ? `/patients/companion/medication-cards/${card.slug}`
+    : null
+
+  useEffect(() => {
+    setNextDate(item.expectedDate)
+    setFrequency(item.frequencyMonths)
+  }, [item.expectedDate, item.frequencyMonths])
+
+  function handleSave() {
+    const finalReason = reason === "other" ? customReason : reason
+    if (!finalReason) return
+    onSave(item.testName, nextDate, frequency, finalReason)
+    setEditing(false)
+    setReason("")
+    setCustomReason("")
+  }
+
+  const canSave = reason === "other" ? customReason.trim().length > 0 : reason.length > 0
+  const canRemove = removeReason === "other"
+    ? customRemoveReason.trim().length > 0
+    : removeReason.length > 0
+
+  function handleRemove() {
+    const finalReason = removeReason === "other" ? customRemoveReason : removeReason
+    if (!finalReason) return
+    onRemove(item.testName, finalReason)
+    setEditing(false)
+    setConfirmingRemove(false)
+    setRemoveReason("")
+    setCustomRemoveReason("")
+  }
+
+  const summaryRow = (
+    <div className="flex items-center justify-between">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-xs font-medium text-foreground">
+            {card?.genericName ?? item.testName}
+          </p>
+          <span className="shrink-0 rounded-full bg-accent px-1.5 py-0.5 text-[9px] font-medium text-foreground">
+            {card ? formatCategory(card.category) : "Lab Test"}
+          </span>
+        </div>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Every {item.frequencyMonths} month{item.frequencyMonths !== 1 ? "s" : ""}
+        </p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          {item.status === "OVERDUE"
+            ? `${Math.abs(item.daysUntilTest)} days overdue`
+            : item.status === "DUE"
+              ? `Due in ${item.daysUntilTest} days`
+              : `In ${item.daysUntilTest} days`}
+        </p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-col items-end gap-1">
+          <StatusBadge status={item.status} />
+          {price != null && (
+            <span className="text-[11px] font-mono text-muted-foreground">
+              KES {price.toLocaleString()}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setEditing((v) => !v)
+            setConfirmingRemove(false)
+            setRemoveReason("")
+            setCustomRemoveReason("")
+          }}
+          className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+        >
+          {editing ? (
+            <X className="h-3.5 w-3.5" />
+          ) : (
+            <Pencil className="h-3.5 w-3.5" />
+          )}
+        </button>
+      </div>
+    </div>
+  )
+
+  return (
+    <div className="rounded-lg bg-muted/50 px-3 py-2">
+      {detailPath && !editing ? (
+        <Link to={detailPath} className="block no-underline">
+          {summaryRow}
+        </Link>
+      ) : (
+        summaryRow
+      )}
+
+      {editing && !confirmingRemove && (
+        <div className="mt-3 space-y-3 border-t pt-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium text-muted-foreground">
+              Next test date
+            </label>
+            <input
+              type="date"
+              value={nextDate}
+              onChange={(e) => setNextDate(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium text-muted-foreground">
+              Test frequency
+            </label>
+            <select
+              value={frequency}
+              onChange={(e) => setFrequency(Number(e.target.value))}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              {TEST_FREQUENCY_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium text-muted-foreground">
+              Reason for change
+            </label>
+            <select
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="" disabled>
+                Select a reason
+              </option>
+              {CHANGE_REASONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {reason === "other" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-[11px] font-medium text-muted-foreground">
+                Specify reason
+              </label>
+              <input
+                type="text"
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                placeholder="Enter your reason"
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium",
+              canSave
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground cursor-not-allowed",
+            )}
+          >
+            <Check className="h-3.5 w-3.5" />
+            Save changes
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmingRemove(true)}
+            className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Remove from schedule
+          </button>
+        </div>
+      )}
+
+      {editing && confirmingRemove && (
+        <div className="mt-3 space-y-3 border-t pt-3">
+          <p className="text-xs font-medium text-foreground">
+            Why are you removing this test?
+          </p>
+          <div className="flex flex-col gap-1">
+            <select
+              value={removeReason}
+              onChange={(e) => setRemoveReason(e.target.value)}
+              className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="" disabled>
+                Select a reason
+              </option>
+              {CHANGE_REASONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          {removeReason === "other" && (
+            <div className="flex flex-col gap-1">
+              <input
+                type="text"
+                value={customRemoveReason}
+                onChange={(e) => setCustomRemoveReason(e.target.value)}
+                placeholder="Enter your reason"
+                className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+              />
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={!canRemove}
+            className={cn(
+              "flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium",
+              canRemove
+                ? "bg-red-600 text-white"
+                : "bg-muted text-muted-foreground cursor-not-allowed",
+            )}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Confirm removal
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setConfirmingRemove(false)
+              setRemoveReason("")
+              setCustomRemoveReason("")
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted"
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function RefillScheduleCard({
   data,
   medicationPrices,
   testPrices,
+  medicationCards,
+  profile,
   onAddMedication,
 }: {
   data: CareCompanionHomeData
   medicationPrices: Record<string, number>
   testPrices: Record<string, number>
+  medicationCards: AnnotatedMedicationCard[]
+  profile: import("@/types/care-companion").CareCompanionProfile | null
   onAddMedication?: () => void
 }) {
-  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { schedules, hasMore } = data.refillSchedule
   const { schedules: testSchedules } = data.testSchedule ?? { schedules: [] }
   const allOverdue = [
@@ -301,13 +922,223 @@ function RefillScheduleCard({
   const overdueCount = allOverdue.length
   const dueCount = allDue.length
 
+  const baseUrl = import.meta.env.VITE_API_BASE_URL
+
+  const logEvent = useMutation({
+    mutationFn: (event: Record<string, unknown>) =>
+      axios.post(`${baseUrl}/companion/events`, event).then((r) => r.data),
+  })
+
+  const patchProfile = useMutation({
+    mutationFn: (patch: Record<string, unknown>) =>
+      axios.patch(`${baseUrl}/companion/profile`, patch).then((r) => r.data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [refillScheduleQueryKey] })
+      queryClient.invalidateQueries({ queryKey: [intakeProfileQueryKey] })
+      queryClient.invalidateQueries({ queryKey: ["careCompanionHome"] })
+    },
+  })
+
+  const handleRefillSave = useCallback(
+    (id: string, nextDate: string, frequencyDays: number, reason: string) => {
+      if (!profile) return
+      const item = schedules.find((s) => s.id === id)
+      if (!item) return
+      const costEntry = profile.costEstimates?.medications?.find(
+        (m) => m.name === item.medicationName,
+      )
+      const reasonLabel = CHANGE_REASONS.find((r) => r.value === reason)?.label ?? reason
+      logEvent.mutate({
+        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        type: "REFILL_SCHEDULE_CHANGE",
+        timestamp: new Date().toISOString(),
+        source: "user",
+        scheduleId: item.id,
+        medicationName: item.medicationName,
+        conditions: profile.conditions?.type ?? [],
+        statusAtChange: item.status,
+        daysUntilRefillAtChange: item.daysUntilRefill,
+        previousFrequencyDays: item.estimatedDaysSupply ?? 30,
+        newFrequencyDays: frequencyDays,
+        previousNextDate: item.expectedRefillDate,
+        newNextDate: nextDate,
+        reason: reasonLabel,
+        reasonCategory: reason,
+        estimatedCostPerRefill: costEntry?.estimatedCostPerRefill ?? null,
+      })
+      const updatedCostEstimates = {
+        ...profile.costEstimates,
+        medications: (profile.costEstimates?.medications ?? []).map((m) =>
+          m.name === item.medicationName
+            ? { ...m, refillFrequencyDays: frequencyDays }
+            : m,
+        ),
+      }
+      trackEvent(EVENTS.CARE_COMPANION.REFILL_SCHEDULE.ITEM_TAP, {
+        medicationName: item.medicationName,
+        action: "save_schedule",
+        reason: reasonLabel,
+        frequencyDays,
+      })
+      axios.patch(
+        `${baseUrl}/companion/refill-schedules/${id}`,
+        { nextDate, frequencyDays },
+      ).then(() => {
+        patchProfile.mutate({ costEstimates: updatedCostEstimates })
+      })
+    },
+    [profile, schedules, patchProfile, logEvent, baseUrl],
+  )
+
+  const handleTestSave = useCallback(
+    (testName: string, nextDate: string, frequencyMonths: number, reason: string) => {
+      if (!profile) return
+      const item = testSchedules.find((t) => t.testName === testName)
+      const costEntry = profile.costEstimates?.tests?.find(
+        (t) => t.name === testName,
+      )
+      const reasonLabel = CHANGE_REASONS.find((r) => r.value === reason)?.label ?? reason
+      logEvent.mutate({
+        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        type: "TEST_SCHEDULE_CHANGE",
+        timestamp: new Date().toISOString(),
+        source: "user",
+        scheduleId: item?.id ?? `test-${testName}`,
+        testName,
+        conditions: profile.conditions?.type ?? [],
+        statusAtChange: item?.status ?? "UPCOMING",
+        daysUntilTestAtChange: item?.daysUntilTest ?? 0,
+        previousFrequencyMonths: item?.frequencyMonths ?? costEntry?.frequencyMonths ?? 12,
+        newFrequencyMonths: frequencyMonths,
+        previousNextDate: item?.expectedDate ?? "",
+        newNextDate: nextDate,
+        reason: reasonLabel,
+        reasonCategory: reason,
+        estimatedCostPerTest: costEntry?.estimatedCostPerTest ?? null,
+      })
+      const updatedCostEstimates = {
+        ...profile.costEstimates,
+        tests: (profile.costEstimates?.tests ?? []).map((t) =>
+          t.name === testName
+            ? { ...t, frequencyMonths }
+            : t,
+        ),
+      }
+      trackEvent(EVENTS.CARE_COMPANION.REFILL_SCHEDULE.ITEM_TAP, {
+        testName,
+        action: "save_test_schedule",
+        reason: reasonLabel,
+        frequencyMonths,
+      })
+      axios.patch(
+        `${baseUrl}/companion/test-schedules/${encodeURIComponent(testName)}`,
+        { nextDate, frequencyMonths },
+      ).then(() => {
+        patchProfile.mutate({ costEstimates: updatedCostEstimates })
+      })
+    },
+    [profile, testSchedules, patchProfile, logEvent, baseUrl],
+  )
+
+  const handleRefillRemove = useCallback(
+    (id: string, reason: string) => {
+      if (!profile) return
+      const item = schedules.find((s) => s.id === id)
+      if (!item) return
+
+      const costEntry = profile.costEstimates?.medications?.find(
+        (m) => m.name === item.medicationName,
+      )
+      const reasonLabel = CHANGE_REASONS.find((r) => r.value === reason)?.label ?? reason
+
+      logEvent.mutate({
+        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        type: "REFILL_SCHEDULE_REMOVE",
+        timestamp: new Date().toISOString(),
+        source: "user",
+        scheduleId: item.id,
+        medicationName: item.medicationName,
+        conditions: profile.conditions?.type ?? [],
+        statusAtChange: item.status,
+        daysUntilRefillAtChange: item.daysUntilRefill,
+        reason: reasonLabel,
+        reasonCategory: reason,
+        estimatedCostPerRefill: costEntry?.estimatedCostPerRefill ?? null,
+      })
+
+      const updatedCostEstimates = {
+        ...profile.costEstimates,
+        medications: (profile.costEstimates?.medications ?? []).filter(
+          (m) => m.name !== item.medicationName,
+        ),
+      }
+      trackEvent(EVENTS.CARE_COMPANION.REFILL_SCHEDULE.ITEM_REMOVE, {
+        medicationName: item.medicationName,
+        status: item.status,
+        reason: reasonLabel,
+      })
+      axios.patch(
+        `${baseUrl}/companion/refill-schedules/${id}`,
+        { status: "CANCELLED" },
+      ).then(() => {
+        patchProfile.mutate({ costEstimates: updatedCostEstimates })
+      })
+    },
+    [profile, schedules, patchProfile, logEvent, baseUrl],
+  )
+
+  const handleTestRemove = useCallback(
+    (testName: string, reason: string) => {
+      if (!profile) return
+
+      const item = testSchedules.find((t) => t.testName === testName)
+      const costEntry = profile.costEstimates?.tests?.find(
+        (t) => t.name === testName,
+      )
+      const reasonLabel = CHANGE_REASONS.find((r) => r.value === reason)?.label ?? reason
+
+      logEvent.mutate({
+        id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        type: "TEST_SCHEDULE_REMOVE",
+        timestamp: new Date().toISOString(),
+        source: "user",
+        scheduleId: item?.id ?? `test-${testName}`,
+        testName,
+        conditions: profile.conditions?.type ?? [],
+        statusAtChange: item?.status ?? "UPCOMING",
+        daysUntilTestAtChange: item?.daysUntilTest ?? 0,
+        reason: reasonLabel,
+        reasonCategory: reason,
+        estimatedCostPerTest: costEntry?.estimatedCostPerTest ?? null,
+      })
+
+      const updatedCostEstimates = {
+        ...profile.costEstimates,
+        tests: (profile.costEstimates?.tests ?? []).filter(
+          (t) => t.name !== testName,
+        ),
+      }
+      trackEvent(EVENTS.CARE_COMPANION.REFILL_SCHEDULE.TEST_REMOVE, {
+        testName,
+        status: item?.status ?? "UPCOMING",
+        reason: reasonLabel,
+      })
+      axios.patch(
+        `${baseUrl}/companion/test-schedules/${encodeURIComponent(testName)}`,
+        { status: "CANCELLED" },
+      ).then(() => {
+        patchProfile.mutate({ costEstimates: updatedCostEstimates })
+      })
+    },
+    [profile, testSchedules, patchProfile, logEvent, baseUrl],
+  )
+
   return (
-    <button
-      type="button"
-      onClick={() => navigate("/patients/companion/refill-schedule")}
-      className="w-full rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted/50"
-    >
-      <div className="flex items-start justify-between">
+    <div className="w-full rounded-xl border bg-card p-4 text-left">
+      <Link
+        to="/patients/companion/refill-schedule"
+        className="flex items-start justify-between no-underline transition-colors active:bg-muted/50"
+      >
         <div className="flex items-center gap-3">
           <div
             className={cn(
@@ -340,105 +1171,51 @@ function RefillScheduleCard({
           </div>
         </div>
         <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
-      </div>
+      </Link>
 
       {(schedules.length > 0 || testSchedules.length > 0) && (
         <div className="mt-3 space-y-2">
-          {schedules.map((s) => {
-            const price = medicationPrices[s.medicationName.toLowerCase()]
-            return (
-              <div
-                key={s.id}
-                className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-medium text-foreground">
-                    {s.medicationName}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {s.status === "OVERDUE"
-                      ? `${Math.abs(s.daysUntilRefill)} days overdue`
-                      : s.status === "DUE"
-                        ? `Due in ${s.daysUntilRefill} days`
-                        : `In ${s.daysUntilRefill} days`}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-end gap-1">
-                    <StatusBadge status={s.status} />
-                    {price != null && (
-                      <span className="text-[11px] font-mono text-muted-foreground">
-                        KES {price.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                </div>
-              </div>
-            )
-          })}
-          {testSchedules.map((t) => {
-            const price = testPrices[t.testName.toLowerCase()]
-            return (
-              <div
-                key={t.id}
-                className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-medium text-foreground">
-                    {t.testName}
-                  </p>
-                  <p className="text-[11px] text-muted-foreground">
-                    {t.status === "OVERDUE"
-                      ? `${Math.abs(t.daysUntilTest)} days overdue`
-                      : t.status === "DUE"
-                        ? `Due in ${t.daysUntilTest} days`
-                        : `In ${t.daysUntilTest} days`}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-end gap-1">
-                    <StatusBadge status={t.status} />
-                    {price != null && (
-                      <span className="text-[11px] font-mono text-muted-foreground">
-                        KES {price.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                </div>
-              </div>
-            )
-          })}
+          {schedules.map((s) => (
+            <MedScheduleItem
+              key={s.id}
+              item={s}
+              price={medicationPrices[s.medicationName.toLowerCase()]}
+              card={findMatchingCard(s.medicationName, medicationCards)}
+              onSave={handleRefillSave}
+              onRemove={handleRefillRemove}
+            />
+          ))}
+          {testSchedules.map((t) => (
+            <TestScheduleItem
+              key={t.id}
+              item={t}
+              price={testPrices[t.testName.toLowerCase()]}
+              card={findMatchingCard(t.testName, medicationCards)}
+              onSave={handleTestSave}
+              onRemove={handleTestRemove}
+            />
+          ))}
           {hasMore && (
-            <p className="text-center text-[11px] text-muted-foreground">
+            <Link
+              to="/patients/companion/refill-schedule"
+              className="block text-center text-[11px] text-muted-foreground no-underline hover:text-primary"
+            >
               View all schedules
-            </p>
+            </Link>
           )}
           {onAddMedication && (
-            <span
-              role="button"
-              tabIndex={0}
-              onClick={(e) => {
-                e.stopPropagation()
-                onAddMedication()
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.stopPropagation()
-                  e.preventDefault()
-                  onAddMedication()
-                }
-              }}
-              className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-muted-foreground/30 px-3 py-2 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+            <button
+              type="button"
+              onClick={onAddMedication}
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-muted-foreground/30 px-3 py-2 text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
             >
               <Plus className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Add medication or test</span>
-            </span>
+            </button>
           )}
         </div>
       )}
-    </button>
+    </div>
   )
 }
 

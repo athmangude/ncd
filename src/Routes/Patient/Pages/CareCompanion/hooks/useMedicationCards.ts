@@ -56,16 +56,30 @@ export function useMedicationCards() {
       const rawCards = cardsRes.data as RawCardResponse
       const taxonomy = taxonomyRes.data as MedicationTaxonomyEntry[]
 
+      const slugToName = (slug: string) =>
+        slug
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+
       const enrichedCards: AnnotatedMedicationCard[] = rawCards.cards.map(
         ({ card, interactions }) => {
-          const taxEntry = taxonomy.find((t) => t.id === card.medicationId)
+          const taxEntry =
+            taxonomy.find((t) => t.id === card.medicationId) ??
+            taxonomy.find(
+              (t) =>
+                t.genericName
+                  .toLowerCase()
+                  .replace(/\s+/g, "-")
+                  .replace(/[^a-z0-9-]/g, "") === card.slug,
+            )
+          const isCustomId = card.medicationId.startsWith("custom-")
           return {
             card,
             interactions,
-            genericName: taxEntry?.genericName ?? "Unknown",
+            genericName: taxEntry?.genericName ?? slugToName(card.slug),
             slug: card.slug,
             brandNames: taxEntry?.brandNames ?? [],
-            category: taxEntry?.category ?? "MEDICATION",
+            category: taxEntry?.category ?? (isCustomId ? "LAB_TEST" : "MEDICATION"),
             strengths: taxEntry?.strengths ?? [],
             conditionTags: taxEntry?.conditionTags ?? [],
           }

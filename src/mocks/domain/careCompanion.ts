@@ -111,11 +111,13 @@ function ensureProfileSeeded(): void {
   const profile = getCareCompanionProfile()
   if (!profile?.completedAt) return
   const meds = profile.treatment?.medicationNames ?? []
-  if (meds.length === 0) return
-  const medsFingerprint = [...meds].sort().join("|").toLowerCase()
+  const testNames = (profile.costEstimates?.tests ?? []).map((t) => t.name)
+  const allNames = [...meds, ...testNames]
+  if (allNames.length === 0) return
+  const medsFingerprint = [...allNames].sort().join("|").toLowerCase()
   const stored = localStorage.getItem("mock:" + TIMELINE_MEDS_KEY)
   if (stored === medsFingerprint) return
-  seedFromIntakeMedications(meds)
+  seedFromIntakeMedications(meds, testNames)
 }
 
 // ---------------------------------------------------------------------------
@@ -141,8 +143,10 @@ export function saveCareCompanionProfile(
   profile: CareCompanionProfile,
 ): CareCompanionProfile {
   writeObject(PROFILE_KEY, profile)
-  if (profile.treatment?.medicationNames?.length) {
-    seedFromIntakeMedications(profile.treatment.medicationNames)
+  const medNames = profile.treatment?.medicationNames ?? []
+  const testNames = (profile.costEstimates?.tests ?? []).map((t) => t.name)
+  if (medNames.length > 0 || testNames.length > 0) {
+    seedFromIntakeMedications(medNames, testNames)
   }
   seedNotificationsFromIntake(profile)
   return profile
@@ -474,8 +478,9 @@ function computeProjectedMonthlyCosts(
   return projections
 }
 
-function seedFromIntakeMedications(medicationNames: string[]): void {
-  const fingerprint = [...medicationNames].sort().join("|").toLowerCase()
+function seedFromIntakeMedications(medicationNames: string[], testNames: string[] = []): void {
+  const allNames = [...medicationNames, ...testNames]
+  const fingerprint = [...allNames].sort().join("|").toLowerCase()
   localStorage.setItem("mock:" + TIMELINE_MEDS_KEY, fingerprint)
 
   const taxonomy = readCollection<MedicationTaxonomyEntry>(
@@ -577,6 +582,51 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
         avoidanceWarnings: [],
         whenToSeekHelp: "Contact your doctor if side effects persist or if you experience any unusual symptoms.",
         storageInstructions: "Store at room temperature away from moisture and heat.",
+      } as unknown as MedicationCard)
+    }
+  })
+
+  testNames.forEach((name, i) => {
+    const taxEntry = taxonomy.find(
+      (t) => t.genericName.toLowerCase() === name.toLowerCase(),
+    )
+    const testId = taxEntry?.id ?? `custom-${name.toLowerCase().replace(/\s+/g, "-")}`
+
+    patientMeds.push({
+      id: `pm-test-${i}`,
+      medication: {
+        id: testId,
+        genericName: taxEntry?.genericName ?? name,
+        brandNames: taxEntry?.brandNames ?? [],
+        strengths: taxEntry?.strengths ?? [],
+        category: taxEntry?.category ?? "LAB_TEST",
+        conditionTags: taxEntry?.conditionTags ?? [],
+      },
+      firstPurchaseDate: todayStr,
+      lastPurchaseDate: todayStr,
+      totalPurchaseCount: 0,
+      averageRefillIntervalDays: 90,
+      isActive: true,
+      inferredConditions: taxEntry?.conditionTags ?? [],
+    } as unknown as PatientMedication)
+
+    const hasCard = existingCards.some((c) => c.medicationId === testId)
+    if (!hasCard) {
+      const slug = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")
+      cards.push({
+        id: `mc-test-${i}`,
+        medicationId: testId,
+        slug,
+        locale: "EN" as ContentLocale,
+        description: `${name} is a diagnostic test used to monitor your health and track your condition over time.`,
+        howItWorks: `${name} helps your doctor assess how well your treatment is working and detect any changes early. Results guide treatment adjustments.`,
+        commonSideEffects: [
+          { effect: "Minor discomfort during the procedure", frequency: "Common", advice: "This is normal and temporary." },
+        ],
+        seriousSideEffects: [],
+        avoidanceWarnings: [],
+        whenToSeekHelp: "Ask your doctor about your results and what they mean for your treatment plan.",
+        storageInstructions: "",
       } as unknown as MedicationCard)
     }
   })
@@ -1168,8 +1218,10 @@ export function patchCareCompanionProfile(
   }
 
   const merged = patchObject(PROFILE_KEY, base, patch)
-  if (patch.treatment?.medicationNames?.length) {
-    seedFromIntakeMedications(patch.treatment.medicationNames)
+  if (patch.treatment?.medicationNames) {
+    const medNames = patch.treatment.medicationNames
+    const testNames = (merged.costEstimates?.tests ?? []).map((t) => t.name)
+    seedFromIntakeMedications(medNames, testNames)
   }
   if (patch.costEstimates?.medications) {
     syncRefillFrequencies(patch.costEstimates.medications)
@@ -1336,6 +1388,7 @@ export function getCostSummary(year?: number): CostSummaryFixture {
     transactionCount: 0,
     cashbackEarned: "0",
     netSpend: "0",
+    currency: "KES",
     breakdown: [],
     monthlyTrend: [],
   }
@@ -1380,6 +1433,7 @@ export function getEmergencyCards(): EmergencyCard[] {
 }
 
 export function getMedicationCards(): MedicationCard[] {
+  ensureProfileSeeded()
   return readCollection<MedicationCard>(
     MEDICATION_CARDS_KEY,
     medicationCardsSeed as unknown as MedicationCard[],
@@ -1394,6 +1448,7 @@ export function getMedicationInteractions(): MedicationInteraction[] {
 }
 
 export function getRefillSchedules(): RefillSchedule[] {
+  ensureProfileSeeded()
   return readCollection<RefillSchedule>(
     REFILL_SCHEDULES_KEY,
     refillSchedulesSeed as unknown as RefillSchedule[],
@@ -2219,6 +2274,17 @@ export function updateRefillScheduleItem(
   return schedules[index]
 }
 
+export function cancelRefillScheduleItem(
+  id: string,
+): RefillSchedule | undefined {
+  const schedules = getRefillSchedules()
+  const index = schedules.findIndex((s) => s.id === id)
+  if (index === -1) return undefined
+  const removed = schedules.splice(index, 1)[0]
+  writeCollection(REFILL_SCHEDULES_KEY, schedules)
+  return { ...removed, status: "REFILLED" as const }
+}
+
 const TEST_SCHEDULES_KEY = "care-companion-test-schedules"
 
 export function getTestSchedules(): import("@/types/care-companion").TestScheduleItem[] {
@@ -2275,6 +2341,20 @@ export function updateTestScheduleItem(
   }
   writeCollection(TEST_SCHEDULES_KEY, schedules)
   return schedules[index]
+}
+
+export function cancelTestScheduleItem(
+  testName: string,
+): import("@/types/care-companion").TestScheduleItem | undefined {
+  ensureTestSchedulesSeeded()
+  const schedules = getTestSchedules()
+  const index = schedules.findIndex(
+    (s) => s.testName.toLowerCase() === testName.toLowerCase(),
+  )
+  if (index === -1) return undefined
+  const removed = schedules.splice(index, 1)[0]
+  writeCollection(TEST_SCHEDULES_KEY, schedules)
+  return removed
 }
 
 // ---------------------------------------------------------------------------
