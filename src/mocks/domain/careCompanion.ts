@@ -541,22 +541,6 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
         gapDaysFromPrevious: m === 0 ? null : refillInterval,
         isGapAnomaly: false,
       })
-
-      if (isLabTest) {
-        const consultFee = facilityConsultationFee(facility)
-        consultSpend += consultFee
-        consultTxns += 1
-        timeline.push({
-          date: purchaseDate.toISOString().slice(0, 10),
-          medicationName: "Doctor consultation",
-          dosage: null,
-          quantity: 1,
-          lineTotal: `${consultFee}.00`,
-          facilityName: facility,
-          gapDaysFromPrevious: null,
-          isGapAnomaly: false,
-        })
-      }
     }
 
     const hasCard = existingCards.some((c) => c.medicationId === medId)
@@ -582,10 +566,89 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
     }
   })
 
+  // -------------------------------------------------------------------------
+  // Hospital visits: consultation → lab (optional) → pharmacy
+  // Each stage is a separate payment at the same hospital.
+  // -------------------------------------------------------------------------
+  const HOSPITALS = [
+    "Nairobi Hospital", "Aga Khan University Hospital", "Kenyatta National Hospital",
+  ]
+  const currentMonth = new Date(now).getMonth() + 1
+  for (let m = 1; m <= currentMonth; m++) {
+    const visitDay = 10
+    const visitDate = new Date(new Date(now).getFullYear(), m - 1, Math.min(visitDay, 28))
+    if (visitDate.getTime() > now) break
+    const hospital = HOSPITALS[m % HOSPITALS.length]
+    const dateStr = visitDate.toISOString().slice(0, 10)
+
+    const consultFee = facilityConsultationFee(hospital)
+    consultSpend += consultFee
+    consultTxns += 1
+    timeline.push({
+      date: dateStr,
+      medicationName: "Doctor consultation",
+      dosage: null,
+      quantity: 1,
+      lineTotal: `${consultFee}.00`,
+      facilityName: hospital,
+      gapDaysFromPrevious: null,
+      isGapAnomaly: false,
+    })
+
+    const hasLab = m % 3 === 0
+    if (hasLab) {
+      const labFee = 1500 + ((m * 7) % 1000)
+      timeline.push({
+        date: dateStr,
+        medicationName: "Blood panel test",
+        dosage: null,
+        quantity: 1,
+        lineTotal: `${labFee}.00`,
+        facilityName: hospital,
+        gapDaysFromPrevious: null,
+        isGapAnomaly: false,
+      })
+    }
+
+    const hasMeds = m % 2 === 0
+    if (hasMeds) {
+      const medFee = 800 + ((m * 13) % 1200)
+      timeline.push({
+        date: dateStr,
+        medicationName: "Prescribed medication",
+        dosage: null,
+        quantity: 1,
+        lineTotal: `${medFee}.00`,
+        facilityName: hospital,
+        gapDaysFromPrevious: null,
+        isGapAnomaly: false,
+      })
+    }
+  }
+
+  const recentPaymentFacilities = [
+    { name: "Nairobi Hospital Pharmacy", type: "PHARMACY" as const, amount: 4200 },
+    { name: "Lancet Pathologists", type: "LAB" as const, amount: 2800 },
+  ]
+  recentPaymentFacilities.forEach((f, idx) => {
+    const daysAgo = idx === 0 ? 2 : 5
+    const date = new Date(now - daysAgo * DAY_MS).toISOString().slice(0, 10)
+    const isTest = f.type === "LAB"
+    timeline.push({
+      date,
+      medicationName: isTest ? "HbA1c test" : "Pharmacy purchase",
+      dosage: null,
+      quantity: 1,
+      lineTotal: `${f.amount}.00`,
+      facilityName: f.name,
+      gapDaysFromPrevious: null,
+      isGapAnomaly: false,
+    })
+  })
+
   timeline.sort((a, b) => b.date.localeCompare(a.date))
 
   const ytdSpend = timeline.reduce((sum, e) => sum + parseFloat(e.lineTotal), 0)
-  const currentMonth = new Date(now).getMonth() + 1
   const monthlyAverage = currentMonth > 0 ? Math.round(ytdSpend / currentMonth) : 0
   const cashbackEarned = Math.round(ytdSpend * 0.05)
   const annualProjection = Math.round(monthlyAverage * 12)
@@ -658,24 +721,26 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
   const events: CareCompanionEvent[] = []
   let runningCashback = 0
 
-  const timelineByDate: Record<string, TimelineEntry[]> = {}
-  for (const entry of timeline) {
-    ;(timelineByDate[entry.date] ??= []).push(entry)
+  function entryCategory(e: TimelineEntry): "CONSULTATION" | "LAB_TEST" | "MEDICATION" {
+    if (e.medicationName === "Doctor consultation") return "CONSULTATION"
+    if (e.medicationName.toLowerCase().includes("test")) return "LAB_TEST"
+    return "MEDICATION"
   }
 
-  for (const [date, entries] of Object.entries(timelineByDate)) {
+  const timelineGrouped: Record<string, TimelineEntry[]> = {}
+  for (const entry of timeline) {
+    const key = `${entry.date}|${entry.facilityName}|${entryCategory(entry)}`
+    ;(timelineGrouped[key] ??= []).push(entry)
+  }
+
+  for (const [key, entries] of Object.entries(timelineGrouped)) {
+    const [date] = key.split("|")
     const facility = entries[0].facilityName
+    const cat = entryCategory(entries[0])
     const total = entries.reduce((s, e) => s + parseFloat(e.lineTotal), 0)
-    const paymentId = `pay-${date}-${facility.slice(0, 8).replace(/\s/g, "")}`
+    const paymentId = `pay-${date}-${facility.slice(0, 8).replace(/\s/g, "")}-${cat.toLowerCase()}`
 
     const lineItems: PaymentEvent["lineItems"] = entries.map((e) => {
-      const isConsult = e.medicationName === "Doctor consultation"
-      const isTest = e.medicationName.toLowerCase().includes("test")
-      const cat = isConsult
-        ? "CONSULTATION" as const
-        : isTest
-          ? "LAB_TEST" as const
-          : "MEDICATION" as const
       return {
         name: e.medicationName,
         category: cat,
@@ -893,10 +958,6 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
   // -------------------------------------------------------------------------
   // Recent payments with empty lineItems (for LLM invoice population)
   // -------------------------------------------------------------------------
-  const recentPaymentFacilities = [
-    { name: "Nairobi Hospital Pharmacy", type: "PHARMACY" as const, amount: 4200 },
-    { name: "Lancet Pathologists", type: "LAB" as const, amount: 2800 },
-  ]
   const paymentHistoryKey = "payment-history"
   const existingHistory = readObject<{
     payments: Record<string, unknown>[]

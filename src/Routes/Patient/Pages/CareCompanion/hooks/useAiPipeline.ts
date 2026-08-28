@@ -8,7 +8,11 @@ import type {
   LlmActionEvent,
   PaymentEvent,
 } from "@/types/care-companion"
-import { runPipeline } from "@/lib/ai-pipeline"
+import {
+  runPipeline,
+  computeInputHash,
+  shouldSkipPipeline,
+} from "@/lib/ai-pipeline"
 import { useCareCompanionStore } from "../store/careCompanionStore"
 
 const EVENTS_QUERY_KEY = ["care-companion", "events"]
@@ -204,8 +208,6 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
   const triggerPipeline = useCallback(async () => {
     if (!profile || isRunningRef.current) return
     isRunningRef.current = true
-    setIsPipelineRunning(true)
-    setStoreRunning(true)
 
     try {
       const cached =
@@ -215,6 +217,14 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
           queryKey: EVENTS_QUERY_KEY,
           queryFn: fetchEvents,
         }))
+
+      const inputHash = await computeInputHash(profile, freshEvents ?? [])
+      if (shouldSkipPipeline(freshEvents ?? [], inputHash)) {
+        return
+      }
+
+      setIsPipelineRunning(true)
+      setStoreRunning(true)
 
       const newActions = await runPipeline(profile, freshEvents ?? [])
       if (newActions.length === 0) return
