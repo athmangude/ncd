@@ -56,7 +56,7 @@ export default function CareCompanionHome() {
   const { data, isLoading, error } = useCareCompanionHome()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [addMedOpen, setAddMedOpen] = useState(false)
-  const { isRunning: aiRunning } = useAiPipeline(profile ?? null)
+  useAiPipeline(profile ?? null)
   const navigate = useNavigate()
   const { data: notifications = [] } = useNotifications()
   const unreadInsights = notifications.filter(
@@ -158,34 +158,24 @@ export default function CareCompanionHome() {
     <div className="flex flex-col gap-4 p-4">
       {profile?.completedAt && <ProfileGreeting profile={profile} />}
 
-      {(unreadInsights.length > 0 || aiRunning) && (
+      {unreadInsights.length > 0 && (
         <button
           type="button"
           onClick={() => navigate("/patients/notifications")}
           className="flex w-full items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-left transition-colors active:bg-primary/10"
         >
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-            {aiRunning ? (
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            ) : (
-              <Sparkles className="h-4 w-4 text-primary" />
-            )}
+            <Sparkles className="h-4 w-4 text-primary" />
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">
-              {aiRunning
-                ? "Analyzing your health data..."
-                : `${unreadInsights.length} new insight${unreadInsights.length === 1 ? "" : "s"}`}
+              {`${unreadInsights.length} new insight${unreadInsights.length === 1 ? "" : "s"}`}
             </p>
-            {!aiRunning && (
-              <p className="text-xs text-muted-foreground">
-                Tap to view in notifications
-              </p>
-            )}
+            <p className="text-xs text-muted-foreground">
+              Tap to view in notifications
+            </p>
           </div>
-          {!aiRunning && (
-            <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-          )}
+          <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
         </button>
       )}
 

@@ -141,7 +141,7 @@ export default function MedicationCardsPage() {
         const maxSeverity = getMaxSeverity(annotatedCard.interactions)
         const borderClass = maxSeverity
           ? SEVERITY_CONFIG[maxSeverity].borderClass
-          : "border-l-transparent"
+          : "border-l-primary/30"
         const isHighlighted =
           highlightMed &&
           annotatedCard.genericName
@@ -156,8 +156,7 @@ export default function MedicationCardsPage() {
             <Link
               to={`/patients/companion/medication-cards/${annotatedCard.slug}`}
               className={cn(
-                "flex items-center justify-between rounded-xl border border-l-4 bg-card p-4 transition-all",
-                borderClass,
+                "flex items-center justify-between rounded-xl border bg-card p-4 no-underline transition-all",
                 isHighlighted && "ring-2 ring-primary/40",
               )}
             >

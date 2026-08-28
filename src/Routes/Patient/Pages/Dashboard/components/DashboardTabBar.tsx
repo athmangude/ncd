@@ -9,6 +9,7 @@ import {
 import { motion } from "framer-motion"
 import type { MotionValue } from "framer-motion"
 import { PatientTabTrigger } from "./PatientTabTrigger"
+import { useCareCompanionStore } from "@/Routes/Patient/Pages/CareCompanion/store/careCompanionStore"
 
 interface DashboardTabBarProps {
   listRef: React.Ref<HTMLDivElement>
@@ -23,6 +24,19 @@ export function DashboardTabBar({
   cx,
   pathD,
 }: DashboardTabBarProps) {
+  const aiRunning = useCareCompanionStore((s) => s.aiPipelineRunning)
+
+  const companionIcon = aiRunning ? (
+    <span className="relative flex items-center justify-center w-5 h-5">
+      <HeartPulse className="w-5 h-5" />
+      <span
+        className="absolute w-7 h-7 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
+      />
+    </span>
+  ) : (
+    <HeartPulse className="w-5 h-5" />
+  )
+
   return (
     // The visible curved bar is `h-20` (5rem). Its height + the `safe-pb`
     // inset this section owns is mirrored by the `--tabbar-h` token in
@@ -68,7 +82,7 @@ export function DashboardTabBar({
           />
           <PatientTabTrigger
             value="companion"
-            icon={<HeartPulse className="w-5 h-5" />}
+            icon={companionIcon}
             setRef={(el) => (tabRefs.current["companion"] = el)}
           />
           <PatientTabTrigger

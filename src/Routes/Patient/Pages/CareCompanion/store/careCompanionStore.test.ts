@@ -9,6 +9,7 @@ describe("careCompanionStore", () => {
       activeAiSessionId: null,
       dismissedOverlayIds: [],
       activeMedicationFilter: null,
+      aiPipelineRunning: false,
     })
   })
 
@@ -19,6 +20,7 @@ describe("careCompanionStore", () => {
       expect(state.activeAiSessionId).toBeNull()
       expect(state.dismissedOverlayIds).toEqual([])
       expect(state.activeMedicationFilter).toBeNull()
+      expect(state.aiPipelineRunning).toBe(false)
     })
   })
 

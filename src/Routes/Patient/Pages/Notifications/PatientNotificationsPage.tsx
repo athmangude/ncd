@@ -242,7 +242,7 @@ export default function PatientNotificationsPage() {
     if (!n.readAt) {
       markCareReadMutation.mutate(n.id)
     }
-    navigate(n.deepLink)
+    navigate(`/patients/notifications/${n.id}`)
   }
 
   // State A: No push permission AND no care notifications to show

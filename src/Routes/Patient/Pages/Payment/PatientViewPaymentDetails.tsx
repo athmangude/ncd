@@ -18,6 +18,8 @@ import {
   FileDown,
   CheckCircle2,
   Star,
+  Sparkles,
+  Receipt,
 } from "lucide-react"
 import { format, isBefore, differenceInDays } from "date-fns"
 import { cn } from "@/lib/utils"
@@ -114,6 +116,7 @@ export default function PatientViewPaymentDetails() {
     paymentSplits,
     user,
     cashbackDetails,
+    lineItems,
   } = query.data
 
   const currencyCode = currency?.code ?? "KES"
@@ -336,6 +339,14 @@ export default function PatientViewPaymentDetails() {
             isLast
           />
         </div>
+
+        {lineItems && lineItems.length > 0 && (
+          <InvoiceBreakdownCard
+            lineItems={lineItems}
+            currencyCode={currencyCode}
+            totalBillAmount={totalBillAmount}
+          />
+        )}
 
         {canShowReviewPrompt && (
           <ReviewPromptCard
@@ -591,6 +602,70 @@ function TimelineItem({
         </div>
 
         {time && <span className="text-muted-foreground text-xs">{time}</span>}
+      </div>
+    </div>
+  )
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  MEDICATION: "Medication",
+  LAB_TEST: "Lab Tests",
+  CONSULTATION: "Consultation",
+  SUPPLY: "Supplies",
+}
+
+function InvoiceBreakdownCard({
+  lineItems,
+  currencyCode,
+  totalBillAmount,
+}: {
+  lineItems: {
+    name: string
+    category: string
+    quantity: number
+    unitPrice: number
+    lineTotal: number
+  }[]
+  currencyCode: string
+  totalBillAmount: number
+}) {
+  return (
+    <div className="bg-card rounded-2xl p-4 shadow-sm border border-border mb-6">
+      <div className="flex items-center gap-2 mb-3">
+        <Sparkles className="w-4 h-4 text-primary" />
+        <p className="text-xs font-medium uppercase tracking-wider text-primary">
+          Invoice breakdown
+        </p>
+      </div>
+      <div className="flex flex-col gap-2">
+        {lineItems.map((item, idx) => (
+          <div
+            key={`${item.name}-${idx}`}
+            className="flex items-start justify-between gap-2"
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-foreground">{item.name}</p>
+              <p className="text-xs text-muted-foreground">
+                {CATEGORY_LABELS[item.category] ?? item.category}
+                {item.quantity > 1 && ` · Qty ${item.quantity}`}
+              </p>
+            </div>
+            <span className="shrink-0 font-mono text-sm text-foreground">
+              {formatMoney(item.lineTotal, currencyCode)}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+        <div className="flex items-center gap-1.5">
+          <Receipt className="w-4 h-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-muted-foreground">
+            Total
+          </span>
+        </div>
+        <span className="font-mono text-sm font-semibold text-foreground">
+          {formatMoney(totalBillAmount, currencyCode)}
+        </span>
       </div>
     </div>
   )

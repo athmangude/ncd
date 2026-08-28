@@ -897,13 +897,20 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
     { name: "Nairobi Hospital Pharmacy", type: "PHARMACY" as const, amount: 4200 },
     { name: "Lancet Pathologists", type: "LAB" as const, amount: 2800 },
   ]
+  const paymentHistoryKey = "payment-history"
+  const existingHistory = readObject<{
+    payments: Record<string, unknown>[]
+    medicalRequests: unknown[]
+  }>(paymentHistoryKey, { payments: [], medicalRequests: [] })
+
   recentPaymentFacilities.forEach((f, idx) => {
     const daysAgo = idx === 0 ? 2 : 5
-    const payId = `pay-recent-${idx}`
+    const payId = `pay-cc-recent-${idx}`
+    const payTimestamp = new Date(now - daysAgo * DAY_MS).toISOString()
     events.push({
       id: payId,
       type: "PAYMENT",
-      timestamp: new Date(now - daysAgo * DAY_MS).toISOString(),
+      timestamp: payTimestamp,
       source: "user",
       facilityName: f.name,
       facilityType: f.type,
@@ -913,7 +920,35 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
       fundingSources: [{ type: "MPESA", amount: f.amount }],
       isInNetwork: true,
     } satisfies PaymentEvent)
+
+    if (!existingHistory.payments.some((p) => p.id === payId)) {
+      existingHistory.payments.push({
+        id: payId,
+      totalBillAmount: f.amount,
+      createdAt: payTimestamp,
+      currency: { code: "KES" },
+      status: "COMPLETED",
+      patientMedicalInfoRequest: {
+        facility: { id: `fac-cc-${idx}`, name: f.name },
+        medicalInvoiceFile: { careProviderName: f.name },
+      },
+      user: { firstName: "Wanjiru", lastName: "Kamau" },
+      disbursementTransaction: { description: `Payment to ${f.name}` },
+      paymentSplits: [
+        {
+          id: `split-cc-${idx}`,
+          createdAt: payTimestamp,
+          paymentSplitAmount: f.amount,
+          wallet: { type: "MPESA" },
+          loan: null,
+        },
+      ],
+      cashbackDetails: [],
+    })
+    }
   })
+
+  writeObject(paymentHistoryKey, existingHistory)
 
   events.sort((a, b) => a.timestamp.localeCompare(b.timestamp))
 
@@ -1857,16 +1892,36 @@ function seedNotificationsFromIntake(profile: CareCompanionProfile): void {
       body: "Foods that support liver health and what to avoid in your daily diet.",
     },
   }
+  const educationSlugs: Record<string, string> = {
+    DIABETES: "ugali-portions-that-work-for-blood-sugar-control",
+    HYPERTENSION: "reducing-salt-without-losing-flavour",
+    HEART_DISEASE: "cooking-oils-that-protect-your-heart",
+    CANCER: "eating-well-during-cancer-treatment-when-nothing-tastes-right",
+    KIDNEY_DISEASE: "why-potassium-matters-when-your-kidneys-are-struggling",
+    ASTHMA: "foods-that-help-keep-your-airways-calm",
+    HIV_AIDS: "eating-well-to-support-your-immune-system-on-arvs",
+    EPILEPSY: "how-missed-meals-can-trigger-seizures",
+    COPD: "why-eating-less-but-more-often-helps-you-breathe-easier",
+    ARTHRITIS: "anti-inflammatory-foods-that-ease-joint-stiffness",
+    MENTAL_HEALTH: "the-gut-brain-connection-how-food-affects-your-mood",
+    THYROID: "foods-that-interfere-with-your-thyroid-medication",
+    STROKE: "eating-to-prevent-a-second-stroke",
+    LIVER_DISEASE: "protecting-your-liver-with-everyday-food-choices",
+  }
   const eduTopic = conditions.length > 0
     ? educationTopics[conditions[0]] ?? { title: "This week: Living well with a chronic condition", body: "Practical tips for staying on top of your health every day." }
     : { title: "This week: Living well with a chronic condition", body: "Practical tips for staying on top of your health every day." }
+  const eduSlug = conditions.length > 0 ? educationSlugs[conditions[0]] : null
+  const eduDeepLink = eduSlug
+    ? `/patients/companion/education/${eduSlug}`
+    : "/patients/companion/education"
 
   notifications.push({
     id: `notif-education-weekly-${Date.now()}`,
     type: "EDUCATION_WEEKLY",
     title: eduTopic.title,
     body: eduTopic.body,
-    deepLink: "/patients/companion/education",
+    deepLink: eduDeepLink,
     scheduledAt: new Date(now - 1 * DAY_MS).toISOString(),
     sentAt: new Date(now - 1 * DAY_MS).toISOString(),
     readAt: null,
@@ -2132,6 +2187,20 @@ export function populatePaymentLineItems(
   const payment = all[idx] as PaymentEvent
   all[idx] = { ...payment, lineItems }
   writeCollection(EVENTS_LOG_KEY, all)
+
+  const historyKey = "payment-history"
+  const history = readObject<{
+    payments: Record<string, unknown>[]
+    medicalRequests: unknown[]
+  }>(historyKey, { payments: [], medicalRequests: [] })
+  const payIdx = history.payments.findIndex(
+    (p) => String(p.id) === String(paymentId),
+  )
+  if (payIdx !== -1) {
+    history.payments[payIdx] = { ...history.payments[payIdx], lineItems }
+    writeObject(historyKey, history)
+  }
+
   return all[idx]
 }
 

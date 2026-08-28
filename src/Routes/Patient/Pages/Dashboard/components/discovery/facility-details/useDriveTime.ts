@@ -25,11 +25,16 @@ function distanceKm(
   return 2 * R * Math.asin(Math.sqrt(h))
 }
 
+export interface DriveTimeResult {
+  minutes: number
+  distanceKm: number
+}
+
 /**
  * Standalone prototype replacement for the Google Distance Matrix call.
- * Estimates driving time locally from the straight-line distance between the
- * user and the facility — no external API. Returns minutes (rounded), or null
- * when origin/destination is missing.
+ * Estimates driving time and distance locally from the straight-line distance
+ * between the user and the facility — no external API. Returns minutes + km,
+ * or null when origin/destination is missing.
  */
 export function useDriveTime({ origin, destination }: DriveTimeArgs) {
   const enabled = Boolean(origin && destination)
@@ -39,15 +44,15 @@ export function useDriveTime({ origin, destination }: DriveTimeArgs) {
     : "none"
 
   return useQuery({
-    queryKey: ["drive-time", originKey, destinationKey],
+    queryKey: ["drive-time-v2", originKey, destinationKey],
     enabled,
     staleTime: STALE_TIME_MS,
     retry: 0,
-    queryFn: async (): Promise<number | null> => {
+    queryFn: async (): Promise<DriveTimeResult | null> => {
       if (!origin || !destination) return null
-      // Inflate straight-line distance ~1.3x to approximate road distance.
-      const km = distanceKm(origin, destination) * 1.3
-      return Math.max(1, Math.round((km / AVG_SPEED_KMH) * 60))
+      const roadKm = distanceKm(origin, destination) * 1.3
+      const minutes = Math.max(1, Math.round((roadKm / AVG_SPEED_KMH) * 60))
+      return { minutes, distanceKm: roadKm }
     },
   })
 }

@@ -5,11 +5,13 @@ export interface CareCompanionState {
   activeAiSessionId: string | null
   dismissedOverlayIds: string[]
   activeMedicationFilter: string | null
+  aiPipelineRunning: boolean
   setIntakeCompleted: (completed: boolean) => void
   setActiveAiSessionId: (sessionId: string | null) => void
   dismissOverlay: (overlayId: string) => void
   clearDismissedOverlays: () => void
   setActiveMedicationFilter: (filter: string | null) => void
+  setAiPipelineRunning: (running: boolean) => void
 }
 
 export const useCareCompanionStore = create<CareCompanionState>((set) => ({
@@ -17,6 +19,7 @@ export const useCareCompanionStore = create<CareCompanionState>((set) => ({
   activeAiSessionId: null,
   dismissedOverlayIds: [],
   activeMedicationFilter: null,
+  aiPipelineRunning: false,
   setIntakeCompleted: (completed: boolean) =>
     set(() => ({ intakeCompleted: completed })),
   setActiveAiSessionId: (sessionId: string | null) =>
@@ -30,4 +33,6 @@ export const useCareCompanionStore = create<CareCompanionState>((set) => ({
   clearDismissedOverlays: () => set(() => ({ dismissedOverlayIds: [] })),
   setActiveMedicationFilter: (filter: string | null) =>
     set(() => ({ activeMedicationFilter: filter })),
+  setAiPipelineRunning: (running: boolean) =>
+    set(() => ({ aiPipelineRunning: running })),
 }))

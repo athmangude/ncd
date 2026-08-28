@@ -95,6 +95,13 @@ interface PaymentRecord {
   disbursementTransaction: { description: string }
   paymentSplits: PaymentSplitRecord[]
   cashbackDetails: { source: string; amount: number }[]
+  lineItems?: {
+    name: string
+    category: string
+    quantity: number
+    unitPrice: number
+    lineTotal: number
+  }[]
 }
 
 interface PaymentHistoryShape {

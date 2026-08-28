@@ -770,7 +770,7 @@ function RecommendedCard({ card }: { card: EducationFeedCard }) {
   return (
     <Link
       to={`/patients/companion/education/${card.slug}`}
-      className="flex items-center gap-3 rounded-xl border bg-card p-3 transition-colors active:bg-muted/50"
+      className="flex items-center gap-3 rounded-xl border bg-card p-3 no-underline transition-colors active:bg-muted/50"
     >
       <div
         className={cn(

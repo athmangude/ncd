@@ -81,6 +81,7 @@ import FastTrackWrapper from "./FastTrack/FastTrackWrapper"
 
 import PatientSecurityAndPermissions from "./Profile/PatientSecurityAndPermissions"
 import PatientNotificationsPage from "./Notifications/PatientNotificationsPage"
+import NotificationDetailPage from "./Notifications/NotificationDetailPage"
 import PatientReferralAndEarn from "./Profile/PatientReferralAndEarn"
 
 import FacilityDetailsPage from "./Dashboard/components/discovery/FacilityDetailsPage"
@@ -713,6 +714,14 @@ export default function PatientsHome() {
           element={
             <RouteMetadata title="Notifications">
               <PatientNotificationsPage />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/notifications/:id"
+          element={
+            <RouteMetadata title="Notification">
+              <NotificationDetailPage />
             </RouteMetadata>
           }
         />

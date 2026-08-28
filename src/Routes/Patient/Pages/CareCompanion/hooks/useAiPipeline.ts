@@ -9,6 +9,7 @@ import type {
   PaymentEvent,
 } from "@/types/care-companion"
 import { runPipeline } from "@/lib/ai-pipeline"
+import { useCareCompanionStore } from "../store/careCompanionStore"
 
 const EVENTS_QUERY_KEY = ["care-companion", "events"]
 const NOTIFICATIONS_QUERY_KEY = "careCompanionNotifications"
@@ -43,7 +44,7 @@ const ACTION_TYPE_DEEP_LINKS: Record<string, string> = {
   PROVIDER_FLAG: "/patients/companion",
   ADHERENCE_PATTERN: "/patients/companion/refill-schedule",
   CIRCLE_PROMPT: "/patients/companion",
-  INVOICE_POPULATE: "/patients/companion/cost-tracker",
+  INVOICE_POPULATE: "/patients/payments/payment-details",
   DRUG_INFO_SURFACE: "/patients/companion/medication-cards",
   TEST_RESULT_PROMPT: "/patients/companion/test-results",
   LOAN_REPAYMENT_PRAISE: "/patients/companion/medication-loan",
@@ -163,13 +164,14 @@ async function applyInvoicePopulations(
       type: "AI_INSIGHT",
       title: action.title,
       body: action.body,
-      deepLink: "/patients/companion/cost-tracker",
+      deepLink: `/patients/payments/payment-details/${matched.id}`,
       scheduledAt: now,
       sentAt: now,
       readAt: null,
       metadata: {
         actionType: "INVOICE_POPULATE",
         severity: action.severity,
+        relatedPaymentId: matched.id,
       },
     })
   }
@@ -182,6 +184,9 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
   const hasRunRef = useRef(false)
   const isRunningRef = useRef(false)
   const [isPipelineRunning, setIsPipelineRunning] = useState(false)
+  const setStoreRunning = useCareCompanionStore(
+    (s) => s.setAiPipelineRunning,
+  )
 
   const { data: events = [] } = useQuery({
     queryKey: EVENTS_QUERY_KEY,
@@ -200,6 +205,7 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
     if (!profile || isRunningRef.current) return
     isRunningRef.current = true
     setIsPipelineRunning(true)
+    setStoreRunning(true)
 
     try {
       const cached =
@@ -239,8 +245,9 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
     } finally {
       isRunningRef.current = false
       setIsPipelineRunning(false)
+      setStoreRunning(false)
     }
-  }, [profile, queryClient, saveBatchMutation])
+  }, [profile, queryClient, saveBatchMutation, setStoreRunning])
 
   useEffect(() => {
     if (!profile || hasRunRef.current) return

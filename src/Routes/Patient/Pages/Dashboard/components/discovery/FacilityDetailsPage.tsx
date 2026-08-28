@@ -63,10 +63,12 @@ export default function FacilityDetailsPage() {
   // location being correct.
   const driveOrigin = userLocation ?? FALLBACK_ORIGIN
 
-  const { data: driveMinutes, isLoading: isDriveLoading } = useDriveTime({
+  const { data: driveDataRaw, isLoading: isDriveLoading } = useDriveTime({
     origin: driveOrigin,
     destination,
   })
+  const driveMinutes = driveDataRaw?.minutes ?? null
+  const driveDistanceKm = driveDataRaw?.distanceKm ?? null
 
   const requestedTab = searchParams.get("tab") as TabValue | null
   const activeTab: TabValue =
@@ -189,7 +191,9 @@ export default function FacilityDetailsPage() {
   const driveTimeLabel = isDriveLoading
     ? "…"
     : typeof driveMinutes === "number"
-      ? `${driveMinutes} mins`
+      ? driveMinutes >= 60
+        ? `${Math.floor(driveMinutes / 60)}h ${driveMinutes % 60}m`
+        : `${driveMinutes} min`
       : "—"
   const showRating = !!reviewAggregate && reviewAggregate.reviewCount > 0
 
@@ -255,6 +259,19 @@ export default function FacilityDetailsPage() {
         )}
 
         <div className="flex items-stretch gap-6 mt-4 text-sm text-foreground">
+          <div className="flex flex-col items-center">
+            <span className="text-xs text-muted-foreground">Distance</span>
+            <span className="font-medium">
+              {isDriveLoading
+                ? "…"
+                : driveDistanceKm != null
+                  ? driveDistanceKm < 1
+                    ? `${Math.round(driveDistanceKm * 1000)}m`
+                    : `${driveDistanceKm.toFixed(1)} km`
+                  : "—"}
+            </span>
+          </div>
+          <div className="w-px bg-border" />
           <div className="flex flex-col items-center">
             <span className="text-xs text-muted-foreground">Drive time</span>
             <span className="font-medium">{driveTimeLabel}</span>
