@@ -693,7 +693,7 @@ function EducationCard({ data }: { data: CareCompanionHomeData }) {
   return (
     <button
       type="button"
-      onClick={() => navigate("/patients/companion/education")}
+      onClick={() => navigate(`/patients/companion/education/${educationFeed.slug}`)}
       className="w-full rounded-xl border bg-card p-4 text-left transition-colors active:bg-muted/50"
     >
       <div className="flex items-start justify-between">

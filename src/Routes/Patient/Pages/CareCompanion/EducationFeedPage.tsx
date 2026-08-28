@@ -592,7 +592,7 @@ function FeaturedCard({
   return (
     <Link
       to={`/patients/companion/education/${card.slug}`}
-      className="relative block w-full rounded-2xl border border-primary/20 overflow-hidden"
+      className="no-underline relative block w-full rounded-2xl border border-primary/20 overflow-hidden"
     >
       <CardImageHeader
         imageUrl={card.imageUrl}
@@ -701,7 +701,7 @@ function ArticleCard({
   return (
     <Link
       to={`/patients/companion/education/${card.slug}`}
-      className="flex items-start gap-3 rounded-xl border bg-card p-3.5 transition-all active:bg-muted/50"
+      className="no-underline flex items-start gap-3 rounded-xl border bg-card p-3.5 transition-all active:bg-muted/50"
     >
       <div className="relative">
         <div
