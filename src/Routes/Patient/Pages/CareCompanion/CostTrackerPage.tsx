@@ -18,7 +18,7 @@ import { trackEvent } from "@/analytics"
 import { EVENTS } from "@/analytics"
 import { useCostSummary } from "./hooks/useCostSummary"
 import { useCostBreakdown } from "./hooks/useCostBreakdown"
-import { useRecentPayments } from "./hooks/useRecentPayments"
+import { useRecentPayments, useAllPayments } from "./hooks/useRecentPayments"
 import type { CostSummary, PaymentEvent } from "@/types/care-companion"
 import type {
   CostCategoryBreakdown,
@@ -72,6 +72,7 @@ export default function CostTrackerPage() {
   const summary = useCostSummary()
   const breakdown = useCostBreakdown()
   const recentPayments = useRecentPayments()
+  const allPayments = useAllPayments()
 
   useEffect(() => {
     trackEvent(EVENTS.CARE_COMPANION.COST_TRACKER.VIEW)
@@ -105,7 +106,10 @@ export default function CostTrackerPage() {
       )}
 
       {breakdown.data && breakdown.data.categories.length > 0 && (
-        <CategoryBreakdownSection categories={breakdown.data.categories} />
+        <CategoryBreakdownSection
+          categories={breakdown.data.categories}
+          payments={allPayments.data ?? []}
+        />
       )}
 
       {breakdown.data && breakdown.data.monthlyTrend.length > 0 && (
@@ -120,6 +124,10 @@ export default function CostTrackerPage() {
 // ---------------------------------------------------------------------------
 
 function AnnualSummarySection({ data }: { data: CostSummary }) {
+  const cashbackOpportunity = Math.round(
+    parseFloat(data.annualProjection) * 0.05,
+  )
+
   const stats = [
     {
       label: "Year to date",
@@ -134,11 +142,10 @@ function AnnualSummarySection({ data }: { data: CostSummary }) {
       highlight: false,
     },
     {
-      label: "Cashback earned",
-      value: formatKES(data.cashbackEarned),
-      icon: BadgeDollarSign,
+      label: "Transactions",
+      value: String(data.transactionCount),
+      icon: Receipt,
       highlight: false,
-      success: true,
     },
     {
       label: "Net spend",
@@ -147,16 +154,24 @@ function AnnualSummarySection({ data }: { data: CostSummary }) {
       highlight: false,
     },
     {
+      label: "Cashback earned",
+      value: formatKES(data.cashbackEarned),
+      icon: BadgeDollarSign,
+      highlight: false,
+      success: true,
+    },
+    {
       label: "Projected annual",
       value: formatKES(data.annualProjection),
       icon: Target,
       highlight: false,
     },
     {
-      label: "Transactions",
-      value: String(data.transactionCount),
-      icon: Receipt,
+      label: "Cashback opportunity",
+      value: formatKES(String(cashbackOpportunity)),
+      icon: BadgeDollarSign,
       highlight: false,
+      success: true,
     },
   ]
 
@@ -216,12 +231,12 @@ function AnnualSummarySection({ data }: { data: CostSummary }) {
 
 function CategoryBreakdownSection({
   categories,
+  payments,
 }: {
   categories: CostCategoryBreakdown[]
+  payments: PaymentEvent[]
 }) {
-  const handleCategoryTap = useCallback((category: string) => {
-    trackEvent(EVENTS.CARE_COMPANION.COST_TRACKER.CATEGORY_TAP, { category })
-  }, [])
+  const [expandedCat, setExpandedCat] = useState<string | null>(null)
 
   return (
     <section aria-label="Spending by category">
@@ -229,41 +244,108 @@ function CategoryBreakdownSection({
         Spending by Category
       </h2>
       <div className="flex flex-col gap-2">
-        {categories.map((cat) => (
-          <button
-            key={cat.category}
-            type="button"
-            onClick={() => handleCategoryTap(cat.category)}
-            className="flex flex-col gap-2 rounded-xl border bg-card p-3 text-left transition-colors active:bg-muted/50"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-foreground">
-                {CATEGORY_LABELS[cat.category] ?? cat.category}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-foreground">
-                  {formatKES(cat.totalSpend)}
-                </span>
-                <span className="text-[10px] text-muted-foreground">
-                  {cat.percentage}%
-                </span>
-              </div>
+        {categories.map((cat) => {
+          const isExpanded = expandedCat === cat.category
+          const catPayments = payments.filter((p) =>
+            p.lineItems.some((li) => li.category === cat.category),
+          )
+
+          return (
+            <div
+              key={cat.category}
+              className="rounded-xl border bg-card overflow-hidden"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  const next = isExpanded ? null : cat.category
+                  setExpandedCat(next)
+                  if (next) {
+                    trackEvent(
+                      EVENTS.CARE_COMPANION.COST_TRACKER.CATEGORY_TAP,
+                      { category: cat.category },
+                    )
+                  }
+                }}
+                className="flex w-full flex-col gap-2 p-3 text-left transition-colors active:bg-muted/50"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-foreground">
+                    {CATEGORY_LABELS[cat.category] ?? cat.category}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-semibold text-foreground">
+                      {formatKES(cat.totalSpend)}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {cat.percentage}%
+                    </span>
+                    {isExpanded ? (
+                      <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                    )}
+                  </div>
+                </div>
+                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                  <div
+                    className={cn(
+                      "h-full rounded-full transition-all",
+                      CATEGORY_COLORS[cat.category] ?? "bg-primary",
+                    )}
+                    style={{ width: `${Math.min(cat.percentage, 100)}%` }}
+                  />
+                </div>
+                <p className="text-[10px] text-muted-foreground">
+                  {cat.transactionCount} transaction
+                  {cat.transactionCount !== 1 ? "s" : ""}
+                </p>
+              </button>
+
+              {isExpanded && (
+                <div className="border-t px-3 pb-3 pt-2">
+                  {catPayments.length > 0 ? (
+                    <div className="flex flex-col gap-2">
+                      {catPayments.map((p) => {
+                        const date = new Date(p.timestamp)
+                        const dateStr = date.toLocaleDateString("en-KE", {
+                          day: "numeric",
+                          month: "short",
+                        })
+                        const catTotal = p.lineItems
+                          .filter((li) => li.category === cat.category)
+                          .reduce((s, li) => s + li.lineTotal, 0)
+
+                        return (
+                          <div
+                            key={p.id}
+                            className="flex items-center justify-between gap-2"
+                          >
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-xs font-medium text-foreground">
+                                {p.facilityName}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground">
+                                {dateStr}
+                              </p>
+                            </div>
+                            <span className="shrink-0 font-mono text-xs text-foreground">
+                              {formatKES(String(catTotal))}
+                            </span>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic py-1">
+                      No recent transactions
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className={cn(
-                  "h-full rounded-full transition-all",
-                  CATEGORY_COLORS[cat.category] ?? "bg-primary"
-                )}
-                style={{ width: `${Math.min(cat.percentage, 100)}%` }}
-              />
-            </div>
-            <p className="text-[10px] text-muted-foreground">
-              {cat.transactionCount} transaction
-              {cat.transactionCount !== 1 ? "s" : ""}
-            </p>
-          </button>
-        ))}
+          )
+        })}
       </div>
     </section>
   )

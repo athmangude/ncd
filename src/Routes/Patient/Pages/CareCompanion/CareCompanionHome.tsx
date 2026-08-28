@@ -511,9 +511,9 @@ function CostTrackerCard({ data }: { data: CareCompanionHomeData }) {
           </p>
         </div>
         <div className="rounded-lg bg-muted/50 px-3 py-2">
-          <p className="text-[11px] text-muted-foreground">Monthly avg</p>
+          <p className="text-[11px] text-muted-foreground">Projected annual</p>
           <p className="text-sm font-semibold font-mono text-foreground">
-            {formatKES(costSummary.monthlyAverage)}
+            {formatKES(costSummary.annualProjection)}
           </p>
         </div>
         <div className="rounded-lg bg-emerald-50 px-3 py-2">
@@ -522,10 +522,14 @@ function CostTrackerCard({ data }: { data: CareCompanionHomeData }) {
             {formatKES(costSummary.cashbackEarned)}
           </p>
         </div>
-        <div className="rounded-lg bg-muted/50 px-3 py-2">
-          <p className="text-[11px] text-muted-foreground">Projected annual</p>
-          <p className="text-sm font-semibold font-mono text-foreground">
-            {formatKES(costSummary.annualProjection)}
+        <div className="rounded-lg bg-emerald-50 px-3 py-2">
+          <p className="text-[11px] text-emerald-600">Cashback opportunity</p>
+          <p className="text-sm font-semibold font-mono text-emerald-700">
+            {formatKES(
+              String(
+                Math.round(parseFloat(costSummary.annualProjection) * 0.05),
+              ),
+            )}
           </p>
         </div>
       </div>
