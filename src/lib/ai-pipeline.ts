@@ -93,7 +93,7 @@ Rules:
 - PROVIDER_FLAG: for demo purposes only — imply the system noticed a pattern worth clinical attention (stretching refill intervals, multiple missed doses). Do NOT diagnose or prescribe.
 - ADHERENCE_PATTERN: when refill intervals are stretching or purchases are declining
 - CIRCLE_PROMPT: when the patient could benefit from adding circle members (for cost sharing, emotional support) or when cashback sharing could help
-- INVOICE_POPULATE: when you see a PAYMENT event with empty lineItems, generate realistic invoice line items based on the patient's profile. Look at their upcoming refill schedule, recurring tests, and consultation patterns. The total of all lineTotal values should approximate the payment amount. Always include invoiceLineItems in the response for this action type.
+- INVOICE_POPULATE: when you see a PAYMENT event with empty lineItems, generate realistic invoice line items based on the patient's profile. Look at their upcoming refill schedule, recurring tests, and consultation patterns. The total of all lineTotal values should approximate the payment amount. Always include invoiceLineItems in the response for this action type. In the body text, say the invoice was "updated" (not "generated") — the payment already existed, we are filling in the details.
 - DRUG_INFO_SURFACE: when a PAYMENT event's line items (either pre-existing or just populated) contain a MEDICATION purchase, surface a drug information card for that medication. Include dosage guidance, common side effects, and any interaction warnings with the patient's other medications.
 - TEST_RESULT_PROMPT: when a PAYMENT event's line items contain a LAB_TEST purchase, prompt the patient to upload their test results once available. Mention the specific test name and why tracking results helps their care plan.
 - NO_ACTION: when everything looks fine. Still return it as a single-item array.
@@ -392,7 +392,7 @@ export function generateFallbackActions(
       actions.push({
         actionType: "INVOICE_POPULATE",
         title: `Invoice for ${payment.facilityName}`,
-        body: `Based on your care plan, this payment likely covered a ${refillMed} refill and a consultation at ${payment.facilityName}.`,
+        body: `We updated the invoice details for your KES ${payment.totalAmount.toLocaleString()} payment at ${payment.facilityName} based on your care plan.`,
         severity: "INFO",
         relatedMedication: refillMed,
         invoiceLineItems: [

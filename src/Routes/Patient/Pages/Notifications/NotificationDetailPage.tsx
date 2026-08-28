@@ -76,7 +76,7 @@ const ACTION_BUTTON_LABELS: Record<string, string> = {
   ADHERENCE_PATTERN: "View schedule",
   INVOICE_POPULATE: "View payment details",
   DRUG_INFO_SURFACE: "View medication card",
-  TEST_RESULT_PROMPT: "View test results",
+  TEST_RESULT_PROMPT: "Upload test results",
   LOAN_REPAYMENT_PRAISE: "View loan details",
   LOAN_REPAYMENT_REMINDER: "View loan details",
   LOAN_REPAYMENT_OVERDUE: "View loan details",

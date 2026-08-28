@@ -57,13 +57,8 @@ import type {
   InteractionSeverity,
 } from "@/types/care-companion"
 
-import patientMedicationsSeed from "../fixtures/patient-medications.json"
 import patientMedicationRecordsSeed from "../fixtures/patient-medication-records.json"
 import medicationTaxonomySeed from "../fixtures/medication-taxonomy.json"
-import medicationTimelineSeed from "../fixtures/medication-timeline.json"
-import careCompanionTimelineSeed from "../fixtures/care-companion-timeline.json"
-import costSummarySeed from "../fixtures/cost-summary.json"
-import careCompanionCostBreakdownSeed from "../fixtures/care-companion-cost-breakdown.json"
 import emergencyCardsSeed from "../fixtures/emergency-cards.json"
 import emergencyReferenceCardsSeed from "../fixtures/emergency-reference-cards.json"
 import medicationCardsSeed from "../fixtures/medication-cards.json"
@@ -105,6 +100,23 @@ const CARE_COMPANION_TIMELINE_KEY = "care-companion-timeline"
 const EMERGENCY_REFERENCE_CARDS_KEY = "care-companion-emergency-reference-cards"
 
 const DAY_MS = 86_400_000
+
+let _profileSeeded = false
+
+const TIMELINE_MEDS_KEY = "care-companion-timeline-meds"
+
+function ensureProfileSeeded(): void {
+  if (_profileSeeded) return
+  _profileSeeded = true
+  const profile = getCareCompanionProfile()
+  if (!profile?.completedAt) return
+  const meds = profile.treatment?.medicationNames ?? []
+  if (meds.length === 0) return
+  const medsFingerprint = [...meds].sort().join("|").toLowerCase()
+  const stored = localStorage.getItem("mock:" + TIMELINE_MEDS_KEY)
+  if (stored === medsFingerprint) return
+  seedFromIntakeMedications(meds)
+}
 
 // ---------------------------------------------------------------------------
 // Profile CRUD
@@ -463,6 +475,9 @@ function computeProjectedMonthlyCosts(
 }
 
 function seedFromIntakeMedications(medicationNames: string[]): void {
+  const fingerprint = [...medicationNames].sort().join("|").toLowerCase()
+  localStorage.setItem("mock:" + TIMELINE_MEDS_KEY, fingerprint)
+
   const taxonomy = readCollection<MedicationTaxonomyEntry>(
     MEDICATION_TAXONOMY_KEY,
     medicationTaxonomySeed as unknown as MedicationTaxonomyEntry[],
@@ -719,6 +734,7 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
     "WALLET", "MPESA", "CASHBACK", "CARE_SAVER",
   ]
   const events: CareCompanionEvent[] = []
+  const timelinePaymentRecords: Record<string, unknown>[] = []
   let runningCashback = 0
 
   function entryCategory(e: TimelineEntry): "CONSULTATION" | "LAB_TEST" | "MEDICATION" {
@@ -779,6 +795,29 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
       isInNetwork: (date.charCodeAt(9) % 3) !== 0,
     }
     events.push(payEvent)
+
+    timelinePaymentRecords.push({
+      id: paymentId,
+      totalBillAmount: total,
+      createdAt: payEvent.timestamp,
+      currency: { code: "KES" },
+      status: "COMPLETED",
+      patientMedicalInfoRequest: {
+        facility: { id: `fac-tl-${paymentId.slice(4, 14)}`, name: facility },
+        medicalInvoiceFile: { careProviderName: facility },
+      },
+      user: { firstName: "Wanjiru", lastName: "Kamau" },
+      disbursementTransaction: { description: `Payment to ${facility}` },
+      paymentSplits: fundingSources.map((fs, fIdx) => ({
+        id: `split-${paymentId}-${fIdx}`,
+        createdAt: payEvent.timestamp,
+        paymentSplitAmount: fs.amount,
+        wallet: { type: fs.type },
+        loan: null,
+      })),
+      cashbackDetails: [],
+      lineItems,
+    })
 
     const cbRate = 0.05
     const cbAmount = Math.round(total * cbRate)
@@ -985,29 +1024,36 @@ function seedFromIntakeMedications(medicationNames: string[]): void {
     if (!existingHistory.payments.some((p) => p.id === payId)) {
       existingHistory.payments.push({
         id: payId,
-      totalBillAmount: f.amount,
-      createdAt: payTimestamp,
-      currency: { code: "KES" },
-      status: "COMPLETED",
-      patientMedicalInfoRequest: {
-        facility: { id: `fac-cc-${idx}`, name: f.name },
-        medicalInvoiceFile: { careProviderName: f.name },
-      },
-      user: { firstName: "Wanjiru", lastName: "Kamau" },
-      disbursementTransaction: { description: `Payment to ${f.name}` },
-      paymentSplits: [
-        {
-          id: `split-cc-${idx}`,
-          createdAt: payTimestamp,
-          paymentSplitAmount: f.amount,
-          wallet: { type: "MPESA" },
-          loan: null,
+        totalBillAmount: f.amount,
+        createdAt: payTimestamp,
+        currency: { code: "KES" },
+        status: "COMPLETED",
+        patientMedicalInfoRequest: {
+          facility: { id: `fac-cc-${idx}`, name: f.name },
+          medicalInvoiceFile: { careProviderName: f.name },
         },
-      ],
-      cashbackDetails: [],
-    })
+        user: { firstName: "Wanjiru", lastName: "Kamau" },
+        disbursementTransaction: { description: `Payment to ${f.name}` },
+        paymentSplits: [
+          {
+            id: `split-cc-${idx}`,
+            createdAt: payTimestamp,
+            paymentSplitAmount: f.amount,
+            wallet: { type: "MPESA" },
+            loan: null,
+          },
+        ],
+        cashbackDetails: [],
+      })
     }
   })
+
+  const existingIds = new Set(existingHistory.payments.map((p) => p.id))
+  for (const rec of timelinePaymentRecords) {
+    if (!existingIds.has(rec.id as string)) {
+      existingHistory.payments.push(rec)
+    }
+  }
 
   writeObject(paymentHistoryKey, existingHistory)
 
@@ -1209,16 +1255,18 @@ export function saveLessonProgress(
 // ---------------------------------------------------------------------------
 
 export function getPatientMedications(): PatientMedication[] {
+  ensureProfileSeeded()
   return readCollection<PatientMedication>(
     PATIENT_MEDICATIONS_KEY,
-    patientMedicationsSeed as unknown as PatientMedication[],
+    [],
   )
 }
 
 export function getMedicationTimeline(): TimelineEntry[] {
+  ensureProfileSeeded()
   return readCollection<TimelineEntry>(
     MEDICATION_TIMELINE_KEY,
-    medicationTimelineSeed as unknown as TimelineEntry[],
+    [],
   )
 }
 
@@ -1239,9 +1287,11 @@ export function getTimeline(
 ): PaginatedResponse<TimelineEntry> {
   const { medicationId, limit, offset } = options
 
+  ensureProfileSeeded()
+
   let entries = readCollection<TimelineEntry>(
     CARE_COMPANION_TIMELINE_KEY,
-    careCompanionTimelineSeed as unknown as TimelineEntry[],
+    [],
   )
 
   if (medicationId) {
@@ -1277,9 +1327,21 @@ interface CostSummaryFixture extends CostSummary {
  * the fixture is returned with the year field adjusted when needed.
  */
 export function getCostSummary(year?: number): CostSummaryFixture {
+  ensureProfileSeeded()
+  const emptySummary: CostSummaryFixture = {
+    year: new Date().getFullYear(),
+    ytdSpend: "0",
+    monthlyAverage: "0",
+    annualProjection: "0",
+    transactionCount: 0,
+    cashbackEarned: "0",
+    netSpend: "0",
+    breakdown: [],
+    monthlyTrend: [],
+  }
   const summary = readObject<CostSummaryFixture>(
     COST_SUMMARY_KEY,
-    costSummarySeed as unknown as CostSummaryFixture,
+    emptySummary,
   )
   if (year !== undefined && summary.year !== year) {
     return { ...summary, year }
@@ -1293,9 +1355,16 @@ export function getCostSummary(year?: number): CostSummaryFixture {
  * The optional year parameter adjusts the returned year field.
  */
 export function getCostBreakdown(year?: number): CostBreakdownResponse {
+  ensureProfileSeeded()
+  const emptyBreakdown: CostBreakdownResponse = {
+    year: new Date().getFullYear(),
+    categories: [],
+    monthlyTrend: [],
+    pagination: { total: 0, limit: 12, offset: 0 },
+  }
   const breakdown = readObject<CostBreakdownResponse>(
     COST_BREAKDOWN_KEY,
-    careCompanionCostBreakdownSeed as unknown as CostBreakdownResponse,
+    emptyBreakdown,
   )
   if (year !== undefined && breakdown.year !== year) {
     return { ...breakdown, year }
@@ -2215,6 +2284,7 @@ export function updateTestScheduleItem(
 const EVENTS_LOG_KEY = "care-companion-events"
 
 export function getEventsLog(): CareCompanionEvent[] {
+  ensureProfileSeeded()
   return readCollection<CareCompanionEvent>(EVENTS_LOG_KEY, [])
 }
 

@@ -50,7 +50,7 @@ export function useMedicationCards() {
 
       const [cardsRes, taxonomyRes] = await Promise.all([
         axios.get(`${baseUrl}/companion/medication-cards`),
-        axios.get(`${baseUrl}/api/medications/taxonomy`),
+        axios.get(`${baseUrl}/api/medications/taxonomy`, { params: { limit: 500 } }),
       ])
 
       const rawCards = cardsRes.data as RawCardResponse
