@@ -696,7 +696,6 @@ function CompletionCard({
   onRestart: () => void
 }) {
   const navigate = useNavigate()
-  const typeConfig = CONTENT_TYPE_CONFIG[card.contentType]
 
   const recommended = allCards
     .filter(

@@ -139,9 +139,6 @@ export default function MedicationCardsPage() {
 
       {data.cards.map((annotatedCard) => {
         const maxSeverity = getMaxSeverity(annotatedCard.interactions)
-        const borderClass = maxSeverity
-          ? SEVERITY_CONFIG[maxSeverity].borderClass
-          : "border-l-primary/30"
         const isHighlighted =
           highlightMed &&
           annotatedCard.genericName
