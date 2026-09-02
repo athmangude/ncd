@@ -140,7 +140,7 @@ describe("EventTypeFilterChips", () => {
     expect(allChip.className).toContain("text-primary-foreground")
   })
 
-  it("has overflow-x-auto and scrollbar-none on the container", () => {
+  it("has overflow-x-auto and no-scrollbar on the container", () => {
     const { container } = render(
       <EventTypeFilterChips
         activeFilter={null}
@@ -150,7 +150,42 @@ describe("EventTypeFilterChips", () => {
 
     const row = container.firstElementChild as HTMLElement
     expect(row.className).toContain("overflow-x-auto")
-    expect(row.className).toContain("scrollbar-none")
+    expect(row.className).toContain("no-scrollbar")
+  })
+
+  it("sets aria-pressed=true on active chip and false on inactive chips", () => {
+    render(
+      <EventTypeFilterChips
+        activeFilter="VISIT_GROUP"
+        onFilterChange={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByRole("button", { name: "Visits" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(
+      screen.getByRole("button", { name: "All" })
+    ).toHaveAttribute("aria-pressed", "false")
+    expect(
+      screen.getByRole("button", { name: "Medications" })
+    ).toHaveAttribute("aria-pressed", "false")
+  })
+
+  it("sets aria-pressed=true on All chip when activeFilter is null", () => {
+    render(
+      <EventTypeFilterChips
+        activeFilter={null}
+        onFilterChange={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByRole("button", { name: "All" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(
+      screen.getByRole("button", { name: "Visits" })
+    ).toHaveAttribute("aria-pressed", "false")
   })
 })
 
@@ -252,7 +287,7 @@ describe("FacilityFilterChips", () => {
     expect(inactive.className).toContain("text-muted-foreground")
   })
 
-  it("has overflow-x-auto and scrollbar-none on the container", () => {
+  it("has overflow-x-auto and no-scrollbar on the container", () => {
     const { container } = render(
       <FacilityFilterChips
         facilities={["Nairobi Hospital", "City Chemist"]}
@@ -263,6 +298,23 @@ describe("FacilityFilterChips", () => {
 
     const row = container.firstElementChild as HTMLElement
     expect(row.className).toContain("overflow-x-auto")
-    expect(row.className).toContain("scrollbar-none")
+    expect(row.className).toContain("no-scrollbar")
+  })
+
+  it("sets aria-pressed=true on active facility and false on inactive", () => {
+    render(
+      <FacilityFilterChips
+        facilities={["Nairobi Hospital", "City Chemist"]}
+        activeFilter="City Chemist"
+        onFilterChange={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByRole("button", { name: "City Chemist" })
+    ).toHaveAttribute("aria-pressed", "true")
+    expect(
+      screen.getByRole("button", { name: "Nairobi Hospital" })
+    ).toHaveAttribute("aria-pressed", "false")
   })
 })

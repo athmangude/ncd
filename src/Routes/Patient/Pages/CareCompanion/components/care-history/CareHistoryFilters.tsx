@@ -15,6 +15,31 @@ export type CareHistoryFilterKey =
   | "INSIGHTS"
 
 // ---------------------------------------------------------------------------
+// Composite filter mapping
+//
+// Maps composite filter keys to the concrete TimelineCardType values they
+// include. The care history hook MUST use this mapping when filtering
+// entries rather than strict equality, because composite keys like
+// "MEDICATIONS" don't correspond to any single card type.
+//
+// Example hook usage:
+//   const types = COMPOSITE_FILTER_MAP[activeFilter]
+//   if (types) {
+//     filtered = entries.filter(e => types.includes(e.type) || e.type === "UPCOMING")
+//   } else {
+//     filtered = entries.filter(e => e.type === activeFilter || e.type === "UPCOMING")
+//   }
+// ---------------------------------------------------------------------------
+
+export const COMPOSITE_FILTER_MAP: Partial<
+  Record<CareHistoryFilterKey, TimelineCardType[]>
+> = {
+  MEDICATIONS: ["SCHEDULE_CHANGE", "DRUG_INTERACTION", "VISIT_GROUP"],
+  LAB_TESTS: ["TEST_RESULT", "SCHEDULE_CHANGE"],
+  INSIGHTS: ["AI_INSIGHT"],
+}
+
+// ---------------------------------------------------------------------------
 // Chip definitions
 // ---------------------------------------------------------------------------
 
@@ -45,7 +70,7 @@ export function EventTypeFilterChips({
   onFilterChange,
 }: EventTypeFilterChipsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto scrollbar-none">
+    <div className="flex gap-2 overflow-x-auto no-scrollbar">
       {EVENT_TYPE_CHIPS.map((chip) => {
         const isActive =
           chip.value === null
@@ -56,6 +81,7 @@ export function EventTypeFilterChips({
           <button
             key={chip.label}
             type="button"
+            aria-pressed={isActive}
             onClick={() => {
               if (isActive && chip.value !== null) {
                 onFilterChange(null)
@@ -96,7 +122,7 @@ export function FacilityFilterChips({
   if (facilities.length <= 1) return null
 
   return (
-    <div className="flex gap-2 overflow-x-auto scrollbar-none">
+    <div className="flex gap-2 overflow-x-auto no-scrollbar">
       {facilities.map((facility) => {
         const isActive = activeFilter === facility
 
@@ -104,6 +130,7 @@ export function FacilityFilterChips({
           <button
             key={facility}
             type="button"
+            aria-pressed={isActive}
             onClick={() => {
               onFilterChange(isActive ? null : facility)
             }}
