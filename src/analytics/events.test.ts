@@ -23,19 +23,23 @@ describe("EVENTS.CARE_COMPANION", () => {
   // Structural completeness
   // ---------------------------------------------------------------------------
 
-  it("contains all 12 required sub-objects", () => {
+  it("contains all 16 required sub-objects", () => {
     const expectedKeys = [
       "INTAKE",
       "HOME",
       "EMERGENCY_CARD",
       "COST_TRACKER",
       "MEDICATION_TIMELINE",
+      "CARE_HISTORY",
       "MEDICATION_CARDS",
       "REFILL_SCHEDULE",
+      "AI_PIPELINE",
+      "EVENTS",
       "EDUCATION",
       "PHARMACY_STOCK",
       "MEDICATION_LOAN",
       "AI_ASSISTANT",
+      "TEST_RESULTS",
       "ERROR",
     ]
     expect(Object.keys(CC).sort()).toEqual(expectedKeys.sort())
@@ -201,6 +205,35 @@ describe("EVENTS.CARE_COMPANION", () => {
     })
   })
 
+  describe("CARE_HISTORY", () => {
+    it("includes view and filter events", () => {
+      expect(CC.CARE_HISTORY.VIEW).toBe(
+        "CARE_COMPANION:CareHistory:view",
+      )
+      expect(CC.CARE_HISTORY.FILTER_TYPE_CHANGE).toBe(
+        "CARE_COMPANION:CareHistory:filter-type-change",
+      )
+      expect(CC.CARE_HISTORY.FILTER_FACILITY_CHANGE).toBe(
+        "CARE_COMPANION:CareHistory:filter-facility-change",
+      )
+    })
+
+    it("includes interaction and navigation events", () => {
+      expect(CC.CARE_HISTORY.VISIT_EXPAND).toBe(
+        "CARE_COMPANION:CareHistory:visit-expand",
+      )
+      expect(CC.CARE_HISTORY.INSIGHT_TAP).toBe(
+        "CARE_COMPANION:CareHistory:insight-tap",
+      )
+      expect(CC.CARE_HISTORY.UPCOMING_TAP).toBe(
+        "CARE_COMPANION:CareHistory:upcoming-tap",
+      )
+      expect(CC.CARE_HISTORY.LOAD_MORE).toBe(
+        "CARE_COMPANION:CareHistory:load-more",
+      )
+    })
+  })
+
   describe("MEDICATION_CARDS", () => {
     it("includes view, card-expand, overlay-dismiss, and overlay-view-all events", () => {
       expect(CC.MEDICATION_CARDS.VIEW).toBe(
@@ -243,6 +276,58 @@ describe("EVENTS.CARE_COMPANION", () => {
     it("includes newly added refill schedule events", () => {
       expect(CC.REFILL_SCHEDULE.ITEM_TAP).toBe(
         "CARE_COMPANION:RefillSchedule:item-tap",
+      )
+    })
+  })
+
+  describe("AI_PIPELINE", () => {
+    it("includes run lifecycle events", () => {
+      expect(CC.AI_PIPELINE.RUN_START).toBe(
+        "CARE_COMPANION:AiPipeline:run-start",
+      )
+      expect(CC.AI_PIPELINE.RUN_COMPLETE).toBe(
+        "CARE_COMPANION:AiPipeline:run-complete",
+      )
+      expect(CC.AI_PIPELINE.RUN_SKIP_DEDUP).toBe(
+        "CARE_COMPANION:AiPipeline:run-skip-dedup",
+      )
+      expect(CC.AI_PIPELINE.RUN_ERROR).toBe(
+        "CARE_COMPANION:AiPipeline:run-error",
+      )
+    })
+
+    it("includes action events", () => {
+      expect(CC.AI_PIPELINE.ACTION_DISMISS).toBe(
+        "CARE_COMPANION:AiPipeline:action-dismiss",
+      )
+      expect(CC.AI_PIPELINE.ACTION_TAP).toBe(
+        "CARE_COMPANION:AiPipeline:action-tap",
+      )
+    })
+  })
+
+  describe("EVENTS", () => {
+    it("includes payment and cashback events", () => {
+      expect(CC.EVENTS.PAYMENT_RECORDED).toBe(
+        "CARE_COMPANION:Events:payment-recorded",
+      )
+      expect(CC.EVENTS.CASHBACK_EARNED).toBe(
+        "CARE_COMPANION:Events:cashback-earned",
+      )
+    })
+
+    it("includes circle and status events", () => {
+      expect(CC.EVENTS.CIRCLE_INVITE_SENT).toBe(
+        "CARE_COMPANION:Events:circle-invite-sent",
+      )
+      expect(CC.EVENTS.CIRCLE_INVITE_ACCEPTED).toBe(
+        "CARE_COMPANION:Events:circle-invite-accepted",
+      )
+      expect(CC.EVENTS.DRUG_INTERACTION_DETECTED).toBe(
+        "CARE_COMPANION:Events:drug-interaction-detected",
+      )
+      expect(CC.EVENTS.JIREH_PLUS_STATUS_CHANGE).toBe(
+        "CARE_COMPANION:Events:jireh-plus-status-change",
       )
     })
   })
@@ -337,6 +422,23 @@ describe("EVENTS.CARE_COMPANION", () => {
     })
   })
 
+  describe("TEST_RESULTS", () => {
+    it("includes view and upload lifecycle events", () => {
+      expect(CC.TEST_RESULTS.VIEW).toBe(
+        "CARE_COMPANION:TestResults:view",
+      )
+      expect(CC.TEST_RESULTS.UPLOAD_START).toBe(
+        "CARE_COMPANION:TestResults:upload-start",
+      )
+      expect(CC.TEST_RESULTS.UPLOAD_SUCCESS).toBe(
+        "CARE_COMPANION:TestResults:upload-success",
+      )
+      expect(CC.TEST_RESULTS.UPLOAD_ERROR).toBe(
+        "CARE_COMPANION:TestResults:upload-error",
+      )
+    })
+  })
+
   describe("ERROR", () => {
     it("includes boundary-hit and retry-tap events", () => {
       expect(CC.ERROR.BOUNDARY_HIT).toBe(
@@ -352,9 +454,10 @@ describe("EVENTS.CARE_COMPANION", () => {
   // Every sub-section has a VIEW event (screen views are required)
   // ---------------------------------------------------------------------------
 
-  it("every sub-section includes a VIEW event (except ERROR)", () => {
+  it("every sub-section includes a VIEW event (except ERROR, AI_PIPELINE, and EVENTS)", () => {
+    const exemptFromView = new Set(["ERROR", "AI_PIPELINE", "EVENTS"])
     for (const [key, section] of Object.entries(CC)) {
-      if (key === "ERROR") continue
+      if (exemptFromView.has(key)) continue
       expect(
         (section as Record<string, string>).VIEW,
       ).toBeDefined()
@@ -365,8 +468,8 @@ describe("EVENTS.CARE_COMPANION", () => {
   // Total event count guard — catches accidental deletions
   // ---------------------------------------------------------------------------
 
-  it("contains exactly 54 total events across all sub-sections", () => {
+  it("contains exactly 80 total events across all sub-sections", () => {
     const values = collectValues(CC as unknown as Record<string, unknown>)
-    expect(values).toHaveLength(54)
+    expect(values).toHaveLength(80)
   })
 })
