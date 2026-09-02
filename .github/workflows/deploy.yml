@@ -30,7 +30,7 @@ jobs:
         env:
           # Project Pages serve from /<repo-name>/ — derive it automatically.
           VITE_BASE: /${{ github.event.repository.name }}/
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
         with:
           # Enable Pages (Actions source) automatically so the first run on a
           # fresh repo doesn't fail before Pages has been turned on by hand.
