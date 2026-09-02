@@ -284,6 +284,15 @@ export const EVENTS = {
       FILTER_DATE: "CARE_COMPANION:MedicationTimeline:filter-date",
       EXPORT_SUCCESS: "CARE_COMPANION:MedicationTimeline:export-success",
     },
+    CARE_HISTORY: {
+      VIEW: "CARE_COMPANION:CareHistory:view",
+      FILTER_TYPE_CHANGE: "CARE_COMPANION:CareHistory:filter-type-change",
+      FILTER_FACILITY_CHANGE: "CARE_COMPANION:CareHistory:filter-facility-change",
+      VISIT_EXPAND: "CARE_COMPANION:CareHistory:visit-expand",
+      INSIGHT_TAP: "CARE_COMPANION:CareHistory:insight-tap",
+      UPCOMING_TAP: "CARE_COMPANION:CareHistory:upcoming-tap",
+      LOAD_MORE: "CARE_COMPANION:CareHistory:load-more",
+    },
     MEDICATION_CARDS: {
       VIEW: "CARE_COMPANION:MedicationCards:view",
       CARD_EXPAND: "CARE_COMPANION:MedicationCards:card-expand",
