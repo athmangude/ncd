@@ -14,6 +14,7 @@ vi.mock("@tanstack/react-query", () => ({
       isLoading: false,
       isFetching: false,
       error: null,
+      dataUpdatedAt: 0,
     }
   }),
 }))
@@ -37,8 +38,21 @@ vi.mock("../store/careCompanionStore", () => ({
     .mockImplementation(
       (selector: (s: Record<string, unknown>) => unknown) =>
         selector({
+          intakeCompleted: false,
+          activeAiSessionId: null,
+          dismissedOverlayIds: [],
+          activeMedicationFilter: null,
           activeEventTypeFilter: null,
           activeFacilityFilter: null,
+          aiPipelineRunning: false,
+          setIntakeCompleted: vi.fn(),
+          setActiveAiSessionId: vi.fn(),
+          dismissOverlay: vi.fn(),
+          clearDismissedOverlays: vi.fn(),
+          setActiveMedicationFilter: vi.fn(),
+          setActiveEventTypeFilter: vi.fn(),
+          setActiveFacilityFilter: vi.fn(),
+          setAiPipelineRunning: vi.fn(),
         })
     ),
 }))
@@ -50,6 +64,14 @@ vi.mock("./useRefillSchedule", () => ({
     isFetching: false,
     error: null,
   }),
+}))
+
+vi.mock("../components/care-history/CareHistoryFilters", () => ({
+  COMPOSITE_FILTER_MAP: {
+    MEDICATIONS: ["SCHEDULE_CHANGE", "DRUG_INTERACTION", "VISIT_GROUP"],
+    LAB_TESTS: ["TEST_RESULT", "SCHEDULE_CHANGE"],
+    INSIGHTS: ["AI_INSIGHT"],
+  },
 }))
 
 vi.mock("../utils/careHistoryClassifier", () => ({

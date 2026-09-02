@@ -1,16 +1,21 @@
 import { create } from "zustand"
+import type { CareHistoryFilterKey } from "../components/care-history/CareHistoryFilters"
 
 export interface CareCompanionState {
   intakeCompleted: boolean
   activeAiSessionId: string | null
   dismissedOverlayIds: string[]
   activeMedicationFilter: string | null
+  activeEventTypeFilter: CareHistoryFilterKey | null
+  activeFacilityFilter: string | null
   aiPipelineRunning: boolean
   setIntakeCompleted: (completed: boolean) => void
   setActiveAiSessionId: (sessionId: string | null) => void
   dismissOverlay: (overlayId: string) => void
   clearDismissedOverlays: () => void
   setActiveMedicationFilter: (filter: string | null) => void
+  setActiveEventTypeFilter: (filter: CareHistoryFilterKey | null) => void
+  setActiveFacilityFilter: (filter: string | null) => void
   setAiPipelineRunning: (running: boolean) => void
 }
 
@@ -19,6 +24,8 @@ export const useCareCompanionStore = create<CareCompanionState>((set) => ({
   activeAiSessionId: null,
   dismissedOverlayIds: [],
   activeMedicationFilter: null,
+  activeEventTypeFilter: null,
+  activeFacilityFilter: null,
   aiPipelineRunning: false,
   setIntakeCompleted: (completed: boolean) =>
     set(() => ({ intakeCompleted: completed })),
@@ -33,6 +40,10 @@ export const useCareCompanionStore = create<CareCompanionState>((set) => ({
   clearDismissedOverlays: () => set(() => ({ dismissedOverlayIds: [] })),
   setActiveMedicationFilter: (filter: string | null) =>
     set(() => ({ activeMedicationFilter: filter })),
+  setActiveEventTypeFilter: (filter: CareHistoryFilterKey | null) =>
+    set(() => ({ activeEventTypeFilter: filter })),
+  setActiveFacilityFilter: (filter: string | null) =>
+    set(() => ({ activeFacilityFilter: filter })),
   setAiPipelineRunning: (running: boolean) =>
     set(() => ({ aiPipelineRunning: running })),
 }))

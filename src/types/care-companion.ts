@@ -1248,6 +1248,27 @@ export type TimelineCardType =
   (typeof TIMELINE_CARD_TYPE)[keyof typeof TIMELINE_CARD_TYPE]
 
 // ---------------------------------------------------------------------------
+// CareHistoryEntry
+//
+// A single entry in the care history timeline. Produced by the
+// careHistoryClassifier from raw CareCompanionEvent[]. The `type` field
+// uses TimelineCardType for classified events, plus "ADHERENCE_GAP" for
+// enricher-generated overdue-refill entries.
+// ---------------------------------------------------------------------------
+
+export interface CareHistoryEntry {
+  id: string
+  type: TimelineCardType | "ADHERENCE_GAP"
+  date: string
+  facilityName: string | null
+  facilityType: "PHARMACY" | "LAB" | "HOSPITAL" | "CLINIC" | null
+  title: string
+  sourceEvents: CareCompanionEvent[]
+  totalCost: number | null
+  fundingSources: string[]
+}
+
+// ---------------------------------------------------------------------------
 // Care Companion Profile (intake questionnaire responses)
 // ---------------------------------------------------------------------------
 

@@ -7,6 +7,7 @@ import type {
   PaymentEvent,
   TestResultEvent,
   TestScheduleItem,
+  TimelineCardType,
 } from "@/types/care-companion"
 import { useCareCompanionStore } from "../store/careCompanionStore"
 import { useRefillSchedule } from "./useRefillSchedule"
@@ -18,6 +19,7 @@ import {
   generateUpcomingEvents,
   buildLinkedTestResultsMap,
 } from "../utils/careHistoryEnricher"
+import { COMPOSITE_FILTER_MAP } from "../components/care-history/CareHistoryFilters"
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -72,18 +74,31 @@ export interface MonthGroup {
  *
  * Uses a ref to persist events between renders so the first render after
  * data arrives already has the full accumulated set.
+ *
+ * The `dataUpdatedAt` parameter ensures that when a React Query refetch
+ * delivers fresh server data for the current offset (e.g. after a new
+ * PAYMENT event), the cache replaces the stale first page instead of
+ * short-circuiting on `lastOffset === offset`.
  */
 function useAccumulatedEvents(
   data: EventsResponse | undefined,
   offset: number,
-  filterKey: string
+  filterKey: string,
+  dataUpdatedAt: number
 ) {
   const cacheRef = useRef<{
     filterKey: string
     events: CareCompanionEvent[]
     seenIds: Set<string>
     lastOffset: number
-  }>({ filterKey: "", events: [], seenIds: new Set(), lastOffset: -1 })
+    lastDataUpdatedAt: number
+  }>({
+    filterKey: "",
+    events: [],
+    seenIds: new Set(),
+    lastOffset: -1,
+    lastDataUpdatedAt: 0,
+  })
 
   return useMemo(() => {
     const cache = cacheRef.current
@@ -94,9 +109,18 @@ function useAccumulatedEvents(
       cache.events = []
       cache.seenIds = new Set()
       cache.lastOffset = -1
+      cache.lastDataUpdatedAt = 0
     }
 
-    if (!data || cache.lastOffset === offset) {
+    if (!data) {
+      return cache.events
+    }
+
+    // Skip if offset and data timestamp are unchanged
+    if (
+      cache.lastOffset === offset &&
+      cache.lastDataUpdatedAt === dataUpdatedAt
+    ) {
       return cache.events
     }
 
@@ -112,8 +136,9 @@ function useAccumulatedEvents(
     }
 
     cache.lastOffset = offset
+    cache.lastDataUpdatedAt = dataUpdatedAt
     return cache.events
-  }, [data, offset, filterKey])
+  }, [data, offset, filterKey, dataUpdatedAt])
 }
 
 // ---------------------------------------------------------------------------
@@ -184,7 +209,8 @@ export function useCareHistory() {
   const accumulatedEvents = useAccumulatedEvents(
     eventsQuery.data,
     offset,
-    filterKey
+    filterKey,
+    eventsQuery.dataUpdatedAt
   )
 
   // Determine whether more pages are available
@@ -237,8 +263,12 @@ export function useCareHistory() {
     let filteredEntries = entriesAfterTestLink
 
     if (activeEventTypeFilter) {
-      filteredEntries = filteredEntries.filter(
-        (e) => e.type === activeEventTypeFilter || e.type === "UPCOMING"
+      const compositeTypes = COMPOSITE_FILTER_MAP[activeEventTypeFilter]
+      filteredEntries = filteredEntries.filter((e) =>
+        compositeTypes
+          ? compositeTypes.includes(e.type as TimelineCardType) ||
+            e.type === "UPCOMING"
+          : e.type === activeEventTypeFilter || e.type === "UPCOMING"
       )
     }
 
