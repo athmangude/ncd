@@ -9,7 +9,7 @@
 -- Demo user UUID (replace after creating auth user)
 DO $$
 DECLARE
-  demo_uid uuid := '00000000-0000-0000-0000-000000000001';
+  demo_uid uuid := '6b4d8e63-16c9-4aa6-ae9c-73820311007a';
   pay1_id uuid := gen_random_uuid();
   pay2_id uuid := gen_random_uuid();
   pay3_id uuid := gen_random_uuid();

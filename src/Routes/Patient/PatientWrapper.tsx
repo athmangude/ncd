@@ -14,7 +14,7 @@ import { usePatientAuthStore } from "./stores/patientAuthStore"
 import { lazy, Suspense } from "react"
 
 const PhoneEntryPage = lazy(() => import("./Pages/Auth/PhoneEntryPage"))
-const OtpVerifyPage = lazy(() => import("./Pages/Auth/OtpVerifyPage"))
+const PinVerifyPage = lazy(() => import("./Pages/Auth/PinVerifyPage"))
 
 function RedirectIfSessionExists({ children }: { children: React.ReactNode }) {
   const [sessionExists, setSessionExists] = useState<boolean | null>(null)
@@ -74,12 +74,12 @@ export default function PatientWrapper() {
               }
             />
             <Route
-              path="/auth/otp"
+              path="/auth/pin"
               element={
                 <RedirectIfSupabaseSession>
-                  <RouteMetadata title="OTP Verification">
+                  <RouteMetadata title="PIN Verification">
                     <Suspense fallback={null}>
-                      <OtpVerifyPage />
+                      <PinVerifyPage />
                     </Suspense>
                   </RouteMetadata>
                 </RedirectIfSupabaseSession>

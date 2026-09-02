@@ -1,7 +1,6 @@
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
-import { supabase } from "@/lib/supabase"
 import PatientAuthWrapper from "../../components/PatientAuthWrapper"
 import PatientAuthHeadline from "../../components/PatientAuthHeadline"
 import FormGroup from "@/components/form/FormGroupInput"
@@ -38,11 +37,7 @@ export default function PhoneEntryPage() {
       const parsed = parsePhoneNumber(data.phoneNumber, data.countryCode)
       const phone = parsed.number
 
-      const { error } = await supabase.auth.signInWithOtp({ phone })
-
-      if (error) throw error
-
-      navigate("/patients/auth/otp", {
+      navigate("/patients/auth/pin", {
         state: { phone, phoneDisplay: parsed.formatInternational() },
       })
     },
@@ -59,7 +54,7 @@ export default function PhoneEntryPage() {
     <PatientAuthWrapper
       footer={
         <PrimaryCTAFooter
-          label="Send OTP"
+          label="Continue"
           form="supabase-phone-entry"
           type="submit"
           disabled={mutation.isPending}
