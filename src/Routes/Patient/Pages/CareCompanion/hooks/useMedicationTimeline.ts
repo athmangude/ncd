@@ -31,6 +31,11 @@ export interface MedicationTimelineParams {
 
 export const medicationTimelineQueryKey = "careCompanionMedicationTimeline"
 
+/**
+ * @deprecated Replaced by useCareHistory which fetches from GET /companion/events,
+ * classifies events into CareHistoryEntry[], and provides richer timeline data.
+ * Will be removed in a future release.
+ */
 export function useMedicationTimeline({
   limit,
   offset,

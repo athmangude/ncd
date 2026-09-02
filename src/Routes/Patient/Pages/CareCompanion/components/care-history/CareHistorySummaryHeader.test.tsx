@@ -97,4 +97,23 @@ describe("CareHistorySummaryHeader", () => {
     )
     expect(screen.getByText("1")).toBeInTheDocument()
   })
+
+  it("renders fallback text when date range is empty", () => {
+    render(
+      <CareHistorySummaryHeader
+        summary={makeSummary({ dateRange: { from: "", to: "" } })}
+      />,
+    )
+    expect(screen.getByText("No date range available")).toBeInTheDocument()
+  })
+
+  it("renders zero counts when there are no visits or facilities", () => {
+    render(
+      <CareHistorySummaryHeader
+        summary={makeSummary({ totalVisits: 0, facilitiesVisited: 0 })}
+      />,
+    )
+    const zeroCounts = screen.getAllByText("0")
+    expect(zeroCounts).toHaveLength(2)
+  })
 })
