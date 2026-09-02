@@ -1,4 +1,4 @@
-import { createAdminClient, createUserClient } from "../_shared/supabase-admin.ts"
+import { createAdminClient, createUserClient, corsHeaders } from "../_shared/supabase-admin.ts"
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")
 const CASHBACK_RATE = 0.05
@@ -63,15 +63,19 @@ function validateLineItems(items: unknown, paymentAmount: number): LineItem[] {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
+  }
+
   try {
     const authHeader = req.headers.get("Authorization")
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401, headers: corsHeaders })
     }
 
     const { paymentId } = await req.json()
     if (!paymentId) {
-      return new Response(JSON.stringify({ error: "paymentId is required" }), { status: 400 })
+      return new Response(JSON.stringify({ error: "paymentId is required" }), { status: 400, headers: corsHeaders })
     }
 
     const userClient = createUserClient(authHeader)
@@ -79,7 +83,7 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: userError } = await userClient.auth.getUser()
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders })
     }
 
     const userId = user.id
@@ -91,10 +95,10 @@ Deno.serve(async (req) => {
     ])
 
     if (profileRes.error || !profileRes.data) {
-      return new Response(JSON.stringify({ error: "Profile not found" }), { status: 404 })
+      return new Response(JSON.stringify({ error: "Profile not found" }), { status: 404, headers: corsHeaders })
     }
     if (paymentRes.error || !paymentRes.data) {
-      return new Response(JSON.stringify({ error: "Payment not found" }), { status: 404 })
+      return new Response(JSON.stringify({ error: "Payment not found" }), { status: 404, headers: corsHeaders })
     }
 
     const profile = profileRes.data
@@ -204,10 +208,10 @@ Return JSON: { "lineItems": [...] }`
     }
 
     return new Response(JSON.stringify({ lineItems, cashbackAmount }), {
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   } catch (err) {
     console.error("[generate-invoice-line-items] Error:", err)
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 })
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: corsHeaders })
   }
 })

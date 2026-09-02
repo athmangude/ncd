@@ -1,4 +1,4 @@
-import { createAdminClient, createUserClient } from "../_shared/supabase-admin.ts"
+import { createAdminClient, createUserClient, corsHeaders } from "../_shared/supabase-admin.ts"
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")
 
@@ -45,15 +45,19 @@ Also generate 3 suggested follow-up questions the user might want to ask, specif
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
+  }
+
   try {
     const authHeader = req.headers.get("Authorization")
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401, headers: corsHeaders })
     }
 
     const { message, conversationHistory } = await req.json()
     if (!message || typeof message !== "string") {
-      return new Response(JSON.stringify({ error: "message is required" }), { status: 400 })
+      return new Response(JSON.stringify({ error: "message is required" }), { status: 400, headers: corsHeaders })
     }
 
     const userClient = createUserClient(authHeader)
@@ -61,7 +65,7 @@ Deno.serve(async (req) => {
 
     const { data: { user }, error: userError } = await userClient.auth.getUser()
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders })
     }
 
     const userId = user.id
@@ -100,7 +104,7 @@ Deno.serve(async (req) => {
         { user_id: userId, role: "assistant", content: fallbackReply },
       ])
       return new Response(JSON.stringify({ reply: fallbackReply, suggestedQuestions: [] }), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
@@ -129,7 +133,7 @@ Deno.serve(async (req) => {
         { user_id: userId, role: "assistant", content: errorReply },
       ])
       return new Response(JSON.stringify({ reply: errorReply, suggestedQuestions: [] }), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
@@ -155,10 +159,10 @@ Deno.serve(async (req) => {
     ])
 
     return new Response(JSON.stringify({ reply, suggestedQuestions }), {
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   } catch (err) {
     console.error("[chat-assistant] Error:", err)
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 })
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: corsHeaders })
   }
 })

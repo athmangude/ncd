@@ -1,4 +1,4 @@
-import { createAdminClient, createUserClient } from "../_shared/supabase-admin.ts"
+import { createAdminClient, createUserClient, corsHeaders } from "../_shared/supabase-admin.ts"
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")
 const MAX_EVENTS_FOR_LLM = 50
@@ -236,10 +236,14 @@ function delay(ms: number) {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
+  }
+
   try {
     const authHeader = req.headers.get("Authorization")
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401, headers: corsHeaders })
     }
 
     const body = await req.json()
@@ -253,7 +257,7 @@ Deno.serve(async (req) => {
         .not("completed_at", "is", null)
 
       if (!profiles || profiles.length === 0) {
-        return new Response(JSON.stringify({ processed: 0 }))
+        return new Response(JSON.stringify({ processed: 0 }), { headers: { ...corsHeaders, "Content-Type": "application/json" } })
       }
 
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
@@ -285,7 +289,7 @@ Deno.serve(async (req) => {
       }
 
       return new Response(JSON.stringify({ processed, results }), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
@@ -293,23 +297,23 @@ Deno.serve(async (req) => {
       const triggerCtx = trigger ? { trigger, triggerData: triggerData ?? {} } : undefined
       const result = await processUser(adminClient, userId, triggerCtx)
       return new Response(JSON.stringify(result), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
     const userClient = createUserClient(authHeader)
     const { data: { user }, error: userError } = await userClient.auth.getUser()
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders })
     }
 
     const triggerCtx = trigger ? { trigger, triggerData: triggerData ?? {} } : undefined
     const result = await processUser(adminClient, user.id, triggerCtx)
     return new Response(JSON.stringify(result), {
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   } catch (err) {
     console.error("[generate-ai-insights] Error:", err)
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 })
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: corsHeaders })
   }
 })

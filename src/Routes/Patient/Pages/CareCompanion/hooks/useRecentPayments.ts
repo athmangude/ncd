@@ -7,6 +7,35 @@ interface PaymentsResponse {
   pagination: { total: number; limit: number; offset: number }
 }
 
+interface SupabasePaymentRow {
+  id: string
+  facility_name: string
+  facility_type: string | null
+  amount: number
+  currency: string
+  line_items: PaymentEvent["lineItems"] | null
+  funding_sources: PaymentEvent["fundingSources"] | null
+  cashback_amount: number
+  status: string
+  created_at: string
+}
+
+function transformPaymentRow(row: SupabasePaymentRow): PaymentEvent {
+  return {
+    id: row.id,
+    type: "PAYMENT",
+    timestamp: row.created_at,
+    source: "user",
+    facilityName: row.facility_name,
+    facilityType: (row.facility_type ?? "HOSPITAL") as PaymentEvent["facilityType"],
+    totalAmount: Number(row.amount),
+    currency: "KES",
+    lineItems: row.line_items ?? [],
+    fundingSources: row.funding_sources ?? [],
+    isInNetwork: true,
+  }
+}
+
 function fetchPayments(limit: number) {
   return async (): Promise<PaymentEvent[]> => {
     if (useSupabase) {
@@ -16,7 +45,7 @@ function fetchPayments(limit: number) {
         .order("created_at", { ascending: false })
         .limit(limit)
       if (error) throw error
-      return (data ?? []) as unknown as PaymentEvent[]
+      return (data ?? []).map((row) => transformPaymentRow(row as unknown as SupabasePaymentRow))
     }
 
     const res = await fetch(`/companion/events?type=PAYMENT&limit=${limit}`)

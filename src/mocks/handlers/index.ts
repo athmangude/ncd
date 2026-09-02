@@ -18,6 +18,7 @@ import { careCompanionHandlers } from "./carecompanion"
  */
 export const handlers: RequestHandler[] = [
   http.post("/api/gemini/*", () => passthrough()),
+  http.all("https://qippjxnvfuedcaourdav.supabase.co/*", () => passthrough()),
   ...profileHandlers,
   ...discoveryHandlers,
   ...loansHandlers,

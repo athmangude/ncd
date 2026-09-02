@@ -1,4 +1,4 @@
-import { createUserClient } from "../_shared/supabase-admin.ts"
+import { createUserClient, corsHeaders } from "../_shared/supabase-admin.ts"
 
 const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY")
 
@@ -26,21 +26,25 @@ const KENYAN_LABS = [
 ]
 
 Deno.serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders })
+  }
+
   try {
     const authHeader = req.headers.get("Authorization")
     if (!authHeader) {
-      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Missing authorization" }), { status: 401, headers: corsHeaders })
     }
 
     const { testName } = await req.json()
     if (!testName || typeof testName !== "string") {
-      return new Response(JSON.stringify({ error: "testName is required" }), { status: 400 })
+      return new Response(JSON.stringify({ error: "testName is required" }), { status: 400, headers: corsHeaders })
     }
 
     const userClient = createUserClient(authHeader)
     const { data: { user }, error: userError } = await userClient.auth.getUser()
     if (userError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 })
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders })
     }
 
     const userId = user.id
@@ -69,7 +73,7 @@ Deno.serve(async (req) => {
     if (!GEMINI_API_KEY) {
       const fallback = generateFallbackResults(testName)
       return new Response(JSON.stringify(fallback), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
 
@@ -97,7 +101,7 @@ Return JSON: { "metrics": [...], "labName": "...", "date": "${new Date().toISOSt
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${GEMINI_API_KEY}`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
@@ -112,7 +116,7 @@ Return JSON: { "metrics": [...], "labName": "...", "date": "${new Date().toISOSt
       if (!res.ok) {
         console.error("[generate-mock-test-results] Gemini error:", res.status)
         return new Response(JSON.stringify(generateFallbackResults(testName)), {
-          headers: { "Content-Type": "application/json" },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         })
       }
 
@@ -142,22 +146,22 @@ Return JSON: { "metrics": [...], "labName": "...", "date": "${new Date().toISOSt
 
       if (validated.metrics.length === 0) {
         return new Response(JSON.stringify(generateFallbackResults(testName)), {
-          headers: { "Content-Type": "application/json" },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         })
       }
 
       return new Response(JSON.stringify(validated), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     } catch (err) {
       console.error("[generate-mock-test-results] Gemini call failed:", err)
       return new Response(JSON.stringify(generateFallbackResults(testName)), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       })
     }
   } catch (err) {
     console.error("[generate-mock-test-results] Error:", err)
-    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500 })
+    return new Response(JSON.stringify({ error: "Internal server error" }), { status: 500, headers: corsHeaders })
   }
 })
 

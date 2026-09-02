@@ -5,6 +5,19 @@
 -- Prerequisites:
 --   1. Auth user must be created first via Supabase Auth (phone: +254700000001)
 --   2. Copy the resulting auth.users UUID and replace the placeholder below
+--
+-- IMPORTANT: All jsonb column values must match the TypeScript types in
+-- src/types/care-companion.ts (CareCompanionProfile interface).
+-- The save mutation in CareCompanionIntake.tsx maps:
+--   conditions     → data.conditions.type            (text[], enum values like 'DIABETES')
+--   treatment      → data.treatment                  (jsonb, full treatment object)
+--   recurring_tests→ data.recurringTests              (jsonb, { selectedTests: string[] })
+--   cost_estimates → data.costEstimates               (jsonb, { medications: [{name, refillFrequencyDays, estimatedCostPerRefill}], tests: [{name, frequencyMonths, estimatedCostPerTest}] })
+--   challenges     → data.challenges                  (jsonb, { selected: string[], topChallenge: string | null })
+--   coping         → data.coping                      (jsonb, { costCoping: string[] | null, informationSources: string[], hasEmergencyPlan: boolean | null, exerciseFrequency: string | null })
+--   goals          → data.goals.selected              (text[], enum values like 'TRACK_COSTS')
+--   user_role      → data.userRole.role.toLowerCase() (text, e.g. 'caregiver')
+--   completed_at   → data.completedAt                 (timestamptz or null)
 
 -- Demo user UUID (replace after creating auth user)
 DO $$
@@ -18,52 +31,42 @@ BEGIN
 -- ============================================================
 -- 1. Profile
 -- ============================================================
-INSERT INTO profiles (id, phone, first_name, conditions, treatment, recurring_tests, cost_estimates, challenges, coping, goals, user_role, completed_at)
+INSERT INTO profiles (id, phone, first_name, conditions, diagnosis_recency, conditions_other_description, treatment, recurring_tests, cost_estimates, challenges, coping, goals, user_role, completed_at)
 VALUES (
   demo_uid,
   '+254700000001',
   'Nancy',
-  ARRAY['Type 2 Diabetes', 'Hypertension'],
+  ARRAY['DIABETES', 'HYPERTENSION'],
+  'MORE_THAN_2_YEARS',
+  NULL,
   '{
+    "currentlyOnMedication": true,
     "medicationNames": ["Metformin 500mg", "Amlodipine 5mg", "Atorvastatin 20mg", "Lisinopril 10mg"],
-    "dosages": {
-      "Metformin 500mg": "Twice daily with meals",
-      "Amlodipine 5mg": "Once daily in the morning",
-      "Atorvastatin 20mg": "Once daily at bedtime",
-      "Lisinopril 10mg": "Once daily in the morning"
-    }
+    "takingMedicationRegularly": "MOSTLY",
+    "reasonsForMissing": [],
+    "usingHerbalAlternatives": false,
+    "herbalDetails": null
   }'::jsonb,
-  '{
-    "selectedTests": ["HbA1c", "Blood Pressure Check", "Lipid Panel", "Kidney Function (Creatinine & eGFR)"],
-    "frequencies": {
-      "HbA1c": 3,
-      "Blood Pressure Check": 1,
-      "Lipid Panel": 6,
-      "Kidney Function (Creatinine & eGFR)": 6
-    }
-  }'::jsonb,
+  '{"selectedTests": ["HbA1c", "Blood Pressure Check", "Lipid Panel", "Kidney Function (Creatinine & eGFR)"]}'::jsonb,
   '{
     "medications": [
-      {"name": "Metformin 500mg", "monthlyCost": 450, "currency": "KES"},
-      {"name": "Amlodipine 5mg", "monthlyCost": 350, "currency": "KES"},
-      {"name": "Atorvastatin 20mg", "monthlyCost": 600, "currency": "KES"},
-      {"name": "Lisinopril 10mg", "monthlyCost": 400, "currency": "KES"}
+      {"name": "Metformin 500mg", "refillFrequencyDays": 30, "estimatedCostPerRefill": 450},
+      {"name": "Amlodipine 5mg", "refillFrequencyDays": 30, "estimatedCostPerRefill": 350},
+      {"name": "Atorvastatin 20mg", "refillFrequencyDays": 30, "estimatedCostPerRefill": 600},
+      {"name": "Lisinopril 10mg", "refillFrequencyDays": 30, "estimatedCostPerRefill": 400}
     ],
     "tests": [
-      {"name": "HbA1c", "cost": 1500, "currency": "KES"},
-      {"name": "Blood Pressure Check", "cost": 200, "currency": "KES"},
-      {"name": "Lipid Panel", "cost": 2500, "currency": "KES"},
-      {"name": "Kidney Function (Creatinine & eGFR)", "cost": 1800, "currency": "KES"}
-    ],
-    "monthlyTotal": 1800,
-    "annualTotal": 27600,
-    "currency": "KES"
+      {"name": "HbA1c", "frequencyMonths": 3, "estimatedCostPerTest": 1500},
+      {"name": "Blood Pressure Check", "frequencyMonths": 1, "estimatedCostPerTest": 200},
+      {"name": "Lipid Panel", "frequencyMonths": 6, "estimatedCostPerTest": 2500},
+      {"name": "Kidney Function (Creatinine & eGFR)", "frequencyMonths": 6, "estimatedCostPerTest": 1800}
+    ]
   }'::jsonb,
-  '{"items": ["Affording medication every month", "Understanding what to eat", "Remembering to take medication on time"]}'::jsonb,
-  '{"items": ["Family support from my daughter", "Walking every morning", "Using a pill organiser"]}'::jsonb,
-  ARRAY['Better blood sugar control', 'Reduce medication costs'],
+  '{"selected": ["COST", "DIET", "UNDERSTANDING_MEDICATION"], "topChallenge": "COST"}'::jsonb,
+  '{"informationSources": ["DOCTOR", "FAMILY"], "costCoping": ["BORROW_FAMILY"], "hasEmergencyPlan": false, "exerciseFrequency": "FEW_TIMES_WEEK"}'::jsonb,
+  ARRAY['TRACK_COSTS', 'MEDICATION_REMINDERS'],
   'caregiver',
-  now() - interval '3 months'
+  NULL
 )
 ON CONFLICT (id) DO NOTHING;
 
