@@ -5,7 +5,6 @@ import type {
   CareCompanionEvent,
   CareHistoryEntry,
   PaymentEvent,
-  TestResultEvent,
   TestScheduleItem,
   TimelineCardType,
 } from "@/types/care-companion"
@@ -228,19 +227,6 @@ export function useCareHistory() {
 
   // Process accumulated events through classifier and enricher pipeline
   const processedData = useMemo(() => {
-    const emptyResult = {
-      monthGroups: [] as MonthGroup[],
-      upcomingEvents: [] as CareHistoryEntry[],
-      summary: {
-        totalVisits: 0,
-        facilitiesVisited: 0,
-        dateRange: { from: "", to: "" },
-        lastVisit: null,
-      } as CareHistorySummary,
-      linkedTestResults: new Map<string, TestResultEvent>(),
-      cashbackMap: new Map<string, { amount: number; rate: number }>(),
-    }
-
     // 1. Classify events into CareHistoryEntry[]
     const classifiedEntries = classifyEvents(accumulatedEvents)
 
@@ -298,11 +284,12 @@ export function useCareHistory() {
     // 8. Group by month for timeline display
     const monthGroups = groupByMonth(allEntries)
 
-    // 9. Compute summary stats from the full (unfiltered) classified entries
-    if (accumulatedEvents.length === 0) {
-      return { ...emptyResult, linkedTestResults, cashbackMap }
-    }
-
+    // 9. Compute summary stats from the full (unfiltered) classified entries.
+    // Note: monthGroups and upcomingEvents above are derived from schedule
+    // data (adherence gaps, upcoming refills/tests) independently of whether
+    // any companion events have loaded yet, so they must always be returned
+    // -- even for a patient with no payment/event history yet -- rather than
+    // being discarded when accumulatedEvents is empty.
     const visitGroupEntries = classifiedEntries.filter(
       (e) => e.type === "VISIT_GROUP"
     )
