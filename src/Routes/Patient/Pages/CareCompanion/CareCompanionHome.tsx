@@ -1369,7 +1369,7 @@ const QUICK_ACTIONS = [
     color: "bg-violet-100 text-violet-600",
   },
   {
-    label: "Purchase History",
+    label: "Care History",
     icon: Clock,
     path: "/patients/companion/medication-timeline",
     color: "bg-sky-100 text-sky-600",
