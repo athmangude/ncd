@@ -1,0 +1,496 @@
+{
+  "specPath": "specs/supabase-backend-technical-spec.md",
+  "productSpecPath": "specs/supabase-backend-ai-demo-spec.md",
+  "createdAt": "2026-09-02",
+  "phases": [
+    {
+      "id": "P1",
+      "name": "Foundation",
+      "description": "Supabase project setup, database schema, client singleton, data service abstraction, and env configuration",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "title": "Supabase project creation and CLI setup",
+          "description": "Create Supabase project (free tier), install supabase CLI, initialize supabase/config.toml, add @supabase/supabase-js dependency to package.json",
+          "files": {
+            "new": ["supabase/config.toml"],
+            "modified": ["package.json"]
+          },
+          "estimate": "S",
+          "labels": ["Backend"]
+        },
+        {
+          "id": "P1-T2",
+          "title": "Database schema migration (001_schema.sql)",
+          "description": "Write SQL migration for all 10 tables: profiles, events, refill_schedules, test_schedules, medication_cards, notifications, payments, wallets, chat_messages, education_content, education_progress. Include primary keys, foreign keys, indexes (GIN on conditions arrays, btree on user_id + created_at), and constraints.",
+          "files": {
+            "new": ["supabase/migrations/001_schema.sql"]
+          },
+          "estimate": "M",
+          "labels": ["Backend"],
+          "blockedBy": ["P1-T1"]
+        },
+        {
+          "id": "P1-T3",
+          "title": "Row Level Security policies (002_rls_policies.sql)",
+          "description": "Write RLS policies for all tables: user_id = auth.uid() for user-owned tables, id = auth.uid() for profiles, public SELECT for education_content. Enable RLS on all tables.",
+          "files": {
+            "new": ["supabase/migrations/002_rls_policies.sql"]
+          },
+          "estimate": "S",
+          "labels": ["Backend"],
+          "blockedBy": ["P1-T2"]
+        },
+        {
+          "id": "P1-T4",
+          "title": "Education content seed migration (003_education_seed.sql)",
+          "description": "Write build-time script scripts/generate-education-seed.ts that reads src/mocks/fixtures/education-cards.json (119 articles) and generates SQL INSERT statements for education_content table. Map all fields: slug, title, category, conditions, content_type, summary, body, sections, estimated_minutes, learning_objectives, image_theme.",
+          "files": {
+            "new": [
+              "scripts/generate-education-seed.ts",
+              "supabase/migrations/003_education_seed.sql"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Backend"],
+          "blockedBy": ["P1-T2"]
+        },
+        {
+          "id": "P1-T5",
+          "title": "Supabase client singleton and types",
+          "description": "Create src/lib/supabase.ts with typed createClient<Database>, export useSupabase boolean from VITE_USE_SUPABASE env var. Generate src/types/supabase.ts via supabase gen types typescript after running migrations.",
+          "files": {
+            "new": [
+              "src/lib/supabase.ts",
+              "src/types/supabase.ts"
+            ]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T2"]
+        },
+        {
+          "id": "P1-T6",
+          "title": "Data service abstraction layer",
+          "description": "Create src/lib/data-service.ts with query, insert, update, invokeFunction methods. Each method branches on useSupabase — MSW path uses axios + TABLE_TO_ENDPOINT mapping, Supabase path uses supabase client directly. Supports select, filter, order, limit, single options.",
+          "files": {
+            "new": ["src/lib/data-service.ts"]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T5"]
+        },
+        {
+          "id": "P1-T7",
+          "title": "Environment variable configuration",
+          "description": "Add VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY, VITE_USE_SUPABASE to .env.example. Update .env (gitignored) with actual Supabase project values.",
+          "files": {
+            "modified": [".env.example"]
+          },
+          "estimate": "S",
+          "labels": ["Backend"],
+          "blockedBy": ["P1-T1"]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Authentication",
+      "description": "Supabase phone OTP auth with mock auto-fill, auth store update, and route guard",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "title": "get-otp Edge Function",
+          "description": "Create supabase/functions/get-otp/index.ts. Accepts { phone } in request body, uses service role client to read OTP from auth schema (auth.one_time_tokens or custom demo_otps table). Returns { otp } for client auto-fill. Create shared supabase/functions/_shared/supabase-admin.ts with createAdminClient() and createUserClient() helpers. Include fallback strategy: if auth.one_time_tokens is inaccessible, use custom SMS hook + demo_otps table.",
+          "files": {
+            "new": [
+              "supabase/functions/get-otp/index.ts",
+              "supabase/functions/_shared/supabase-admin.ts"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Backend"],
+          "blockedBy": ["P1-T1"]
+        },
+        {
+          "id": "P2-T2",
+          "title": "PhoneEntryPage component",
+          "description": "Create src/Routes/Patient/Pages/Auth/PhoneEntryPage.tsx. Phone number input with +254 prefix (Kenya format), validation for 9-digit number after prefix. On submit: calls supabase.auth.signInWithOtp({ phone }), navigates to /patients/auth/otp with phone in route state. Use existing form components and design tokens. Loading state during OTP send.",
+          "files": {
+            "new": ["src/Routes/Patient/Pages/Auth/PhoneEntryPage.tsx"]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T5"]
+        },
+        {
+          "id": "P2-T3",
+          "title": "OtpVerifyPage component with auto-fill",
+          "description": "Create src/Routes/Patient/Pages/Auth/OtpVerifyPage.tsx. 6-digit OTP input field. On mount: calls supabase.functions.invoke('get-otp', { body: { phone } }) and auto-populates all digits. User taps 'Verify' -> calls supabase.auth.verifyOtp({ phone, token, type: 'sms' }). On success: check profiles table — no profile -> navigate to intake, has profile -> navigate to companion home.",
+          "files": {
+            "new": ["src/Routes/Patient/Pages/Auth/OtpVerifyPage.tsx"]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T5", "P2-T1"]
+        },
+        {
+          "id": "P2-T4",
+          "title": "Update patientAuthStore for Supabase sessions",
+          "description": "Modify patientAuthStore.ts — add supabaseSession state, initializeAuth() that calls supabase.auth.getSession(), onAuthStateChange listener for session refresh/expiry. isAuthenticated computed from either MSW flags or Supabase session based on VITE_USE_SUPABASE flag.",
+          "files": {
+            "modified": ["src/Routes/Patient/stores/patientAuthStore.ts"]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T5"]
+        },
+        {
+          "id": "P2-T5",
+          "title": "Update PatientWrapper auth guard and routes",
+          "description": "Modify PatientWrapper.tsx — when useSupabase, check supabase.auth.getSession() instead of localStorage flags. Route /patients/auth to PhoneEntryPage, /patients/auth/otp to OtpVerifyPage. Register new routes in PatientsHome.tsx. Auth guard wraps all authenticated routes.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/PatientWrapper.tsx",
+              "src/Routes/Patient/Pages/PatientsHome.tsx"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P2-T2", "P2-T3", "P2-T4"]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "Data Layer Migration",
+      "description": "Migrate all 12 hooks to dual data source pattern using dataService abstraction",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "title": "Migrate useIntakeProfile hook",
+          "description": "Modify useIntakeProfile.ts to use dataService.query('profiles', { single: true }). Profile uses id = auth.uid() (not user_id). Also migrate the save/update mutation to use dataService.update or dataService.insert.",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useIntakeProfile.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T2",
+          "title": "Migrate useRefillSchedule and useTestSchedule hooks",
+          "description": "Modify both hooks to use dataService.query with appropriate table names, filters (user_id), and ordering (next_date ascending). Include mutation hooks for creating/updating/deleting schedule items.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useRefillSchedule.ts"
+            ]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T3",
+          "title": "Migrate useNotifications hook",
+          "description": "Modify to use dataService.query('notifications', { order: { column: 'sent_at' }, filter: { user_id } }). Include markAsRead mutation using dataService.update to set read_at timestamp.",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useNotifications.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T4",
+          "title": "Migrate useMedicationCards hook",
+          "description": "Modify to use dataService.query('medication_cards'). Supabase path joins with taxonomy data if needed for enrichment.",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useMedicationCards.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T5",
+          "title": "Migrate useRecentPayments hook",
+          "description": "Modify to use dataService.query('payments', { order: { column: 'created_at' }, limit: 10 }). Map payment records to existing PaymentEvent shape for backward compatibility with UI components.",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useRecentPayments.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T6",
+          "title": "Migrate useCostSummary and useCostBreakdown hooks",
+          "description": "These are computed queries. In Supabase mode: fetch all payments for current year, compute YTD spend, cashback earned, monthly averages client-side. useCostBreakdown groups by line item category from populated invoices. Must handle payments where line_items is still empty (pending AI population).",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useCostSummary.ts",
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useCostBreakdown.ts"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T7",
+          "title": "Migrate useEducationFeed and useLessonProgress hooks",
+          "description": "useEducationFeed: query education_content table, filter by user's conditions (array overlap). useLessonProgress: read/write education_progress table. markSectionComplete upserts progress row, markCourseComplete sets completed=true + completed_at. On course completion, trigger generate-ai-insights Edge Function with trigger='course_complete'.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useEducationFeed.ts",
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useLessonProgress.ts"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T8",
+          "title": "Migrate wallet balance query",
+          "description": "Add or modify wallet hook to query wallets table in Supabase mode. Single row per user. Used by FastTrack payment flow and cost tracker.",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useWalletBalance.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P1-T6"]
+        },
+        {
+          "id": "P3-T9",
+          "title": "Verify all UI renders correctly with Supabase data",
+          "description": "End-to-end verification: with VITE_USE_SUPABASE=true, navigate through all companion screens — home, cost tracker, medications, education, notifications, profile. Confirm data loads, mutations work, and no UI regressions. Fix any data shape mismatches between Supabase query results and existing component expectations.",
+          "files": {
+            "modified": []
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P3-T1", "P3-T2", "P3-T3", "P3-T4", "P3-T5", "P3-T6", "P3-T7", "P3-T8"]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Edge Functions (AI Pipeline)",
+      "description": "Server-side AI pipeline via Supabase Edge Functions with Gemini integration",
+      "tasks": [
+        {
+          "id": "P4-T1",
+          "title": "generate-invoice-line-items Edge Function",
+          "description": "Create supabase/functions/generate-invoice-line-items/index.ts. Accepts { paymentId }, authenticates user from JWT, fetches profile + payment + refill schedules. Builds Gemini prompt from ai-pipeline-rules.ts constants (port to Deno-compatible format). Calls Gemini gemini-3.6-flash with responseMimeType='application/json'. Validates line items sum within 10% of payment amount. Updates payments.line_items, calculates 5% cashback, upserts wallets.cashback_balance, inserts CASHBACK_EARNED event and notification. Chains call to generate-ai-insights.",
+          "files": {
+            "new": ["supabase/functions/generate-invoice-line-items/index.ts"]
+          },
+          "estimate": "L",
+          "labels": ["Backend"],
+          "blockedBy": ["P2-T1"]
+        },
+        {
+          "id": "P4-T2",
+          "title": "generate-ai-insights Edge Function",
+          "description": "Create supabase/functions/generate-ai-insights/index.ts. Four trigger modes: (1) post-invoice from generate-invoice-line-items, (2) on-demand from client, (3) pg_cron hourly batch, (4) event-driven (course_complete, test_upload, prescription, refill_overdue, test_overdue, cashback_milestone). Single-user mode: fetch profile + last 50 events + schedules + education progress, call Gemini, validate actions, deduplicate against last 24h notifications, insert new notifications. Batch mode: query all completed profiles, skip if notified in last hour, rate limit 10 calls/min.",
+          "files": {
+            "new": ["supabase/functions/generate-ai-insights/index.ts"]
+          },
+          "estimate": "L",
+          "labels": ["Backend"],
+          "blockedBy": ["P2-T1"]
+        },
+        {
+          "id": "P4-T3",
+          "title": "chat-assistant Edge Function",
+          "description": "Create supabase/functions/chat-assistant/index.ts. Accepts { message, conversationHistory }. Fetches full profile (conditions, medications, test schedules, cost estimates, goals), last 30 events, last 20 chat_messages. Builds system prompt (port callAssistantChat logic). Calls Gemini, saves both messages to chat_messages table. Returns { reply, suggestedQuestions }.",
+          "files": {
+            "new": ["supabase/functions/chat-assistant/index.ts"]
+          },
+          "estimate": "M",
+          "labels": ["Backend"],
+          "blockedBy": ["P2-T1"]
+        },
+        {
+          "id": "P4-T4",
+          "title": "pg_cron hourly insight job (004_pg_cron.sql)",
+          "description": "Write migration enabling pg_cron extension and scheduling hourly HTTP POST to generate-ai-insights Edge Function with { batch: true } body. Uses service role key from app.settings.",
+          "files": {
+            "new": ["supabase/migrations/004_pg_cron.sql"]
+          },
+          "estimate": "S",
+          "labels": ["Backend"],
+          "blockedBy": ["P4-T2"]
+        },
+        {
+          "id": "P4-T5",
+          "title": "Wire payment flow to generate-invoice-line-items",
+          "description": "Modify FastTrack payment flow: after successful payment insert, call supabase.functions.invoke('generate-invoice-line-items', { body: { paymentId } }). Update PaymentStatus.tsx to show 'processing invoice...' state while Edge Function runs. Add query invalidation for payments and notifications after function returns.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/FastTrack/FastTrackWalletSelection.tsx",
+              "src/Routes/Patient/Pages/FastTrack/PaymentStatus.tsx"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P4-T1", "P3-T5"]
+        },
+        {
+          "id": "P4-T6",
+          "title": "Migrate useAssistantChat to Edge Function",
+          "description": "Modify useAssistantChat hook: in Supabase mode, call dataService.invokeFunction('chat-assistant', { message, conversationHistory }). Remove client-side Gemini call path. Invalidate chat_messages query key after response.",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useAssistantChat.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P4-T3"]
+        },
+        {
+          "id": "P4-T7",
+          "title": "Wire event-driven insight triggers in client",
+          "description": "Modify useAiPipeline: in Supabase mode, call generate-ai-insights Edge Function instead of client-side callLlmApi. Add trigger calls after: course completion (in useLessonProgress), test result upload (in test results page), payment completion (already handled by P4-T5). Pass trigger and triggerData in request body.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useAiPipeline.ts"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P4-T2", "P3-T7"]
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Test Results Utility + Education Triggers",
+      "description": "Mock test result generator page and education-to-insight wiring",
+      "tasks": [
+        {
+          "id": "P5-T1",
+          "title": "generate-mock-test-results Edge Function",
+          "description": "Create supabase/functions/generate-mock-test-results/index.ts. Accepts { testName }, fetches profile + previous TEST_RESULT events. Builds Gemini prompt for clinically plausible metrics consistent with patient conditions and treatment. Returns JSON only: { metrics, labName, date }. No PDF generation — that happens client-side.",
+          "files": {
+            "new": ["supabase/functions/generate-mock-test-results/index.ts"]
+          },
+          "estimate": "M",
+          "labels": ["Backend"],
+          "blockedBy": ["P2-T1"]
+        },
+        {
+          "id": "P5-T2",
+          "title": "TestResultsUtility page component with client-side PDF",
+          "description": "Create src/Routes/Patient/Pages/Profile/TestResultsUtility.tsx. Route: /#/patients/profile/test-results-utility. Fetches profile recurring tests + scans recent PAYMENT events for LAB_TEST line items. Displays test cards with generate button. On generate: calls generate-mock-test-results Edge Function (returns JSON metrics only), shows result preview (metrics table with color-coded status badges). 'Download PDF' button generates PDF client-side using jsPDF + jspdf-autotable (lazy-imported via dynamic import to avoid main bundle impact). PDF contains lab report header, patient name, date, and results table with color-coded status column. 'Upload these results' link navigates to test results upload page. New dependencies: jspdf, jspdf-autotable (~180KB gzipped combined).",
+          "files": {
+            "new": ["src/Routes/Patient/Pages/Profile/TestResultsUtility.tsx"],
+            "modified": ["package.json"]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P5-T1", "P3-T1"]
+        },
+        {
+          "id": "P5-T3",
+          "title": "Profile menu integration for Test Results Utility",
+          "description": "Modify PatientProfile.tsx: add 'Test Results Utility' menu item conditionally when useSupabase is true. Icon: FlaskConical. Route: /patients/profile/test-results-utility. Register route in PatientsHome.tsx.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/Profile/PatientProfile.tsx",
+              "src/Routes/Patient/Pages/PatientsHome.tsx"
+            ]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P5-T2"]
+        },
+        {
+          "id": "P5-T4",
+          "title": "Wire test result upload to insight trigger",
+          "description": "After a user uploads test results (existing test results page), call generate-ai-insights Edge Function with trigger='test_upload' and triggerData containing testName and metrics. This generates insights about the test results (trend analysis, next steps).",
+          "files": {
+            "modified": ["src/Routes/Patient/Pages/CareCompanion/hooks/useAiPipeline.ts"]
+          },
+          "estimate": "S",
+          "labels": ["Frontend"],
+          "blockedBy": ["P4-T2"]
+        }
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "Demo Seed + Polish",
+      "description": "Demo account data, end-to-end testing, error handling, MSW fallback verification",
+      "tasks": [
+        {
+          "id": "P6-T1",
+          "title": "Demo seed data script",
+          "description": "Create supabase/seed.sql with pre-populated demo account: auth user +254700000001, completed profile (diabetes + hypertension, Metformin + Lisinopril), 12 payments with AI-populated line items over 6 months, refill/test schedules in realistic states, 20+ notifications (mixed types), KES 2,125 cashback balance, 5 chat messages, education progress (3 completed, 2 in progress).",
+          "files": {
+            "new": ["supabase/seed.sql"]
+          },
+          "estimate": "L",
+          "labels": ["Backend"],
+          "blockedBy": ["P1-T2", "P1-T3"]
+        },
+        {
+          "id": "P6-T2",
+          "title": "End-to-end demo flow testing",
+          "description": "Test the complete flow: phone login -> OTP auto-fill -> dashboard loads with seeded data -> make a payment -> invoice line items populate -> cashback appears -> AI insights generated -> chat assistant works with profile context -> test results utility generates and downloads PDF -> upload triggers insights. Verify on both desktop and mobile viewport.",
+          "files": {
+            "modified": []
+          },
+          "estimate": "L",
+          "labels": ["Frontend", "Backend"],
+          "blockedBy": ["P6-T1", "P5-T3", "P4-T5", "P4-T6", "P4-T7"]
+        },
+        {
+          "id": "P6-T3",
+          "title": "Error states and loading states for Edge Functions",
+          "description": "Add loading spinners, error toasts, and retry buttons for all Edge Function calls: invoice generation, AI insights, chat assistant, mock test results. Handle network errors, Gemini rate limits, and timeout scenarios gracefully.",
+          "files": {
+            "modified": [
+              "src/Routes/Patient/Pages/FastTrack/PaymentStatus.tsx",
+              "src/Routes/Patient/Pages/Profile/TestResultsUtility.tsx",
+              "src/Routes/Patient/Pages/CareCompanion/hooks/useAssistantChat.ts"
+            ]
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P4-T5", "P4-T6", "P5-T2"]
+        },
+        {
+          "id": "P6-T4",
+          "title": "Verify MSW fallback (VITE_USE_SUPABASE=false)",
+          "description": "With VITE_USE_SUPABASE unset or false, verify the entire app works exactly as before: MSW intercepts all requests, localStorage persists data, client-side AI pipeline runs, no Supabase-related errors or imports that break without config.",
+          "files": {
+            "modified": []
+          },
+          "estimate": "M",
+          "labels": ["Frontend"],
+          "blockedBy": ["P3-T9"]
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalTasks": 33,
+    "byEstimate": {
+      "S": 13,
+      "M": 16,
+      "L": 4
+    },
+    "byLabel": {
+      "Frontend": 22,
+      "Backend": 14
+    },
+    "criticalPath": [
+      "P1-T1 -> P1-T2 -> P1-T5 -> P1-T6 -> P3-T1..T8 -> P3-T9",
+      "P1-T1 -> P2-T1 -> P4-T1 -> P4-T5",
+      "P1-T1 -> P2-T1 -> P4-T2 -> P4-T4",
+      "P1-T1 -> P2-T1 -> P5-T1 -> P5-T2 -> P5-T3"
+    ]
+  }
+}

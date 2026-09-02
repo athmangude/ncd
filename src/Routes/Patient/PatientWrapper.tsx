@@ -9,15 +9,13 @@ import useTenantAccessControl from "@/hooks/useTenantAccessControl"
 import { PatientOTP } from "./Pages/Onboarding/PatientOTP"
 import PatientValidateReferral from "./Pages/PatientValidateReferral"
 import PatientAcceptInvite from "./Pages/Network/PatientAcceptInvite"
+import { useSupabase } from "@/lib/supabase"
+import { usePatientAuthStore } from "./stores/patientAuthStore"
+import { lazy, Suspense } from "react"
 
-/**
- * Guards the auth entry routes so a returning user with a live session —
- * e.g. reloading after an error boundary, or restarting the app mid-session
- * — lands back on the dashboard instead of being sent through sign-up again.
- * Onboarding-incomplete redirects are handled downstream by
- * useOnboardingChecklist once inside PatientsHome. Mirrors the session check
- * Home.tsx already does for "/".
- */
+const PhoneEntryPage = lazy(() => import("./Pages/Auth/PhoneEntryPage"))
+const OtpVerifyPage = lazy(() => import("./Pages/Auth/OtpVerifyPage"))
+
 function RedirectIfSessionExists({ children }: { children: React.ReactNode }) {
   const [sessionExists, setSessionExists] = useState<boolean | null>(null)
 
@@ -34,6 +32,24 @@ function RedirectIfSessionExists({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function RedirectIfSupabaseSession({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const isAuthenticated = usePatientAuthStore((s) => s.isAuthenticated)
+  const initializeAuth = usePatientAuthStore((s) => s.initializeAuth)
+  const [initialized, setInitialized] = useState(false)
+
+  useEffect(() => {
+    initializeAuth().then(() => setInitialized(true))
+  }, [initializeAuth])
+
+  if (!initialized) return null
+  if (isAuthenticated) return <Navigate to="/patients/" replace />
+  return <>{children}</>
+}
+
 export default function PatientWrapper() {
   useTenantAccessControl({
     setTenantIdValue: "patients",
@@ -43,26 +59,57 @@ export default function PatientWrapper() {
   return (
     <main className="">
       <Routes>
-        <Route
-          path="/auth"
-          element={
-            <RedirectIfSessionExists>
-              <RouteMetadata title="Sign Up">
-                <PatientSignUp />
-              </RouteMetadata>
-            </RedirectIfSessionExists>
-          }
-        />
-        <Route
-          path="/auth/otp"
-          element={
-            <RedirectIfSessionExists>
-              <RouteMetadata title="OTP Verification">
-                <PatientOTP />
-              </RouteMetadata>
-            </RedirectIfSessionExists>
-          }
-        />
+        {useSupabase ? (
+          <>
+            <Route
+              path="/auth"
+              element={
+                <RedirectIfSupabaseSession>
+                  <RouteMetadata title="Sign In">
+                    <Suspense fallback={null}>
+                      <PhoneEntryPage />
+                    </Suspense>
+                  </RouteMetadata>
+                </RedirectIfSupabaseSession>
+              }
+            />
+            <Route
+              path="/auth/otp"
+              element={
+                <RedirectIfSupabaseSession>
+                  <RouteMetadata title="OTP Verification">
+                    <Suspense fallback={null}>
+                      <OtpVerifyPage />
+                    </Suspense>
+                  </RouteMetadata>
+                </RedirectIfSupabaseSession>
+              }
+            />
+          </>
+        ) : (
+          <>
+            <Route
+              path="/auth"
+              element={
+                <RedirectIfSessionExists>
+                  <RouteMetadata title="Sign Up">
+                    <PatientSignUp />
+                  </RouteMetadata>
+                </RedirectIfSessionExists>
+              }
+            />
+            <Route
+              path="/auth/otp"
+              element={
+                <RedirectIfSessionExists>
+                  <RouteMetadata title="OTP Verification">
+                    <PatientOTP />
+                  </RouteMetadata>
+                </RedirectIfSessionExists>
+              }
+            />
+          </>
+        )}
 
         <Route
           path="/validate-referral"

@@ -1,26 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useSupabase, supabase } from "@/lib/supabase"
 import axios from "axios"
 import type { CareCompanionNotification } from "@/types/care-companion"
 
-// ---------------------------------------------------------------------------
-// Query key
-// ---------------------------------------------------------------------------
-
 export const notificationsQueryKey = "careCompanionNotifications"
-
-// ---------------------------------------------------------------------------
-// useNotifications — fetch notification feed
-// ---------------------------------------------------------------------------
 
 export function useNotifications(unreadOnly?: boolean) {
   return useQuery({
     queryKey: [notificationsQueryKey, { unreadOnly }],
     queryFn: async () => {
+      if (useSupabase) {
+        let query = supabase
+          .from("notifications")
+          .select("*")
+          .order("sent_at", { ascending: false })
+        if (unreadOnly) {
+          query = query.is("read_at", null)
+        }
+        const { data, error } = await query
+        if (error) throw error
+        return (data ?? []) as unknown as CareCompanionNotification[]
+      }
+
       const response = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications`,
         {
           params: unreadOnly ? { unreadOnly: true } : undefined,
-        }
+        },
       )
       return response.data as CareCompanionNotification[]
     },
@@ -28,17 +34,22 @@ export function useNotifications(unreadOnly?: boolean) {
   })
 }
 
-// ---------------------------------------------------------------------------
-// useMarkNotificationRead — mark a single notification as read
-// ---------------------------------------------------------------------------
-
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (id: string) => {
+      if (useSupabase) {
+        const { error } = await supabase
+          .from("notifications")
+          .update({ read_at: new Date().toISOString() })
+          .eq("id", id)
+        if (error) throw error
+        return
+      }
+
       await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications/${id}/read`
+        `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications/${id}/read`,
       )
     },
     onMutate: async (id: string) => {
@@ -54,8 +65,8 @@ export function useMarkNotificationRead() {
         { queryKey: [notificationsQueryKey] },
         (old) =>
           old?.map((n) =>
-            n.id === id ? { ...n, readAt: new Date().toISOString() } : n
-          )
+            n.id === id ? { ...n, readAt: new Date().toISOString() } : n,
+          ),
       )
 
       return { previous }

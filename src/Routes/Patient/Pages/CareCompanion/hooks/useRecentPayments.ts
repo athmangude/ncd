@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { useSupabase, supabase } from "@/lib/supabase"
 import type { PaymentEvent } from "@/types/care-companion"
 
 interface PaymentsResponse {
@@ -7,7 +8,17 @@ interface PaymentsResponse {
 }
 
 function fetchPayments(limit: number) {
-  return async () => {
+  return async (): Promise<PaymentEvent[]> => {
+    if (useSupabase) {
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(limit)
+      if (error) throw error
+      return (data ?? []) as unknown as PaymentEvent[]
+    }
+
     const res = await fetch(`/companion/events?type=PAYMENT&limit=${limit}`)
     if (!res.ok) return []
     const json = (await res.json()) as PaymentsResponse

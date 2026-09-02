@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react"
 import { useIntakeProfile } from "./useIntakeProfile"
+import { useSupabase, supabase } from "@/lib/supabase"
 import {
   callAssistantChat,
   type AssistantMessage,
@@ -95,24 +96,37 @@ export function useAssistantChat() {
       setMessages((prev) => [...prev, userMsg])
 
       try {
-        const events = await fetchEvents()
+        let replyText: string
 
-        const history: AssistantMessage[] = messages.map((m) => ({
-          role: m.role === "user" ? "user" : "model",
-          content: m.content,
-        }))
-
-        const reply = await callAssistantChat(
-          profile,
-          events,
-          history,
-          message,
-        )
+        if (useSupabase) {
+          const conversationHistory = messages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          }))
+          const { data, error } = await supabase.functions.invoke(
+            "chat-assistant",
+            { body: { message, conversationHistory } },
+          )
+          if (error) throw error
+          replyText = data.reply
+        } else {
+          const events = await fetchEvents()
+          const history: AssistantMessage[] = messages.map((m) => ({
+            role: m.role === "user" ? "user" : "model",
+            content: m.content,
+          }))
+          replyText = await callAssistantChat(
+            profile,
+            events,
+            history,
+            message,
+          )
+        }
 
         const assistantMsg: ChatMessage = {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: reply,
+          content: replyText,
           timestamp: new Date().toISOString(),
         }
         setMessages((prev) => [...prev, assistantMsg])

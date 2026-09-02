@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import { useSupabase, supabase } from "@/lib/supabase"
 import axios from "axios"
 import type {
   MedicationCard as DomainMedicationCard,
@@ -46,6 +47,40 @@ export function useMedicationCards() {
   return useQuery({
     queryKey: [medicationCardsQueryKey],
     queryFn: async (): Promise<MedicationCardsData> => {
+      if (useSupabase) {
+        const { data, error } = await supabase
+          .from("medication_cards")
+          .select("*")
+        if (error) throw error
+
+        const slugToName = (slug: string) =>
+          slug
+            .replace(/-/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase())
+
+        const enrichedCards: AnnotatedMedicationCard[] = (data ?? []).map(
+          (row) => {
+            const card = row as unknown as DomainMedicationCard
+            const isCustomId = card.medicationId?.startsWith("custom-")
+            return {
+              card,
+              interactions: [],
+              genericName: slugToName(card.slug),
+              slug: card.slug,
+              brandNames: [],
+              category: (isCustomId ? "LAB_TEST" : "MEDICATION") as MedicationCategory,
+              strengths: [],
+              conditionTags: [],
+            }
+          },
+        )
+
+        return {
+          cards: enrichedCards,
+          pagination: { total: enrichedCards.length, limit: 500, offset: 0 },
+        }
+      }
+
       const baseUrl = import.meta.env.VITE_API_BASE_URL
 
       const [cardsRes, taxonomyRes] = await Promise.all([

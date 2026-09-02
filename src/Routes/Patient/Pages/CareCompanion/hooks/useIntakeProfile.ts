@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { dataService } from "@/lib/data-service"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
 export const intakeProfileQueryKey = "careCompanionIntakeProfile"
@@ -7,12 +7,10 @@ export const intakeProfileQueryKey = "careCompanionIntakeProfile"
 export function useIntakeProfile() {
   return useQuery({
     queryKey: [intakeProfileQueryKey],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
-      )
-      return response.data as CareCompanionProfile | null
-    },
+    queryFn: () =>
+      dataService.query<CareCompanionProfile | null>("profiles", {
+        single: true,
+      }),
     staleTime: 10 * 60 * 1000,
   })
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useSupabase, supabase } from "@/lib/supabase"
 
 import type {
   CareCompanionEvent,
@@ -210,6 +211,17 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
     isRunningRef.current = true
 
     try {
+      setIsPipelineRunning(true)
+      setStoreRunning(true)
+
+      if (useSupabase) {
+        await supabase.functions.invoke("generate-ai-insights", {
+          body: { trigger: "on_demand" },
+        })
+        queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] })
+        return
+      }
+
       const cached =
         queryClient.getQueryData<CareCompanionEvent[]>(EVENTS_QUERY_KEY)
       const freshEvents =
@@ -222,9 +234,6 @@ export function useAiPipeline(profile: CareCompanionProfile | null) {
       if (shouldSkipPipeline(freshEvents ?? [], inputHash)) {
         return
       }
-
-      setIsPipelineRunning(true)
-      setStoreRunning(true)
 
       const newActions = await runPipeline(profile, freshEvents ?? [])
       if (newActions.length === 0) return

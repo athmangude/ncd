@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { dataService } from "@/lib/data-service"
 import type { RefillScheduleItem } from "@/types/care-companion"
 
 export interface RefillScheduleData {
@@ -11,12 +11,10 @@ export const refillScheduleQueryKey = "careCompanionRefillSchedule"
 export function useRefillSchedule() {
   return useQuery({
     queryKey: [refillScheduleQueryKey],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/refill-schedule`
-      )
-      return response.data as RefillScheduleData
-    },
+    queryFn: () =>
+      dataService.query<RefillScheduleData>("refill_schedules", {
+        order: { column: "next_date", ascending: true },
+      }),
     staleTime: 5 * 60 * 1000,
   })
 }

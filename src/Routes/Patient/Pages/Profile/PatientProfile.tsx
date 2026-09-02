@@ -27,6 +27,7 @@ import {
   Upload,
   Wrench,
   UserCog,
+  FlaskConical,
 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
@@ -41,6 +42,7 @@ import {
   DrawerFooter,
 } from "@/components/Drawer"
 import { ConfirmDialog } from "@/components/ConfirmDialog"
+import { useSupabase } from "@/lib/supabase"
 
 import {
   DashboardStagger,
@@ -216,6 +218,16 @@ export default function PatientProfile() {
       icon: <Wrench className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/facilitator"),
     },
+    ...(useSupabase
+      ? [
+          {
+            title: "Test Results Utility",
+            description: "Generate mock lab results for testing",
+            icon: <FlaskConical className="h-5 w-5 text-muted-foreground" />,
+            onClick: () => navigate("/patients/profile/test-results-utility"),
+          },
+        ]
+      : []),
   ]
 
   if (showSkeleton) {
