@@ -11,9 +11,7 @@ import {
   BookOpen,
   AlertTriangle,
   Loader2,
-  Pill,
   Clock,
-  CreditCard,
   Sparkles,
   Pencil,
   Plus,
@@ -1424,22 +1422,16 @@ function EmergencyCardCard({ data }: { data: CareCompanionHomeData }) {
 
 const QUICK_ACTIONS = [
   {
-    label: "My Medications",
-    icon: Pill,
-    path: "/patients/companion/medication-cards",
-    color: "bg-violet-100 text-violet-600",
-  },
-  {
     label: "Care History",
     icon: Clock,
     path: "/patients/companion/medication-timeline",
     color: "bg-sky-100 text-sky-600",
   },
   {
-    label: "Medication Loan",
-    icon: CreditCard,
-    path: "/patients/companion/medication-loan",
-    color: "bg-amber-100 text-amber-600",
+    label: "Health Education",
+    icon: BookOpen,
+    path: "/patients/companion/education",
+    color: "bg-emerald-100 text-emerald-600",
   },
 ]
 
