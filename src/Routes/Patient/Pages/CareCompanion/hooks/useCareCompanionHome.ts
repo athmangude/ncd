@@ -121,7 +121,7 @@ async function fetchFromSupabase(): Promise<CareCompanionHome> {
         estimatedMinutes: nextContent.estimated_minutes ?? 5,
         learningObjectives: nextContent.learning_objectives ?? [],
         weekNumber: 1,
-        imageUrl: null,
+        imageUrl: nextContent.image_theme ?? null,
         isPublished: true,
         householdCompatible: null,
         costNeutral: null,
