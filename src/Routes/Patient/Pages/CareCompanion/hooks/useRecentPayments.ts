@@ -21,6 +21,21 @@ interface SupabasePaymentRow {
 }
 
 function transformPaymentRow(row: SupabasePaymentRow): PaymentEvent {
+  const rawItems = (row.line_items ?? []) as Array<Record<string, unknown>>
+  const lineItems: PaymentEvent["lineItems"] = rawItems.map((li) => ({
+    name: String(li.name ?? ""),
+    category: (li.category ?? "SUPPLY") as PaymentEvent["lineItems"][number]["category"],
+    quantity: Number(li.quantity ?? 1),
+    unitPrice: Number(li.unitPrice ?? 0),
+    lineTotal: Number(li.lineTotal ?? li.total ?? 0),
+  }))
+
+  const rawSources = (row.funding_sources ?? []) as Array<Record<string, unknown>>
+  const fundingSources: PaymentEvent["fundingSources"] = rawSources.map((fs) => ({
+    type: (fs.type ?? fs.source ?? "WALLET") as PaymentEvent["fundingSources"][number]["type"],
+    amount: Number(fs.amount ?? 0),
+  }))
+
   return {
     id: row.id,
     type: "PAYMENT",
@@ -30,8 +45,8 @@ function transformPaymentRow(row: SupabasePaymentRow): PaymentEvent {
     facilityType: (row.facility_type ?? "HOSPITAL") as PaymentEvent["facilityType"],
     totalAmount: Number(row.amount),
     currency: "KES",
-    lineItems: row.line_items ?? [],
-    fundingSources: row.funding_sources ?? [],
+    lineItems,
+    fundingSources,
     isInNetwork: true,
   }
 }

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef } from "react"
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import { useSupabase, supabase } from "@/lib/supabase"
 import type {
   CareCompanionEvent,
   CareHistoryEntry,
@@ -176,6 +177,26 @@ export function useCareHistory() {
       activeFacilityFilter ?? null,
     ],
     queryFn: async () => {
+      if (useSupabase) {
+        const { data, error, count } = await supabase
+          .from("events")
+          .select("*", { count: "exact" })
+          .order("created_at", { ascending: false })
+          .range(offset, offset + PAGE_SIZE - 1)
+        if (error) throw error
+        const events: CareCompanionEvent[] = (data ?? []).map((row: any) => ({
+          id: row.id,
+          type: row.type,
+          timestamp: row.created_at,
+          source: row.data?.source ?? "system",
+          ...row.data,
+        }))
+        return {
+          events,
+          pagination: { total: count ?? 0, limit: PAGE_SIZE, offset },
+        } as EventsResponse
+      }
+
       const params: Record<string, string | number> = {
         limit: PAGE_SIZE,
         offset,
@@ -196,6 +217,30 @@ export function useCareHistory() {
   const testScheduleQuery = useQuery({
     queryKey: [testScheduleQueryKey],
     queryFn: async () => {
+      if (useSupabase) {
+        const DAY_MS = 86_400_000
+        const now = new Date()
+        const { data, error } = await supabase
+          .from("test_schedules")
+          .select("*")
+          .order("next_date", { ascending: true })
+        if (error) throw error
+        const schedules: TestScheduleItem[] = (data ?? []).map((t: any) => {
+          const days = Math.ceil(
+            (new Date(t.next_date).getTime() - now.getTime()) / DAY_MS,
+          )
+          return {
+            id: t.id,
+            testName: t.test_name,
+            expectedDate: t.next_date,
+            status: days <= 0 ? "OVERDUE" : days <= 3 ? "DUE" : "UPCOMING",
+            daysUntilTest: days,
+            frequencyMonths: t.frequency_months,
+          } as TestScheduleItem
+        })
+        return { schedules } as TestScheduleResponse
+      }
+
       const response = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/companion/test-schedules`
       )

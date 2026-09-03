@@ -14,7 +14,7 @@ export const costBreakdownQueryKey = "careCompanionCostBreakdown"
 
 interface PaymentRow {
   amount: number
-  line_items: Array<{ category: MedicationCategory; lineTotal: number }> | null
+  line_items: Array<{ category: MedicationCategory; total: number }> | null
   created_at: string
 }
 
@@ -46,10 +46,10 @@ export function useCostBreakdown() {
           for (const li of p.line_items) {
             const cat = li.category ?? ("OTHER" as MedicationCategory)
             const entry = catMap.get(cat) ?? { total: 0, count: 0 }
-            entry.total += Number(li.lineTotal ?? 0)
+            entry.total += Number(li.total ?? 0)
             entry.count += 1
             catMap.set(cat, entry)
-            grandTotal += Number(li.lineTotal ?? 0)
+            grandTotal += Number(li.total ?? 0)
           }
         } else {
           grandTotal += Number(p.amount)

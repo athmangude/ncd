@@ -31,11 +31,12 @@ BEGIN
 -- ============================================================
 -- 1. Profile
 -- ============================================================
-INSERT INTO profiles (id, phone, first_name, conditions, diagnosis_recency, conditions_other_description, treatment, recurring_tests, cost_estimates, challenges, coping, goals, user_role, completed_at)
+INSERT INTO profiles (id, phone, first_name, last_name, conditions, diagnosis_recency, conditions_other_description, treatment, recurring_tests, cost_estimates, challenges, coping, goals, user_role, completed_at)
 VALUES (
   demo_uid,
   '+254700000001',
   'Nancy',
+  'Kamau',
   ARRAY['DIABETES', 'HYPERTENSION'],
   'MORE_THAN_2_YEARS',
   NULL,
@@ -252,7 +253,23 @@ INSERT INTO notifications (user_id, type, title, body, metadata, deep_link, read
    '{"insightType": "EDUCATION_RECOMMENDATION", "courseSlug": "ugali-portions-that-work-for-blood-sugar-control"}'::jsonb,
    '/patients/companion/education/ugali-portions-that-work-for-blood-sugar-control',
    now() - interval '10 days',
-   now() - interval '12 days');
+   now() - interval '12 days'),
+
+  (demo_uid, 'AI_INSIGHT',
+   'Potential interaction: Metformin and Atorvastatin',
+   'Taking Metformin 500mg and Atorvastatin 20mg together is generally safe, but monitoring liver function is recommended. Both medications are processed by the liver, and regular blood tests can help ensure everything stays on track.',
+   '{"actionType": "DRUG_INTERACTION_WARNING", "severity": "MEDIUM", "relatedMedication": "Metformin 500mg + Atorvastatin 20mg"}'::jsonb,
+   '/patients/companion/medication-cards/metformin-500mg',
+   null,
+   now() - interval '2 days'),
+
+  (demo_uid, 'AI_INSIGHT',
+   'Your Lisinopril medication card is ready',
+   'We have prepared a detailed medication card for Lisinopril 10mg. It includes how it works, common side effects, and tips for getting the most from your treatment.',
+   '{"actionType": "MEDICATION_CARD_AVAILABLE", "relatedMedication": "Lisinopril 10mg"}'::jsonb,
+   '/patients/companion/medication-cards/lisinopril-10mg',
+   null,
+   now() - interval '3 days');
 
 -- ============================================================
 -- 8. Chat Messages
@@ -298,40 +315,82 @@ FROM education_content WHERE slug = 'the-guilt-trap-when-you-eat-something-wrong
 -- ============================================================
 INSERT INTO medication_cards (user_id, medication_id, slug, content) VALUES
   (demo_uid, 'metformin-500mg', 'metformin-500mg', '{
-    "genericName": "Metformin",
-    "brandNames": ["Glucophage", "Daonil"],
-    "strength": "500mg",
-    "category": "BIGUANIDE",
-    "description": "Metformin helps lower blood sugar by reducing the amount of glucose your liver produces and improving your body''s response to insulin.",
-    "sideEffects": ["Nausea", "Diarrhoea", "Stomach upset"],
-    "tips": ["Take with meals to reduce stomach upset", "Do not skip doses even if you feel well"]
+    "locale": "en",
+    "description": "Metformin helps lower blood sugar by reducing the amount of glucose your liver produces and improving your body''s response to insulin. It is the most commonly prescribed medication for Type 2 Diabetes worldwide.",
+    "howItWorks": "Metformin works in three ways: it reduces how much glucose your liver releases into your blood, it helps your muscles use insulin more effectively, and it slows glucose absorption from food in your intestines.",
+    "commonSideEffects": [
+      {"effect": "Nausea", "frequency": "Common in the first 1-2 weeks", "advice": "Take with food to reduce stomach upset. Symptoms usually improve as your body adjusts."},
+      {"effect": "Diarrhoea", "frequency": "Common initially", "advice": "Stay hydrated and eat smaller meals. If it persists beyond 2 weeks, talk to your doctor."},
+      {"effect": "Stomach upset", "frequency": "Occasional", "advice": "Taking your dose with or after meals helps. Avoid alcohol, which can worsen discomfort."}
+    ],
+    "seriousSideEffects": [
+      {"effect": "Lactic acidosis (very rare)", "action": "Seek emergency care if you experience unusual muscle pain, difficulty breathing, or unusual tiredness."}
+    ],
+    "avoidanceWarnings": [
+      {"substance": "Excessive alcohol", "reason": "Increases the risk of lactic acidosis and can cause dangerously low blood sugar."},
+      {"substance": "Contrast dye (CT scans)", "reason": "Tell your doctor you take Metformin before any imaging with contrast dye."}
+    ],
+    "whenToSeekHelp": "Contact your doctor if you experience severe nausea or vomiting, unusual muscle pain, difficulty breathing, or if your blood sugar stays very high despite taking your medication.",
+    "storageInstructions": "Store at room temperature away from moisture and heat. Keep in original container."
   }'::jsonb),
   (demo_uid, 'amlodipine-5mg', 'amlodipine-5mg', '{
-    "genericName": "Amlodipine",
-    "brandNames": ["Norvasc", "Amlopress"],
-    "strength": "5mg",
-    "category": "CALCIUM_CHANNEL_BLOCKER",
-    "description": "Amlodipine relaxes blood vessels to lower blood pressure and reduce strain on your heart.",
-    "sideEffects": ["Swollen ankles", "Dizziness", "Flushing"],
-    "tips": ["Take at the same time each day", "Stand up slowly to avoid dizziness"]
+    "locale": "en",
+    "description": "Amlodipine relaxes blood vessels to lower blood pressure and reduce strain on your heart. It is a calcium channel blocker commonly used alongside diabetes medications.",
+    "howItWorks": "Amlodipine blocks calcium from entering the muscle cells of your heart and blood vessels. This causes the blood vessels to relax and widen, allowing blood to flow more easily and lowering your blood pressure.",
+    "commonSideEffects": [
+      {"effect": "Swollen ankles", "frequency": "Common", "advice": "Elevate your feet when sitting. This is usually harmless but tell your doctor if it bothers you."},
+      {"effect": "Dizziness", "frequency": "Occasional, especially when starting", "advice": "Stand up slowly from sitting or lying down. Avoid driving until you know how it affects you."},
+      {"effect": "Flushing", "frequency": "Occasional", "advice": "Usually mild and temporary. Stay cool and avoid hot environments when possible."}
+    ],
+    "seriousSideEffects": [
+      {"effect": "Severe dizziness or fainting", "action": "Sit or lie down immediately and contact your doctor."},
+      {"effect": "Rapid or irregular heartbeat", "action": "Seek medical attention promptly."}
+    ],
+    "avoidanceWarnings": [
+      {"substance": "Grapefruit juice", "reason": "Can increase Amlodipine levels in your blood, potentially causing side effects."}
+    ],
+    "whenToSeekHelp": "Contact your doctor if you experience severe dizziness, fainting, rapid heartbeat, or if your ankles swell significantly.",
+    "storageInstructions": "Store at room temperature away from light and moisture."
   }'::jsonb),
   (demo_uid, 'atorvastatin-20mg', 'atorvastatin-20mg', '{
-    "genericName": "Atorvastatin",
-    "brandNames": ["Lipitor", "Atorva"],
-    "strength": "20mg",
-    "category": "STATIN",
-    "description": "Atorvastatin lowers cholesterol and reduces the risk of heart disease, which is especially important when you have diabetes.",
-    "sideEffects": ["Muscle pain", "Headache", "Nausea"],
-    "tips": ["Take at bedtime for best effect", "Report unexplained muscle pain to your doctor"]
+    "locale": "en",
+    "description": "Atorvastatin lowers cholesterol and reduces the risk of heart disease, which is especially important when you have diabetes. People with diabetes are at higher risk of cardiovascular problems.",
+    "howItWorks": "Atorvastatin blocks an enzyme in your liver that produces cholesterol (HMG-CoA reductase). This reduces the amount of ''bad'' cholesterol (LDL) in your blood and helps prevent plaque buildup in your arteries.",
+    "commonSideEffects": [
+      {"effect": "Muscle pain or weakness", "frequency": "Common", "advice": "Mild muscle aches are common. Report unexplained or severe muscle pain to your doctor immediately."},
+      {"effect": "Headache", "frequency": "Occasional", "advice": "Usually resolves on its own. Stay hydrated and rest."},
+      {"effect": "Nausea", "frequency": "Occasional", "advice": "Taking your dose with food may help. This usually improves over time."}
+    ],
+    "seriousSideEffects": [
+      {"effect": "Severe muscle pain (rhabdomyolysis)", "action": "Stop the medication and seek emergency care immediately — this is rare but serious."},
+      {"effect": "Yellowing of skin or eyes", "action": "Contact your doctor immediately as this may indicate liver problems."}
+    ],
+    "avoidanceWarnings": [
+      {"substance": "Grapefruit juice", "reason": "Can increase Atorvastatin levels and risk of side effects."},
+      {"substance": "Excessive alcohol", "reason": "Can increase the risk of liver problems when combined with Atorvastatin."}
+    ],
+    "whenToSeekHelp": "Contact your doctor if you experience unexplained muscle pain, dark urine, yellowing of skin or eyes, or unusual tiredness.",
+    "storageInstructions": "Store at room temperature. Take at bedtime for best effect."
   }'::jsonb),
   (demo_uid, 'lisinopril-10mg', 'lisinopril-10mg', '{
-    "genericName": "Lisinopril",
-    "brandNames": ["Zestril", "Lisipril"],
-    "strength": "10mg",
-    "category": "ACE_INHIBITOR",
-    "description": "Lisinopril lowers blood pressure and protects your kidneys from diabetes-related damage.",
-    "sideEffects": ["Dry cough", "Dizziness", "Elevated potassium"],
-    "tips": ["Take in the morning", "Report persistent dry cough to your doctor"]
+    "locale": "en",
+    "description": "Lisinopril lowers blood pressure and protects your kidneys from diabetes-related damage. ACE inhibitors like Lisinopril are often recommended for people with diabetes to preserve kidney function.",
+    "howItWorks": "Lisinopril blocks an enzyme called ACE (angiotensin-converting enzyme) that narrows blood vessels. By blocking this enzyme, your blood vessels relax and widen, lowering blood pressure and reducing the workload on your heart and kidneys.",
+    "commonSideEffects": [
+      {"effect": "Dry cough", "frequency": "Common (affects up to 1 in 10 people)", "advice": "A persistent dry cough is the most common side effect. If it becomes bothersome, talk to your doctor about alternatives."},
+      {"effect": "Dizziness", "frequency": "Common when starting or increasing dose", "advice": "Stand up slowly. Take your first dose at bedtime to reduce daytime dizziness."},
+      {"effect": "Elevated potassium", "frequency": "Occasional", "advice": "Your doctor will monitor your potassium levels. Avoid excessive potassium-rich foods like bananas and oranges."}
+    ],
+    "seriousSideEffects": [
+      {"effect": "Swelling of face, lips, or tongue", "action": "Stop the medication and seek emergency care immediately — this could be angioedema."},
+      {"effect": "Signs of kidney problems (reduced urination)", "action": "Contact your doctor promptly for blood tests."}
+    ],
+    "avoidanceWarnings": [
+      {"substance": "Potassium supplements", "reason": "Lisinopril can raise potassium levels — do not take supplements without your doctor''s advice."},
+      {"substance": "NSAIDs (e.g. ibuprofen)", "reason": "Can reduce the effectiveness of Lisinopril and increase kidney risk."}
+    ],
+    "whenToSeekHelp": "Seek emergency care if you experience swelling of the face, lips, or tongue. Contact your doctor for persistent dry cough, reduced urination, or unusual tiredness.",
+    "storageInstructions": "Store at room temperature away from moisture. Take in the morning at the same time each day."
   }'::jsonb);
 
 END $$;

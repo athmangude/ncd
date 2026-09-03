@@ -19,7 +19,17 @@ export function useNotifications(unreadOnly?: boolean) {
         }
         const { data, error } = await query
         if (error) throw error
-        return (data ?? []) as unknown as CareCompanionNotification[]
+        return (data ?? []).map((row: Record<string, unknown>) => ({
+          id: row.id as string,
+          type: row.type as string,
+          title: row.title as string,
+          body: (row.body ?? "") as string,
+          deepLink: (row.deep_link ?? "/patients/companion") as string,
+          scheduledAt: (row.sent_at ?? "") as string,
+          sentAt: (row.sent_at ?? null) as string | null,
+          readAt: (row.read_at ?? null) as string | null,
+          metadata: (row.metadata ?? null) as Record<string, string> | null,
+        })) as CareCompanionNotification[]
       }
 
       const response = await axios.get(

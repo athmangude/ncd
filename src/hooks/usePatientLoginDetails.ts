@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
+import { useSupabase, supabase } from '@/lib/supabase';
 
 // Define the patient login details type based on the API response
 export interface PatientLoginDetails {
@@ -69,10 +70,63 @@ export function usePatientLoginDetails() {
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
-  
+
   const query = useQuery({
     queryKey: ['patientLoginDetails'],
     queryFn: async () => {
+      if (useSupabase) {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .single()
+        if (error) throw error
+
+        const { data: wallet } = await supabase
+          .from('wallets')
+          .select('cashback_balance')
+          .single()
+
+        return {
+          id: profile.id,
+          firstName: profile.first_name || '',
+          lastName: profile.last_name || '',
+          email: '',
+          phoneNumber: profile.phone,
+          isVerified: true,
+          hasVerifiedId: 'APPROVED',
+          membershipStatus: 'ACTIVE',
+          creditLimit: {
+            totalCreditLimitAmount: '0',
+            remainingAmount: '0',
+            currency: { countryName: 'Kenya', code: 'KES', id: 1 },
+          },
+          medicalRequests: [],
+          loans: [],
+          hasAcceptedMedicalConsentForm: true,
+          hasBeenReferred: false,
+          hasVerifiedCrbScore: false,
+          idVerificationStatus: 'APPROVED',
+          network: [],
+          type: 'PUBLIC',
+          canPayMedicalBill: true,
+          orgBorrower: null,
+          hasUploadedMpesaStatement: false,
+          careFundAccount: {
+            id: 1,
+            careFundBalance: String(wallet?.cashback_balance ?? 0),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            accountOwner: null,
+            currency: { countryName: 'Kenya', code: 'KES', id: 1 },
+          },
+          accountReference: '',
+          subscriptions: [],
+          isBasicMember: false,
+          hasSetPin: true,
+          profilePhoto: null,
+        } as PatientLoginDetails
+      }
+
       const response = await axios.get(`${BASE_URL}${endpoint}`);
       return response.data;
     },

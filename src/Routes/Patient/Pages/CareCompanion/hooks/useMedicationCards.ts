@@ -59,18 +59,24 @@ export function useMedicationCards() {
             .replace(/\b\w/g, (c) => c.toUpperCase())
 
         const enrichedCards: AnnotatedMedicationCard[] = (data ?? []).map(
-          (row) => {
-            const card = row as unknown as DomainMedicationCard
+          (row: Record<string, unknown>) => {
+            const content = (row.content ?? {}) as Record<string, unknown>
+            const card: DomainMedicationCard = {
+              id: row.id as string,
+              medicationId: (row.medication_id ?? "") as string,
+              slug: (row.slug ?? "") as string,
+              ...(content as Record<string, unknown>),
+            } as DomainMedicationCard
             const isCustomId = card.medicationId?.startsWith("custom-")
             return {
               card,
               interactions: [],
-              genericName: slugToName(card.slug),
+              genericName: (content.genericName as string) ?? slugToName(card.slug),
               slug: card.slug,
-              brandNames: [],
-              category: (isCustomId ? "LAB_TEST" : "MEDICATION") as MedicationCategory,
-              strengths: [],
-              conditionTags: [],
+              brandNames: (content.brandNames ?? []) as string[],
+              category: ((content.category ?? (isCustomId ? "LAB_TEST" : "MEDICATION")) as MedicationCategory),
+              strengths: (content.strengths ?? []) as string[],
+              conditionTags: (content.conditionTags ?? []) as ConditionType[],
             }
           },
         )

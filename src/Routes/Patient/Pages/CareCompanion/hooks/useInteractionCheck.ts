@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import axios from "axios"
+import { useSupabase } from "@/lib/supabase"
 
 export interface DrugInteraction {
   id: string
@@ -22,6 +23,14 @@ export function useInteractionCheck() {
   return useQuery({
     queryKey: [interactionCheckQueryKey],
     queryFn: async () => {
+      if (useSupabase) {
+        return {
+          interactions: [],
+          checkedAt: new Date().toISOString(),
+          hasSevereInteractions: false,
+        } as InteractionCheckData
+      }
+
       const response = await axios.get(
         `${import.meta.env.VITE_API_BASE_URL}/companion/interaction-check`
       )
