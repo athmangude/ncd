@@ -7,7 +7,7 @@ import {
   CircleAlert,
   CircleMinus,
   CreditCard,
-  Loader2,
+
   MapPin,
   Pill,
   ShieldX,
@@ -356,6 +356,57 @@ function ConfirmationContent({
   )
 }
 
+function MedicationLoanSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-4 pb-40 animate-pulse">
+      <div className="flex justify-center">
+        <div className="h-9 w-36 rounded-full bg-muted" />
+      </div>
+
+      <div className="rounded-xl border bg-card p-5 flex flex-col items-center gap-2">
+        <div className="h-3 w-28 rounded bg-muted" />
+        <div className="h-8 w-40 rounded bg-muted" />
+        <div className="h-3 w-24 rounded bg-muted" />
+      </div>
+
+      <div className="rounded-xl border bg-card p-4">
+        <div className="h-4 w-full rounded bg-muted" />
+        <div className="mt-1.5 h-4 w-4/5 rounded bg-muted" />
+      </div>
+
+      <div className="rounded-xl border bg-card p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-full bg-muted" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-3 w-24 rounded bg-muted" />
+            <div className="h-4 w-40 rounded bg-muted" />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="h-4 w-36 rounded bg-muted" />
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-2"
+          >
+            <div className="flex items-center gap-2">
+              <div className="h-3.5 w-3.5 rounded bg-muted" />
+              <div className="h-3 w-28 rounded bg-muted" />
+            </div>
+            <div className="h-3 w-16 rounded bg-muted" />
+          </div>
+        ))}
+        <div className="flex items-center justify-between border-t pt-3">
+          <div className="h-3 w-10 rounded bg-muted" />
+          <div className="h-4 w-20 rounded bg-muted" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function MedicationLoanPage() {
   const { data, isLoading, error } = useMedicationLoanPreApproval()
   const [pageState, setPageState] = useState<LoanPageState>("viewing")
@@ -389,11 +440,7 @@ export default function MedicationLoanPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <MedicationLoanSkeleton />
   }
 
   if (error || !data) {

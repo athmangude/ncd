@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import { useSupabase } from "@/lib/supabase"
 import { dataService } from "@/lib/data-service"
-import { Loader2 } from "lucide-react"
+
 import { Button } from "@/components/Button"
 import { trackEvent, EVENTS } from "@/analytics"
 import { useCareCompanionStore } from "@/Routes/Patient/Pages/CareCompanion/store/careCompanionStore"
@@ -250,11 +250,7 @@ export default function CareCompanionIntake() {
   }
 
   if (profileLoading || !initialized) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <IntakeSkeleton />
   }
 
   const isCompletionStep = currentStep === 8
@@ -372,6 +368,46 @@ export default function CareCompanionIntake() {
 
           </div>
         )}
+      </div>
+    </div>
+  )
+}
+
+function IntakeSkeleton() {
+  return (
+    <div className="flex flex-col bg-background animate-pulse">
+      <div className="px-4 pb-3 pt-4">
+        <div className="mb-4 space-y-2">
+          <div className="h-5 w-3/4 rounded bg-muted" />
+          <div className="h-4 w-full rounded bg-muted" />
+          <div className="h-4 w-2/3 rounded bg-muted" />
+        </div>
+
+        <div className="flex gap-1">
+          {Array.from({ length: 8 }, (_, i) => (
+            <div key={i} className="h-1.5 flex-1 rounded-full bg-muted" />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-4 px-4 pb-4 pt-2">
+        <div className="h-5 w-48 rounded bg-muted" />
+
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 4 }, (_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-3 rounded-xl border p-4"
+            >
+              <div className="h-5 w-5 rounded bg-muted shrink-0" />
+              <div className="h-4 flex-1 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6">
+          <div className="h-10 w-full rounded-lg bg-muted" />
+        </div>
       </div>
     </div>
   )

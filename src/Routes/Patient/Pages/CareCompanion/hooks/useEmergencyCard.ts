@@ -21,25 +21,39 @@ export function useEmergencyCard() {
         const hasDiabetes = conditions.includes("DIABETES")
 
         return {
+          id: "emergency-card-001",
           conditionType: hasDiabetes ? "DIABETES" : conditions[0] ?? "DIABETES",
+          locale: "en-KE",
           title: hasDiabetes
             ? "Diabetic Emergency Card"
             : "Emergency Reference Card",
-          cardId: "emergency-card-001",
-          sections: [
-            {
-              title: "Signs of Low Blood Sugar (Hypoglycemia)",
-              items: ["Shaking or trembling", "Sweating", "Dizziness or confusion", "Fast heartbeat"],
-            },
-            {
-              title: "What to Do",
-              items: ["Drink a glass of juice or sugary drink", "Eat 3-4 glucose tablets", "Rest for 15 minutes", "If no improvement, call for help"],
-            },
-            {
-              title: "Emergency Numbers",
-              items: ["Kenya Red Cross: 1199", "Ambulance: 999", "Your doctor: See profile"],
-            },
+          warningSymptoms: [
+            { symptom: "Shaking or trembling", severity: "critical" },
+            { symptom: "Sweating", severity: "critical" },
+            { symptom: "Dizziness or confusion", severity: "critical" },
+            { symptom: "Fast heartbeat", severity: "warning" },
+            { symptom: "Blurred vision", severity: "warning" },
+            { symptom: "Unusual fatigue", severity: "warning" },
           ],
+          immediateActions: [
+            { step: 1, action: "Drink a glass of juice or sugary drink" },
+            { step: 2, action: "Eat 3-4 glucose tablets if available" },
+            { step: 3, action: "Rest for 15 minutes and recheck blood sugar" },
+            { step: 4, action: "If no improvement, call for help immediately" },
+          ],
+          whenToGoToER: [
+            "Blood sugar stays below 3.9 mmol/L after treatment",
+            "Loss of consciousness or seizures",
+            "Unable to swallow food or drink",
+            "Symptoms worsen despite taking sugar",
+          ],
+          doNotDo: [
+            "Do not give insulin during a low blood sugar episode",
+            "Do not leave the person alone if they are confused",
+            "Do not give food or drink if the person is unconscious",
+          ],
+          version: 1,
+          isPublished: true,
         } as EmergencyCardData
       }
 

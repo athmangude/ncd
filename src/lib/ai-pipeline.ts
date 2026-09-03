@@ -966,3 +966,88 @@ GUIDELINES:
     return "Something went wrong generating insights. Please try again."
   }
 }
+
+export async function extractMetricsFromLabDocument(
+  fileBase64: string,
+  mimeType: string,
+  testName: string,
+): Promise<TestResultMetric[]> {
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY
+  if (!apiKey) return []
+
+  try {
+    const model = "gemini-3.6-flash"
+    const url = `/api/gemini/v1beta/models/${model}:generateContent?key=${apiKey}`
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [
+            {
+              text: `You are a medical lab result parser. Extract structured metrics from the uploaded lab result document.
+
+Return ONLY a JSON array of metric objects with this exact shape:
+[{
+  "name": "metric name",
+  "value": numeric_value,
+  "unit": "unit string",
+  "referenceRange": "low - high unit",
+  "status": "NORMAL" | "LOW" | "HIGH" | "CRITICAL"
+}]
+
+Rules:
+- Extract all measurable metrics from the document
+- Determine status by comparing value to reference range
+- Use CRITICAL for values far outside normal range (>2x deviation)
+- If reference range is not visible, use standard medical reference ranges for the test
+- Return raw JSON array only, no markdown fences or explanation`,
+            },
+          ],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                inlineData: {
+                  mimeType,
+                  data: fileBase64,
+                },
+              },
+              {
+                text: `Extract all test metrics from this ${testName} lab result document. Return as a JSON array.`,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 4096,
+          temperature: 0.2,
+        },
+      }),
+    })
+
+    if (!res.ok) return []
+
+    const data = (await res.json()) as GeminiResponse
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]"
+    const cleaned = text.replace(/```json\n?|\n?```/g, "").trim()
+    const parsed = JSON.parse(cleaned)
+
+    if (!Array.isArray(parsed)) return []
+
+    return parsed.filter(
+      (m: Record<string, unknown>) =>
+        typeof m.name === "string" &&
+        typeof m.value === "number" &&
+        typeof m.unit === "string" &&
+        typeof m.referenceRange === "string" &&
+        ["NORMAL", "LOW", "HIGH", "CRITICAL"].includes(m.status as string),
+    ) as TestResultMetric[]
+  } catch (err) {
+    console.error("[lab-document] Metric extraction failed:", err)
+    return []
+  }
+}

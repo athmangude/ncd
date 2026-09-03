@@ -4,7 +4,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import axios from "axios"
 import {
   AlertTriangle,
-  Loader2,
   Pill,
   Clock,
   MapPin,
@@ -933,11 +932,7 @@ export default function RefillSchedulePage() {
   }, [])
 
   if (isLoading || homeLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <RefillScheduleSkeleton />
   }
 
   if (error || !data) {
@@ -1064,6 +1059,41 @@ export default function RefillSchedulePage() {
           Find Pharmacy
         </button>
       </div>
+    </div>
+  )
+}
+
+function RefillScheduleSkeletonCard() {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          <div className="h-9 w-9 shrink-0 rounded-full bg-muted" />
+          <div className="min-w-0 space-y-1.5">
+            <div className="h-4 w-28 rounded bg-muted" />
+            <div className="h-3 w-20 rounded bg-muted" />
+          </div>
+        </div>
+        <div className="flex flex-col items-end gap-1">
+          <div className="h-5 w-16 rounded-full bg-muted" />
+          <div className="h-3 w-14 rounded bg-muted" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function RefillScheduleSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 p-4 pb-24 animate-pulse">
+      <div className="h-3 w-24 rounded bg-muted" />
+      <RefillScheduleSkeletonCard />
+      <RefillScheduleSkeletonCard />
+      <RefillScheduleSkeletonCard />
+
+      <div className="mt-2 h-3 w-12 rounded bg-muted" />
+      <RefillScheduleSkeletonCard />
+      <RefillScheduleSkeletonCard />
     </div>
   )
 }

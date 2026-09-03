@@ -75,11 +75,7 @@ export default function CareCompanionHome() {
   )
 
   if (profileLoading || isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <CareCompanionHomeSkeleton />
   }
 
   if (!profile?.completedAt) {
@@ -211,6 +207,71 @@ export default function CareCompanionHome() {
           profile?.treatment?.medicationNames ?? []
         }
       />
+    </div>
+  )
+}
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 shrink-0 rounded-full bg-muted" />
+        <div className="flex-1 space-y-1.5">
+          <div className="h-4 w-2/5 rounded bg-muted" />
+          <div className="h-3 w-3/5 rounded bg-muted" />
+        </div>
+        <div className="h-5 w-5 rounded bg-muted" />
+      </div>
+      <div className="mt-3 space-y-2">
+        <div className="rounded-lg bg-muted/50 px-3 py-2 space-y-1.5">
+          <div className="h-3 w-3/4 rounded bg-muted" />
+          <div className="h-3 w-1/2 rounded bg-muted" />
+        </div>
+        <div className="rounded-lg bg-muted/50 px-3 py-2 space-y-1.5">
+          <div className="h-3 w-2/3 rounded bg-muted" />
+          <div className="h-3 w-2/5 rounded bg-muted" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CareCompanionHomeSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-4 animate-pulse">
+      <div className="rounded-xl bg-muted/40 px-4 py-3">
+        <div className="h-4 w-4/5 rounded bg-muted" />
+      </div>
+
+      <SkeletonCard />
+      <SkeletonCard />
+
+      <div className="rounded-xl border border-red-200 bg-red-50/30 p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 shrink-0 rounded-full bg-red-100/50" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-4 w-2/5 rounded bg-red-100/50" />
+            <div className="h-3 w-4/5 rounded bg-red-100/50" />
+          </div>
+        </div>
+      </div>
+
+      <SkeletonCard />
+
+      <div>
+        <div className="mb-2 h-3 w-24 rounded bg-muted" />
+        <div className="grid grid-cols-3 gap-2">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="flex flex-col items-center gap-1.5 rounded-xl border bg-card p-3"
+            >
+              <div className="h-9 w-9 rounded-full bg-muted" />
+              <div className="h-3 w-12 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

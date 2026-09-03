@@ -47,11 +47,7 @@ export default function EmergencyCardPage() {
   }, [])
 
   if (cardLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <EmergencyCardSkeleton />
   }
 
   if (cardError || !card) {
@@ -110,6 +106,66 @@ export default function EmergencyCardPage() {
 
       {/* Emergency Numbers */}
       <EmergencyNumbersSection />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Skeleton
+// ---------------------------------------------------------------------------
+
+function SkeletonSection({ rows = 3 }: { rows?: number }) {
+  return (
+    <div className="rounded-xl border bg-card p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <div className="h-4 w-4 rounded bg-muted" />
+        <div className="h-4 w-24 rounded bg-muted" />
+      </div>
+      <div className="space-y-2">
+        {Array.from({ length: rows }, (_, i) => (
+          <div key={i} className="flex items-start gap-2.5 rounded-lg px-3 py-2">
+            <div className="mt-0.5 h-4 w-4 shrink-0 rounded bg-muted" />
+            <div className="flex-1 space-y-1">
+              <div className="h-3 w-4/5 rounded bg-muted" />
+              <div className="h-3 w-12 rounded-full bg-muted" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function EmergencyCardSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-4 pb-8 animate-pulse">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 shrink-0 rounded-full bg-muted" />
+        <div className="space-y-1.5">
+          <div className="h-5 w-44 rounded bg-muted" />
+          <div className="h-3 w-56 rounded bg-muted" />
+        </div>
+      </div>
+
+      <SkeletonSection rows={4} />
+      <SkeletonSection rows={3} />
+      <SkeletonSection rows={3} />
+
+      <div className="rounded-xl border bg-card p-4 space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 rounded bg-muted" />
+          <div className="h-4 w-36 rounded bg-muted" />
+        </div>
+        <div className="flex items-center justify-between rounded-lg bg-muted/50 px-3 py-3">
+          <div className="space-y-1.5">
+            <div className="h-3 w-28 rounded bg-muted" />
+            <div className="h-5 w-20 rounded bg-muted" />
+          </div>
+          <div className="h-5 w-16 rounded-full bg-muted" />
+        </div>
+      </div>
+
+      <SkeletonSection rows={3} />
     </div>
   )
 }

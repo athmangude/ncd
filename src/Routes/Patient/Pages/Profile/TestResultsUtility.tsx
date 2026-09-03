@@ -15,22 +15,19 @@ import {
 } from "lucide-react"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
-interface TestMetric {
-  name: string
-  value: number
-  unit: string
-  referenceRange: string
-  status: "NORMAL" | "LOW" | "HIGH" | "CRITICAL"
-}
+import {
+  generateLabResultPdf,
+  type LabResultMetric,
+} from "@/Routes/Patient/Pages/CareCompanion/utils/generateLabResultPdf"
 
 interface TestResult {
-  metrics: TestMetric[]
+  metrics: LabResultMetric[]
   labName: string
   date: string
 }
 
 const STATUS_CONFIG: Record<
-  TestMetric["status"],
+  LabResultMetric["status"],
   { label: string; className: string; icon: typeof CheckCircle2 }
 > = {
   NORMAL: {
@@ -53,53 +50,6 @@ const STATUS_CONFIG: Record<
     className: "bg-red-50 text-red-700 border-red-200",
     icon: AlertCircle,
   },
-}
-
-async function generatePdf(
-  metrics: TestMetric[],
-  labName: string,
-  date: string,
-  patientName: string,
-  testName: string,
-) {
-  const { default: jsPDF } = await import("jspdf")
-  const { default: autoTable } = await import("jspdf-autotable")
-
-  const doc = new jsPDF()
-
-  doc.setFontSize(16)
-  doc.text(labName, 20, 20)
-  doc.setFontSize(10)
-  doc.text(`Date: ${date}`, 20, 28)
-  doc.text(`Patient: ${patientName}`, 20, 34)
-  doc.text(`Test: ${testName}`, 20, 40)
-
-  autoTable(doc, {
-    startY: 50,
-    head: [["Metric", "Result", "Unit", "Reference Range", "Status"]],
-    body: metrics.map((m) => [
-      m.name,
-      String(m.value),
-      m.unit,
-      m.referenceRange,
-      m.status,
-    ]),
-    didParseCell: (data: { column: { index: number }; section: string; cell: { raw: unknown; styles: { textColor: number[] } } }) => {
-      if (data.column.index === 4 && data.section === "body") {
-        const status = data.cell.raw as string
-        data.cell.styles.textColor =
-          status === "NORMAL"
-            ? [34, 139, 34]
-            : status === "LOW"
-              ? [204, 163, 0]
-              : status === "HIGH"
-                ? [255, 140, 0]
-                : [220, 20, 60]
-      }
-    },
-  })
-
-  doc.save(`${testName.replace(/\s+/g, "-").toLowerCase()}-results.pdf`)
 }
 
 export default function TestResultsUtility() {
@@ -173,7 +123,7 @@ export default function TestResultsUtility() {
       setDownloadingTest(testName)
       try {
         const patientName = profile?.firstName ?? "Patient"
-        await generatePdf(
+        await generateLabResultPdf(
           result.metrics,
           result.labName,
           result.date,

@@ -4,7 +4,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
-  Loader2,
+
   Pill,
   ShieldAlert,
   Thermometer,
@@ -70,11 +70,7 @@ export default function MedicationCardDetailPage() {
   }, [card, slug])
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <MedicationDetailSkeleton />
   }
 
   if (error || !data) {
@@ -269,6 +265,46 @@ export default function MedicationCardDetailPage() {
           />
         )}
       </div>
+    </div>
+  )
+}
+
+function MedicationDetailSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-4 animate-pulse">
+      <div>
+        <div className="flex items-center gap-2">
+          <div className="h-6 w-40 rounded bg-muted" />
+          <div className="h-5 w-20 rounded-full bg-muted" />
+        </div>
+        <div className="mt-1 h-3.5 w-32 rounded bg-muted" />
+        <div className="mt-1 h-3.5 w-24 rounded bg-muted" />
+      </div>
+
+      {[
+        { titleW: "w-24", lines: 2 },
+        { titleW: "w-28", lines: 3 },
+        { titleW: "w-36", lines: 4 },
+        { titleW: "w-28", lines: 2 },
+      ].map((section, i) => (
+        <div key={i} className="rounded-xl border bg-card p-4">
+          <div className="mb-3 flex items-center gap-1.5">
+            <div className="h-4 w-4 rounded bg-muted" />
+            <div className={cn("h-3.5 rounded bg-muted", section.titleW)} />
+          </div>
+          <div className="space-y-2">
+            {Array.from({ length: section.lines }, (_, j) => (
+              <div
+                key={j}
+                className={cn(
+                  "h-3.5 rounded bg-muted",
+                  j === section.lines - 1 ? "w-3/4" : "w-full",
+                )}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }

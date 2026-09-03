@@ -28,6 +28,8 @@ export interface ClinicalVisit {
   hasLabResults: boolean
   testResultEvent: TestResultData | null
   aiInsight: string | null
+  aiInsightsByTest: Record<string, string>
+  labResultsByTest: Record<string, TestResultData>
 }
 
 export interface TestResultData {
@@ -41,6 +43,10 @@ export interface TestResultData {
   }[]
   labName?: string
   date?: string
+  paymentId?: string
+  lineItemName?: string
+  uploadedFilePath?: string
+  source?: "generated" | "uploaded"
 }
 
 export interface ClinicalVisitsSummary {
@@ -149,8 +155,19 @@ export function useClinicalVisits() {
 
       const paymentDate = new Date(p.date)
 
+      const exactResults = testResults.filter(
+        (tr: any) => tr.data?.paymentId === p.id,
+      )
+
+      const labResultsByTest: Record<string, TestResultData> = {}
+      for (const tr of exactResults) {
+        const key = tr.data?.lineItemName ?? tr.data?.testName
+        if (key) labResultsByTest[key] = tr.data as TestResultData
+      }
+
       const matchedResult = labs.length > 0
-        ? testResults.find((tr: any) => {
+        ? exactResults[0] ?? testResults.find((tr: any) => {
+            if (tr.data?.paymentId) return false
             const trDate = new Date(tr.timestamp)
             const diffDays = Math.abs(
               (paymentDate.getTime() - trDate.getTime()) / 86_400_000,
@@ -159,7 +176,19 @@ export function useClinicalVisits() {
           })
         : null
 
-      const matchedInsight = aiInsights.find((ai: any) => {
+      const exactInsights = aiInsights.filter(
+        (ai: any) => ai.data?.paymentId === p.id,
+      )
+
+      const aiInsightsByTest: Record<string, string> = {}
+      for (const ai of exactInsights) {
+        const key = ai.data?.lineItemName
+        const body = ai.data?.body ?? ai.data?.title
+        if (key && body) aiInsightsByTest[key] = body
+      }
+
+      const matchedInsight = exactInsights[0] ?? aiInsights.find((ai: any) => {
+        if (ai.data?.paymentId) return false
         const aiDate = new Date(ai.timestamp)
         const diffDays = Math.abs(
           (paymentDate.getTime() - aiDate.getTime()) / 86_400_000,
@@ -181,11 +210,13 @@ export function useClinicalVisits() {
         labs,
         prescriptions,
         supplies,
-        hasLabResults: matchedResult != null,
+        hasLabResults: matchedResult != null || Object.keys(labResultsByTest).length > 0,
         testResultEvent: matchedResult
           ? (matchedResult.data as TestResultData)
           : null,
         aiInsight: matchedInsight?.data?.body ?? matchedInsight?.data?.title ?? null,
+        aiInsightsByTest,
+        labResultsByTest,
       } as ClinicalVisit
     })
   }, [paymentsQuery.data, eventsQuery.data])

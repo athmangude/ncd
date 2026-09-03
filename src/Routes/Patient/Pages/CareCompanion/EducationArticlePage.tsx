@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom"
 import {
   AlertTriangle,
   BookOpen,
-  Loader2,
+
   Clock,
   ArrowLeft,
   ArrowRight,
@@ -263,11 +263,7 @@ export default function EducationArticlePage() {
   )
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <ArticleSkeleton />
   }
 
   if (error || !data) {
@@ -796,6 +792,50 @@ function RecommendedCard({ card }: { card: EducationFeedCard }) {
       </div>
       <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
     </Link>
+  )
+}
+
+function ArticleSkeleton() {
+  return (
+    <div className="flex flex-col min-h-[calc(100vh-3.5rem)] animate-pulse">
+      <div className="h-48 w-full bg-muted" />
+
+      <div className="flex-1 flex flex-col gap-5 p-4">
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-16 rounded-full bg-muted" />
+          <div className="h-5 w-14 rounded-full bg-muted" />
+        </div>
+
+        <div className="space-y-2">
+          <div className="h-6 w-4/5 rounded bg-muted" />
+          <div className="h-6 w-3/5 rounded bg-muted" />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="h-4 w-16 rounded bg-muted" />
+          <div className="h-4 w-20 rounded bg-muted" />
+        </div>
+
+        <div className="rounded-xl border bg-card p-4 space-y-3">
+          <div className="h-4 w-32 rounded bg-muted" />
+          <div className="space-y-2">
+            <div className="h-4 w-full rounded bg-muted" />
+            <div className="h-4 w-5/6 rounded bg-muted" />
+            <div className="h-4 w-4/6 rounded bg-muted" />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="h-4 w-full rounded bg-muted" />
+          <div className="h-4 w-5/6 rounded bg-muted" />
+          <div className="h-4 w-3/4 rounded bg-muted" />
+        </div>
+
+        <div className="mt-auto pb-4">
+          <div className="h-12 w-full rounded-xl bg-muted" />
+        </div>
+      </div>
+    </div>
   )
 }
 

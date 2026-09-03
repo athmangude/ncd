@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react"
+import ReactMarkdown from "react-markdown"
 import {
   AlertTriangle,
-  Loader2,
   Building2,
   Calendar,
   Stethoscope,
@@ -25,6 +25,9 @@ import {
   type LineItem,
   type TestResultData,
 } from "./hooks/useClinicalVisits"
+import { GenerateLabResultsDrawer } from "./components/GenerateLabResultsDrawer"
+import { UploadLabResultsDrawer } from "./components/UploadLabResultsDrawer"
+import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 
 function formatKES(value: number): string {
   return `KES ${value.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`
@@ -133,6 +136,67 @@ function MetricStatusIcon({ status }: { status: string }) {
   }
 }
 
+function TimelineSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-4 pb-8 animate-pulse">
+      {/* Summary header */}
+      <div className="rounded-xl border bg-card p-4">
+        <div className="h-4 w-24 rounded bg-muted" />
+        <div className="mt-2 h-3 w-40 rounded bg-muted" />
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="rounded-lg bg-accent px-3 py-2">
+              <div className="h-3 w-12 rounded bg-muted" />
+              <div className="mt-1.5 h-5 w-8 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Month label */}
+      <div className="h-4 w-28 rounded bg-muted" />
+
+      {/* Visit cards */}
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="rounded-xl border bg-card p-3">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-muted" />
+            <div className="flex-1 min-w-0">
+              <div className="h-4 w-3/5 rounded bg-muted" />
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="h-4 w-14 rounded-full bg-muted" />
+                <div className="h-3 w-16 rounded bg-muted" />
+              </div>
+              <div className="mt-1.5 h-3 w-2/3 rounded bg-muted" />
+            </div>
+            <div className="h-4 w-16 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+
+      {/* Second month label */}
+      <div className="h-4 w-24 rounded bg-muted" />
+
+      {/* More visit cards */}
+      {[0, 1].map((i) => (
+        <div key={i} className="rounded-xl border bg-card p-3">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-muted" />
+            <div className="flex-1 min-w-0">
+              <div className="h-4 w-2/5 rounded bg-muted" />
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="h-4 w-14 rounded-full bg-muted" />
+                <div className="h-3 w-16 rounded bg-muted" />
+              </div>
+            </div>
+            <div className="h-4 w-14 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function SummaryHeader({
   totalVisits,
   facilitiesVisited,
@@ -208,31 +272,107 @@ function categoryLabel(cat: string): string {
   }
 }
 
-function LineItemRow({ item }: { item: LineItem }) {
+function LineItemRow({
+  item,
+  hasResults,
+  results,
+  insight,
+  onGenerateClick,
+  onUploadClick,
+}: {
+  item: LineItem
+  hasResults?: boolean
+  results?: TestResultData
+  insight?: string
+  onGenerateClick?: () => void
+  onUploadClick?: () => void
+}) {
+  const isLab = item.category === "LAB_TEST"
+  const [showResults, setShowResults] = useState(false)
+
   return (
-    <div className="flex items-center justify-between gap-2 py-1.5">
-      <div className="flex items-center gap-2 min-w-0">
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-accent text-muted-foreground">
-          <ComponentIcon category={item.category} />
+    <div className="py-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-accent text-muted-foreground">
+            <ComponentIcon category={item.category} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-foreground truncate">
+              {item.name}
+            </p>
+            <p className="text-[10px] text-muted-foreground">
+              {categoryLabel(item.category)}
+              {item.quantity > 1 ? ` × ${item.quantity}` : ""}
+            </p>
+          </div>
         </div>
-        <div className="min-w-0">
-          <p className="text-xs font-medium text-foreground truncate">
-            {item.name}
+        <div className="shrink-0 flex flex-col items-end gap-1">
+          <p className="text-xs font-mono text-muted-foreground">
+            {formatKES(item.total)}
           </p>
-          <p className="text-[10px] text-muted-foreground">
-            {categoryLabel(item.category)}
-            {item.quantity > 1 ? ` × ${item.quantity}` : ""}
-          </p>
+          {isLab && (
+            <div className="flex items-center gap-1.5">
+              {hasResults ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowResults(!showResults)
+                  }}
+                  className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                >
+                  {showResults ? "Hide Results" : "See Results"}
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onGenerateClick?.()
+                    }}
+                    className="rounded p-0.5 text-primary/60 hover:text-primary active:bg-primary/10 transition-colors"
+                    title="Generate demo results"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onUploadClick?.()
+                    }}
+                    className="rounded p-0.5 text-primary/60 hover:text-primary active:bg-primary/10 transition-colors"
+                    title="Upload results"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
-      <p className="shrink-0 text-xs font-mono text-muted-foreground">
-        {formatKES(item.total)}
-      </p>
+
+      {showResults && results && (
+        <div className="mt-2">
+          <TestResultsCard results={results} insight={insight} />
+        </div>
+      )}
     </div>
   )
 }
 
-function TestResultsCard({ results }: { results: TestResultData }) {
+function TestResultsCard({
+  results,
+  insight,
+}: {
+  results: TestResultData
+  insight?: string
+}) {
+  const [showInsight, setShowInsight] = useState(false)
+
   return (
     <div className="rounded-lg border border-purple-200 bg-purple-50/50 p-3 dark:border-purple-800/50 dark:bg-purple-950/20">
       <div className="flex items-center gap-2 mb-2">
@@ -268,57 +408,44 @@ function TestResultsCard({ results }: { results: TestResultData }) {
           {results.metrics.map((m) => `${m.name}: ${m.referenceRange}`).join(", ")}
         </p>
       </div>
+
+      {insight && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowInsight(!showInsight)}
+            className="mt-2 flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
+          >
+            <Sparkles className="h-3 w-3" />
+            {showInsight ? "Hide AI Insight" : "Show AI Insight"}
+          </button>
+
+          {showInsight && (
+            <div className="mt-2 rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 p-2.5">
+              <div className="text-xs text-foreground leading-relaxed prose prose-xs prose-amber max-w-none [&_p]:mb-1.5 [&_ul]:mb-1.5 [&_ol]:mb-1.5 [&_li]:mb-0.5 [&_strong]:text-foreground">
+                <ReactMarkdown>{insight}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   )
 }
 
-function AiInsightCard({ insight }: { insight: string }) {
-  return (
-    <div className="rounded-lg border border-amber-200 bg-amber-50/50 p-3 dark:border-amber-800/50 dark:bg-amber-950/20">
-      <div className="flex items-start gap-2">
-        <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-        <div>
-          <p className="text-xs font-semibold text-amber-700 dark:text-amber-300 mb-1">
-            AI Insight
-          </p>
-          <p className="text-xs text-foreground leading-relaxed">{insight}</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function UploadLabResultsPrompt({ labNames }: { labNames: string[] }) {
-  return (
-    <button
-      type="button"
-      className="w-full rounded-lg border-2 border-dashed border-primary/30 bg-primary/5 p-3 transition-colors active:bg-primary/10"
-      onClick={() => {
-        trackEvent(EVENTS.CARE_COMPANION.MEDICATION_TIMELINE.VIEW, {
-          action: "upload_lab_results",
-          labs: labNames,
-        })
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
-          <Upload className="h-4 w-4 text-primary" />
-        </div>
-        <div className="text-left">
-          <p className="text-xs font-semibold text-foreground">
-            Upload lab results
-          </p>
-          <p className="text-[11px] text-muted-foreground">
-            {labNames.join(", ")} — add your results to get AI insights
-          </p>
-        </div>
-      </div>
-    </button>
-  )
-}
-
-function VisitCard({ visit }: { visit: ClinicalVisit }) {
+function VisitCard({
+  visit,
+  userId,
+}: {
+  visit: ClinicalVisit
+  userId: string
+}) {
   const [expanded, setExpanded] = useState(false)
+  const [activeDrawer, setActiveDrawer] = useState<{
+    type: "generate" | "upload"
+    labItem: LineItem
+  } | null>(null)
+
   const hasComponents =
     visit.consultations.length > 0 ||
     visit.labs.length > 0 ||
@@ -333,8 +460,6 @@ function VisitCard({ visit }: { visit: ClinicalVisit }) {
       `${visit.prescriptions.length} med${visit.prescriptions.length > 1 ? "s" : ""}`,
     visit.supplies.length > 0 && "Supplies",
   ].filter(Boolean)
-
-  const labNames = visit.labs.map((l) => l.name)
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
@@ -406,7 +531,19 @@ function VisitCard({ visit }: { visit: ClinicalVisit }) {
                 Lab Tests
               </p>
               {visit.labs.map((item, i) => (
-                <LineItemRow key={`l-${i}`} item={item} />
+                <LineItemRow
+                  key={`l-${i}`}
+                  item={item}
+                  hasResults={!!visit.labResultsByTest[item.name]}
+                  results={visit.labResultsByTest[item.name]}
+                  insight={visit.aiInsightsByTest[item.name]}
+                  onGenerateClick={() =>
+                    setActiveDrawer({ type: "generate", labItem: item })
+                  }
+                  onUploadClick={() =>
+                    setActiveDrawer({ type: "upload", labItem: item })
+                  }
+                />
               ))}
             </div>
           )}
@@ -451,16 +588,29 @@ function VisitCard({ visit }: { visit: ClinicalVisit }) {
             </div>
           )}
 
-          {visit.hasLabResults && visit.testResultEvent && (
-            <TestResultsCard results={visit.testResultEvent} />
-          )}
-
-          {!visit.hasLabResults && visit.labs.length > 0 && (
-            <UploadLabResultsPrompt labNames={labNames} />
-          )}
-
-          {visit.aiInsight && <AiInsightCard insight={visit.aiInsight} />}
         </div>
+      )}
+
+      {activeDrawer?.type === "generate" && (
+        <GenerateLabResultsDrawer
+          open
+          onOpenChange={(open) => {
+            if (!open) setActiveDrawer(null)
+          }}
+          testName={activeDrawer.labItem.name}
+        />
+      )}
+
+      {activeDrawer?.type === "upload" && (
+        <UploadLabResultsDrawer
+          open
+          onOpenChange={(open) => {
+            if (!open) setActiveDrawer(null)
+          }}
+          testName={activeDrawer.labItem.name}
+          paymentId={visit.id}
+          userId={userId}
+        />
       )}
     </div>
   )
@@ -469,9 +619,11 @@ function VisitCard({ visit }: { visit: ClinicalVisit }) {
 function MonthGroup({
   label,
   visits,
+  userId,
 }: {
   label: string
   visits: ClinicalVisit[]
+  userId: string
 }) {
   return (
     <div>
@@ -483,7 +635,7 @@ function MonthGroup({
       </div>
       <div className="flex flex-col gap-2">
         {visits.map((visit) => (
-          <VisitCard key={visit.id} visit={visit} />
+          <VisitCard key={visit.id} visit={visit} userId={userId} />
         ))}
       </div>
     </div>
@@ -492,6 +644,8 @@ function MonthGroup({
 
 export default function MedicationTimelinePage() {
   const { visits, summary, isLoading, error } = useClinicalVisits()
+  const supabaseSession = usePatientAuthStore((s) => s.supabaseSession)
+  const userId = supabaseSession?.user?.id ?? "demo-user"
 
   useEffect(() => {
     trackEvent(EVENTS.CARE_COMPANION.MEDICATION_TIMELINE.VIEW)
@@ -514,11 +668,7 @@ export default function MedicationTimelinePage() {
   }, [])
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <TimelineSkeleton />
   }
 
   if (error && visits.length === 0) {
@@ -600,6 +750,7 @@ export default function MedicationTimelinePage() {
             key={group.monthKey}
             label={group.label}
             visits={group.visits}
+            userId={userId}
           />
         ))}
       </div>
