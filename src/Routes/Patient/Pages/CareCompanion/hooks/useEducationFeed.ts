@@ -35,9 +35,24 @@ export function useEducationFeed() {
           (progress ?? []).map((p) => [p.content_id, p.completed]),
         )
 
-        const cards: EducationFeedCard[] = (content ?? []).map((row) => ({
-          ...(row as unknown as EducationContentCard),
-          viewed: progressMap.get(row.id) ?? false,
+        const cards: EducationFeedCard[] = (content ?? []).map((row: Record<string, unknown>) => ({
+          id: row.id as string,
+          slug: row.slug as string,
+          conditionType: ((row.conditions as string[] | null)?.[0] ?? "DIABETES") as EducationContentCard["conditionType"],
+          contentType: (row.content_type ?? "NUTRITION") as EducationContentCard["contentType"],
+          locale: "en" as EducationContentCard["locale"],
+          title: (row.title ?? "") as string,
+          summary: (row.summary ?? "") as string,
+          body: (row.body ?? "") as string,
+          sections: (row.sections ?? []) as EducationContentCard["sections"],
+          estimatedMinutes: (row.estimated_minutes ?? 5) as number,
+          learningObjectives: (row.learning_objectives ?? []) as string[],
+          weekNumber: 1,
+          imageUrl: (row.image_theme ?? null) as string | null,
+          isPublished: true,
+          householdCompatible: null,
+          costNeutral: null,
+          viewed: progressMap.get(row.id as string) ?? false,
         }))
 
         return { cards }
