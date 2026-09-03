@@ -30,7 +30,7 @@ export function DashboardTabBar({
     <span className="relative flex items-center justify-center w-5 h-5">
       <HeartPulse className="w-5 h-5" />
       <span
-        className="absolute w-7 h-7 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
+        className="absolute -inset-1 animate-spin rounded-full border-2 border-primary/30 border-t-primary"
       />
     </span>
   ) : (
@@ -62,7 +62,7 @@ export function DashboardTabBar({
           style={{
             x: cx,
             translateX: "-50%",
-            y: 4,
+            y: 1,
           }}
         />
 
