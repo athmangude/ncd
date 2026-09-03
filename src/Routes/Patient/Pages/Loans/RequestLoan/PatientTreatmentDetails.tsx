@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { Phone, ChevronRight } from "lucide-react"
 import { DetailsNotSet } from "@/Routes/Patient/components/DetailsNotSet"
 import SearchField from "@/components/SearchField"
+import { searchFacilitiesSupabase } from "@/lib/searchFacilitiesSupabase"
 import axios from "axios"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import careProviderIcon from "@/assets/icons/care-provider.png"
@@ -97,7 +98,7 @@ function TreatmentDetailsForm() {
   return (
     <div className="flex flex-col gap-7">
       <SearchField
-        searchUrl="/patients/search-facilities"
+        searchFn={searchFacilitiesSupabase}
         dataDetails={{
           titleKey: "name",
           descriptionKey: "plotNumber",

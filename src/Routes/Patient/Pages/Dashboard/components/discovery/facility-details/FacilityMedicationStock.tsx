@@ -9,6 +9,11 @@ import {
 import { cn } from "@/lib/utils"
 import { useIntakeProfile } from "@/Routes/Patient/Pages/CareCompanion/hooks/useIntakeProfile"
 import type { PharmacyStock, StockStatus } from "@/types/care-companion"
+import { supabase } from "@/lib/supabase"
+import {
+  getFacilityMedicationStock,
+  type StockFacility,
+} from "@/mocks/domain/careCompanion"
 
 const STATUS_CONFIG: Record<
   StockStatus,
@@ -31,16 +36,6 @@ const STATUS_CONFIG: Record<
   },
 }
 
-async function fetchFacilityStock(
-  facilityId: string,
-): Promise<PharmacyStock[]> {
-  const res = await fetch(
-    `/companion/pharmacy-stock/facility/${facilityId}`,
-  )
-  if (!res.ok) return []
-  return res.json()
-}
-
 interface FacilityMedicationStockProps {
   facilityId: string
 }
@@ -53,9 +48,31 @@ export function FacilityMedicationStock({
   const hasTests = (profile?.recurringTests?.selectedTests?.length ?? 0) > 0
   const hasItems = hasMeds || hasTests
 
+  const allItems = [
+    ...(profile?.treatment?.medicationNames ?? []),
+    ...(profile?.recurringTests?.selectedTests ?? []),
+  ]
+
   const { data: stock = [], isLoading } = useQuery({
     queryKey: ["care-companion", "pharmacy-stock", "facility", facilityId],
-    queryFn: () => fetchFacilityStock(facilityId),
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("facilities")
+        .select("id, name, latitude, longitude, verification_status")
+        .eq("id", Number(facilityId))
+      if (!data || data.length === 0) return []
+      const facilities: StockFacility[] = data.map((f) => ({
+        id: String(f.id),
+        name: f.name,
+        latitude: String(f.latitude),
+        longitude: String(f.longitude),
+        verificationStatus: f.verification_status,
+      }))
+      return getFacilityMedicationStock(facilityId, {
+        medications: allItems,
+        facilities,
+      })
+    },
     enabled: hasItems,
     staleTime: 5 * 60 * 1000,
   })
@@ -73,9 +90,6 @@ export function FacilityMedicationStock({
     )
   }
 
-  const medications = profile?.treatment?.medicationNames ?? []
-  const tests = profile?.recurringTests?.selectedTests ?? []
-  const allItems = [...medications, ...tests]
   const stockMap = new Map(stock.map((s) => [s.medicationName, s]))
 
   return (

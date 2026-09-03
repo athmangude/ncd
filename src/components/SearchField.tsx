@@ -71,14 +71,15 @@ interface SearchFieldProps {
   minQueryLength?: number
   onResultSelect?: (result: SearchResult) => void
   className?: string
-  searchUrl: string // Optional URL for custom search API
+  searchUrl?: string
+  searchFn?: (query: string) => Promise<SearchResponse>
   dataDetails: {
     titleKey: string
     descriptionKey: string
-    dataKey: string // Access nested data from response
+    dataKey: string
   }
-  id?: string // Optional ID for the input element
-  clearOnSelect?: boolean // Optional prop to clear input on result select
+  id?: string
+  clearOnSelect?: boolean
   emphasis?: {
     key: string
     text: string
@@ -93,6 +94,7 @@ export default function SearchField({
   onResultSelect,
   className = "",
   searchUrl,
+  searchFn,
   dataDetails,
   id,
   clearOnSelect,
@@ -106,7 +108,10 @@ export default function SearchField({
   // React Query for search
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["search", debouncedQuery],
-    queryFn: () => searchAPI(searchUrl, debouncedQuery),
+    queryFn: () =>
+      searchFn
+        ? searchFn(debouncedQuery)
+        : searchAPI(searchUrl!, debouncedQuery),
     enabled: debouncedQuery.length >= minQueryLength,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)

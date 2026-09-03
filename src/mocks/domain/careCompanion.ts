@@ -70,7 +70,6 @@ import medicationLoanPreapprovalSeed from "../fixtures/medication-loan-preapprov
 import emergencyTransportCreditSeed from "../fixtures/emergency-transport-credit.json"
 import aiConversationsSeed from "../fixtures/ai-assistant-conversations.json"
 import careCompanionProfileSeed from "../fixtures/care-companion-profile.json"
-import facilitiesSeed from "../fixtures/facilities.json"
 import { getMedicationPriceKES } from "../fixtures/medication-prices"
 // Static fixture no longer used — notifications are seeded dynamically from intake profile
 // import careCompanionNotificationsSeed from "../fixtures/care-companion-notifications.json"
@@ -1507,19 +1506,21 @@ export function getNearbyStock(medicationId: string): PharmacyStock[] {
  * facilities from the discovery fixture. Uses a simple hash to assign
  * deterministic stock statuses so results are stable across reloads.
  */
+export type StockFacility = {
+  id: string
+  name: string
+  latitude: string
+  longitude: string
+  verificationStatus: string
+}
+
 export function getProfileAwarePharmacyStock(
   medicationNames: string[],
+  facilities: StockFacility[] = [],
 ): PharmacyStock[] {
   if (medicationNames.length === 0) return []
 
-  type SeedFacility = {
-    id: string
-    name: string
-    latitude: string
-    longitude: string
-    verificationStatus: string
-  }
-  const allFacilities = facilitiesSeed as SeedFacility[]
+  const allFacilities = facilities
   const pharmacyFacilities = allFacilities.filter(
     (f) => f.verificationStatus === "APPROVED",
   )
@@ -1582,19 +1583,25 @@ export function getProfileAwarePharmacyStock(
  */
 export function getFacilityMedicationStock(
   facilityId: string,
+  opts?: { medications?: string[]; facilities?: StockFacility[] },
 ): PharmacyStock[] {
-  const profile = getCareCompanionProfile()
-  const meds = profile?.treatment?.medicationNames ?? []
-  const tests = profile?.recurringTests?.selectedTests ?? []
-  const allItems = [...meds, ...tests]
+  const allItems =
+    opts?.medications ??
+    (() => {
+      const profile = getCareCompanionProfile()
+      const meds = profile?.treatment?.medicationNames ?? []
+      const tests = profile?.recurringTests?.selectedTests ?? []
+      return [...meds, ...tests]
+    })()
   if (allItems.length === 0) return []
 
-  const all = getProfileAwarePharmacyStock(allItems)
+  const all = getProfileAwarePharmacyStock(allItems, opts?.facilities)
   return all.filter((s) => s.facilityId === Number(facilityId))
 }
 
 export function searchPharmacyStockByName(
   term: string,
+  opts?: { profileItems?: string[]; facilities?: StockFacility[] },
 ): { name: string; entries: PharmacyStock[] }[] {
   if (!term || term.trim().length < 2) return []
 
@@ -1605,12 +1612,14 @@ export function searchPharmacyStockByName(
     taxonomyMatches.map((t) => t.genericName),
   )
 
-  const profileStock = (() => {
-    const profile = getCareCompanionProfile()
-    const meds = profile?.treatment?.medicationNames ?? []
-    const tests = profile?.recurringTests?.selectedTests ?? []
-    return [...meds, ...tests]
-  })()
+  const profileStock =
+    opts?.profileItems ??
+    (() => {
+      const profile = getCareCompanionProfile()
+      const meds = profile?.treatment?.medicationNames ?? []
+      const tests = profile?.recurringTests?.selectedTests ?? []
+      return [...meds, ...tests]
+    })()
 
   for (const item of profileStock) {
     if (item.toLowerCase().includes(lower)) {
@@ -1621,7 +1630,7 @@ export function searchPharmacyStockByName(
   if (matchedNames.size === 0) return []
 
   const allNames = Array.from(matchedNames)
-  const stock = getProfileAwarePharmacyStock(allNames)
+  const stock = getProfileAwarePharmacyStock(allNames, opts?.facilities)
 
   const grouped = new Map<string, PharmacyStock[]>()
   for (const entry of stock) {

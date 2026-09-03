@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query"
 import { useIntakeProfile } from "@/Routes/Patient/Pages/CareCompanion/hooks/useIntakeProfile"
 import type { PharmacyStock } from "@/types/care-companion"
+import { supabase } from "@/lib/supabase"
+import {
+  getProfileAwarePharmacyStock,
+  type StockFacility,
+} from "@/mocks/domain/careCompanion"
 
 export interface MedicationStockSummary {
   medicationName: string
@@ -13,21 +18,33 @@ export interface MedicationStockSummary {
   entries: PharmacyStock[]
 }
 
-async function fetchProfileStock(): Promise<PharmacyStock[]> {
-  const res = await fetch("/companion/pharmacy-stock/profile")
-  if (!res.ok) return []
-  return res.json()
-}
-
 export function useMyMedicationStock(enabled = true) {
   const { data: profile } = useIntakeProfile()
   const hasMeds = (profile?.treatment?.medicationNames?.length ?? 0) > 0
   const hasTests = (profile?.recurringTests?.selectedTests?.length ?? 0) > 0
   const hasItems = hasMeds || hasTests
 
+  const allItems = [
+    ...(profile?.treatment?.medicationNames ?? []),
+    ...(profile?.recurringTests?.selectedTests ?? []),
+  ]
+
   const { data: rawStock = [], isLoading } = useQuery({
     queryKey: ["care-companion", "pharmacy-stock", "profile"],
-    queryFn: fetchProfileStock,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("facilities")
+        .select("id, name, latitude, longitude, verification_status")
+      if (!data) return []
+      const facilities: StockFacility[] = data.map((f) => ({
+        id: String(f.id),
+        name: f.name,
+        latitude: String(f.latitude),
+        longitude: String(f.longitude),
+        verificationStatus: f.verification_status,
+      }))
+      return getProfileAwarePharmacyStock(allItems, facilities)
+    },
     enabled: enabled && hasItems,
     staleTime: 5 * 60 * 1000,
   })

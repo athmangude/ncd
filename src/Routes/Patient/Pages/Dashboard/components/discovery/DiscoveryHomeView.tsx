@@ -446,7 +446,7 @@ function PartnerCard({
 
         <div className="flex items-center gap-2 w-full">
           {medStockLabel && (
-            <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs font-medium px-2 py-0.5 rounded-full">
+            <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-sm font-medium px-3 py-1 rounded-md whitespace-nowrap shrink-0">
               <Pill className="h-3 w-3" />
               {medStockLabel}
             </span>

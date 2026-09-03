@@ -6,16 +6,16 @@ import {
   useMemo,
   useDeferredValue,
 } from "react"
-import axios from "axios"
 import { useToast } from "@/hooks/useToast"
 import {
   Facility,
-  DiscoveryResponse,
-  VerifiedFacilitiesResponse,
   DEFAULT_VIEW_STATE,
 } from "./types"
 import { useLocation } from "react-router-dom"
 import { trackEvent, EVENTS } from "@/analytics"
+import { supabase } from "@/lib/supabase"
+import { mapFacilityRow } from "./mappers"
+import type { FacilityRow } from "./mappers"
 
 export const DISCOVERY_STORAGE_KEY = "discovery_tab_state"
 
@@ -160,77 +160,23 @@ export function useDiscovery(enabled: boolean = true) {
       facilitiesAbortRef.current = controller
       setLoading(true)
       try {
+        let query = supabase.from("facilities").select("*")
         if (tab === "jireh") {
-          const response = await axios.get<VerifiedFacilitiesResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}/healthcare/discovery/verified-facilities`,
-            {
-              params: {
-                latitude: lat,
-                longitude: lng,
-                serviceCategories:
-                  categories.length > 0 ? categories : undefined,
-              },
-              paramsSerializer: { indexes: null },
-              signal: controller.signal,
-            }
-          )
-          setFacilities(
-            response.data.facilities.map((f) => ({
-              id: f.id,
-              name: f.name,
-              facilityType: f.facilityType ?? "",
-              facilityLevel: f.facilityLevel ?? "",
-              county: f.county ?? "",
-              latitude: f.latitude?.toString() ?? "",
-              longitude: f.longitude?.toString() ?? "",
-              locationName: f.locationName,
-              phoneNumber: f.phoneNumber ?? "",
-              placeImageUrl: f.placeImageUrl ?? "",
-              distance: f.distance,
-              verificationStatus: "APPROVED",
-              // fields not provided by this endpoint
-              registrationNumber: "",
-              poBox: "",
-              bedCapacity: 0,
-              status: "",
-              plotNumber: "",
-              updatedAt: "",
-              createdAt: "",
-              facility: null,
-              hasActiveDiscount: f.hasActiveDiscount,
-              activeDiscount: f.activeDiscount ?? null,
-              serviceCategories: f.serviceCategories ?? [],
-            }))
-          )
+          query = query.eq("verification_status", "APPROVED")
         } else {
-          const params: {
-            latitude: number
-            longitude: number
-            facilityType?: string
-            facilityLevel?: string
-            serviceCategories?: string[]
-          } = { latitude: lat, longitude: lng }
-          if (facilityType && facilityType !== "All") {
-            params.facilityType = facilityType
-          }
-          if (facilityLevel && facilityLevel !== "All") {
-            params.facilityLevel = facilityLevel
-          }
-          if (categories.length > 0) {
-            params.serviceCategories = categories
-          }
-          const response = await axios.get<DiscoveryResponse>(
-            `${import.meta.env.VITE_API_BASE_URL}/healthcare/discovery/facilities`,
-            {
-              params,
-              paramsSerializer: { indexes: null },
-              signal: controller.signal,
-            }
-          )
-          setFacilities(response.data.facilities)
+          if (facilityType && facilityType !== "All")
+            query = query.eq("facility_type", facilityType)
+          if (facilityLevel && facilityLevel !== "All")
+            query = query.eq("facility_level", facilityLevel)
         }
+        if (categories.length > 0)
+          query = query.contains("service_categories", categories)
+        const { data, error } = await query.order("name")
+        if (error) throw error
+        setFacilities(
+          ((data ?? []) as FacilityRow[]).map(mapFacilityRow),
+        )
       } catch (error) {
-        if (axios.isCancel(error)) return
         console.error("Error fetching facilities:", error)
         toast({
           title: "Error",
@@ -238,7 +184,7 @@ export function useDiscovery(enabled: boolean = true) {
           variant: "destructive",
         })
       } finally {
-        if (!controller.signal.aborted) setLoading(false)
+        setLoading(false)
       }
     },
     [toast]
@@ -256,38 +202,29 @@ export function useDiscovery(enabled: boolean = true) {
       facilitiesAbortRef.current = controller
       setLoading(true)
       try {
-        const params: {
-          searchTerm: string
-          facilityType?: string
-          facilityLevel?: string
-          serviceCategories?: string[]
-        } = {
-          searchTerm: term,
-        }
-        if (facilityType && facilityType !== "All") {
-          params.facilityType = facilityType
-        }
-        if (facilityLevel && facilityLevel !== "All") {
-          params.facilityLevel = facilityLevel
-        }
-        if (categories.length > 0) {
-          params.serviceCategories = categories
-        }
-        const response = await axios.get<DiscoveryResponse>(
-          `${import.meta.env.VITE_API_BASE_URL}/healthcare/discovery/search`,
-          {
-            params,
-            paramsSerializer: { indexes: null },
-            signal: controller.signal,
-          }
-        )
-        setFacilities(response.data.facilities)
+        let query = supabase.from("facilities").select("*")
+        const orFilters = [
+          `name.ilike.%${term}%`,
+          `county.ilike.%${term}%`,
+          `location_name.ilike.%${term}%`,
+          `facility_type.ilike.%${term}%`,
+        ].join(",")
+        query = query.or(orFilters)
+        if (facilityType && facilityType !== "All")
+          query = query.eq("facility_type", facilityType)
+        if (facilityLevel && facilityLevel !== "All")
+          query = query.eq("facility_level", facilityLevel)
+        if (categories.length > 0)
+          query = query.contains("service_categories", categories)
+        const { data, error } = await query.order("name")
+        if (error) throw error
+        const mapped = ((data ?? []) as FacilityRow[]).map(mapFacilityRow)
+        setFacilities(mapped)
         trackEvent(EVENTS.DISCOVERY.SEARCH_SUBMIT, {
-          resultCount: response.data.facilities.length,
+          resultCount: mapped.length,
           triggerSource: "debounce",
         })
       } catch (error) {
-        if (axios.isCancel(error)) return
         console.error("Error searching facilities:", error)
         toast({
           title: "Error",
@@ -295,7 +232,7 @@ export function useDiscovery(enabled: boolean = true) {
           variant: "destructive",
         })
       } finally {
-        if (!controller.signal.aborted) setLoading(false)
+        setLoading(false)
       }
     },
     [toast]
