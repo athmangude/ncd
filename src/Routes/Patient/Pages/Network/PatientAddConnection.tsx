@@ -7,7 +7,7 @@ import FormGroupSelect from "@/components/form/FormGroupSelect"
 import { Controller } from "react-hook-form"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { validatePhoneNumber } from "@/utilities/validators"
 import { patientTreatmentDetailsStorageKey } from "../Loans/RequestLoan/PatientTreatmentDetails"
 import { invalidateCircleQueries } from "../../hooks/useCircleSync"
@@ -130,13 +130,31 @@ export default function PatientAddConnection() {
         delete (payload as any).phoneNumber
       }
 
-      const response = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/send-invite",
-        payload
-      )
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
 
-      return response.data
+      const inviteId = "invite-" + Date.now().toString(36)
+      const { error } = await supabase.from("network_invites").insert({
+        id: inviteId,
+        user_id: userId,
+        first_name: payload.firstName,
+        last_name: payload.lastName,
+        phone_number: payload.phoneNumber ?? null,
+        status: "PENDING",
+        nickname: payload.nickname ?? null,
+        relationship: payload.relationship,
+      })
+      if (error) throw error
+
+      return {
+        message: "Invite sent successfully",
+        patientId: inviteId,
+        firstName: payload.firstName,
+        lastName: payload.lastName,
+        status: "PENDING",
+        relationship: payload.relationship,
+      }
     },
     onSuccess: (data: any) => {
       try {

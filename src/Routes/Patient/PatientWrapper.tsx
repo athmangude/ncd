@@ -1,36 +1,16 @@
 import { useEffect, useState } from "react"
 import { Navigate, Route, Routes } from "react-router-dom"
-import Session from "supertokens-web-js/recipe/session"
-import PatientSignUp from "./Pages/Onboarding/PatientSignUp"
 import PatientsHome from "./Pages/PatientsHome"
 import RouteMetadata from "@/components/RouteMetadata"
 import useSetAmplitudeUserId from "@/hooks/useSetAmplitudeUserId"
 import useTenantAccessControl from "@/hooks/useTenantAccessControl"
-import { PatientOTP } from "./Pages/Onboarding/PatientOTP"
 import PatientValidateReferral from "./Pages/PatientValidateReferral"
 import PatientAcceptInvite from "./Pages/Network/PatientAcceptInvite"
-import { useSupabase } from "@/lib/supabase"
 import { usePatientAuthStore } from "./stores/patientAuthStore"
 import { lazy, Suspense } from "react"
 
 const PhoneEntryPage = lazy(() => import("./Pages/Auth/PhoneEntryPage"))
 const PinVerifyPage = lazy(() => import("./Pages/Auth/PinVerifyPage"))
-
-function RedirectIfSessionExists({ children }: { children: React.ReactNode }) {
-  const [sessionExists, setSessionExists] = useState<boolean | null>(null)
-
-  useEffect(() => {
-    Session.doesSessionExist().then(setSessionExists)
-  }, [])
-
-  if (sessionExists === null) {
-    return null
-  }
-  if (sessionExists) {
-    return <Navigate to="/patients/" replace />
-  }
-  return <>{children}</>
-}
 
 function RedirectIfSupabaseSession({
   children,
@@ -59,57 +39,30 @@ export default function PatientWrapper() {
   return (
     <main className="">
       <Routes>
-        {useSupabase ? (
-          <>
-            <Route
-              path="/auth"
-              element={
-                <RedirectIfSupabaseSession>
-                  <RouteMetadata title="Sign In">
-                    <Suspense fallback={null}>
-                      <PhoneEntryPage />
-                    </Suspense>
-                  </RouteMetadata>
-                </RedirectIfSupabaseSession>
-              }
-            />
-            <Route
-              path="/auth/pin"
-              element={
-                <RedirectIfSupabaseSession>
-                  <RouteMetadata title="PIN Verification">
-                    <Suspense fallback={null}>
-                      <PinVerifyPage />
-                    </Suspense>
-                  </RouteMetadata>
-                </RedirectIfSupabaseSession>
-              }
-            />
-          </>
-        ) : (
-          <>
-            <Route
-              path="/auth"
-              element={
-                <RedirectIfSessionExists>
-                  <RouteMetadata title="Sign Up">
-                    <PatientSignUp />
-                  </RouteMetadata>
-                </RedirectIfSessionExists>
-              }
-            />
-            <Route
-              path="/auth/otp"
-              element={
-                <RedirectIfSessionExists>
-                  <RouteMetadata title="OTP Verification">
-                    <PatientOTP />
-                  </RouteMetadata>
-                </RedirectIfSessionExists>
-              }
-            />
-          </>
-        )}
+        <Route
+          path="/auth"
+          element={
+            <RedirectIfSupabaseSession>
+              <RouteMetadata title="Sign In">
+                <Suspense fallback={null}>
+                  <PhoneEntryPage />
+                </Suspense>
+              </RouteMetadata>
+            </RedirectIfSupabaseSession>
+          }
+        />
+        <Route
+          path="/auth/pin"
+          element={
+            <RedirectIfSupabaseSession>
+              <RouteMetadata title="PIN Verification">
+                <Suspense fallback={null}>
+                  <PinVerifyPage />
+                </Suspense>
+              </RouteMetadata>
+            </RedirectIfSupabaseSession>
+          }
+        />
 
         <Route
           path="/validate-referral"

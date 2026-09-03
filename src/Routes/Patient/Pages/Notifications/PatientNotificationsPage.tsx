@@ -7,7 +7,7 @@ import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { usePushNotifications } from "@/hooks/usePushNotifications"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { NotificationHelpDialog } from "@/components/EnableNotificationsCard"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { cn } from "@/lib/utils"
@@ -108,10 +108,22 @@ export default function PatientNotificationsPage() {
     const fetchNotifications = async () => {
       try {
         setIsLoading(true)
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/notifications`,
+        const { data, error: fetchError } = await supabase
+          .from("notifications")
+          .select("*")
+          .order("sent_at", { ascending: false })
+
+        if (fetchError) throw fetchError
+
+        setNotifications(
+          (data ?? []).map((row: Record<string, unknown>) => ({
+            ...row,
+            deepLink: row.deep_link,
+            readAt: row.read_at,
+            sentAt: row.sent_at,
+            readStatus: row.read_at ? "READ" : "UNREAD",
+          })) as unknown as Notification[],
         )
-        setNotifications(response.data.notifications)
       } catch (err: any) {
         console.error("Error fetching notifications:", err)
         setError(err.message || "Failed to load notifications")
@@ -178,9 +190,10 @@ export default function PatientNotificationsPage() {
     }
 
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`,
-      )
+      await supabase
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .is("read_at", null)
       toast({
         title: "Success",
         description: "All notifications marked as read",

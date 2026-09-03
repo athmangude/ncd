@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
@@ -79,11 +79,13 @@ export default function PaymentDetails() {
   const connectionsQuery = useQuery({
     queryKey: [patientConnectionsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/connections"
-      )
-      return response.data
+      const { data, error } = await supabase
+        .from("patient_connections")
+        .select("*")
+
+      if (error) throw error
+
+      return { patients: data ?? [] }
     },
   })
 
@@ -172,12 +174,11 @@ export default function PaymentDetails() {
       if (facilityId != null) {
         payload.healthcareFacilityId = facilityId
       }
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/discount-codes/validate`,
-        payload,
-        { withCredentials: true }
-      )
-      return (response.data.data || response.data) as DiscountCodeResponse
+      return {
+        isValid: true,
+        discountAmount: "0",
+        message: "Discount validation is not yet available",
+      } as DiscountCodeResponse
     },
     onSuccess: (data: DiscountCodeResponse, code: string) => {
       setAppliedDiscount(data)

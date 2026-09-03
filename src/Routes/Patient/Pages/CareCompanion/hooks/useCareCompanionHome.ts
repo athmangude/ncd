@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
-import { useSupabase, supabase } from "@/lib/supabase"
-import type { CareCompanionHome } from "@/types/care-companion"
+import { supabase } from "@/lib/supabase"
+import type { CareCompanionHome, RefillScheduleItem, TestScheduleItem } from "@/types/care-companion"
 
 export const careCompanionHomeQueryKey = "careCompanionHome"
 
@@ -129,8 +128,8 @@ async function fetchFromSupabase(): Promise<CareCompanionHome> {
     : null
 
   return {
-    refillSchedule: { schedules: refillSchedules, hasMore: false },
-    testSchedule: { schedules: testSchedules, hasMore: false },
+    refillSchedule: { schedules: refillSchedules as RefillScheduleItem[], hasMore: false },
+    testSchedule: { schedules: testSchedules as TestScheduleItem[], hasMore: false },
     costSummary,
     educationFeed,
     emergencyCard: {
@@ -145,15 +144,7 @@ async function fetchFromSupabase(): Promise<CareCompanionHome> {
 export function useCareCompanionHome() {
   return useQuery({
     queryKey: [careCompanionHomeQueryKey],
-    queryFn: async () => {
-      if (useSupabase) {
-        return fetchFromSupabase()
-      }
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/home`,
-      )
-      return response.data as CareCompanionHome
-    },
+    queryFn: fetchFromSupabase,
     staleTime: 5 * 60 * 1000,
   })
 }

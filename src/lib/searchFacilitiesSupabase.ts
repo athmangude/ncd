@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase"
 import { mapFacilityRow } from "@/Routes/Patient/Pages/Dashboard/components/discovery/mappers"
 import type { FacilityRow } from "@/Routes/Patient/Pages/Dashboard/components/discovery/mappers"
 
-export async function searchFacilitiesSupabase(query: string) {
+export async function searchFacilitiesSupabase(query: string): Promise<{ facilities: any[]; total: number; query: string; [key: string]: any }> {
   if (!query.trim()) {
     return { facilities: [], total: 0, query }
   }

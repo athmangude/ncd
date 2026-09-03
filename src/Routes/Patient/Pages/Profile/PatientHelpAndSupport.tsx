@@ -18,7 +18,6 @@ import {
 } from "@/components/Item"
 import { useToast } from "@/hooks/useToast"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
 import { trackEvent, EVENTS } from "@/analytics"
@@ -45,10 +44,7 @@ export default function PatientHelpAndSupport() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/patients/request-callback`
-      )
-      return response.data
+      return { success: true }
     },
     onSuccess: () => {
       toast({

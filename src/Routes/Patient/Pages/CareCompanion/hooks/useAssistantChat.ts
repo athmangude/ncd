@@ -1,11 +1,6 @@
 import { useState, useCallback, useEffect } from "react"
 import { useIntakeProfile } from "./useIntakeProfile"
-import { useSupabase, supabase } from "@/lib/supabase"
-import {
-  callAssistantChat,
-  type AssistantMessage,
-} from "@/lib/ai-pipeline"
-import type { CareCompanionEvent } from "@/types/care-companion"
+import { supabase } from "@/lib/supabase"
 
 export interface ChatMessage {
   id: string
@@ -43,16 +38,6 @@ function saveChatSession(session: ChatSession): void {
 
 function clearChatStorage(): void {
   localStorage.removeItem(STORAGE_KEY)
-}
-
-async function fetchEvents(): Promise<CareCompanionEvent[]> {
-  try {
-    const res = await fetch("/companion/events?limit=200")
-    const data = (await res.json()) as { events: CareCompanionEvent[] }
-    return data.events ?? []
-  } catch {
-    return []
-  }
 }
 
 export function useAssistantChat() {
@@ -96,32 +81,16 @@ export function useAssistantChat() {
       setMessages((prev) => [...prev, userMsg])
 
       try {
-        let replyText: string
-
-        if (useSupabase) {
-          const conversationHistory = messages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          }))
-          const { data, error } = await supabase.functions.invoke(
-            "chat-assistant",
-            { body: { message, conversationHistory } },
-          )
-          if (error) throw error
-          replyText = data.reply
-        } else {
-          const events = await fetchEvents()
-          const history: AssistantMessage[] = messages.map((m) => ({
-            role: m.role === "user" ? "user" : "model",
-            content: m.content,
-          }))
-          replyText = await callAssistantChat(
-            profile,
-            events,
-            history,
-            message,
-          )
-        }
+        const conversationHistory = messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        }))
+        const { data, error: fnError } = await supabase.functions.invoke(
+          "chat-assistant",
+          { body: { message, conversationHistory } },
+        )
+        if (fnError) throw fnError
+        const replyText: string = data.reply
 
         const assistantMsg: ChatMessage = {
           id: crypto.randomUUID(),

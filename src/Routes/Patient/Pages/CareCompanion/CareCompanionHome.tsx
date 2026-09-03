@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import {
   Calendar,
   Check,
@@ -20,7 +20,10 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { trackEvent, EVENTS } from "@/analytics"
-import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
+import {
+  useMedicationTaxonomy,
+  getMedicationPrice,
+} from "@/hooks/useMedicationTaxonomy"
 import { SectionErrorBoundary } from "./components/SectionErrorBoundary"
 import { EmergencyCardStaticFallback } from "./components/EmergencyCardStaticFallback"
 import { MedicationCardDrawer } from "./components/MedicationCardDrawer"
@@ -65,6 +68,7 @@ export default function CareCompanionHome() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [addMedOpen, setAddMedOpen] = useState(false)
   const { data: medCardsData } = useMedicationCards()
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
   useAiPipeline(profile ?? null)
   const navigate = useNavigate()
   const { data: notifications = [] } = useNotifications()
@@ -113,7 +117,7 @@ export default function CareCompanionHome() {
   for (const s of data.refillSchedule?.schedules ?? []) {
     const key = s.medicationName.toLowerCase()
     if (medPriceMap[key] == null) {
-      medPriceMap[key] = getMedicationPriceKES(s.medicationName)
+      medPriceMap[key] = getMedicationPrice(taxonomyData,s.medicationName)
     }
   }
   const testPriceMap: Record<string, number> = {}
@@ -123,7 +127,7 @@ export default function CareCompanionHome() {
   for (const t of data.testSchedule?.schedules ?? []) {
     const key = t.testName.toLowerCase()
     if (testPriceMap[key] == null) {
-      testPriceMap[key] = getMedicationPriceKES(t.testName)
+      testPriceMap[key] = getMedicationPrice(taxonomyData,t.testName)
     }
   }
 
@@ -981,16 +985,22 @@ function RefillScheduleCard({
   const overdueCount = allOverdue.length
   const dueCount = allDue.length
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL
-
   const logEvent = useMutation({
-    mutationFn: (event: Record<string, unknown>) =>
-      axios.post(`${baseUrl}/companion/events`, event).then((r) => r.data),
+    mutationFn: async (event: Record<string, unknown>) => {
+      const { error } = await supabase.from("events").insert({
+        id: event.id as string,
+        type: event.type as string,
+        data: event,
+      })
+      if (error) throw error
+    },
   })
 
   const patchProfile = useMutation({
-    mutationFn: (patch: Record<string, unknown>) =>
-      axios.patch(`${baseUrl}/companion/profile`, patch).then((r) => r.data),
+    mutationFn: async (patch: Record<string, unknown>) => {
+      const { error } = await supabase.from("profiles").update(patch)
+      if (error) throw error
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [refillScheduleQueryKey] })
       queryClient.invalidateQueries({ queryKey: [intakeProfileQueryKey] })
@@ -1039,14 +1049,15 @@ function RefillScheduleCard({
         reason: reasonLabel,
         frequencyDays,
       })
-      axios.patch(
-        `${baseUrl}/companion/refill-schedules/${id}`,
-        { nextDate, frequencyDays },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ next_date: nextDate, frequency_days: frequencyDays })
+        .eq("id", id)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, schedules, patchProfile, logEvent, baseUrl],
+    [profile, schedules, patchProfile, logEvent],
   )
 
   const handleTestSave = useCallback(
@@ -1089,14 +1100,18 @@ function RefillScheduleCard({
         reason: reasonLabel,
         frequencyMonths,
       })
-      axios.patch(
-        `${baseUrl}/companion/test-schedules/${encodeURIComponent(testName)}`,
-        { nextDate, frequencyMonths },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({
+          next_date: nextDate,
+          frequency_days: frequencyMonths * 30,
+        })
+        .eq("medication_name", testName)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, testSchedules, patchProfile, logEvent, baseUrl],
+    [profile, testSchedules, patchProfile, logEvent],
   )
 
   const handleRefillRemove = useCallback(
@@ -1136,14 +1151,15 @@ function RefillScheduleCard({
         status: item.status,
         reason: reasonLabel,
       })
-      axios.patch(
-        `${baseUrl}/companion/refill-schedules/${id}`,
-        { status: "CANCELLED" },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ status: "CANCELLED" })
+        .eq("id", id)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, schedules, patchProfile, logEvent, baseUrl],
+    [profile, schedules, patchProfile, logEvent],
   )
 
   const handleTestRemove = useCallback(
@@ -1182,14 +1198,15 @@ function RefillScheduleCard({
         status: item?.status ?? "UPCOMING",
         reason: reasonLabel,
       })
-      axios.patch(
-        `${baseUrl}/companion/test-schedules/${encodeURIComponent(testName)}`,
-        { status: "CANCELLED" },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ status: "CANCELLED" })
+        .eq("medication_name", testName)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, testSchedules, patchProfile, logEvent, baseUrl],
+    [profile, testSchedules, patchProfile, logEvent],
   )
 
   return (

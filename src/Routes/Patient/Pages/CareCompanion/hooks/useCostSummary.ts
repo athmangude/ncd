@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useSupabase, supabase } from "@/lib/supabase"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import type { CostSummary } from "@/types/care-companion"
 
 export type { CostSummary }
@@ -11,13 +10,6 @@ export function useCostSummary() {
   return useQuery({
     queryKey: [costSummaryQueryKey],
     queryFn: async (): Promise<CostSummary> => {
-      if (!useSupabase) {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/companion/cost-summary`,
-        )
-        return response.data as CostSummary
-      }
-
       const startOfYear = new Date(
         new Date().getFullYear(),
         0,

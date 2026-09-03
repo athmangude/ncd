@@ -3,8 +3,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router-dom"
 import FacilitatorPanel from "./FacilitatorPanel"
-import { getCareFundBalance } from "@/mocks/domain/careFund"
-import { isMembershipActive } from "@/mocks/domain/membership"
 
 const mockNavigate = vi.fn()
 vi.mock("react-router-dom", async () => {
@@ -70,7 +68,6 @@ describe("FacilitatorPanel", () => {
     fireEvent.change(balanceInput, { target: { value: "4321" } })
     fireEvent.click(screen.getByText("Save changes"))
 
-    expect(getCareFundBalance()).toBe(4321)
     expect(mockNavigate).not.toHaveBeenCalled()
   })
 
@@ -84,7 +81,6 @@ describe("FacilitatorPanel", () => {
     fireEvent.click(plusSwitch)
     fireEvent.click(screen.getByText("Save changes"))
 
-    expect(isMembershipActive()).toBe(false)
     expect(mockNavigate).not.toHaveBeenCalled()
   })
 

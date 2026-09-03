@@ -1,6 +1,6 @@
 import { useReducer, useCallback } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { careCompanionProfileQueryKey } from "./useCareCompanionProfile"
 
 export interface IntakeStep0Data {
@@ -253,11 +253,10 @@ export function useIntakeForm() {
 
   const skipIntake = useMutation({
     mutationFn: async () => {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
-        { skippedAt: new Date().toISOString() }
-      )
-      return response.data
+      const { error } = await supabase
+        .from("profiles")
+        .update({ completed_at: new Date().toISOString() })
+      if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -268,11 +267,28 @@ export function useIntakeForm() {
 
   const submitIntake = useMutation({
     mutationFn: async (data: IntakeFormData) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/intake`,
-        { formData: data }
-      )
-      return response.data
+      const { data: user } = await supabase.auth.getUser()
+      if (!user.user) throw new Error("Not authenticated")
+
+      const { error } = await supabase.from("profiles").upsert({
+        id: user.user.id,
+        phone: "",
+        conditions: data.step0?.conditions ?? [],
+        treatment: {
+          diagnosisDate: data.step1?.diagnosisDate ?? null,
+          managingDoctor: data.step1?.managingDoctor ?? null,
+          medications: data.step2?.medications ?? [],
+        },
+        cost_estimates: {
+          monthlyMedicationBudget: data.step3?.monthlyMedicationBudget ?? null,
+          budgetCurrency: data.step3?.budgetCurrency ?? "KES",
+          hasInsurance: data.step3?.hasInsurance ?? false,
+          insuranceProvider: data.step3?.insuranceProvider ?? null,
+        },
+        challenges: data.step4?.challenges ?? [],
+        completed_at: new Date().toISOString(),
+      })
+      if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

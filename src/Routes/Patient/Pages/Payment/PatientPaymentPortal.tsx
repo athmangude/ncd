@@ -14,7 +14,7 @@ import {
 import { useToast } from "@/hooks/useToast"
 import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { Button } from "@/components/Button"
 import cashIcon from "@/assets/icons/cash.png"
 import { formatMoney } from "@/utilities/currencyUtilities"
@@ -59,20 +59,21 @@ export default function PaymentPortal({
         // Silent fail
       }
 
-      const result = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          `/loans/patient/me/initiate-repayment`,
-        {
-          amount: amount,
-          loanId: loanId,
-          isTransactionFeePayment,
-        }
-      )
+      const { data, error } = await supabase.rpc("rpc_initiate_repayment", {
+        p_amount: Number(amount),
+        p_loan_id: String(loanId),
+      })
 
-      return result.data
+      if (error) throw error
+
+      return data as Record<string, unknown>
     },
-    onSuccess: (data) => {
-      const { isChargeTransaction, authorizationUrl, reference } = data
+    onSuccess: (data: Record<string, unknown>) => {
+      const { isChargeTransaction, authorizationUrl, reference } = data as {
+        isChargeTransaction?: boolean
+        authorizationUrl?: string
+        reference?: string
+      }
 
       // A repayment changes several server-derived views at once: the loan's
       // outstanding/repaid/timeline, the dashboard loan + payments cards
@@ -106,14 +107,14 @@ export default function PaymentPortal({
       if (isChargeTransaction) {
         navigate(`/patients/transaction-result?reference=${reference}`)
       } else {
-        window.location.assign(authorizationUrl)
+        window.location.assign(authorizationUrl as string)
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       try {
         trackEvent(EVENTS.LOAN_REPAYMENT.PAYMENT_ERROR, {
           loanId,
-          errorMessage: error.response?.data?.message || error.message,
+          errorMessage: error.message,
         })
       } catch {
         // Silent fail
@@ -121,7 +122,7 @@ export default function PaymentPortal({
 
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: error.message,
         variant: "destructive",
       })
     },

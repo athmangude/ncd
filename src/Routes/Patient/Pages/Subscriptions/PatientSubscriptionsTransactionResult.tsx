@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { patientTransactionResultQueryKey } from "../Payment/PatientTransactionResult"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import QueryWrapper from "@/components/QueryBlock"
 import { Button } from "@/components/Button"
 import AppShell from "@/Routes/AppShell"
@@ -17,12 +17,19 @@ export default function PatientSubscriptionsTransactionResult() {
   const query = useQuery({
     queryKey: [patientTransactionResultQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          `/patients/payments/transaction-result/${reference}`
-      )
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("reference", reference)
+        .single()
 
-      return response.data
+      if (error) throw error
+
+      return {
+        subscription: {
+          plan: String((data as Record<string, unknown>)?.plan ?? "PLUS"),
+        },
+      }
     },
   })
 

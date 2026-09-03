@@ -1,8 +1,0 @@
-{
-  "userId": "patient-001",
-  "options": [
-    { "provider": "FACEBOOK", "label": "Facebook" },
-    { "provider": "GOOGLE", "label": "Google" },
-    { "provider": "LINKEDIN", "label": "LinkedIn" }
-  ]
-}

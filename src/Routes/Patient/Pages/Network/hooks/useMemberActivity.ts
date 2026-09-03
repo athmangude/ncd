@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 
 export type MemberActivityItem =
   | {
@@ -20,19 +20,6 @@ export type MemberActivityItem =
       createdAt: string
     }
 
-interface CareFundTransactionsResponse {
-  data: Array<{
-    id: string
-    transactionAmount: number
-    currency: { code: string }
-    type: string
-    sender: { accountOwner: { id: string; firstName: string; lastName: string } } | null
-    receiver: { accountOwner: { id: string; firstName: string; lastName: string } } | null
-    description: string | null
-    createdAt: string
-  }>
-}
-
 export interface UseMemberActivityOpts {
   joinedAt: string | null
   firstName: string
@@ -42,36 +29,50 @@ export function useMemberActivity(memberId: string, opts: UseMemberActivityOpts)
   const query = useQuery({
     queryKey: ["careFundTransactions"],
     queryFn: async () => {
-      const response = await axios.get<CareFundTransactionsResponse>(
-        `${import.meta.env.VITE_API_BASE_URL}/care-fund/transactions`,
-      )
-      return response.data
+      const { data, error } = await supabase
+        .from("care_fund_transactions")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (error) throw error
+      return data
     },
     staleTime: 60 * 1000,
   })
 
   const items: MemberActivityItem[] = []
-  const transactions = query.data?.data ?? []
+  const transactions = query.data ?? []
   for (const tx of transactions) {
-    const isSenderMember = tx.sender?.accountOwner?.id === memberId
-    const isReceiverMember = tx.receiver?.accountOwner?.id === memberId
+    const sender = tx.sender as {
+      accountOwner: { id: string; firstName: string; lastName: string }
+    } | null
+    const receiver = tx.receiver as {
+      accountOwner: { id: string; firstName: string; lastName: string }
+    } | null
+    const isSenderMember = sender?.accountOwner?.id === memberId
+    const isReceiverMember = receiver?.accountOwner?.id === memberId
     if (!isSenderMember && !isReceiverMember) continue
-    const direction: "sent" | "received" = isReceiverMember ? "sent" : "received"
-    const counterpart = isReceiverMember ? tx.receiver : tx.sender
+    const direction: "sent" | "received" = isReceiverMember
+      ? "sent"
+      : "received"
+    const counterpart = isReceiverMember ? receiver : sender
+    const currency = tx.currency as { code?: string } | null
     items.push({
       kind: "transaction",
       id: tx.id,
       direction,
-      amount: tx.transactionAmount,
-      currencyCode: tx.currency?.code ?? "KES",
+      amount: Number(tx.transaction_amount),
+      currencyCode: currency?.code ?? "KES",
       counterpartFirstName: counterpart?.accountOwner.firstName ?? "",
       counterpartLastName: counterpart?.accountOwner.lastName ?? "",
       description: tx.description,
-      createdAt: tx.createdAt,
+      createdAt: tx.created_at!,
     })
   }
 
-  items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  items.sort(
+    (a, b) =>
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  )
 
   if (opts.joinedAt) {
     items.push({

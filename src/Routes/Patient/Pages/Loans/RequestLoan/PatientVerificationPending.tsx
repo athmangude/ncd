@@ -8,7 +8,7 @@ import {
 } from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useEffect, useMemo } from "react"
 import { useToast } from "@/hooks/useToast"
 import { PatientIdVerificationStatus } from "../../../enums/PatientIdVerificationStatus"
@@ -62,10 +62,28 @@ export default function PatientVerificationPending() {
     queryKey: ["manual-request", manualRequestId],
     queryFn: async () => {
       if (!manualRequestId) return null
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/payments/manual-review-request/${manualRequestId}`
-      )
-      return response.data
+      const { data, error } = await supabase
+        .from("manual_requests")
+        .select("*")
+        .eq("id", manualRequestId)
+        .single()
+      if (error) throw error
+
+      return {
+        id: data.id,
+        status: data.status,
+        careProviderName: data.care_provider_name,
+        billAmount: data.bill_amount,
+        totalBillAmount: data.bill_amount,
+        currency: "KES",
+        reason: (data.payment_info as Record<string, unknown> | null)?.reason as string | undefined,
+        rejectionReason: (data.payment_info as Record<string, unknown> | null)?.rejectionReason as string | undefined,
+        patient: data.patient,
+        dependent: data.dependent,
+        kmpdcFacility: data.kmpdc_facility,
+        invoiceFile: data.invoice_file,
+        payment: data.payment_info,
+      }
     },
     enabled: !!manualRequestId,
     refetchInterval: (query) => {
@@ -122,9 +140,11 @@ export default function PatientVerificationPending() {
   const cancelMutation = useMutation({
     mutationFn: async () => {
       if (!manualRequestId) return
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/patients/payments/manual-requests/${manualRequestId}/cancel`
-      )
+      const { error } = await supabase
+        .from("manual_requests")
+        .update({ status: "CANCELLED" })
+        .eq("id", manualRequestId)
+      if (error) throw error
     },
     onMutate: async () => {
       if (!manualRequestId) return
@@ -145,15 +165,13 @@ export default function PatientVerificationPending() {
       // Return a context object with the snapshotted value
       return { previousRequests }
     },
-    onError: (error: any, _variables, context: any) => {
-      // If the mutation fails, roll back to the previous value
+    onError: (error: Error, _variables, context: { previousRequests?: unknown[] } | undefined) => {
       if (context?.previousRequests) {
         queryClient.setQueryData(["paymentRequests"], context.previousRequests)
       }
       toast({
         title: "Error",
-        description:
-          error?.response?.data?.message || "Failed to cancel request",
+        description: error.message || "Failed to cancel request",
         variant: "destructive",
       })
     },

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate, matchPath } from "react-router-dom"
 import { usePatientAuthStore } from "../stores/patientAuthStore"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 
 // Define the shape of a Care Profile Step
@@ -56,12 +56,12 @@ export const getFirstIncompleteCareProfileStep = (user: any): string | null => {
   return firstIncomplete ? firstIncomplete.route : null
 }
 
-const stepEndpoints: { [key: string]: string } = {
-  "/patients/select-Insurance": "/patients/submit-insurance-providers",
-  "/patients/select-favorite-care-providers":
-    "/patients/submit-favorite-care-providers",
-  "/patients/healthcare-focus": "/patients/submit-focus-areas",
-  "/patients/ncd-status": "/patients/ncd-status",
+// Maps each care profile step route to the patient_details data key it updates
+const stepDataKeys: { [key: string]: string } = {
+  "/patients/select-Insurance": "insuranceProviders",
+  "/patients/select-favorite-care-providers": "favoriteCareProviders",
+  "/patients/healthcare-focus": "focusAreas",
+  "/patients/ncd-status": "ncdStatus",
 }
 
 const orgRoutes: { [key: string]: string } = {
@@ -126,29 +126,43 @@ export default function useNextCareProfileStep() {
   }
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      const endpoint = stepEndpoints[location.pathname]
-      if (!endpoint) {
-        // If no endpoint is defined for this step, just return null (or handle as needed)
+    mutationFn: async (data: Record<string, unknown>) => {
+      const dataKey = stepDataKeys[location.pathname]
+      if (!dataKey) {
+        // If no data key is defined for this step, just return null
         return null
       }
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + endpoint,
-        data
-      )
-      return response.data
+
+      const { data: pd, error: pdError } = await supabase
+        .from("patient_details")
+        .select("id, data")
+        .single()
+
+      if (pdError) throw pdError
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      const { error: updateError } = await supabase
+        .from("patient_details")
+        .update({
+          data: { ...blob, [dataKey]: data[dataKey] ?? data },
+        })
+        .eq("id", pd.id)
+
+      if (updateError) throw updateError
+
+      return { message: "Step saved" }
     },
     onSuccess: (data) => {
-      // If the endpoint returned a specific redirect or action, handle it here
-      // For now, we proceed to nextRoute
+      // Proceed to nextRoute after saving
       if (nextRoute) {
-        navigate(nextRoute, { state: data }) // Pass response data to next state if needed
+        navigate(nextRoute, { state: data })
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { message?: string }
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: err.message || "Something went wrong",
         variant: "destructive",
       })
     },

@@ -2,7 +2,6 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
 import { Input } from "@/components/Input"
 import { Card } from "@/components/Card"
 import { Skeleton } from "@/components/Skeleton"
@@ -22,7 +21,7 @@ interface SearchResult {
 }
 
 interface SearchResponse {
-  results: SearchResult[]
+  results?: SearchResult[]
   total: number
   query: string
   [key: string]: any // Add index signature for dynamic property access
@@ -45,32 +44,13 @@ function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue
 }
 
-// API function
-const searchAPI = async (
-  searchUrl: string,
-  query: string
-): Promise<SearchResponse> => {
-  if (!query.trim()) {
-    return { results: [], total: 0, query }
-  }
-
-  const response = await axios.get(
-    import.meta.env.VITE_API_BASE_URL + searchUrl,
-    {
-      params: { searchTerm: query },
-      timeout: 5000, // 5 second timeout
-    }
-  )
-
-  return response.data
-}
-
 interface SearchFieldProps {
   placeholder?: string
   debounceMs?: number
   minQueryLength?: number
   onResultSelect?: (result: SearchResult) => void
   className?: string
+  /** @deprecated Use searchFn instead — searchUrl is no longer supported */
   searchUrl?: string
   searchFn?: (query: string) => Promise<SearchResponse>
   dataDetails: {
@@ -93,7 +73,7 @@ export default function SearchField({
   minQueryLength = 2,
   onResultSelect,
   className = "",
-  searchUrl,
+  searchUrl: _searchUrl,
   searchFn,
   dataDetails,
   id,
@@ -108,11 +88,13 @@ export default function SearchField({
   // React Query for search
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ["search", debouncedQuery],
-    queryFn: () =>
-      searchFn
-        ? searchFn(debouncedQuery)
-        : searchAPI(searchUrl!, debouncedQuery),
-    enabled: debouncedQuery.length >= minQueryLength,
+    queryFn: () => {
+      if (!searchFn) {
+        return { results: [], total: 0, query: debouncedQuery }
+      }
+      return searchFn(debouncedQuery)
+    },
+    enabled: debouncedQuery.length >= minQueryLength && !!searchFn,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     retry: 2,

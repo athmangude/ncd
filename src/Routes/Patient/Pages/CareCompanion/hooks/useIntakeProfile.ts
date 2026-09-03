@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
 import { dataService } from "@/lib/data-service"
-import { useSupabase } from "@/lib/supabase"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
 export const intakeProfileQueryKey = "careCompanionIntakeProfile"
@@ -48,8 +47,8 @@ function transformSupabaseRow(
     dosages?: Record<string, string>
   } | null
   const costEstimates = row.cost_estimates as {
-    medications?: { name: string; estimatedCostPerRefill?: number; monthlyCost?: number }[]
-    tests?: { name: string; estimatedCostPerTest?: number; cost?: number }[]
+    medications?: { name: string; estimatedCostPerRefill?: number; monthlyCost?: number; refillFrequencyDays?: number }[]
+    tests?: { name: string; estimatedCostPerTest?: number; cost?: number; frequencyMonths?: number; defaultFrequencyMonths?: number }[]
   } | null
   const recurringTests = row.recurring_tests as {
     selectedTests?: string[]
@@ -118,12 +117,6 @@ export function useIntakeProfile() {
   return useQuery({
     queryKey: [intakeProfileQueryKey],
     queryFn: async () => {
-      if (!useSupabase) {
-        return dataService.query<CareCompanionProfile | null>("profiles", {
-          single: true,
-        })
-      }
-
       const row = await dataService.query<SupabaseProfileRow | null>(
         "profiles",
         { single: true },

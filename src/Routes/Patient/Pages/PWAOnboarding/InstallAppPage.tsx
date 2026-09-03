@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react"
-import axios from "axios"
 import { AlertDialog } from "radix-ui"
 import {
   Download,
@@ -78,11 +77,6 @@ export default function InstallAppPage() {
     const handleAppInstalled = () => {
       trackEvent(EVENTS.PWA_INSTALL.INSTALL_CONFIRMED)
       localStorage.setItem("pwaInstalled", "true")
-      axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/alerts/INSTALL_APP/resolve`)
-        .catch((err) =>
-          console.error("Failed to resolve INSTALL_APP alert", err)
-        )
       setDeferredPrompt(null)
       handleNext()
     }
@@ -122,20 +116,12 @@ export default function InstallAppPage() {
     setIsSkipDialogOpen(true)
   }
 
-  const handleSkipConfirm = (dontAskAgain: boolean) => {
+  const handleSkipConfirm = (_dontAskAgain: boolean) => {
     trackEvent(EVENTS.PWA_INSTALL.SKIP_DONT_ASK_AGAIN)
     setIsSkipDialogOpen(false)
 
     // Record skip
     localStorage.setItem(`pwa_skip_${STEP_ID}`, "true")
-
-    if (dontAskAgain) {
-      axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/alerts/INSTALL_APP/resolve`)
-        .catch((err) =>
-          console.error("Failed to resolve INSTALL_APP alert", err)
-        )
-    }
 
     handleNext()
   }
@@ -146,10 +132,6 @@ export default function InstallAppPage() {
 
     // Record skip
     localStorage.setItem(`pwa_skip_${STEP_ID}`, "true")
-
-    axios
-      .post(`${import.meta.env.VITE_API_BASE_URL}/alerts/INSTALL_APP/dismiss`)
-      .catch((err) => console.error("Failed to dismiss INSTALL_APP alert", err))
 
     handleNext()
   }

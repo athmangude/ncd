@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react"
-import axios, { AxiosError } from "axios"
 import { saveAs } from "file-saver"
+import { supabase } from "@/lib/supabase"
 import { toast } from "@/hooks/useToast"
 
 type ReceiptStatus = "idle" | "loading" | "success" | "error"
@@ -14,12 +14,14 @@ export function useDownloadReceipt(transactionId: string | undefined) {
     setStatus("loading")
 
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/transactions/${transactionId}/receipt`,
-        { responseType: "blob" }
+      const { data, error } = await supabase.functions.invoke(
+        "generate-receipt",
+        { body: { transactionId } }
       )
 
-      const blob = new Blob([response.data], { type: "application/pdf" })
+      if (error) throw error
+
+      const blob = new Blob([data], { type: "application/pdf" })
       saveAs(blob, `jireh-receipt-${transactionId}.pdf`)
 
       setStatus("success")
@@ -31,10 +33,10 @@ export function useDownloadReceipt(transactionId: string | undefined) {
       setStatus("error")
 
       let description = "Unable to generate receipt. Please try again."
-      if (err instanceof AxiosError) {
-        if (err.response?.status === 401) {
+      if (err instanceof Error) {
+        if (err.message?.includes("401") || err.message?.includes("auth")) {
           description = "Your session has expired. Please log in again."
-        } else if (err.response?.status === 404) {
+        } else if (err.message?.includes("404") || err.message?.includes("not found")) {
           description = "Receipt not found for this transaction."
         }
       }

@@ -4,7 +4,7 @@ import { DualActionFooter } from "@/Routes/shell/footers"
 import { useNavigate, useLocation } from "react-router-dom"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import upgradeMembershipIcon from "@/assets/icons/upgrade-membership.png"
 import Loader from "@/components/Loader"
@@ -72,16 +72,13 @@ export default function PatientPayMembership() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const payload = {
-        plan: "JIREH_PLUS",
-      }
+      const { data, error } = await supabase.rpc("rpc_activate_membership", {
+        p_plan: "JIREH_PLUS",
+      })
 
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/submit-plan-details",
-        payload
-      )
+      if (error) throw error
 
-      return response.data
+      return data ?? { success: true }
     },
     onSuccess: (data: any) => {
       try {

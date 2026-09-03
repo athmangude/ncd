@@ -109,7 +109,7 @@ export function GenerateLabResultsDrawer({
       metrics,
       "Jireh Demo Lab",
       new Date().toLocaleDateString("en-KE"),
-      profile?.firstName ?? "Patient",
+      (profile as any)?.firstName ?? "Patient",
       testName,
     )
   }, [metrics, testName, profile])

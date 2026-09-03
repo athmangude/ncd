@@ -15,7 +15,7 @@ export default function PatientOnboardingSuccess() {
   if (isLoading) return null
 
   // Check if phone match failed (explicitly false)
-  const showMatchWarning = data?.phoneNameMatch?.isMatch === false
+  const showMatchWarning = (data as any)?.phoneNameMatch?.isMatch === false
 
   return (
     <PatientPageWrapper

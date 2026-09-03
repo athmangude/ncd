@@ -8,13 +8,12 @@ import IncompleteSignUp from "../components/IncompleteSignUp"
 import AppShell from "@/Routes/AppShell"
 import { LogoHeader } from "@/Routes/shell/headers"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import PatientDashboardTabs from "./Dashboard/PatientDashboardTabs"
 import { usePatientLoginDetails } from "@/hooks/usePatientLoginDetails"
 import { useSetAmplitudeUserProperties } from "@/hooks/useSetAmplitudeUserId"
 import { CloudOff } from "lucide-react"
 import { useNotifications as useCareNotifications } from "./CareCompanion/hooks/useNotifications"
-import { useSupabase, supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase"
 import { SetPinCTA } from "../components/CallToActions"
 import {
   Drawer,
@@ -88,19 +87,12 @@ function Dashboard({ data }: { data: any }) {
   const { data: generalUnread = 0 } = useQuery({
     queryKey: ["notifications", "unreadCount"],
     queryFn: async () => {
-      if (useSupabase) {
-        const { count, error } = await supabase
-          .from("notifications")
-          .select("*", { count: "exact", head: true })
-          .is("read_at", null)
-        if (error) return 0
-        return count ?? 0
-      }
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications`,
-      )
-      const notifications = response.data.notifications || []
-      return notifications.filter((n: any) => n.readStatus === "UNREAD").length
+      const { count, error } = await supabase
+        .from("notifications")
+        .select("*", { count: "exact", head: true })
+        .is("read_at", null)
+      if (error) return 0
+      return count ?? 0
     },
     enabled: !isOffline,
     staleTime: 60 * 1000,

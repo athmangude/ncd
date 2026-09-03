@@ -1,7 +1,6 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-import { useSupabase, supabase } from "@/lib/supabase"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 
 export interface LineItem {
   name: string
@@ -63,32 +62,25 @@ export function useClinicalVisits() {
   const paymentsQuery = useQuery({
     queryKey: [clinicalVisitsQueryKey, "payments"],
     queryFn: async () => {
-      if (useSupabase) {
-        const { data, error } = await supabase
-          .from("payments")
-          .select("*")
-          .order("created_at", { ascending: false })
-        if (error) throw error
-        return (data ?? []).map((p: any) => ({
-          id: p.id,
-          date: p.created_at,
-          facilityName: p.facility_name,
-          facilityType: p.facility_type,
-          totalAmount: Number(p.amount),
-          currency: p.currency ?? "KES",
-          lineItems: (p.line_items ?? []) as LineItem[],
-          fundingSources: (p.funding_sources ?? []) as {
-            source: string
-            amount: number
-          }[],
-          cashbackAmount: Number(p.cashback_amount ?? 0),
-        }))
-      }
-
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/payments`,
-      )
-      return response.data?.payments ?? []
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (error) throw error
+      return (data ?? []).map((p: any) => ({
+        id: p.id,
+        date: p.created_at,
+        facilityName: p.facility_name,
+        facilityType: p.facility_type,
+        totalAmount: Number(p.amount),
+        currency: p.currency ?? "KES",
+        lineItems: (p.line_items ?? []) as LineItem[],
+        fundingSources: (p.funding_sources ?? []) as {
+          source: string
+          amount: number
+        }[],
+        cashbackAmount: Number(p.cashback_amount ?? 0),
+      }))
     },
     staleTime: 2 * 60 * 1000,
   })
@@ -96,35 +88,18 @@ export function useClinicalVisits() {
   const eventsQuery = useQuery({
     queryKey: [clinicalVisitsQueryKey, "events"],
     queryFn: async () => {
-      if (useSupabase) {
-        const { data, error } = await supabase
-          .from("events")
-          .select("*")
-          .in("type", ["TEST_RESULT", "AI_INSIGHT"])
-          .order("created_at", { ascending: false })
-        if (error) throw error
-        return (data ?? []).map((e: any) => ({
-          id: e.id,
-          type: e.type as "TEST_RESULT" | "AI_INSIGHT",
-          timestamp: e.created_at,
-          data: e.data ?? {},
-        }))
-      }
-
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/events?limit=200`,
-      )
-      const events = response.data?.events ?? []
-      return events
-        .filter(
-          (e: any) => e.type === "TEST_RESULT" || e.type === "AI_INSIGHT",
-        )
-        .map((e: any) => ({
-          id: e.id,
-          type: e.type,
-          timestamp: e.timestamp,
-          data: e,
-        }))
+      const { data, error } = await supabase
+        .from("events")
+        .select("*")
+        .in("type", ["TEST_RESULT", "AI_INSIGHT"])
+        .order("created_at", { ascending: false })
+      if (error) throw error
+      return (data ?? []).map((e: any) => ({
+        id: e.id,
+        type: e.type as "TEST_RESULT" | "AI_INSIGHT",
+        timestamp: e.created_at,
+        data: e.data ?? {},
+      }))
     },
     staleTime: 2 * 60 * 1000,
   })

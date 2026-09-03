@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useIntakeProfile } from "./useIntakeProfile"
 import { generateSuggestedQuestions } from "@/lib/ai-pipeline"
-import { useSupabase, supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase"
 import type { CareCompanionEvent } from "@/types/care-companion"
 
 const FALLBACK_PROMPTS = [
@@ -13,25 +13,19 @@ const FALLBACK_PROMPTS = [
 
 async function fetchEvents(): Promise<CareCompanionEvent[]> {
   try {
-    if (useSupabase) {
-      const { data, error } = await supabase
-        .from("events")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(200)
-      if (error) return []
-      return (data ?? []).map((row: any) => ({
-        id: row.id,
-        type: row.type,
-        timestamp: row.created_at,
-        source: "system",
-        ...row.data,
-      })) as CareCompanionEvent[]
-    }
-
-    const res = await fetch("/companion/events?limit=200")
-    const data = (await res.json()) as { events: CareCompanionEvent[] }
-    return data.events ?? []
+    const { data, error } = await supabase
+      .from("events")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(200)
+    if (error) return []
+    return (data ?? []).map((row: any) => ({
+      id: row.id,
+      type: row.type,
+      timestamp: row.created_at,
+      source: "system",
+      ...row.data,
+    })) as CareCompanionEvent[]
   } catch {
     return []
   }

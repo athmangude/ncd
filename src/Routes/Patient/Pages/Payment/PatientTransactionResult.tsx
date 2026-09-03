@@ -1,5 +1,5 @@
-import axios from "axios"
 import { useQuery } from "@tanstack/react-query"
+import { supabase } from "@/lib/supabase"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { CircleAlert, Coins, Receipt } from "lucide-react"
@@ -25,14 +25,31 @@ export default function TransactionResult() {
   const query = useQuery({
     queryKey: [patientTransactionResultQueryKey],
     queryFn: async () => {
-      const queryParam = paymentId
-        ? `/payments/user/payment-details?paymentId=${paymentId}`
-        : `/patients/payments/transaction-result/${reference}`
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN + queryParam
-      )
+      const identifier = paymentId ?? reference
 
-      return response.data
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("id", identifier as string)
+        .single()
+
+      if (error) throw error
+
+      return {
+        id: data.id,
+        status: data.status,
+        totalBillAmount: data.amount,
+        updatedAt: data.created_at,
+        disbursementTransaction: data.disbursement_transaction,
+        paymentSplits: data.payment_splits,
+        description: data.description,
+        facilityName: data.facility_name,
+        facilityType: data.facility_type,
+        cashbackAmount: data.cashback_amount,
+        cashbackDetails: data.cashback_details,
+        patientMedicalInfoRequest: data.patient_medical_info_request,
+        currency: { code: data.currency ?? "KES" },
+      }
     },
   })
 

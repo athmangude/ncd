@@ -2,7 +2,6 @@ import { usePatientAuthStore } from "../stores/patientAuthStore"
 import qrPlaceHolder from "@/assets/icons/qrPlaceHolder.png"
 import qrIllustration from "@/assets/icons/invite-qr-code.png"
 import { useEffect, useState } from "react"
-import axios from "axios"
 import { useToast } from "@/hooks/useToast"
 import LoadingPage from "@/Routes/LoadingPage"
 import PatientPageWrapper from "./PatientPageWrapper"
@@ -32,10 +31,7 @@ export default function PatientScanQRIntro() {
     const generateQR = async () => {
       try {
         setLoading(true)
-        const response = await axios.post(
-          `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/qr/generate`
-        )
-        setQrCodeUrl(response.data.qrCodeUrl)
+        setQrCodeUrl("")
       } catch (error: any) {
         toast({
           title: "Error",

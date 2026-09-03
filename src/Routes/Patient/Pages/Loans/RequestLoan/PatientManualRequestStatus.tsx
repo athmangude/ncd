@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useQuery } from "@tanstack/react-query"
 import { setToLocalStorage } from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
@@ -17,10 +17,28 @@ export default function PatientManualRequestStatus() {
     queryKey: ["manual-request", id],
     queryFn: async () => {
       if (!id) throw new Error("No request ID provided")
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/payments/manual-review-request/${id}`
-      )
-      return response.data
+      const { data: row, error } = await supabase
+        .from("manual_requests")
+        .select("*")
+        .eq("id", id)
+        .single()
+      if (error) throw error
+
+      return {
+        id: row.id,
+        status: row.status,
+        careProviderName: row.care_provider_name,
+        billAmount: row.bill_amount,
+        totalBillAmount: row.bill_amount,
+        currency: "KES",
+        reason: (row.payment_info as Record<string, unknown> | null)?.reason as string | undefined,
+        rejectionReason: (row.payment_info as Record<string, unknown> | null)?.rejectionReason as string | undefined,
+        patient: row.patient,
+        dependent: row.dependent,
+        kmpdcFacility: row.kmpdc_facility,
+        invoiceFile: row.invoice_file,
+        payment: row.payment_info,
+      }
     },
     enabled: !!id,
     retry: false,

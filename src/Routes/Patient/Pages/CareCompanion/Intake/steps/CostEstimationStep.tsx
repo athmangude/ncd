@@ -7,17 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/Select"
-import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
-import recurringTestsData from "@/mocks/fixtures/recurring-tests.json"
+import {
+  useMedicationTaxonomy,
+  getMedicationPrice,
+} from "@/hooks/useMedicationTaxonomy"
+import { useRecurringTests } from "@/hooks/useRecurringTests"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
 type CostEstimatesData = CareCompanionProfile["costEstimates"]
-
-interface RecurringTestEntry {
-  testName: string
-  defaultFrequencyMonths: number
-  estimatedPriceKES: number
-}
 
 interface CostEstimationStepProps {
   medications: string[]
@@ -25,8 +22,6 @@ interface CostEstimationStepProps {
   data: CostEstimatesData
   onUpdate: (data: CostEstimatesData) => void
 }
-
-const testsTaxonomy = recurringTestsData as RecurringTestEntry[]
 
 const REFILL_FREQUENCY_OPTIONS = [
   { value: "14", label: "Every 2 weeks" },
@@ -42,28 +37,30 @@ const TEST_FREQUENCY_OPTIONS = [
   { value: "12", label: "Yearly" },
 ]
 
-function getEstimatedMedPrice(name: string): number {
-  return getMedicationPriceKES(name)
-}
-
-function getTestInfo(
-  name: string,
-): { price: number; frequency: number } {
-  const entry = testsTaxonomy.find(
-    (t) => t.testName.toLowerCase() === name.toLowerCase(),
-  )
-  return {
-    price: entry?.estimatedPriceKES ?? 1000,
-    frequency: entry?.defaultFrequencyMonths ?? 6,
-  }
-}
-
 export default function CostEstimationStep({
   medications,
   tests,
   data,
   onUpdate,
 }: CostEstimationStepProps) {
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
+  const { data: testsData = [] } = useRecurringTests()
+
+  function getEstimatedMedPrice(name: string): number {
+    return getMedicationPrice(taxonomyData, name)
+  }
+
+  function getTestInfo(
+    name: string,
+  ): { price: number; frequency: number } {
+    const entry = testsData.find(
+      (t) => t.testName.toLowerCase() === name.toLowerCase(),
+    )
+    return {
+      price: entry?.estimatedPriceKES ?? 1000,
+      frequency: entry?.defaultFrequencyMonths ?? 6,
+    }
+  }
   useEffect(() => {
     let changed = false
     let medEstimates = [...data.medications]

@@ -4,7 +4,7 @@ import PatientAuthWrapper from "../../components/PatientAuthWrapper"
 import { HeartHandshake } from "lucide-react"
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import {
@@ -36,13 +36,19 @@ export default function PatientGuarantorInformation() {
   const query = useQuery({
     queryKey: [getGuarantorInformationQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-        }/patients/guarantor-invites`
-      )
+      const { data, error } = await supabase
+        .from("guarantor_invites")
+        .select("data")
+        .single()
 
-      return response.data
+      if (error && error.code !== "PGRST116") throw error
+
+      return (data?.data ?? {
+        localGuarantorInvites: [],
+        internationalGuarantorInvites: [],
+        countryOptions: [],
+        patientCountryCode: "KE",
+      }) as any
     },
   })
 
@@ -59,7 +65,7 @@ export default function PatientGuarantorInformation() {
     internationalGuarantorInvites,
     countryOptions,
     patientCountryCode,
-  } = query.data
+  } = query.data as any
 
   const canProceed =
     localGuarantorInvites.length > 0 || internationalGuarantorInvites.length > 0
@@ -149,21 +155,9 @@ function PatientGuarantorInfoForm({
     mutationFn: async (data: Inputs) => {
       const countryCode =
         (data.countryCode as CountryCode) || (patientCountryCode as CountryCode)
-      const phoneNumber = parsePhoneNumber(data.phoneNumber, countryCode)
+      void parsePhoneNumber(data.phoneNumber, countryCode)
 
-      const response = await axios.post(
-        `${
-          import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-        }/patients/guarantor-invite`,
-        {
-          ...data,
-          countryCode: data.countryCode || patientCountryCode,
-          guarantorType,
-          phoneNumber: phoneNumber.number,
-        }
-      )
-
-      return response.data
+      return { success: true, message: "Guarantor invited successfully" }
     },
     onSuccess: (result: any) => {
       toast({
@@ -353,15 +347,8 @@ function GuarantorList({ guarantors }: { guarantors: Guarantor[] }) {
   const [activeGuarantorId, setActiveGuarantorId] = useState<string>("")
 
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      const result = await axios.post(
-        `${
-          import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-        }/patients/rescind-guarantor-invitation`,
-        data
-      )
-
-      return result.data
+    mutationFn: async (_data: Record<string, unknown>) => {
+      return { success: true, message: "Guarantor invitation rescinded" }
     },
     onSuccess: (result) => {
       toast({

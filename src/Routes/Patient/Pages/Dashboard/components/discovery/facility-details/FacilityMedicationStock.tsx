@@ -10,10 +10,42 @@ import { cn } from "@/lib/utils"
 import { useIntakeProfile } from "@/Routes/Patient/Pages/CareCompanion/hooks/useIntakeProfile"
 import type { PharmacyStock, StockStatus } from "@/types/care-companion"
 import { supabase } from "@/lib/supabase"
-import {
-  getFacilityMedicationStock,
-  type StockFacility,
-} from "@/mocks/domain/careCompanion"
+
+interface StockRow {
+  facility_id: number
+  medication_name: string
+  unit_price: number
+  in_stock: boolean
+  quantity_available: number
+  last_restocked_at: string | null
+  updated_at: string
+  facilities: {
+    name: string
+    latitude: number
+    longitude: number
+  } | null
+}
+
+function deriveStatus(inStock: boolean, qty: number): StockStatus {
+  if (!inStock || qty === 0) return "OUT_OF_STOCK"
+  if (qty <= 10) return "LOW_STOCK"
+  return "IN_STOCK"
+}
+
+function mapRow(row: StockRow): PharmacyStock | null {
+  if (!row.facilities) return null
+  return {
+    facilityId: row.facility_id,
+    facilityName: row.facilities.name,
+    medicationName: row.medication_name,
+    status: deriveStatus(row.in_stock, row.quantity_available),
+    lastReportedAt: row.last_restocked_at ?? row.updated_at,
+    distance: null,
+    lat: Number(row.facilities.latitude),
+    lng: Number(row.facilities.longitude),
+    priceKES: row.unit_price,
+  }
+}
 
 const STATUS_CONFIG: Record<
   StockStatus,
@@ -56,22 +88,20 @@ export function FacilityMedicationStock({
   const { data: stock = [], isLoading } = useQuery({
     queryKey: ["care-companion", "pharmacy-stock", "facility", facilityId],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("facilities")
-        .select("id, name, latitude, longitude, verification_status")
-        .eq("id", Number(facilityId))
-      if (!data || data.length === 0) return []
-      const facilities: StockFacility[] = data.map((f) => ({
-        id: String(f.id),
-        name: f.name,
-        latitude: String(f.latitude),
-        longitude: String(f.longitude),
-        verificationStatus: f.verification_status,
-      }))
-      return getFacilityMedicationStock(facilityId, {
-        medications: allItems,
-        facilities,
-      })
+      const { data, error } = await supabase
+        .from("pharmacy_stock")
+        .select(
+          `facility_id, medication_name, unit_price, in_stock,
+           quantity_available, last_restocked_at, updated_at,
+           facilities (name, latitude, longitude)`,
+        )
+        .eq("facility_id", Number(facilityId))
+
+      if (error || !data) return []
+
+      return (data as unknown as StockRow[])
+        .map(mapRow)
+        .filter((entry): entry is PharmacyStock => entry !== null)
     },
     enabled: hasItems,
     staleTime: 5 * 60 * 1000,

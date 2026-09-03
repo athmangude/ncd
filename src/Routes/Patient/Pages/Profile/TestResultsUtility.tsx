@@ -122,7 +122,7 @@ export default function TestResultsUtility() {
       if (!result) return
       setDownloadingTest(testName)
       try {
-        const patientName = profile?.firstName ?? "Patient"
+        const patientName = (profile as any)?.firstName ?? "Patient"
         await generateLabResultPdf(
           result.metrics,
           result.labName,

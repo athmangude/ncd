@@ -8,7 +8,7 @@ import successImage from "@/assets/icons/id-verification-success.png"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { Button } from "@/components/Button"
 
@@ -30,10 +30,21 @@ export function PatientMembershipSuccess() {
   const { isLoading, data, isError } = useQuery({
     queryKey: [getPatientCreditLimitKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/credit-limit`
-      )
-      return response.data
+      const { data: pd, error } = await supabase
+        .from("patient_details")
+        .select("data")
+        .single()
+
+      if (error) throw error
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      return {
+        creditLimit: blob.creditLimit ?? {
+          totalCreditLimitAmount: "0",
+          remainingAmount: "0",
+          currency: { countryName: "Kenya", code: "KES", id: 1 },
+        },
+      }
     },
   })
 
@@ -44,7 +55,7 @@ export function PatientMembershipSuccess() {
     return <ErrorBlock message="Failed to load membership success data" />
   }
 
-  const { totalCreditLimitAmount, currency } = data?.creditLimit || {}
+  const { totalCreditLimitAmount, currency } = (data?.creditLimit ?? {}) as Record<string, any>
 
   return (
     <PatientPageWrapper

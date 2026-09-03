@@ -35,7 +35,7 @@ export async function generateLabResultPdf(
       m.referenceRange,
       m.status,
     ]),
-    didParseCell: (data: {
+    didParseCell: ((data: {
       column: { index: number }
       section: string
       cell: { raw: unknown; styles: { textColor: number[] } }
@@ -51,7 +51,7 @@ export async function generateLabResultPdf(
                 ? [255, 140, 0]
                 : [220, 20, 60]
       }
-    },
+    }) as any,
   })
 
   doc.save(`${testName.replace(/\s+/g, "-").toLowerCase()}-results.pdf`)

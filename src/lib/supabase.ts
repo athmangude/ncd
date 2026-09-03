@@ -4,5 +4,3 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? ""
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? ""
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
-export const useSupabase = import.meta.env.VITE_USE_SUPABASE === "true"

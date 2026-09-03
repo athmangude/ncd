@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import type { TimelineEntry } from "@/types/care-companion"
 
 export interface MedicationTimelineSummary {
@@ -32,9 +32,7 @@ export interface MedicationTimelineParams {
 export const medicationTimelineQueryKey = "careCompanionMedicationTimeline"
 
 /**
- * @deprecated Replaced by useCareHistory which fetches from GET /companion/events,
- * classifies events into CareHistoryEntry[], and provides richer timeline data.
- * Will be removed in a future release.
+ * @deprecated Replaced by useCareHistory which fetches from events table.
  */
 export function useMedicationTimeline({
   limit,
@@ -44,15 +42,61 @@ export function useMedicationTimeline({
   return useQuery({
     queryKey: [medicationTimelineQueryKey, limit, offset, medicationId ?? null],
     queryFn: async () => {
-      const params: Record<string, string | number> = { limit, offset }
+      let query = supabase
+        .from("events")
+        .select("*", { count: "exact" })
+        .in("type", [
+          "medication_purchase",
+          "refill_completed",
+          "prescription_filled",
+        ])
+        .order("created_at", { ascending: false })
+        .range(offset, offset + limit - 1)
+
       if (medicationId) {
-        params.medicationId = medicationId
+        query = query.eq("data->>medicationId", medicationId)
       }
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/medication-timeline`,
-        { params }
+
+      const { data: events, error, count } = await query
+      if (error) throw error
+
+      const entries: TimelineEntry[] = (events ?? []).map((e: any) => ({
+        id: e.id,
+        type: e.type,
+        date: e.created_at,
+        ...(e.data as Record<string, unknown>),
+      })) as unknown as TimelineEntry[]
+
+      const uniqueMeds = new Set(
+        entries
+          .map((e: any) => e.medicationId ?? e.medicationName)
+          .filter(Boolean),
       )
-      return response.data as MedicationTimelineData
+      const uniquePharmacies = new Set(
+        entries.map((e: any) => e.pharmacyName ?? e.facilityName).filter(Boolean),
+      )
+      const dates = entries.map((e) => new Date(e.date).getTime())
+
+      return {
+        entries,
+        summary: {
+          totalMedications: uniqueMeds.size,
+          pharmaciesUsed: uniquePharmacies.size,
+          dateRange: {
+            from: dates.length
+              ? new Date(Math.min(...dates)).toISOString()
+              : new Date().toISOString(),
+            to: dates.length
+              ? new Date(Math.max(...dates)).toISOString()
+              : new Date().toISOString(),
+          },
+        },
+        pagination: {
+          total: count ?? 0,
+          limit,
+          offset,
+        },
+      } as MedicationTimelineData
     },
     staleTime: 2 * 60 * 1000,
   })

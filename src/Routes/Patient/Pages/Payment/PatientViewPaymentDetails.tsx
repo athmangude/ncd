@@ -138,7 +138,7 @@ export default function PatientViewPaymentDetails() {
     user,
     cashbackDetails,
     lineItems,
-  } = query.data
+  } = query.data!
 
   const currencyCode = currency?.code ?? "KES"
   const providerName =

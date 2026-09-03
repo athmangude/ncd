@@ -1,6 +1,7 @@
-import { useReducer, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { queryClient } from "@/queryClient"
+import { useQueryClient } from "@tanstack/react-query"
+import { supabase } from "@/lib/supabase"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/Button"
 import { Input } from "@/components/Input"
@@ -15,43 +16,19 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/Accordion"
-import { makeId, readCollection, readObject, writeCollection } from "@/mocks/db"
-import { getLoginDetails, patchLoginDetails } from "@/mocks/handlers/profile"
-import { LOANS_KEY, MANUAL_REQUESTS_KEY } from "@/mocks/handlers/loans"
-import { getCareFundBalance, setCareFundBalance } from "@/mocks/domain/careFund"
-import {
-  getWalletBalance,
-  setWalletBalance,
-  type WalletType,
-} from "@/mocks/domain/wallets"
-import {
-  activateMembership,
-  deactivateMembership,
-} from "@/mocks/domain/membership"
-import {
-  acceptInvite,
-  acceptReceivedInvite,
-  addSentInvite,
-  declineReceivedInvite,
-  getNetwork,
-  getPatientCircleSummary,
-  removeInvite,
-  removeMember,
-  setCircleFrozen,
-} from "@/mocks/domain/network"
-import {
-  clearAllParticipantState,
-  clearCollection,
-  resetCollection,
-} from "@/mocks/domain/reset"
-import { resetToOnboardingOnly, seedDemoAccount } from "@/mocks/domain/seed"
-import { seedAtStage, type OnboardingStage } from "@/mocks/domain/scenarios"
-import loansSeed from "@/mocks/fixtures/loans.json"
-import manualRequestsSeed from "@/mocks/fixtures/manual-requests.json"
 
-type LoginDetails = ReturnType<typeof getLoginDetails>
+// ── Types ────────────────────────────────────────────────────────────
+
+type WalletType = "MPESA" | "LOAN" | "CASHBACK" | "CARD"
 type IdStatus = "NONE" | "PENDING" | "APPROVED" | "REJECTED"
 type DocStatus = "NONE" | "PENDING" | "PASSED" | "FAILED"
+
+type OnboardingStage =
+  | "onboarding"
+  | "id_verified"
+  | "circle_built"
+  | "membership_active"
+  | "post_first_payment"
 
 interface PanelLoan {
   id: string
@@ -65,6 +42,37 @@ interface PanelManualRequest {
   careProviderName: string
   billAmount: string
   status: string
+}
+
+interface WalletEntry {
+  type: string
+  remainingBalance?: string
+  [key: string]: unknown
+}
+
+interface PatientCircleInfo {
+  filledAccountableSlots?: number
+  isFrozen?: boolean
+  [key: string]: unknown
+}
+
+interface NetworkMemberRow {
+  id: string
+  first_name: string
+  last_name: string
+  phone_number: string | null
+  relationship: string
+  status: string | null
+  type: string
+}
+
+interface NetworkInviteRow {
+  id: string
+  first_name: string
+  last_name: string
+  phone_number: string | null
+  status: string | null
+  relationship: string | null
 }
 
 /**
@@ -101,6 +109,20 @@ interface Draft {
   frozen: boolean
 }
 
+/** Everything the panel needs, fetched from Supabase in one batch. */
+interface PanelData {
+  userId: string
+  blob: Record<string, unknown>
+  cashbackBalance: number
+  loans: PanelLoan[]
+  manualRequests: PanelManualRequest[]
+  networkMembers: NetworkMemberRow[]
+  networkInvites: NetworkInviteRow[]
+  collectionCounts: Record<string, number>
+}
+
+// ── Constants ────────────────────────────────────────────────────────
+
 const WALLET_FIELDS: [WalletType, keyof Draft][] = [
   ["MPESA", "walletMpesa"],
   ["LOAN", "walletLoan"],
@@ -111,6 +133,25 @@ const WALLET_FIELDS: [WalletType, keyof Draft][] = [
 // A 1×1 transparent PNG, enough to exercise the "has a photo" profile state.
 const SAMPLE_PHOTO =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
+
+const STAGE_ROUTES: Record<OnboardingStage, string> = {
+  onboarding: "/patients",
+  id_verified: "/patients",
+  circle_built: "/patients",
+  membership_active: "/patients",
+  post_first_payment: "/patients",
+}
+
+/** Maps collection keys used in the COLLECTIONS UI to Supabase table names. */
+const COLLECTION_TABLE: Record<string, string | null> = {
+  "payment-history": "payments",
+  "fast-track-transactions": null,
+  "care-fund-transactions": "care_fund_transactions",
+  "circle-activity": "circle_activity",
+  notifications: "notifications",
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────
 
 function toIdStatus(value?: string | null): IdStatus {
   if (value === "APPROVED" || value === "PENDING" || value === "REJECTED")
@@ -124,64 +165,162 @@ function toDocStatus(value?: string | null): DocStatus {
   return "NONE"
 }
 
-function readSnapshot(): Draft {
-  const p = getLoginDetails()
+/** Fetch every piece of data the facilitator panel needs in parallel. */
+async function fetchAllPanelData(): Promise<PanelData> {
+  const [
+    pdResult,
+    walletResult,
+    loansResult,
+    requestsResult,
+    membersResult,
+    invitesResult,
+    paymentCount,
+    cfCount,
+    caCount,
+    notifCount,
+  ] = await Promise.all([
+    supabase.from("patient_details").select("data, user_id").maybeSingle(),
+    supabase.from("wallets").select("cashback_balance, user_id").maybeSingle(),
+    supabase
+      .from("loans")
+      .select(
+        "id, status, outstanding_amount, patient_medical_info_request",
+      ),
+    supabase
+      .from("manual_requests")
+      .select("id, care_provider_name, bill_amount, status"),
+    supabase
+      .from("network_members")
+      .select(
+        "id, first_name, last_name, phone_number, relationship, status, type",
+      ),
+    supabase
+      .from("network_invites")
+      .select(
+        "id, first_name, last_name, phone_number, status, relationship",
+      ),
+    supabase
+      .from("payments")
+      .select("*", { count: "exact", head: true }),
+    supabase
+      .from("care_fund_transactions")
+      .select("*", { count: "exact", head: true }),
+    supabase
+      .from("circle_activity")
+      .select("*", { count: "exact", head: true }),
+    supabase
+      .from("notifications")
+      .select("*", { count: "exact", head: true }),
+  ])
+
+  const blob = (pdResult.data?.data ?? {}) as Record<string, unknown>
+  const userId =
+    pdResult.data?.user_id ?? walletResult.data?.user_id ?? ""
+
   return {
-    firstName: p.firstName ?? "",
-    lastName: p.lastName ?? "",
-    phoneNumber: p.phoneNumber ?? "",
-    email: p.email ?? "",
-    accountReference: p.accountReference ?? "",
-    profilePhoto: p.profilePhoto ?? null,
-    isVerified: !!p.isVerified,
-    hasSetPin: !!p.hasSetPin,
-    hasUploadedMpesaStatement: !!p.hasUploadedMpesaStatement,
-    hasVerifiedCrbScore: !!p.hasVerifiedCrbScore,
-    hasAcceptedMedicalConsentForm: !!p.hasAcceptedMedicalConsentForm,
+    userId,
+    blob,
+    cashbackBalance: walletResult.data?.cashback_balance ?? 0,
+    loans: (loansResult.data ?? []).map((row) => ({
+      id: row.id,
+      status: row.status ?? "",
+      outstandingAmount: row.outstanding_amount ?? 0,
+      patientMedicalInfoRequest:
+        row.patient_medical_info_request as PanelLoan["patientMedicalInfoRequest"],
+    })),
+    manualRequests: (requestsResult.data ?? []).map((row) => ({
+      id: row.id,
+      careProviderName: row.care_provider_name,
+      billAmount: row.bill_amount,
+      status: row.status ?? "",
+    })),
+    networkMembers: (membersResult.data ?? []) as NetworkMemberRow[],
+    networkInvites: (invitesResult.data ?? []) as NetworkInviteRow[],
+    collectionCounts: {
+      "payment-history": paymentCount.count ?? 0,
+      "fast-track-transactions": 0,
+      "care-fund-transactions": cfCount.count ?? 0,
+      "circle-activity": caCount.count ?? 0,
+      notifications: notifCount.count ?? 0,
+    },
+  }
+}
+
+/** Derive a Draft from fetched panel data (the "last saved" baseline). */
+function buildSnapshot(pd: PanelData): Draft {
+  const { blob, cashbackBalance } = pd
+  const wallets = (
+    Array.isArray(blob.wallets) ? blob.wallets : []
+  ) as WalletEntry[]
+  const getWallet = (type: string) => {
+    const w = wallets.find((item) => item.type === type)
+    return String(w?.remainingBalance ?? "0")
+  }
+  const credit = blob.creditLimit as
+    | Record<string, unknown>
+    | undefined
+  const circle = blob.patientCircle as PatientCircleInfo | undefined
+
+  return {
+    firstName: String(blob.firstName ?? ""),
+    lastName: String(blob.lastName ?? ""),
+    phoneNumber: String(blob.phoneNumber ?? ""),
+    email: String(blob.email ?? ""),
+    accountReference: String(blob.accountReference ?? ""),
+    profilePhoto: (blob.profilePhoto as string | null) ?? null,
+    isVerified: !!blob.isVerified,
+    hasSetPin: !!blob.hasSetPin,
+    hasUploadedMpesaStatement: !!blob.hasUploadedMpesaStatement,
+    hasVerifiedCrbScore: !!blob.hasVerifiedCrbScore,
+    hasAcceptedMedicalConsentForm: !!blob.hasAcceptedMedicalConsentForm,
     hasAcceptedLatestTermsAndConditions:
-      !!p.hasAcceptedLatestTermsAndConditions,
-    hasBeenReferred: !!p.hasBeenReferred,
-    idStatus: toIdStatus(p.idVerificationStatus),
-    docStatus: toDocStatus(p.documentVerificationStatus),
-    membership: !!p.hasActiveMembership,
-    creditTotal: String(p.creditLimit?.totalCreditLimitAmount ?? "0"),
-    creditRemaining: String(p.creditLimit?.remainingAmount ?? "0"),
-    cashback: String(getCareFundBalance()),
-    walletMpesa: String(getWalletBalance("MPESA")),
-    walletLoan: String(getWalletBalance("LOAN")),
-    walletCashback: String(getWalletBalance("CASHBACK")),
-    walletCard: String(getWalletBalance("CARD")),
-    frozen: getPatientCircleSummary().isFrozen,
+      !!blob.hasAcceptedLatestTermsAndConditions,
+    hasBeenReferred: !!blob.hasBeenReferred,
+    idStatus: toIdStatus(blob.idVerificationStatus as string),
+    docStatus: toDocStatus(blob.documentVerificationStatus as string),
+    membership: !!blob.hasActiveMembership,
+    creditTotal: String(credit?.totalCreditLimitAmount ?? "0"),
+    creditRemaining: String(credit?.remainingAmount ?? "0"),
+    cashback: String(cashbackBalance),
+    walletMpesa: getWallet("MPESA"),
+    walletLoan: getWallet("LOAN"),
+    walletCashback: getWallet("CASHBACK"),
+    walletCard: getWallet("CARD"),
+    frozen: !!circle?.isFrozen,
   }
 }
 
-function getPanelLoans(): PanelLoan[] {
-  return readCollection<PanelLoan>(
-    LOANS_KEY,
-    loansSeed as unknown as PanelLoan[]
-  )
+/** Clear client-side flow state (localStorage / sessionStorage / IDB). */
+function clearClientState() {
+  const flowKeys = [
+    "approved_patient_phone_number",
+    "patientReviewInvoice",
+    "manualPaymentRequestId",
+    "paymentId",
+    "paymentResponse",
+    "patientSelectPatient",
+    "patientTreatmentDetails",
+    "kyc_circle_members",
+    "fast-track-storage",
+    "qrToken",
+    "qrSignature",
+    "inviteId",
+  ]
+  flowKeys.forEach((key) => localStorage.removeItem(key))
+  try {
+    sessionStorage.removeItem("discovery_tab_state")
+    sessionStorage.removeItem("sw-purged")
+  } catch {
+    // ignore — sessionStorage may be unavailable
+  }
+  try {
+    indexedDB?.deleteDatabase("JirehHealthDB")
+  } catch {
+    // ignore — offline cache is best-effort
+  }
 }
 
-function getPanelManualRequests(): PanelManualRequest[] {
-  return readCollection<PanelManualRequest>(
-    MANUAL_REQUESTS_KEY,
-    manualRequestsSeed as unknown as PanelManualRequest[]
-  )
-}
-
-function collectionCount(key: string): number {
-  if (key === "payment-history") {
-    const o = readObject(key, { payments: [], medicalRequests: [] })
-    return o.payments.length + o.medicalRequests.length
-  }
-  if (key === "care-fund-transactions") {
-    return readObject(key, { transactions: [] }).transactions.length
-  }
-  if (key === "circle-activity") {
-    return readObject(key, { events: [] }).events.length
-  }
-  return readCollection(key, []).length
-}
+// ── Component ────────────────────────────────────────────────────────
 
 /**
  * Facilitator-only control panel for usability testing, on the canonical
@@ -194,48 +333,108 @@ function collectionCount(key: string): number {
 export default function FacilitatorPanel() {
   const navigate = useNavigate()
   const { toast } = useToast()
-  const [, rerender] = useReducer((n: number) => n + 1, 0)
-  const snapshotRef = useRef<Draft>(readSnapshot())
-  const [draft, setDraft] = useState<Draft>(snapshotRef.current)
+  const qc = useQueryClient()
+
+  const [panelData, setPanelData] = useState<PanelData | null>(null)
+  const snapshotRef = useRef<Draft | null>(null)
+  const [draft, setDraft] = useState<Draft | null>(null)
+  const [loading, setLoading] = useState(true)
   const [confirmingFresh, setConfirmingFresh] = useState(false)
 
-  const profile = getLoginDetails()
-  const network = getNetwork()
-  const loans = getPanelLoans()
-  const pendingRequests = getPanelManualRequests().filter(
-    (request) => request.status === "PENDING"
-  )
-  const pendingInvites = network.invites.filter(
-    (invite) => invite.status === "PENDING"
+  // Initial load
+  useEffect(() => {
+    fetchAllPanelData().then((data) => {
+      setPanelData(data)
+      const s = buildSnapshot(data)
+      snapshotRef.current = s
+      setDraft(s)
+      setLoading(false)
+    })
+  }, [])
+
+  /**
+   * Re-fetch panel data from Supabase, reset the snapshot and draft, and
+   * invalidate app-wide React Query caches so participant screens pick up
+   * the new state.
+   */
+  async function refreshAll() {
+    const freshData = await fetchAllPanelData()
+    setPanelData(freshData)
+    const s = buildSnapshot(freshData)
+    snapshotRef.current = s
+    setDraft(s)
+    qc.invalidateQueries()
+  }
+
+  /**
+   * Re-fetch panel data without resetting the draft (preserves unsaved edits
+   * while updating the "live" display for discrete actions).
+   */
+  async function refreshData() {
+    const freshData = await fetchAllPanelData()
+    setPanelData(freshData)
+    qc.invalidateQueries()
+  }
+
+  const header = (
+    <BackTitleHeader
+      title="Facilitator Tools"
+      onBack={() => navigate("/patients", { state: { tab: "profile" } })}
+    />
   )
 
+  if (loading || !panelData || !draft || !snapshotRef.current) {
+    return (
+      <AppShell header={header}>
+        <div className="flex items-center justify-center py-20">
+          <p className="text-sm text-muted-foreground">
+            Loading panel data...
+          </p>
+        </div>
+      </AppShell>
+    )
+  }
+
+  // ── Narrowed references for closures ────────────────────────────────
+  const data = panelData
   const snapshot = snapshotRef.current
+
   const changedKeys = (Object.keys(draft) as (keyof Draft)[]).filter(
-    (key) => draft[key] !== snapshot[key]
+    (key) => draft[key] !== snapshot[key],
   )
   const dirty = changedKeys.length > 0
 
   function set<K extends keyof Draft>(key: K, value: Draft[K]) {
-    setDraft((d) => ({ ...d, [key]: value }))
+    setDraft((d) => (d ? { ...d, [key]: value } : d))
   }
 
-  // Discrete commands: persist immediately, refetch participant screens, redraw
-  // the panel's own readouts — without disturbing any in-progress draft edits.
+  // ── Discrete commands ─────────────────────────────────────────────
+
   function afterAction(message: string) {
-    queryClient.invalidateQueries()
-    rerender()
     toast({ title: message })
+    refreshData()
   }
 
-  function saveDraft() {
-    const s = snapshotRef.current
-    if (draft.membership !== s.membership) {
-      if (draft.membership) activateMembership()
-      else deactivateMembership()
+  async function saveDraft() {
+    if (!draft) return
+    const s = snapshot
+
+    // 1. Handle membership activation via RPC (modifies blob server-side)
+    if (draft.membership !== s.membership && draft.membership) {
+      await supabase.rpc("rpc_activate_membership")
     }
 
-    const patch: Record<string, unknown> = {}
-    const direct: (keyof Draft)[] = [
+    // 2. Re-read the blob so RPC-set fields are included
+    const { data: currentPd } = await supabase
+      .from("patient_details")
+      .select("data")
+      .maybeSingle()
+    const updatedBlob: Record<string, unknown> = {
+      ...((currentPd?.data ?? {}) as Record<string, unknown>),
+    }
+
+    // 3. Direct profile fields
+    const directFields: (keyof Draft)[] = [
       "firstName",
       "lastName",
       "phoneNumber",
@@ -250,47 +449,118 @@ export default function FacilitatorPanel() {
       "hasAcceptedLatestTermsAndConditions",
       "hasBeenReferred",
     ]
-    for (const key of direct) {
-      if (draft[key] !== s[key]) patch[key] = draft[key]
+    for (const key of directFields) {
+      if (draft[key] !== s[key]) updatedBlob[key] = draft[key]
     }
+
+    // 4. ID verification status
     if (draft.idStatus !== s.idStatus) {
-      patch.idVerificationStatus =
+      updatedBlob.idVerificationStatus =
         draft.idStatus === "NONE" ? "" : draft.idStatus
-      patch.hasVerifiedId = draft.idStatus === "APPROVED" ? "APPROVED" : ""
+      updatedBlob.hasVerifiedId =
+        draft.idStatus === "APPROVED" ? "APPROVED" : ""
     }
+
+    // 5. Document verification status
     if (draft.docStatus !== s.docStatus) {
-      patch.documentVerificationStatus =
+      updatedBlob.documentVerificationStatus =
         draft.docStatus === "NONE" ? "" : draft.docStatus
     }
+
+    // 6. Credit limit
     if (
       draft.creditTotal !== s.creditTotal ||
       draft.creditRemaining !== s.creditRemaining
     ) {
-      patch.creditLimit = {
-        ...getLoginDetails().creditLimit,
-        totalCreditLimitAmount: String(Number(draft.creditTotal) || 0),
+      const existingCredit = updatedBlob.creditLimit as
+        | Record<string, unknown>
+        | undefined
+      updatedBlob.creditLimit = {
+        ...existingCredit,
+        totalCreditLimitAmount: String(
+          Number(draft.creditTotal) || 0,
+        ),
         remainingAmount: String(Number(draft.creditRemaining) || 0),
       }
     }
-    if (Object.keys(patch).length > 0) {
-      patchLoginDetails(patch as Partial<LoginDetails>)
-    }
 
-    if (draft.cashback !== s.cashback) {
-      setCareFundBalance(Number(draft.cashback) || 0)
-    }
+    // 7. Wallet balances inside the blob
+    const wallets = Array.isArray(updatedBlob.wallets)
+      ? ([...updatedBlob.wallets] as Array<Record<string, unknown>>)
+      : []
     for (const [type, key] of WALLET_FIELDS) {
       if (draft[key] !== s[key]) {
-        setWalletBalance(type, Number(draft[key]) || 0)
+        const idx = wallets.findIndex(
+          (w) => w.type === type,
+        )
+        if (idx !== -1) {
+          wallets[idx] = {
+            ...wallets[idx],
+            remainingBalance: String(
+              Number(draft[key]) || 0,
+            ),
+            updatedAt: new Date().toISOString(),
+          }
+        }
       }
     }
-    if (draft.frozen !== s.frozen) setCircleFrozen(draft.frozen)
+    updatedBlob.wallets = wallets
 
-    queryClient.invalidateQueries()
-    const next = readSnapshot()
-    snapshotRef.current = next
-    setDraft(next)
-    rerender()
+    // 8. Cashback in the blob's careFundAccount
+    if (draft.cashback !== s.cashback) {
+      const cfAccount = (updatedBlob.careFundAccount ?? {}) as Record<
+        string,
+        unknown
+      >
+      updatedBlob.careFundAccount = {
+        ...cfAccount,
+        careFundBalance: String(Number(draft.cashback) || 0),
+        updatedAt: new Date().toISOString(),
+      }
+    }
+
+    // 9. Circle frozen state
+    if (draft.frozen !== s.frozen) {
+      const circleBlob = (updatedBlob.patientCircle ?? {}) as Record<
+        string,
+        unknown
+      >
+      updatedBlob.patientCircle = {
+        ...circleBlob,
+        isFrozen: draft.frozen,
+      }
+    }
+
+    // 10. Membership deactivation (no RPC; direct blob update)
+    if (draft.membership !== s.membership && !draft.membership) {
+      updatedBlob.hasActiveMembership = false
+      updatedBlob.membershipStatus = "INACTIVE"
+      updatedBlob.isBasicMember = true
+      updatedBlob.type = "PUBLIC"
+    }
+
+    // 11. Write the updated blob to patient_details
+    await supabase
+      .from("patient_details")
+      .update({
+        data: updatedBlob,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", data.userId)
+
+    // 12. Sync cashback to the wallets table
+    if (draft.cashback !== s.cashback) {
+      await supabase
+        .from("wallets")
+        .update({
+          cashback_balance: Number(draft.cashback) || 0,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", data.userId)
+    }
+
+    // 13. Refresh panel + app queries
+    await refreshAll()
     toast({ title: "Changes saved" })
   }
 
@@ -299,74 +569,123 @@ export default function FacilitatorPanel() {
   }
 
   // ── Discrete actions ──────────────────────────────────────────────
-  function onApproveRequest(id: string, status: "APPROVED" | "REJECTED") {
-    const next = getPanelManualRequests().map((request) =>
-      request.id === id ? { ...request, status } : request
+
+  async function onApproveRequest(
+    id: string,
+    status: "APPROVED" | "REJECTED",
+  ) {
+    await supabase
+      .from("manual_requests")
+      .update({ status })
+      .eq("id", id)
+    afterAction(
+      status === "APPROVED" ? "Request approved" : "Request rejected",
     )
-    writeCollection(MANUAL_REQUESTS_KEY, next)
-    afterAction(status === "APPROVED" ? "Request approved" : "Request rejected")
   }
 
-  function onRemoveLoan(id: string) {
-    writeCollection(
-      LOANS_KEY,
-      getPanelLoans().filter((loan) => loan.id !== id)
-    )
+  async function onRemoveLoan(id: string) {
+    await supabase.from("loans").delete().eq("id", id)
     afterAction("Loan removed")
   }
 
-  function onAddMember() {
-    addSentInvite({
-      id: makeId("invite"),
-      firstName: "New",
-      lastName: "Member",
-      phoneNumber: "+254700000000",
+  async function onAddMember() {
+    await supabase.from("network_invites").insert({
+      id: crypto.randomUUID(),
+      user_id: data.userId,
+      first_name: "New",
+      last_name: "Member",
+      phone_number: "+254700000000",
       status: "PENDING",
       relationship: "FRIEND",
     })
     afterAction("Sample invite added")
   }
 
-  // ── Scenarios: seed a known state, then go view that screen ──────────
+  // ── Scenarios ─────────────────────────────────────────────────────
+
   function goScenario(route: string, message: string) {
-    queryClient.invalidateQueries()
+    qc.invalidateQueries()
     toast({ title: message })
     navigate(route)
   }
 
-  function onStage(stage: OnboardingStage, label: string) {
-    goScenario(seedAtStage(stage), `Set to: ${label}`)
+  async function onStage(stage: OnboardingStage, label: string) {
+    if (stage === "onboarding") {
+      await supabase.rpc("rpc_reset_to_onboarding")
+    } else {
+      await supabase.rpc("rpc_seed_at_stage", { p_stage: stage })
+    }
+    goScenario(STAGE_ROUTES[stage], `Set to: ${label}`)
   }
 
-  function removeMemberAction(id: string) {
-    removeMember(id)
+  // ── Network actions ───────────────────────────────────────────────
+
+  async function removeMemberAction(id: string) {
+    await supabase.from("network_members").delete().eq("id", id)
     afterAction("Member removed")
   }
-  function acceptInviteAction(id: string) {
-    acceptInvite(id)
+
+  async function acceptInviteAction(id: string) {
+    const invite = data.networkInvites.find((i) => i.id === id)
+    if (invite) {
+      await supabase.from("network_members").insert({
+        id: crypto.randomUUID(),
+        user_id: data.userId,
+        first_name: invite.first_name,
+        last_name: invite.last_name,
+        phone_number: invite.phone_number,
+        relationship: invite.relationship ?? "FRIEND",
+        type: "ACCOUNTABLE",
+        status: "ACTIVE",
+        joined_at: new Date().toISOString(),
+      })
+      await supabase
+        .from("network_invites")
+        .update({ status: "ACCEPTED" })
+        .eq("id", id)
+    }
     afterAction("Invite accepted")
   }
-  function removeInviteAction(id: string) {
-    removeInvite(id)
+
+  async function removeInviteAction(id: string) {
+    await supabase.from("network_invites").delete().eq("id", id)
     afterAction("Invite dropped")
   }
-  function acceptReceivedAction(id: string) {
-    acceptReceivedInvite(id)
+
+  // Received invites are not yet modelled as a Supabase table. The handlers
+  // below exist so the UI section keeps its shape; in practice the array is
+  // always empty and these never fire.
+  async function acceptReceivedAction(_id: string) {
     afterAction("Invite accepted")
   }
-  function declineReceivedAction(id: string) {
-    declineReceivedInvite(id)
+  async function declineReceivedAction(_id: string) {
     afterAction("Invite declined")
   }
 
-  const circle = getPatientCircleSummary()
+  // ── Derived display values (from live panelData, not the draft) ───
 
-  const header = (
-    <BackTitleHeader
-      title="Facilitator Tools"
-      onBack={() => navigate("/patients", { state: { tab: "profile" } })}
-    />
+  const accountReference = String(data.blob.accountReference ?? "")
+  const patientCircle = data.blob.patientCircle as
+    | PatientCircleInfo
+    | undefined
+  const circleFilledAccountable =
+    patientCircle?.filledAccountableSlots ?? data.networkMembers.length
+
+  const pendingRequests = data.manualRequests.filter(
+    (r) => r.status === "PENDING",
   )
+  const pendingInvites = data.networkInvites.filter(
+    (i) => i.status === "PENDING",
+  )
+
+  // Received invites have no Supabase table yet — empty for now.
+  const receivedInvites: Array<{
+    id: string
+    inviterFirstName: string
+    inviterLastName: string
+  }> = []
+
+  // ── Render ────────────────────────────────────────────────────────
 
   const footer = dirty ? (
     <div className="flex items-center gap-2 border-t bg-white p-3">
@@ -406,7 +725,7 @@ export default function FacilitatorPanel() {
             </p>
             <p className="truncate font-mono text-xs text-muted-foreground">
               {draft.phoneNumber || "no phone"}
-              {profile.accountReference ? ` · ${profile.accountReference}` : ""}
+              {accountReference ? ` · ${accountReference}` : ""}
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-end gap-1">
@@ -444,8 +763,8 @@ export default function FacilitatorPanel() {
           </div>
           <div className="mt-1 flex flex-col gap-2">
             <Button
-              onClick={() => {
-                seedDemoAccount()
+              onClick={async () => {
+                await supabase.rpc("rpc_seed_demo_account")
                 goScenario("/patients", "Loaded demo (Amina)")
               }}
             >
@@ -453,9 +772,12 @@ export default function FacilitatorPanel() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => {
-                resetToOnboardingOnly()
-                goScenario("/patients", "Activity reset (kept onboarding)")
+              onClick={async () => {
+                await supabase.rpc("rpc_reset_to_onboarding")
+                goScenario(
+                  "/patients",
+                  "Activity reset (kept onboarding)",
+                )
               }}
             >
               Reset activity (keep onboarding info)
@@ -639,8 +961,9 @@ export default function FacilitatorPanel() {
           {/* Circle & network */}
           <Panel value="circle" index="6" title="Circle & network">
             <p className="-mt-1 mb-1 text-xs text-muted-foreground">
-              Accountable {circle.filledAccountableSlots}/2 ·{" "}
-              {network.network.length} active · {pendingInvites.length} invite
+              Accountable {circleFilledAccountable}/2 ·{" "}
+              {data.networkMembers.length} active ·{" "}
+              {pendingInvites.length} invite
               {pendingInvites.length === 1 ? "" : "s"} pending
             </p>
             <ToggleRow
@@ -649,10 +972,10 @@ export default function FacilitatorPanel() {
               checked={draft.frozen}
               onChange={(v) => set("frozen", v)}
             />
-            {network.network.map((member) => (
+            {data.networkMembers.map((member) => (
               <ListItem
                 key={member.id}
-                title={`${member.firstName} ${member.lastName}`}
+                title={`${member.first_name} ${member.last_name}`}
                 subtitle={`${member.relationship ?? "Member"} · active`}
               >
                 <MiniButton
@@ -666,7 +989,7 @@ export default function FacilitatorPanel() {
             {pendingInvites.map((invite) => (
               <ListItem
                 key={invite.id}
-                title={`${invite.firstName} ${invite.lastName}`}
+                title={`${invite.first_name} ${invite.last_name}`}
                 subtitle="Sent invite · pending"
               >
                 <MiniButton
@@ -683,7 +1006,7 @@ export default function FacilitatorPanel() {
                 </MiniButton>
               </ListItem>
             ))}
-            {network.receivedInvites.map((invite) => (
+            {receivedInvites.map((invite) => (
               <ListItem
                 key={invite.id}
                 title={`${invite.inviterFirstName} ${invite.inviterLastName}`}
@@ -728,17 +1051,24 @@ export default function FacilitatorPanel() {
                   <ListItem
                     key={request.id}
                     title={request.careProviderName}
-                    subtitle={formatMoney(Number(request.billAmount), "KES")}
+                    subtitle={formatMoney(
+                      Number(request.billAmount),
+                      "KES",
+                    )}
                   >
                     <MiniButton
                       tone="good"
-                      onClick={() => onApproveRequest(request.id, "APPROVED")}
+                      onClick={() =>
+                        onApproveRequest(request.id, "APPROVED")
+                      }
                     >
                       Approve
                     </MiniButton>
                     <MiniButton
                       tone="danger"
-                      onClick={() => onApproveRequest(request.id, "REJECTED")}
+                      onClick={() =>
+                        onApproveRequest(request.id, "REJECTED")
+                      }
                     >
                       Reject
                     </MiniButton>
@@ -747,20 +1077,21 @@ export default function FacilitatorPanel() {
               </div>
             )}
 
-            {loans.length > 0 && (
+            {data.loans.length > 0 && (
               <div className="mb-1 flex flex-col gap-2">
                 <p className="text-xs font-medium text-muted-foreground">
                   Loans
                 </p>
-                {loans.map((loan) => (
+                {data.loans.map((loan) => (
                   <ListItem
                     key={loan.id}
                     title={
-                      loan.patientMedicalInfoRequest?.facility?.name ?? "Loan"
+                      loan.patientMedicalInfoRequest?.facility?.name ??
+                      "Loan"
                     }
                     subtitle={`${loan.status} · ${formatMoney(
                       Number(loan.outstandingAmount),
-                      "KES"
+                      "KES",
                     )} due`}
                   >
                     <MiniButton
@@ -778,14 +1109,24 @@ export default function FacilitatorPanel() {
               <CollectionRow
                 key={collection.key}
                 label={collection.label}
-                count={collectionCount(collection.key)}
-                onRestore={() => {
-                  resetCollection(collection.key)
-                  afterAction(`Restored ${collection.label.toLowerCase()}`)
+                count={data.collectionCounts[collection.key] ?? 0}
+                onRestore={async () => {
+                  await supabase.rpc("rpc_seed_demo_account")
+                  afterAction(
+                    `Restored ${collection.label.toLowerCase()}`,
+                  )
                 }}
-                onClear={() => {
-                  clearCollection(collection.key)
-                  afterAction(`Cleared ${collection.label.toLowerCase()}`)
+                onClear={async () => {
+                  const table = COLLECTION_TABLE[collection.key]
+                  if (table) {
+                    await supabase
+                      .from(table)
+                      .delete()
+                      .not("id", "is", null)
+                  }
+                  afterAction(
+                    `Cleared ${collection.label.toLowerCase()}`,
+                  )
                 }}
               />
             ))}
@@ -809,8 +1150,9 @@ export default function FacilitatorPanel() {
               <div className="flex gap-2">
                 <Button
                   variant="destructive"
-                  onClick={() => {
-                    clearAllParticipantState()
+                  onClick={async () => {
+                    clearClientState()
+                    await supabase.rpc("rpc_reset_to_onboarding")
                     goScenario("/patients", "Started fresh")
                   }}
                 >
@@ -846,13 +1188,11 @@ export default function FacilitatorPanel() {
 
 // ── Static config ───────────────────────────────────────────────────
 const STAGES: { id: OnboardingStage; label: string }[] = [
-  { id: "phone-entry", label: "Phone entry" },
-  { id: "needs-name", label: "Needs name" },
-  { id: "needs-pin", label: "Needs PIN" },
-  { id: "needs-id", label: "Needs ID" },
-  { id: "needs-circle", label: "Needs circle" },
-  { id: "onboarded", label: "Onboarded" },
-  { id: "onboarded-plus", label: "Onboarded + Plus" },
+  { id: "onboarding", label: "Onboarding" },
+  { id: "id_verified", label: "ID verified" },
+  { id: "circle_built", label: "Circle built" },
+  { id: "membership_active", label: "Membership active" },
+  { id: "post_first_payment", label: "Post first payment" },
 ]
 
 const ID_OPTIONS = [
@@ -911,7 +1251,7 @@ function SectionTitle({
             "ml-auto rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase",
             tagTone === "danger" && "bg-destructive/10 text-destructive",
             tagTone === "reload" && "bg-blue-50 text-blue-700",
-            tagTone === "live" && "bg-green-50 text-green-700"
+            tagTone === "live" && "bg-green-50 text-green-700",
           )}
         >
           {tag}
@@ -1070,7 +1410,7 @@ function Segmented({
             "rounded-md px-2 py-1 text-[11px] font-medium transition-colors",
             value === option.v
               ? "bg-white text-foreground shadow-sm"
-              : "text-muted-foreground"
+              : "text-muted-foreground",
           )}
         >
           {option.label}
@@ -1117,7 +1457,7 @@ function MiniButton({
         "rounded-md border border-border bg-white px-2.5 py-1 text-xs font-medium",
         tone === "good" && "text-green-700",
         tone === "danger" && "text-destructive",
-        !tone && "text-muted-foreground"
+        !tone && "text-muted-foreground",
       )}
     >
       {children}
@@ -1160,7 +1500,7 @@ function StateChip({
         tone === "good" && "bg-green-100 text-green-700",
         tone === "warn" && "bg-amber-100 text-amber-700",
         tone === "neutral" && "bg-muted text-muted-foreground",
-        tone === "accent" && "bg-primary/10 text-primary"
+        tone === "accent" && "bg-primary/10 text-primary",
       )}
     >
       {label}

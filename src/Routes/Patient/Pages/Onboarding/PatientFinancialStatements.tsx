@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import useNextMembershipSetupStep from "../../hooks/useNextMembershipSetupStep"
@@ -111,10 +110,7 @@ function UploadStatements() {
   const query = useQuery({
     queryKey: [getFinancialStatementsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_API_BASE_URL + "/underwriting/financial-statements"
-      )
-      return response.data
+      return { mpesaStatements: [] as { id: number; fileName: string; passcode: string }[] }
     },
   })
 

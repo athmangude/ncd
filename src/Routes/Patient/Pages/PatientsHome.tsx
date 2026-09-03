@@ -1,17 +1,12 @@
-import ErrorBlock from "@/components/ErrorBlock"
 import RouteMetadata from "@/components/RouteMetadata"
-import LoadingPage from "@/Routes/LoadingPage"
 import { DashboardTabFallback } from "./Dashboard/components/DashboardTabFallback"
 import {
   Navigate,
   Route,
   Routes,
-  useNavigate,
   useLocation,
 } from "react-router-dom"
-import { SessionAuth } from "supertokens-auth-react/recipe/session"
 import { useOnboardingChecklist } from "../hooks/useOnboardingChecklist"
-import { useSupabase } from "@/lib/supabase"
 import PatientDashboard from "./PatientDashboard"
 import PatientHelpAndSupport from "./Profile/PatientHelpAndSupport"
 import PatientTermsAndConditions from "./PatientTermsAndConditions"
@@ -124,40 +119,14 @@ function PatientDashboardRedirect() {
 
 export const patientLoginDetailsQueryKey = "patientLoginDetails"
 export default function PatientsHome() {
-  const query = useOnboardingChecklist()
-  const signOut = usePatientAuthStore((state: any) => state.signOut)
+  useOnboardingChecklist()
   const isAuthenticated = usePatientAuthStore((s) => s.isAuthenticated)
-  const navigate = useNavigate()
 
-  if (useSupabase) {
-    if (!isAuthenticated) {
-      return <Navigate to="/patients/auth" replace />
-    }
-    return <PatientsHomeRoutes />
+  if (!isAuthenticated) {
+    return <Navigate to="/patients/auth" replace />
   }
 
-  if (query.isLoading) {
-    return <LoadingPage />
-  }
-
-  if (query.isError) {
-    const error: any = query.error
-
-    // This is very hacky but it might solve our user not found issue.
-    //TODO: Figure out what is causing the user not found error.
-    if (error.response?.data.message === "User not found") {
-      signOut()
-      navigate("/patients/auth")
-    }
-
-    return <ErrorBlock message={error.response?.data.message} />
-  }
-
-  return (
-    <SessionAuth requireAuth={true}>
-      <PatientsHomeRoutes />
-    </SessionAuth>
-  )
+  return <PatientsHomeRoutes />
 }
 
 function PatientsHomeRoutes() {

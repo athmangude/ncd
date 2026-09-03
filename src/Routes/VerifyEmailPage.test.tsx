@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react"
 import { createElement, type ReactNode } from "react"
 import { MemoryRouter } from "react-router-dom"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { startMockSession, endMockSession } from "@/mocks/auth/session"
+import { startMockSession, endMockSession } from "@/stubs/auth/session"
 
 vi.mock("@/hooks/useToast", () => ({ toast: vi.fn() }))
 

@@ -148,13 +148,11 @@ export function useDiscovery(enabled: boolean = true) {
       categories?: string[]
     }) => {
       const {
-        lat,
-        lng,
         facilityType,
         facilityLevel,
         tab = "all",
         categories = [],
-      } = opts
+      } = opts as Omit<typeof opts, "lat" | "lng">
       facilitiesAbortRef.current?.abort()
       const controller = new AbortController()
       facilitiesAbortRef.current = controller

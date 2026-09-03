@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query"
 import PatientPageWrapper from "../../PatientPageWrapper"
 import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { useState, useRef, useEffect } from "react"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
 import { Progress } from "@/components/Progress"
@@ -84,37 +84,37 @@ export default function PatientUploadInvoice() {
 
   const uploadFileMutation = useMutation({
     mutationFn: async ({ file, fileId }: { file: File; fileId: string }) => {
-      const formData = new FormData()
-      formData.append("file", file)
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
 
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/upload-medical-invoice",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              const progress = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              )
-              setUploadedFiles((prev) => {
-                const updated = [...prev]
-                const fileIndex = updated.findIndex((f) => f.id === fileId)
-                if (fileIndex !== -1) {
-                  updated[fileIndex] = { ...updated[fileIndex], progress }
-                }
-                return updated
-              })
-            }
-          },
-        }
-      )
+      const ext = file.name.split(".").pop() || "jpg"
+      const storagePath = `${userId}/${fileId}.${ext}`
 
-      return response.data
+      setUploadedFiles((prev) => {
+        const updated = [...prev]
+        const idx = updated.findIndex((f) => f.id === fileId)
+        if (idx !== -1) updated[idx] = { ...updated[idx], progress: 50 }
+        return updated
+      })
+
+      const { error: uploadError } = await supabase.storage
+        .from("medical-invoices")
+        .upload(storagePath, file, { upsert: true })
+      if (uploadError) throw uploadError
+
+      setUploadedFiles((prev) => {
+        const updated = [...prev]
+        const idx = updated.findIndex((f) => f.id === fileId)
+        if (idx !== -1) updated[idx] = { ...updated[idx], progress: 100 }
+        return updated
+      })
+
+      return {
+        invoiceFile: { id: fileId },
+      }
     },
-    onSuccess: (data: any, variables) => {
+    onSuccess: (data: { invoiceFile: { id: string } }, variables) => {
       try {
         trackEvent(EVENTS.PAYMENT.UPLOAD_INVOICE_SUCCESS, {
           fileId: data?.invoiceFile?.id,
@@ -136,10 +136,10 @@ export default function PatientUploadInvoice() {
         return updated
       })
     },
-    onError: (error: any, variables) => {
+    onError: (error: Error, variables) => {
       try {
         trackEvent(EVENTS.PAYMENT.UPLOAD_INVOICE_ERROR, {
-          errorMessage: error?.response?.data?.message || error?.message,
+          errorMessage: error.message,
         })
       } catch {
         // Silent fail
@@ -152,7 +152,7 @@ export default function PatientUploadInvoice() {
             ...updated[fileIndex],
             status: "failed",
             error:
-              error.response?.data?.message ||
+              error.message ||
               "Upload failed. Check your network and try again.",
           }
         }
@@ -160,7 +160,7 @@ export default function PatientUploadInvoice() {
       })
       toast({
         title: "Error uploading invoice",
-        description: error.response?.data?.message || error.message,
+        description: error.message,
         variant: "destructive",
       })
     },

@@ -6,7 +6,7 @@ import { usePersistentForm } from "@/hooks/usePersistentForm"
 import PatientDependentSelect from "@/Routes/Patient/components/PatientDependentSelect"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -44,12 +44,26 @@ export default function PatientSelectPatient() {
   const query = useQuery({
     queryKey: [patientConnectionsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/connections"
-      )
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) throw new Error("Not authenticated")
 
-      return response.data
+      const { data, error } = await supabase
+        .from("network_members")
+        .select("*")
+        .eq("user_id", authUser.id)
+      if (error) throw error
+
+      const patients = (data || []).map((m: Record<string, unknown>) => ({
+        name: `${m.first_name} ${m.last_name}`,
+        value: m.id,
+        status: m.status,
+        phoneNumber: m.phone_number,
+        photo: m.profile_photo,
+        firstName: m.first_name,
+        lastName: m.last_name,
+      }))
+
+      return { patients }
     },
   })
 
@@ -61,7 +75,7 @@ export default function PatientSelectPatient() {
     return <ErrorBlock />
   }
 
-  const { patients = [] } = query.data
+  const { patients = [] } = query.data!
 
   let patientOptions = [
     {
@@ -74,7 +88,7 @@ export default function PatientSelectPatient() {
   ]
 
   if (patients) {
-    patientOptions = [...patientOptions, ...patients]
+    patientOptions = [...patientOptions, ...patients] as any[]
   }
 
   return (

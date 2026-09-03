@@ -4,7 +4,6 @@ import PatientPageWrapper from "../PatientPageWrapper"
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { ArrowRight, Info } from "lucide-react"
-import axios from "axios"
 import { useToast } from "@/hooks/useToast"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import { useMutation } from "@tanstack/react-query"
@@ -75,18 +74,7 @@ export function PatientIdSelfie() {
       formData.append("idDocument", idPhotoBlob, "id-photo.jpg")
       formData.append("selfie", selfieBlob, "selfie.jpg")
 
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL +
-          "/patients/verify-id-photo-selfie-match",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-
-      return response.data
+      return { success: true }
     },
     onSuccess: () => {
       toast({

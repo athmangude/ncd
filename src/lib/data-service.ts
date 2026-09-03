@@ -1,7 +1,4 @@
-import { supabase, useSupabase } from "@/lib/supabase"
-import axios from "axios"
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL
+import { supabase } from "@/lib/supabase"
 
 export const dataService = {
   async query<T>(table: string, options?: {
@@ -11,12 +8,6 @@ export const dataService = {
     limit?: number
     single?: boolean
   }): Promise<T> {
-    if (!useSupabase) {
-      const endpoint = TABLE_TO_ENDPOINT[table]
-      const { data } = await axios.get(`${baseUrl}${endpoint}`)
-      return data as T
-    }
-
     let query = supabase.from(table).select(options?.select ?? "*")
 
     if (options?.filter) {
@@ -40,15 +31,9 @@ export const dataService = {
   },
 
   async insert<T>(table: string, data: Partial<T>): Promise<T> {
-    if (!useSupabase) {
-      const endpoint = TABLE_TO_ENDPOINT[table]
-      const { data: result } = await axios.post(`${baseUrl}${endpoint}`, data)
-      return result as T
-    }
-
     const { data: result, error } = await supabase
       .from(table)
-      .insert(data)
+      .insert(data as any)
       .select()
       .single()
     if (error) throw error
@@ -56,18 +41,9 @@ export const dataService = {
   },
 
   async update<T>(table: string, id: string, data: Partial<T>): Promise<T> {
-    if (!useSupabase) {
-      const endpoint = TABLE_TO_ENDPOINT[table]
-      const { data: result } = await axios.patch(
-        `${baseUrl}${endpoint}/${id}`,
-        data,
-      )
-      return result as T
-    }
-
     const { data: result, error } = await supabase
       .from(table)
-      .update(data)
+      .update(data as any)
       .eq("id", id)
       .select()
       .single()
@@ -79,26 +55,8 @@ export const dataService = {
     name: string,
     body: Record<string, unknown>,
   ): Promise<T> {
-    if (!useSupabase) {
-      throw new Error(`Edge Function ${name} not available in MSW mode`)
-    }
-
     const { data, error } = await supabase.functions.invoke(name, { body })
     if (error) throw error
     return data as T
   },
-}
-
-const TABLE_TO_ENDPOINT: Record<string, string> = {
-  profiles: "/companion/profile",
-  events: "/companion/events",
-  refill_schedules: "/companion/refill-schedule",
-  test_schedules: "/companion/test-schedules",
-  medication_cards: "/companion/medication-cards",
-  notifications: "/api/companion/notifications",
-  payments: "/companion/payments",
-  wallets: "/companion/wallet",
-  chat_messages: "/companion/assistant/messages",
-  education_content: "/companion/education-cards",
-  education_progress: "/companion/lesson-progress",
 }

@@ -1,124 +1,73 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
-import { useNavigate } from "react-router-dom"
 import { usePatientAuthStore } from "../stores/patientAuthStore"
-import { useSupabase, supabase } from "@/lib/supabase"
+import { supabase } from "@/lib/supabase"
 
 export const patientLoginDetailsQueryKey = "patientLoginDetails"
 
 export function useOnboardingChecklist() {
-  const navigate = useNavigate()
   const setUser = usePatientAuthStore((state: any) => state.setUser)
 
   return useQuery({
     queryKey: [patientLoginDetailsQueryKey],
     queryFn: async () => {
-      if (useSupabase) {
-        const { data: profile, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .single()
-        if (error) throw error
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .single()
+      if (error) throw error
 
-        const { data: wallet } = await supabase
-          .from("wallets")
-          .select("cashback_balance")
-          .single()
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("cashback_balance")
+        .single()
 
-        const userDetails = {
-          id: profile.id,
-          firstName: profile.first_name || "",
-          lastName: profile.last_name || "",
-          phoneNumber: profile.phone,
-          email: "",
-          isVerified: true,
-          hasVerifiedId: "APPROVED",
-          membershipStatus: "ACTIVE",
-          hasActiveMembership: true,
-          creditLimit: {
-            totalCreditLimitAmount: "0",
-            remainingAmount: "0",
-            currency: { countryName: "Kenya", code: "KES", id: 1 },
-          },
-          medicalRequests: [],
-          loans: [],
-          wallets: [],
-          patientCircle: null,
-          hasAcceptedMedicalConsentForm: true,
-          hasAcceptedLatestTermsAndConditions: true,
-          hasBeenReferred: false,
-          hasVerifiedCrbScore: false,
-          idVerificationStatus: "APPROVED",
-          network: [],
-          type: "PUBLIC",
-          canPayMedicalBill: true,
-          orgBorrower: null,
-          hasUploadedMpesaStatement: false,
-          careFundAccount: {
-            id: 1,
-            careFundBalance: String(wallet?.cashback_balance ?? 0),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-            accountOwner: null,
-            currency: { countryName: "Kenya", code: "KES", id: 1 },
-          },
-          accountReference: "",
-          subscriptions: [],
-          isBasicMember: false,
-          hasSetPin: true,
-          profilePhoto: null,
-          onboardingRedirectLink: "",
-        }
-
-        setUser(userDetails)
-        return userDetails
+      const userDetails = {
+        id: profile.id,
+        firstName: profile.first_name || "",
+        lastName: profile.last_name || "",
+        phoneNumber: profile.phone,
+        email: "",
+        isVerified: true,
+        hasVerifiedId: "APPROVED",
+        membershipStatus: "ACTIVE",
+        hasActiveMembership: true,
+        creditLimit: {
+          totalCreditLimitAmount: "0",
+          remainingAmount: "0",
+          currency: { countryName: "Kenya", code: "KES", id: 1 },
+        },
+        medicalRequests: [],
+        loans: [],
+        wallets: [],
+        patientCircle: null,
+        hasAcceptedMedicalConsentForm: true,
+        hasAcceptedLatestTermsAndConditions: true,
+        hasBeenReferred: false,
+        hasVerifiedCrbScore: false,
+        idVerificationStatus: "APPROVED",
+        network: [],
+        type: "PUBLIC",
+        canPayMedicalBill: true,
+        orgBorrower: null,
+        hasUploadedMpesaStatement: false,
+        careFundAccount: {
+          id: 1,
+          careFundBalance: String(wallet?.cashback_balance ?? 0),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          accountOwner: null,
+          currency: { countryName: "Kenya", code: "KES", id: 1 },
+        },
+        accountReference: "",
+        subscriptions: [],
+        isBasicMember: false,
+        hasSetPin: true,
+        profilePhoto: null,
+        onboardingRedirectLink: "",
       }
 
-      try {
-        const res = await axios.get(
-          import.meta.env.VITE_API_BASE_URL + "/patients/login-details"
-        )
-
-        let onboardingRedirectLink = ""
-
-        function setUserDetails() {
-          const userDetails = {
-            ...res.data,
-            onboardingRedirectLink,
-          }
-
-          setUser(userDetails)
-          return userDetails
-        }
-
-
-        const {  firstName, lastName , hasSetPin} = res.data
-        if (!firstName || !lastName) {
-          onboardingRedirectLink = "/patients/personal-details"
-          return setUserDetails()
-        }
-        if(!hasSetPin){
-          onboardingRedirectLink = "/patients/set-pin"
-          return setUserDetails()
-        }
-
-
-
-        onboardingRedirectLink = ""
-        return setUserDetails()
-      } catch (error: any) {
-        if (error.response?.status === 401) {
-          navigate("/patients/auth/login")
-          return null
-        }
-
-        if (error.response?.status === 403) {
-          navigate("/invalid-tenant")
-          return null
-        }
-
-        throw error
-      }
+      setUser(userDetails)
+      return userDetails
     },
   })
 }

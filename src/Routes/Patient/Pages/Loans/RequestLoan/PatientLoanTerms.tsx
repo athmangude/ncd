@@ -20,7 +20,7 @@ import {
 import { useState } from "react"
 import cash from "@/assets/icons/cash.png"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { Checkbox } from "@/components/Checkbox"
 import {
@@ -189,17 +189,20 @@ function LoanTermsForm({
         throw new Error("Loan amount exceeds the maximum allowed")
       }
 
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) throw new Error("Not authenticated")
+
       //Accept latest terms and conditions
       if (!user.hasAcceptedLatestTermsAndConditions) {
         if (!acceptedTerms) {
           throw new Error("You must accept the latest terms and conditions")
         }
 
-        await axios.post(
-          `${
-            import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-          }/patients/accept-terms-and-conditions`
-        )
+        const { error: tcError } = await supabase
+          .from("profiles")
+          .update({ has_accepted_latest_terms_and_conditions: true })
+          .eq("id", authUser.id)
+        if (tcError) throw tcError
       }
 
       if (!user.hasAcceptedMedicalConsentForm) {
@@ -207,32 +210,39 @@ function LoanTermsForm({
           throw new Error("You must accept the medical consent form")
         }
 
-        await axios.post(
-          `${
-            import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-          }/patients/accept-medical-consent-form`
-        )
+        const { error: mcError } = await supabase
+          .from("profiles")
+          .update({ has_accepted_medical_consent_form: true })
+          .eq("id", authUser.id)
+        if (mcError) throw mcError
       }
 
-      const body = {
-        careProviderId,
-        totalBillAmount,
-        loanAmount,
-        repaymentPeriodDays,
-        patientId,
-        patientName,
-        careFundDiscountAmount,
-      }
-      const result = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/loans/patient/apply-for-loan",
-        {
-          ...body,
-          fileId,
-        }
-      )
+      const loanId = crypto.randomUUID()
+      const { data: loanData, error: loanError } = await supabase
+        .from("loans")
+        .insert({
+          id: loanId,
+          user_id: authUser.id,
+          amount: loanAmount,
+          total_bill_amount: totalBillAmount,
+          outstanding_amount: loanAmount,
+          total_paid: 0,
+          care_fund_discount_amount: careFundDiscountAmount,
+          status: "ACTIVE",
+          loan_type: "STANDARD",
+          currency: { code: "KES" },
+          patient_name: patientName,
+          patient_medical_info_request: {
+            patientId,
+            careProviderId,
+            fileId,
+          },
+        })
+        .select()
+        .single()
+      if (loanError) throw loanError
 
-      return result.data
+      return { loanId: loanData.id }
     },
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({
@@ -253,19 +263,12 @@ function LoanTermsForm({
           "Loan application successful. You will be redirected shortly",
       })
 
-      //Redirect if there is a payment to be made
-      if (data.authorizationUrl) {
-        window.location.assign(data.authorizationUrl)
-        return
-      }
-
-      //Redirect to payment success page if there is no payment to be made
       navigate(`${next}/${data.loanId}`)
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: error.message,
         variant: "destructive",
       })
     },

@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { useSupabase, supabase } from "@/lib/supabase"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import type {
   CostBreakdownResponse,
   CostCategoryBreakdown,
@@ -22,13 +21,6 @@ export function useCostBreakdown() {
   return useQuery({
     queryKey: [costBreakdownQueryKey],
     queryFn: async (): Promise<CostBreakdownResponse> => {
-      if (!useSupabase) {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/companion/cost-breakdown`,
-        )
-        return response.data as CostBreakdownResponse
-      }
-
       const year = new Date().getFullYear()
       const startOfYear = new Date(year, 0, 1).toISOString()
       const { data: payments, error } = await supabase

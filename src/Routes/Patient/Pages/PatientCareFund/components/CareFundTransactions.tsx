@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { SectionTitle } from "@/components/SectionTitle"
 import {
   TransactionHistoryList,
@@ -9,16 +9,6 @@ import { CashbackCard } from "@/components/CashbackCard"
 import type { CashbackTransaction } from "@/components/CashbackCard"
 import PatientCareFundExplainer from "../PatientCareFundExplainer"
 
-interface CareFundTransactionsResponse {
-  message: string
-  data: CashbackTransaction[]
-  meta: {
-    total: number
-    page: number
-    limit: number
-    totalPages: number
-  }
-}
 
 export function CareFundTransactions() {
   const {
@@ -28,15 +18,27 @@ export function CareFundTransactions() {
   } = useQuery({
     queryKey: ["careFundTransactions"],
     queryFn: async () => {
-      try {
-        const response = await axios.get<CareFundTransactionsResponse>(
-          `${import.meta.env.VITE_API_BASE_URL}/care-fund/transactions`
-        )
-        return response.data
-      } catch (err) {
-        console.error("Error fetching transactions:", err)
-        throw err
-      }
+      const { data, error } = await supabase
+        .from("care_fund_transactions")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (error) throw error
+      const transactions: CashbackTransaction[] = (data ?? []).map((row: any) => ({
+        id: row.id,
+        transactionAmount: Number(row.transaction_amount),
+        currency: row.currency,
+        type: row.type,
+        status: row.status,
+        sender: row.sender,
+        receiver: row.receiver,
+        receiverPhoneNumber: row.receiver_phone_number,
+        description: row.description,
+        loan: row.loan,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        expiresAt: row.expires_at,
+      }))
+      return { message: "ok", data: transactions, meta: { total: transactions.length, page: 1, limit: 100, totalPages: 1 } }
     },
     enabled: true,
   })

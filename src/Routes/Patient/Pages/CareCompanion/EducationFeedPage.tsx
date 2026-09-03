@@ -23,7 +23,7 @@ import { useIntakeProfile } from "./hooks/useIntakeProfile"
 import { useLessonProgress } from "./hooks/useLessonProgress"
 import type { EducationFeedCard } from "./hooks/useEducationFeed"
 import type { EducationContentType, ConditionType } from "@/types/care-companion"
-import type { LessonProgress } from "@/mocks/domain/careCompanion"
+import type { LessonProgress } from "@/types/education"
 
 const CONDITION_LABELS: Record<string, string> = {
   DIABETES: "Diabetes",

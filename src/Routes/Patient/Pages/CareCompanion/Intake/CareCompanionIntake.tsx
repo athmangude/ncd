@@ -1,8 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
-import { useSupabase } from "@/lib/supabase"
 import { dataService } from "@/lib/data-service"
 
 import { Button } from "@/components/Button"
@@ -96,27 +94,20 @@ export default function CareCompanionIntake() {
 
   const saveProfile = useMutation({
     mutationFn: async (data: CareCompanionProfile) => {
-      if (useSupabase) {
-        return dataService.update<CareCompanionProfile>("profiles", data.id, {
-          conditions: data.conditions.type,
-          diagnosis_recency: data.conditions.diagnosisRecency,
-          conditions_other_description: data.conditions.otherDescription,
-          treatment: data.treatment,
-          recurring_tests: data.recurringTests,
-          cost_estimates: data.costEstimates,
-          challenges: data.challenges,
-          coping: data.coping,
-          goals: data.goals.selected,
-          user_role: data.userRole.role?.toLowerCase(),
-          patient_relationship: data.userRole.patientRelationship,
-          completed_at: data.completedAt,
-        } as any)
-      }
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
-        data,
-      )
-      return response.data as CareCompanionProfile
+      return dataService.update<CareCompanionProfile>("profiles", data.id, {
+        conditions: data.conditions.type,
+        diagnosis_recency: data.conditions.diagnosisRecency,
+        conditions_other_description: data.conditions.otherDescription,
+        treatment: data.treatment,
+        recurring_tests: data.recurringTests,
+        cost_estimates: data.costEstimates,
+        challenges: data.challenges,
+        coping: data.coping,
+        goals: data.goals.selected,
+        user_role: data.userRole.role?.toLowerCase(),
+        patient_relationship: data.userRole.patientRelationship,
+        completed_at: data.completedAt,
+      } as any)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

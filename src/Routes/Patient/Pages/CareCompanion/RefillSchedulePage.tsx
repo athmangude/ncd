@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import {
   AlertTriangle,
   Pill,
@@ -15,7 +15,10 @@ import {
   Trash2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
+import {
+  useMedicationTaxonomy,
+  getMedicationPrice,
+} from "@/hooks/useMedicationTaxonomy"
 import { trackEvent, EVENTS } from "@/analytics"
 import { useRefillSchedule, refillScheduleQueryKey } from "./hooks/useRefillSchedule"
 import { useCareCompanionHome } from "./hooks/useCareCompanionHome"
@@ -684,6 +687,7 @@ export default function RefillSchedulePage() {
   const { data, isLoading, error } = useRefillSchedule()
   const { data: homeData, isLoading: homeLoading } = useCareCompanionHome()
   const { data: profile } = useIntakeProfile()
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
 
   useEffect(() => {
     if (!editTarget || hasScrolled.current) return
@@ -700,11 +704,8 @@ export default function RefillSchedulePage() {
 
   const patchProfile = useMutation({
     mutationFn: async (patch: Record<string, unknown>) => {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
-        patch,
-      )
-      return response.data
+      const { error } = await supabase.from("profiles").update(patch)
+      if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [refillScheduleQueryKey] })
@@ -715,11 +716,12 @@ export default function RefillSchedulePage() {
 
   const logEvent = useMutation({
     mutationFn: async (event: Record<string, unknown>) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/events`,
-        event,
-      )
-      return response.data
+      const { error } = await supabase.from("events").insert({
+        id: event.id as string,
+        type: event.type as string,
+        data: event,
+      })
+      if (error) throw error
     },
   })
 
@@ -768,12 +770,13 @@ export default function RefillSchedulePage() {
         reason: reasonLabel,
         frequencyDays,
       })
-      axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/refill-schedules/${id}`,
-        { nextDate, frequencyDays },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ next_date: nextDate, frequency_days: frequencyDays })
+        .eq("id", id)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
     [profile, data, patchProfile, logEvent],
   )
@@ -822,12 +825,13 @@ export default function RefillSchedulePage() {
         reason: reasonLabel,
         frequencyMonths,
       })
-      axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/test-schedules/${encodeURIComponent(testName)}`,
-        { nextDate, frequencyMonths },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ next_date: nextDate, frequency_days: frequencyMonths * 30 })
+        .eq("medication_name", testName)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
     [profile, homeData, patchProfile, logEvent],
   )
@@ -870,12 +874,13 @@ export default function RefillSchedulePage() {
         status: item.status,
         reason: reasonLabel,
       })
-      axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/refill-schedules/${id}`,
-        { status: "CANCELLED" },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ status: "CANCELLED" })
+        .eq("id", id)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
     [profile, data, patchProfile, logEvent],
   )
@@ -917,12 +922,13 @@ export default function RefillSchedulePage() {
         status: item?.status ?? "UPCOMING",
         reason: reasonLabel,
       })
-      axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/test-schedules/${encodeURIComponent(testName)}`,
-        { status: "CANCELLED" },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ status: "CANCELLED" })
+        .eq("medication_name", testName)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
     [profile, homeData, patchProfile, logEvent],
   )
@@ -953,7 +959,7 @@ export default function RefillSchedulePage() {
   for (const s of data.schedules) {
     const key = s.medicationName.toLowerCase()
     if (medPriceMap[key] == null) {
-      medPriceMap[key] = getMedicationPriceKES(s.medicationName)
+      medPriceMap[key] = getMedicationPrice(taxonomyData,s.medicationName)
     }
   }
   const testPriceMap: Record<string, number> = {}
@@ -963,7 +969,7 @@ export default function RefillSchedulePage() {
   for (const t of homeData?.testSchedule?.schedules ?? []) {
     const key = t.testName.toLowerCase()
     if (testPriceMap[key] == null) {
-      testPriceMap[key] = getMedicationPriceKES(t.testName)
+      testPriceMap[key] = getMedicationPrice(taxonomyData,t.testName)
     }
   }
 

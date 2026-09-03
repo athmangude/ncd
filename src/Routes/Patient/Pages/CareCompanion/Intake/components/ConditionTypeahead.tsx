@@ -2,7 +2,10 @@ import { useState, useMemo, useRef, useEffect, useId } from "react"
 import { cn } from "@/lib/utils"
 import { Chip } from "@/components/Chip"
 import FormGroupInput from "@/components/form/FormGroupInput"
-import medicationTaxonomy from "@/mocks/fixtures/medication-taxonomy.json"
+import {
+  useMedicationTaxonomy,
+  type MedicationTaxonomyEntry,
+} from "@/hooks/useMedicationTaxonomy"
 
 interface MedicationEntry {
   id: string
@@ -22,7 +25,16 @@ interface ConditionTypeaheadProps {
   className?: string
 }
 
-const taxonomy = medicationTaxonomy as MedicationEntry[]
+function toMedicationEntry(row: MedicationTaxonomyEntry): MedicationEntry {
+  return {
+    id: row.id,
+    genericName: row.genericName,
+    brandNames: row.brandNames,
+    strengths: row.strengths,
+    category: row.category,
+    conditionTags: row.conditionTags,
+  }
+}
 
 export default function ConditionTypeahead({
   selectedMedications,
@@ -36,6 +48,12 @@ export default function ConditionTypeahead({
   const [query, setQuery] = useState("")
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
+
+  const taxonomy = useMemo(
+    () => taxonomyData.map(toMedicationEntry),
+    [taxonomyData],
+  )
 
   const selectedIds = useMemo(
     () => new Set(selectedMedications.map((m) => m.id)),
@@ -53,7 +71,7 @@ export default function ConditionTypeahead({
         (med.genericName.toLowerCase().includes(normalised) ||
           med.brandNames.some((b) => b.toLowerCase().includes(normalised)))
     )
-  }, [query, selectedIds])
+  }, [query, selectedIds, taxonomy])
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

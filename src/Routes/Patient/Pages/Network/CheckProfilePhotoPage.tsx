@@ -4,7 +4,7 @@ import { Button } from "@/components/Button"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { Trash2 } from "lucide-react"
 import { Input } from "@/components/Input"
@@ -68,22 +68,27 @@ export default function CheckProfilePhotoPage() {
 
   const uploadPhotoMutation = useMutation({
     mutationFn: async (file: File) => {
-      const formData = new FormData()
-      formData.append("file", file)
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/upload-profile-photo",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      )
-      return response.data
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
+
+      const ext = file.name.split(".").pop() || "jpg"
+      const path = `${userId}/profile.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(path)
+
+      return { profilePhoto: urlData.publicUrl }
     },
     onSuccess: (data) => {
       if (data.profilePhoto) {
-        // Append a cache-busting param so ProfileAvatar detects a new src and
-        // re-fetches immediately, bypassing the browser's cached old image.
         const freshUrl = `${data.profilePhoto}?cb=${Date.now()}`
         setUser({ ...user, profilePhoto: freshUrl })
-        // Pre-warm the image so it's ready before PreviewInvitePage renders.
         const img = new Image()
         img.src = freshUrl
       }
@@ -91,10 +96,10 @@ export default function CheckProfilePhotoPage() {
         state: { ...location.state, tempProfilePhoto: previewUrl },
       })
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Upload Failed",
-        description: error.response?.data?.message || "Failed to upload photo",
+        description: error.message || "Failed to upload photo",
         variant: "destructive",
       })
     },

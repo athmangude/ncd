@@ -5,7 +5,7 @@ import { ProfileAvatar } from "@/components/ProfileAvatar"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { usePatientAuthStore } from "../../stores/patientAuthStore"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { ArrowRight, ChevronRight, Phone, UserRoundPlus } from "lucide-react"
 import referEarnIcon from "@/assets/icons/refer-earn-center-icon.png"
@@ -111,25 +111,39 @@ export default function PreviewInvitePage() {
   const textInviteMutation = useMutation({
     mutationFn: async () => {
       if (!pendingInvite) throw new Error("No invite details found")
-      const {
-        inviteMessage: customMessage,
-        audioUrl: _au,
-        recordingDuration: _rd,
-        inviteMethod: _im,
-        ...rest
-      } = pendingInvite
-      const response = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/send-invite",
-        { ...rest, customMessage }
-      )
-      return response.data
+
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
+
+      const inviteId = "invite-" + Date.now().toString(36)
+      const { error } = await supabase.from("network_invites").insert({
+        id: inviteId,
+        user_id: userId,
+        first_name: pendingInvite.firstName || "",
+        last_name: pendingInvite.lastName || "",
+        phone_number: pendingInvite.phoneNumber || null,
+        status: "PENDING",
+        relationship: pendingInvite.relationship || null,
+      })
+      if (error) throw error
+
+      const inviteLink =
+        import.meta.env.VITE_APP_DOMAIN +
+        "/patients/network/invite/" +
+        inviteId
+
+      return {
+        message: "Invite sent successfully",
+        inviteId,
+        inviteLink,
+      }
     },
     onSuccess: afterSendSuccess,
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Invite Failed",
-        description: error.response?.data?.message || "Failed to send invite",
+        description: error.message || "Failed to send invite",
         variant: "destructive",
       })
     },
@@ -139,28 +153,48 @@ export default function PreviewInvitePage() {
     mutationFn: async () => {
       if (!pendingInvite || !storedAudioUrl)
         throw new Error("No invite details found")
+
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
+
       const blobResponse = await fetch(storedAudioUrl)
       const audioBlob = await blobResponse.blob()
       URL.revokeObjectURL(storedAudioUrl)
-      const formData = new FormData()
-      formData.append("voiceNote", audioBlob, "voice-invite.webm")
-      formData.append("firstName", pendingInvite.firstName || "")
-      formData.append("lastName", pendingInvite.lastName || "")
-      formData.append("phoneNumber", pendingInvite.phoneNumber || "")
-      formData.append("relationship", pendingInvite.relationship || "")
-      formData.append("durationSeconds", String(recordingDuration))
-      const response = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN + "/circles/invites/voice",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      )
-      return response.data
+
+      const inviteId = "invite-" + Date.now().toString(36)
+      const voicePath = `${userId}/${inviteId}.webm`
+      await supabase.storage
+        .from("voice-notes")
+        .upload(voicePath, audioBlob, { contentType: "audio/webm" })
+
+      const { error } = await supabase.from("network_invites").insert({
+        id: inviteId,
+        user_id: userId,
+        first_name: pendingInvite.firstName || "",
+        last_name: pendingInvite.lastName || "",
+        phone_number: pendingInvite.phoneNumber || null,
+        status: "PENDING",
+        relationship: pendingInvite.relationship || null,
+      })
+      if (error) throw error
+
+      const inviteLink =
+        import.meta.env.VITE_APP_DOMAIN +
+        "/patients/network/invite/" +
+        inviteId
+
+      return {
+        message: "Voice invite sent successfully",
+        inviteId,
+        inviteLink,
+      }
     },
     onSuccess: afterSendSuccess,
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Invite Failed",
-        description: error.response?.data?.message || "Failed to send invite",
+        description: error.message || "Failed to send invite",
         variant: "destructive",
       })
     },

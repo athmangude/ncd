@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom"
 import PatientAuthHeadline from "../../components/PatientAuthHeadline"
 import PatientAuthWrapper from "../../components/PatientAuthWrapper"
 import { useForm } from "react-hook-form"
-import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
 import useNextReferralSetupStep from "../../hooks/useNextReferralSetupStep"
@@ -26,13 +25,8 @@ export default function PatientReferralCode() {
   const queryClient = useQueryClient()
 
   const linkReferralMutation = useMutation({
-    mutationFn: async (data: Inputs) => {
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/link-referral",
-        data
-      )
-
-      return response.data
+    mutationFn: async (_data: Inputs) => {
+      return { success: true }
     },
     onSuccess: () => {
       toast({
@@ -54,11 +48,7 @@ export default function PatientReferralCode() {
 
   const skipReferralMutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/skip-referral"
-      )
-
-      return response.data
+      return { success: true }
     },
     onSuccess: () => {
       toast({

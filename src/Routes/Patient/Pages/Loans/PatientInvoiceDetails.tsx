@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { Link, useParams } from "react-router-dom"
@@ -23,14 +23,29 @@ export default function InvoiceDetails() {
   const query = useQuery({
     queryKey: [getPatientLoanDetailsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_API_BASE_URL
-        }/loans/patient/me/medical-invoice-details/${id}`
-      )
+      const { data, error } = await supabase
+        .from("loans")
+        .select("*")
+        .eq("id", id)
+        .single()
+      if (error) throw error
 
-      setLoan(response.data)
-      return response.data
+      const currency = data.currency as { code?: string } | null
+      const patientMedicalInfoRequest = data.patient_medical_info_request as Record<string, unknown> | null
+
+      const mapped = {
+        id: data.id,
+        amount: Number(data.amount),
+        totalBillAmount: Number(data.total_bill_amount),
+        outstandingAmount: Number(data.outstanding_amount),
+        status: data.status,
+        currency: currency ?? { code: "KES" },
+        patientMedicalInfoRequest,
+        patientName: data.patient_name,
+      }
+
+      setLoan(mapped)
+      return mapped
     },
   })
 
