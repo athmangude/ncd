@@ -115,6 +115,9 @@ export const EVENTS = {
     HOW_IT_WORKS_VIEW: "CIRCLE:HowItWorks:view",
     HOW_IT_WORKS_CTA_TAP: "CIRCLE:HowItWorks:cta-tap",
     HOW_IT_WORKS_CALL_SUPPORT_TAP: "CIRCLE:HowItWorks:call-support-tap",
+    CIRCLE_SCHEDULES_VIEW: "CIRCLE:Schedules:view",
+    CIRCLE_SCHEDULE_SHARE_CASHBACK_TAPPED:
+      "CIRCLE:Schedules:share-cashback-tapped",
   },
 
   // LOAN_REPAYMENT Journey

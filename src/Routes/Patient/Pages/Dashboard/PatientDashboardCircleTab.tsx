@@ -2,6 +2,7 @@ import { TabsContent } from "@radix-ui/react-tabs"
 import { useNavigate } from "react-router-dom"
 import { CircleSetupContent } from "../Onboarding/CircleSetupContent"
 import { useNetworkData } from "../Network/hooks/useNetworkData"
+import { CircleSchedulesSection } from "../Network/components/CircleSchedulesSection"
 import { DashboardSection } from "./components/DashboardStagger"
 import { DashboardSkeleton } from "./components/DashboardSkeleton"
 import { useDashboardFirstLoad } from "./hooks/useDashboardFirstLoad"
@@ -30,13 +31,18 @@ export default function PatientDashboardCircleTab() {
       {showSkeleton ? (
         <DashboardSkeleton sections={1} />
       ) : (
-        <DashboardSection mode={animationMode}>
-          <CircleSetupContent
-            onAddMember={handleAddMember}
-            onNodeClick={handleNodeClick}
-            onLearnMore={handleLearnMore}
-          />
-        </DashboardSection>
+        <>
+          <DashboardSection mode={animationMode}>
+            <CircleSetupContent
+              onAddMember={handleAddMember}
+              onNodeClick={handleNodeClick}
+              onLearnMore={handleLearnMore}
+            />
+          </DashboardSection>
+          <DashboardSection mode={animationMode}>
+            <CircleSchedulesSection />
+          </DashboardSection>
+        </>
       )}
     </TabsContent>
   )

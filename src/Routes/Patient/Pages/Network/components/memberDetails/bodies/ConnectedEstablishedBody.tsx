@@ -7,6 +7,7 @@ import { LinkedAvatarPair } from "../LinkedAvatarPair"
 import { MemberBalanceCard } from "../MemberBalanceCard"
 import { MemberActionTile } from "../MemberActionTile"
 import { MemberActivityFeed } from "../MemberActivityFeed"
+import { MemberScheduleSection } from "../MemberScheduleSection"
 import { RemoveMemberButton } from "../RemoveMemberButton"
 
 interface ConnectedEstablishedBodyProps {
@@ -65,6 +66,10 @@ export function ConnectedEstablishedBody({
           />
         </div>
       </div>
+      <MemberScheduleSection
+        phoneNumber={member.phoneNumber}
+        firstName={member.firstName}
+      />
       <MemberActivityFeed
         memberId={member.id}
         firstName={member.firstName}

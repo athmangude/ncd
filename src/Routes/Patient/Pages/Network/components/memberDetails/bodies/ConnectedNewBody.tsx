@@ -6,6 +6,7 @@ import { trackEvent, EVENTS } from "@/analytics"
 import { LinkedAvatarPair } from "../LinkedAvatarPair"
 import { MemberBalanceCard } from "../MemberBalanceCard"
 import { MemberActionTile } from "../MemberActionTile"
+import { MemberScheduleSection } from "../MemberScheduleSection"
 import { RemoveMemberButton } from "../RemoveMemberButton"
 
 interface ConnectedNewBodyProps {
@@ -60,6 +61,10 @@ export function ConnectedNewBody({ member, you }: ConnectedNewBodyProps) {
           />
         </div>
       </div>
+      <MemberScheduleSection
+        phoneNumber={member.phoneNumber}
+        firstName={member.firstName}
+      />
       {member.joinedAt && (
         <p className="mt-2 text-center text-sm text-muted-foreground">
           Connected since {format(new Date(member.joinedAt), "EEE yyyy")}
