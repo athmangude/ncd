@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/useToast"
 import { useMutation } from "@tanstack/react-query"
 import { useRef, useState } from "react"
 import { UseFormHandleSubmit } from "react-hook-form"
-// import { useNavigate } from "react-router-dom"
 import pinProtectIcon from "@/assets/icons/pin-protect.svg"
+import { supabase } from "@/lib/supabase"
 
 type PatientPinPromptProps = {
   drawer: {
@@ -50,10 +50,20 @@ export default function PatientPinPrompt({
   const { toast } = useToast()
 
   const { mutateAsync, isSuccess, isPending, reset } = useMutation({
-    mutationFn: async (_pinValue: string) => {
-      // Stub: PIN verification is not yet wired to Supabase.
-      // Returns a success response so the downstream flow can proceed.
-      await new Promise((r) => setTimeout(r, 300))
+    mutationFn: async (pinValue: string) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error("Not authenticated")
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("pin")
+        .eq("id", user.id)
+        .single()
+
+      if (error) throw new Error("Could not verify PIN")
+      if (!profile?.pin) throw new Error("No PIN set. Please set a PIN in Settings first.")
+      if (profile.pin !== pinValue) throw new Error("Incorrect PIN. Please try again.")
+
       return { valid: true, message: "PIN verified" }
     },
     onSuccess: (data: any) => {

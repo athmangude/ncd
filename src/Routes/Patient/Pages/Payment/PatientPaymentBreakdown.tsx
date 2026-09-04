@@ -183,7 +183,7 @@ export default function PatientPaymentBreakdown() {
           <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             {sources.map((source: any, idx: number) => (
               <SourceRow
-                key={source.id}
+                key={source.id ?? idx}
                 icon={source.icon}
                 label={source.label}
                 sublabel={source.sublabel}

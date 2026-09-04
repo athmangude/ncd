@@ -144,7 +144,7 @@ export function WalletDrawer({
     : 0
   const remainingToAllocate = Math.max(0, totalBillAmount - otherAllocated)
 
-  let maxAmount = remainingToAllocate
+  let maxAmount = Math.ceil(remainingToAllocate)
   let balanceLabel = "Balance"
   let balanceAmount = 0
 
@@ -161,7 +161,7 @@ export function WalletDrawer({
   } else if (wallet?.type === "LOAN") {
     // remainingAmount is "available to borrow" and the maximum loan amount the user can request
     balanceAmount = remainingAmount
-    maxAmount = Math.min(remainingToAllocate, balanceAmount)
+    maxAmount = Math.min(maxAmount, balanceAmount)
     balanceLabel = "Available to borrow"
   }
 

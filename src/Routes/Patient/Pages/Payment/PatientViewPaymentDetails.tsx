@@ -150,7 +150,10 @@ export default function PatientViewPaymentDetails() {
     ? `${user.firstName} ${user.lastName} (myself)`
     : "Me (myself)"
 
-  const formattedDate = format(new Date(createdAt), "d MMM • h:mm a")
+  const parsedDate = new Date(createdAt)
+  const formattedDate = isNaN(parsedDate.getTime())
+    ? "—"
+    : format(parsedDate, "d MMM • h:mm a")
 
   // Extract Loan Data
   const discountSplit = paymentSplits?.find(
@@ -293,7 +296,10 @@ export default function PatientViewPaymentDetails() {
   const groupedEvents: { dateLabel: string; items: TimelineEvent[] }[] = []
 
   events.forEach((event) => {
-    const dateLabel = format(new Date(event.date), "dd MMM yyyy")
+    const eventDate = new Date(event.date)
+    const dateLabel = isNaN(eventDate.getTime())
+      ? "—"
+      : format(eventDate, "dd MMM yyyy")
     const lastGroup = groupedEvents[groupedEvents.length - 1]
 
     if (lastGroup && lastGroup.dateLabel === dateLabel) {
@@ -503,7 +509,7 @@ export default function PatientViewPaymentDetails() {
                     icon={event.icon}
                     title={event.title}
                     amount={event.amount}
-                    time={format(new Date(event.date), "h:mm a")} // Display time in AM/PM format
+                    time={isNaN(new Date(event.date).getTime()) ? "—" : format(new Date(event.date), "h:mm a")}
                     subEvents={event.subEvents}
                   />
                 ))}

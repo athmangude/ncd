@@ -6,12 +6,13 @@ import PatientPageWrapper from "../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS, safeAmount } from "@/analytics"
 import { useFastTrackStore } from "./useFastTrackStore"
-import type { InitiateFastTrackPaymentDto, FastTrackTransaction } from "./types"
+import type { InitiateFastTrackPaymentDto, FastTrackTransaction, SplitMode } from "./types"
 import { SPLIT_MODE_LABELS } from "./types"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import { formatPaymentNumber } from "./formatters"
 import { Building2, User, FileText, ChevronRight, Receipt } from "lucide-react"
 import { useEffect, useMemo } from "react"
+import { supabase } from "@/lib/supabase"
 
 export default function ConfirmPayment() {
   const navigate = useNavigate()
@@ -35,27 +36,93 @@ export default function ConfirmPayment() {
   const discountAmount = parseFloat(discountAmountStr) || 0
   const netAmount = invoiceAmount - discountAmount
 
-  const handlePaymentSuccess = (data: FastTrackTransaction) => {
-    trackEvent(EVENTS.FAST_TRACK_PAYMENT.PAYMENT_COMPLETED, {
-      payment_id: data.id,
-      payment_point_id: provider?.id,
-      facility_id: provider?.facility?.id,
-      amount_paid: safeAmount(data.netAmount),
+  const handlePaymentSuccess = async () => {
+    const txnId = crypto.randomUUID()
+    const paymentModeTags = splits
+      .map((s) => s.mode)
+      .filter((m) => m !== "DISCOUNT") as SplitMode[]
+    const now = new Date().toISOString()
+
+    const { data: { user: authUser } } = await supabase.auth.getUser()
+
+    const paymentSplits = splits
+      .filter((s) => s.mode !== "DISCOUNT")
+      .map((s) => ({
+        paymentSplitAmount: String(s.amount),
+        wallet: { type: s.mode === "CAREFUND" ? "CASHBACK" : s.mode },
+        ...(s.mode === "LOAN" ? { loan: { repaymentPeriodDays: s.repaymentPeriodDays } } : {}),
+      }))
+
+    const { error: insertError } = await supabase.from("payments").insert({
+      id: txnId,
+      user_id: authUser?.id,
+      facility_name: provider?.facility?.name ?? "",
+      facility_type: "HOSPITAL",
+      amount: netAmount,
       currency: "KES",
-      payment_method: data.paymentModeTags?.join(","),
-      discount_applied: safeAmount(data.discountAmount),
-      has_redirect: !!data.paymentRedirectUrl,
+      status: "COMPLETED",
+      payment_splits: paymentSplits,
+      user_info: {
+        firstName: patient?.firstName ?? "",
+        lastName: patient?.lastName ?? "",
+      },
+      created_at: now,
     })
 
-    // Prototype: no external Paystack redirect. The mock returns empty redirect
-    // URLs, so we always proceed to the in-app status/result screen below
-    // instead of navigating the browser away to an external payment provider.
-    setTransaction(data)
+    if (insertError) {
+      toast({
+        title: "Error",
+        description: "Failed to save payment record. Please try again.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    const transaction: FastTrackTransaction = {
+      id: txnId,
+      providerId: provider?.id ?? 0,
+      patientId: patient?.id ?? "",
+      invoiceNumber,
+      paymentNumber: provider?.paymentNumber ?? "",
+      totalBillAmount: String(invoiceAmount),
+      grossAmount: String(invoiceAmount),
+      providerName: provider?.facility?.name ?? "",
+      discountAmount: String(discountAmount),
+      netAmount: String(netAmount),
+      paymentModeTags,
+      status: "SETTLED",
+      createdAt: now,
+      updatedAt: now,
+      provider: {
+        id: provider?.id ?? 0,
+        name: provider?.facility?.name ?? "",
+        address: "",
+        POBox: null,
+      },
+      patient: {
+        id: patient?.id ?? "",
+        firstName: patient?.firstName ?? "",
+        lastName: patient?.lastName ?? "",
+        phoneNumber: patient?.phoneNumber ?? "",
+      },
+    }
+
+    trackEvent(EVENTS.FAST_TRACK_PAYMENT.PAYMENT_COMPLETED, {
+      payment_id: txnId,
+      payment_point_id: provider?.id,
+      facility_id: provider?.facility?.id,
+      amount_paid: safeAmount(netAmount),
+      currency: "KES",
+      payment_method: paymentModeTags.join(","),
+      discount_applied: safeAmount(discountAmount),
+    })
+
+    setTransaction(transaction)
     setPaymentSubmitted(true)
 
     toast({
       title: "Payment Submitted",
-      description: `Payment of ${formatMoney(invoiceAmount, "KES")} made successfully`,
+      description: `Payment of ${formatMoney(netAmount, "KES")} made successfully`,
     })
     navigate("/patients/fast-track/status", { replace: true })
   }

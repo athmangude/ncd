@@ -134,25 +134,27 @@ export default function PatientAddConnection() {
       const userId = userData.user?.id
       if (!userId) throw new Error("Not authenticated")
 
-      const inviteId = "invite-" + Date.now().toString(36)
-      const { error } = await supabase.from("network_invites").insert({
-        id: inviteId,
+      const recordId = (isPaymentFlowAdd ? "pc-" : "invite-") + Date.now().toString(36)
+      const table = isPaymentFlowAdd ? "patient_connections" : "network_invites"
+
+      const { error } = await supabase.from(table).insert({
+        id: recordId,
         user_id: userId,
         first_name: payload.firstName,
         last_name: payload.lastName,
         phone_number: payload.phoneNumber ?? null,
-        status: "PENDING",
+        status: isPaymentFlowAdd ? "ACTIVE" : "PENDING",
         nickname: payload.nickname ?? null,
         relationship: payload.relationship,
       })
       if (error) throw error
 
       return {
-        message: "Invite sent successfully",
-        patientId: inviteId,
+        message: isPaymentFlowAdd ? "Patient added successfully" : "Invite sent successfully",
+        patientId: recordId,
         firstName: payload.firstName,
         lastName: payload.lastName,
-        status: "PENDING",
+        status: isPaymentFlowAdd ? "ACTIVE" : "PENDING",
         relationship: payload.relationship,
       }
     },
