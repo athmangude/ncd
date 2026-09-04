@@ -53,6 +53,17 @@ function getCompanionTypeLabel(n: CareCompanionNotification): string {
   return COMPANION_TYPE_LABELS[n.type] ?? n.type
 }
 
+function getNotificationTypeLabel(type: string | undefined): string {
+  if (!type) return "Notification"
+  return (
+    COMPANION_TYPE_LABELS[type] ??
+    type
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ")
+  )
+}
+
 interface Notification {
   id: number
   patientId: string
@@ -520,10 +531,13 @@ export default function PatientNotificationsPage() {
                 )}
 
                 <div className="flex-1 pr-8">
+                  <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
+                    {getNotificationTypeLabel(notification.type)}
+                  </span>
                   {notification.title && (
                     <p
                       className={cn(
-                        "text-sm",
+                        "mt-0.5 text-sm",
                         notification.readStatus === "UNREAD"
                           ? "font-medium text-foreground"
                           : "text-foreground",
