@@ -28,32 +28,32 @@ export default defineConfig(({ command }) => ({
       // SuperTokens → local fake auth
       {
         find: /^supertokens-auth-react\/recipe\/session$/,
-        replacement: stub("src/mocks/auth/recipe-session-react.tsx"),
+        replacement: stub("src/stubs/auth/recipe-session-react.tsx"),
       },
       {
         find: /^supertokens-auth-react\/recipe\/passwordless$/,
-        replacement: stub("src/mocks/auth/recipe-passwordless.ts"),
+        replacement: stub("src/stubs/auth/recipe-passwordless.ts"),
       },
       {
         find: /^supertokens-auth-react\/recipe\/emailverification$/,
-        replacement: stub("src/mocks/auth/recipe-emailverification.ts"),
+        replacement: stub("src/stubs/auth/recipe-emailverification.ts"),
       },
       {
         find: /^supertokens-web-js\/recipe\/session$/,
-        replacement: stub("src/mocks/auth/web-session.ts"),
+        replacement: stub("src/stubs/auth/web-session.ts"),
       },
       {
         find: /^supertokens-web-js\/recipe\/thirdparty$/,
-        replacement: stub("src/mocks/auth/web-thirdparty.ts"),
+        replacement: stub("src/stubs/auth/web-thirdparty.ts"),
       },
       {
         find: /^supertokens-web-js\/types$/,
-        replacement: stub("src/mocks/auth/web-types.ts"),
+        replacement: stub("src/stubs/auth/web-types.ts"),
       },
       // Amplitude → no-op stub
       {
         find: /^@amplitude\/analytics-browser$/,
-        replacement: stub("src/mocks/vendor/amplitude.ts"),
+        replacement: stub("src/stubs/vendor/amplitude.ts"),
       },
     ],
   },

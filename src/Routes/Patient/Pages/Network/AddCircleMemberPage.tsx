@@ -14,7 +14,7 @@ import {
 } from "@/utilities/localStorage"
 import { PENDING_INVITE_KEY } from "./InviteMethodPage"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { Calendar } from "@/components/Calendar"
 import { Label } from "@/components/Label"
@@ -131,19 +131,27 @@ export default function AddCircleMemberPage() {
 
   const mutation = useMutation({
     mutationFn: async (data: Inputs) => {
-      const payload = { ...data }
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
 
-      if (payload.relationship === "CHILD") {
-        delete (payload as { phoneNumber?: string }).phoneNumber
+      const inviteId = "invite-" + Date.now().toString(36)
+      const { error } = await supabase.from("network_invites").insert({
+        id: inviteId,
+        user_id: userId,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        phone_number: data.relationship === "CHILD" ? null : data.phoneNumber,
+        status: "PENDING",
+        nickname: data.nickname ?? null,
+        relationship: data.relationship,
+      })
+      if (error) throw error
+
+      return {
+        message: "Child added successfully",
+        patientId: inviteId,
       }
-
-      const response = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/send-invite",
-        payload
-      )
-
-      return response.data
     },
     onSuccess: (data) => {
       toast({
@@ -174,13 +182,24 @@ export default function AddCircleMemberPage() {
 
   const validateInviteMutation = useMutation({
     mutationFn: async (data: Inputs) => {
-      const response = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/circles/invites/validate",
-        data
-      )
+      if (data.phoneNumber) {
+        const { data: existing } = await supabase
+          .from("network_invites")
+          .select("id, status")
+          .eq("phone_number", data.phoneNumber)
+          .in("status", ["PENDING", "ACCEPTED"])
+          .limit(1)
 
-      return response.data as {
+        if (existing && existing.length > 0) {
+          return {
+            isValid: false,
+            message: "An invite has already been sent to this phone number",
+            isResend: true,
+          }
+        }
+      }
+
+      return { isValid: true, message: "OK" } as {
         isValid: boolean
         message: string
         isResend?: boolean

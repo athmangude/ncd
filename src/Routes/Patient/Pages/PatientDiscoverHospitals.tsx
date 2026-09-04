@@ -2,6 +2,7 @@ import SearchField, { SearchFieldEmphasis } from "@/components/SearchField"
 import PatientPageWrapper from "./PatientPageWrapper"
 import careProviderIcon from "@/assets/icons/care-provider.png"
 import { useState } from "react"
+import { searchFacilitiesSupabase } from "@/lib/searchFacilitiesSupabase"
 
 export default function PatientDiscoverHospitals() {
   const [careProvider, setCareProvider] = useState<any>(null)
@@ -20,7 +21,7 @@ export default function PatientDiscoverHospitals() {
       </p>
 
       <SearchField
-        searchUrl="/patients/search-facilities"
+        searchFn={searchFacilitiesSupabase}
         dataDetails={{
           titleKey: "name",
           descriptionKey: "plotNumber",

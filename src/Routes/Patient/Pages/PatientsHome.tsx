@@ -1,15 +1,11 @@
-import ErrorBlock from "@/components/ErrorBlock"
 import RouteMetadata from "@/components/RouteMetadata"
-import LoadingPage from "@/Routes/LoadingPage"
 import { DashboardTabFallback } from "./Dashboard/components/DashboardTabFallback"
 import {
   Navigate,
   Route,
   Routes,
-  useNavigate,
   useLocation,
 } from "react-router-dom"
-import { SessionAuth } from "supertokens-auth-react/recipe/session"
 import { useOnboardingChecklist } from "../hooks/useOnboardingChecklist"
 import PatientDashboard from "./PatientDashboard"
 import PatientHelpAndSupport from "./Profile/PatientHelpAndSupport"
@@ -108,6 +104,9 @@ const PatientDashboardExploreTab = lazy(
 const PatientDashboardProfileTab = lazy(
   () => import("./Dashboard/PatientDashboardProfileTab")
 )
+const TestResultsUtility = lazy(
+  () => import("./Profile/TestResultsUtility")
+)
 
 function PatientDashboardRedirect() {
   const location = useLocation()
@@ -120,34 +119,19 @@ function PatientDashboardRedirect() {
 
 export const patientLoginDetailsQueryKey = "patientLoginDetails"
 export default function PatientsHome() {
-  const query = useOnboardingChecklist()
-  const signOut = usePatientAuthStore((state: any) => state.signOut)
-  const navigate = useNavigate()
+  useOnboardingChecklist()
+  const isAuthenticated = usePatientAuthStore((s) => s.isAuthenticated)
 
-  if (query.isLoading) {
-    return <LoadingPage />
+  if (!isAuthenticated) {
+    return <Navigate to="/patients/auth" replace />
   }
 
-  if (query.isError) {
-    const error: any = query.error
+  return <PatientsHomeRoutes />
+}
 
-    // This is very hacky but it might solve our user not found issue.
-    //TODO: Figure out what is causing the user not found error.
-    if (error.response?.data.message === "User not found") {
-      signOut()
-      navigate("/patients/auth")
-    }
-
-    return <ErrorBlock message={error.response?.data.message} />
-  }
-
-  // Every patient screen now renders its own canonical shell (via
-  // PatientPageWrapper / PatientAuthWrapper), so this component is a pure router
-  // — no layout container, no path allowlist. Adding any wrapper here would
-  // double-frame the self-shelled screens on desktop.
+function PatientsHomeRoutes() {
   return (
-    <SessionAuth requireAuth={true}>
-      <Routes>
+    <Routes>
         <Route
           path="/"
           element={
@@ -392,6 +376,16 @@ export default function PatientsHome() {
           element={
             <RouteMetadata title="Security & Permissions">
               <PatientSecurityAndPermissions />
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/profile/test-results-utility"
+          element={
+            <RouteMetadata title="Test Results Utility">
+              <Suspense fallback={<DashboardTabFallback />}>
+                <TestResultsUtility />
+              </Suspense>
             </RouteMetadata>
           }
         />
@@ -823,6 +817,5 @@ export default function PatientsHome() {
           element={<PatientSubscriptionsWrapper />}
         />
       </Routes>
-    </SessionAuth>
   )
 }

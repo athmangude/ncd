@@ -10,11 +10,10 @@ import {
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/InputOtp"
 import { useToast } from "@/hooks/useToast"
 import { useMutation } from "@tanstack/react-query"
-import axios, { HttpStatusCode } from "axios"
 import { useRef, useState } from "react"
 import { UseFormHandleSubmit } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
 import pinProtectIcon from "@/assets/icons/pin-protect.svg"
+import { supabase } from "@/lib/supabase"
 
 type PatientPinPromptProps = {
   drawer: {
@@ -40,7 +39,7 @@ export default function PatientPinPrompt({
   form,
 }: PatientPinPromptProps) {
   const [pin, setPin] = useState("")
-  const [data, setData] = useState<any>()
+  const [_data, setData] = useState<any>()
 
   const [open, setOpen] = useState(false)
 
@@ -50,22 +49,22 @@ export default function PatientPinPrompt({
 
   const { toast } = useToast()
 
-  const navigate = useNavigate()
-
   const { mutateAsync, isSuccess, isPending, reset } = useMutation({
     mutationFn: async (pinValue: string) => {
-      const result = await axios.post(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN + form.url,
-        data,
-        {
-          headers: {
-            "AUTH-PIN": pinValue,
-          },
-          timeout: 60_000, // 60s — avoid indefinite hang if API never responds
-        }
-      )
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error("Not authenticated")
 
-      return result.data
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("pin")
+        .eq("id", user.id)
+        .single()
+
+      if (error) throw new Error("Could not verify PIN")
+      if (!profile?.pin) throw new Error("No PIN set. Please set a PIN in Settings first.")
+      if (profile.pin !== pinValue) throw new Error("Incorrect PIN. Please try again.")
+
+      return { valid: true, message: "PIN verified" }
     },
     onSuccess: (data: any) => {
       if (!form.onSuccess) {
@@ -79,13 +78,10 @@ export default function PatientPinPrompt({
         form.onSuccess(data)
       }
     },
-    onError: (error: any) => {
-      if (error.response?.status === HttpStatusCode.Locked) {
-        navigate("/patients/account-locked")
-        return
-      }
+    onError: (error: unknown) => {
+      const err = error as { message?: string }
 
-      setError(error.response?.data?.message || error.message)
+      setError(err.message || "PIN verification failed")
       setPin("")
       setTimeout(() => pinInputRef.current?.focus(), 0)
 

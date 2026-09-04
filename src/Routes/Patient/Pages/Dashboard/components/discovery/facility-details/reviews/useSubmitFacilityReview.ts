@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import type { SubmitReviewPayload } from "./types"
 
 interface SubmitArgs {
@@ -12,11 +12,22 @@ export function useSubmitFacilityReview() {
 
   return useMutation({
     mutationFn: async ({ facilityId, payload }: SubmitArgs) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/patients/facilities/${facilityId}/reviews`,
-        payload
-      )
-      return response.data as { message: string }
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) throw new Error("Not authenticated")
+      const { error } = await supabase.from("facility_reviews").insert({
+        id: `rev-${Date.now().toString(36)}`,
+        facility_id: Number(facilityId),
+        user_id: user.id,
+        payment_id: payload.paymentId,
+        nps_score: payload.npsScore,
+        loved_most: payload.lovedMost ?? null,
+        could_do_better: payload.couldDoBetter ?? null,
+        make_it_a_ten: payload.makeItATen ?? null,
+      })
+      if (error) throw error
+      return { message: "Review submitted" }
     },
     onSuccess: (_data, { facilityId }) => {
       queryClient.invalidateQueries({

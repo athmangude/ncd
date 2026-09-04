@@ -3,7 +3,7 @@ import { CircleMemberCard } from "@/components/CircleMemberCard"
 import { Trash2 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 
@@ -28,10 +28,12 @@ export function InviteRequestCard({
 
   const rejectMutation = useMutation({
     mutationFn: async (inviteId: string) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/${inviteId}/reject`
-      )
-      return response.data
+      const { error } = await supabase
+        .from("network_invites")
+        .update({ status: "REJECTED" })
+        .eq("id", inviteId)
+      if (error) throw error
+      return { success: true }
     },
     onSuccess: () => {
       toast({

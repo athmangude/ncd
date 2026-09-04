@@ -235,8 +235,8 @@ function FacilityRow({
   const drive = getDriveInfo(entry, userLocation)
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border bg-card p-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted">
+    <div className="flex gap-3 rounded-xl border border-border bg-card p-3">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted mt-0.5">
         <MapPin className="h-4 w-4 text-muted-foreground" />
       </div>
 
@@ -247,32 +247,31 @@ function FacilityRow({
         <div className="flex items-center gap-2 mt-0.5">
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium",
+              "inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[10px] font-medium whitespace-nowrap",
               config.className,
             )}
           >
-            <Icon className="h-2.5 w-2.5" />
+            <Icon className="h-2.5 w-2.5 shrink-0" />
             {config.label}
           </span>
           {drive && (
             <>
-              <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground">
-                <Car className="h-2.5 w-2.5" />
+              <span className="flex items-center gap-0.5 text-[11px] text-muted-foreground whitespace-nowrap">
+                <Car className="h-2.5 w-2.5 shrink-0" />
                 {formatDriveTime(drive.driveMinutes)}
               </span>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="text-[11px] text-muted-foreground whitespace-nowrap">
                 {formatDistance(drive.distanceKm)}
               </span>
             </>
           )}
         </div>
+        {price && (
+          <p className="text-xs font-semibold text-foreground font-mono tabular-nums text-right mt-0.5">
+            {price}
+          </p>
+        )}
       </div>
-
-      {price && (
-        <span className="shrink-0 text-sm font-semibold text-foreground font-mono tabular-nums">
-          {price}
-        </span>
-      )}
     </div>
   )
 }

@@ -1,8 +1,0 @@
-[
-  { "category": "outpatient_primary_care", "displayName": "Outpatient Care", "count": 12 },
-  { "category": "inpatient_services", "displayName": "Inpatient Services", "count": 9 },
-  { "category": "critical_care", "displayName": "Emergency", "count": 7 },
-  { "category": "neonatal_services", "displayName": "Neonatal Services", "count": 5 },
-  { "category": "preventive_public_health", "displayName": "Preventive & Public Health", "count": 8 },
-  { "category": "conditional_services", "displayName": "Conditional Services", "count": 1 }
-]

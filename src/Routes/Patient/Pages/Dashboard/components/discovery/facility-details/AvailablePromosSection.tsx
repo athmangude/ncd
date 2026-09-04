@@ -2,7 +2,7 @@ import { useState } from "react"
 import { ChevronRight, Gift } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
 import percentTile from "@/assets/icons/percent-tile.png"
 import { Button } from "@/components/Button"
@@ -30,11 +30,32 @@ export function AvailablePromosSection({
   // everything it needs (Min. bill, currency symbol for FIXED_AMOUNT, etc.).
   const { data: fullDiscount, isFetching } = useQuery({
     queryKey: ["discountCode", selectedPromoId],
-    queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/discount-codes/${selectedPromoId}`
-      )
-      return (response.data?.data ?? null) as DiscountCode | null
+    queryFn: async (): Promise<DiscountCode | null> => {
+      const { data, error } = await supabase
+        .from("discount_codes")
+        .select("*")
+        .eq("id", selectedPromoId as number)
+        .single()
+
+      if (error) throw error
+      if (!data) return null
+
+      return {
+        id: data.id,
+        code: data.code,
+        description: data.description ?? "",
+        discountType: data.discount_type as DiscountCode["discountType"],
+        discountValue: data.discount_value,
+        currency: data.currency as DiscountCode["currency"],
+        context: data.context as DiscountCode["context"],
+        discountAmount: data.discount_amount ?? "0",
+        validFrom: data.valid_from,
+        validUntil: data.valid_until,
+        minimumOrderAmount: data.minimum_order_amount,
+        maximumDiscountAmount: data.maximum_discount_amount,
+        isActive: data.is_active ?? false,
+        isValid: data.is_valid ?? false,
+      }
     },
     enabled: selectedPromoId != null,
   })

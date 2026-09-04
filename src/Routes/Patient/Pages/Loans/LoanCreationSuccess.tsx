@@ -3,7 +3,7 @@ import { usePatientLoanStore } from "../../stores/patientLoanStore"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { HERO_ILLUSTRATION } from "@/Routes/shell/PageHeader"
 import { getPatientLoanDetailsQueryKey } from "./PatientViewLoanDetails"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useQuery } from "@tanstack/react-query"
 import { CircleCheck } from "lucide-react"
 import { formatMoney } from "@/utilities/currencyUtilities"
@@ -20,12 +20,33 @@ export default function LoanCreationSuccess() {
   const { isLoading, error, data } = useQuery({
     queryKey: [getPatientLoanDetailsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/loans/patient/me/${id}`
-      )
+      const { data: loan, error: loanError } = await supabase
+        .from("loans")
+        .select("*")
+        .eq("id", id)
+        .single()
+      if (loanError) throw loanError
 
-      setLoan(response.data)
-      return response.data
+      const currency = loan.currency as { code?: string } | null
+      const patientMedicalInfoRequest = loan.patient_medical_info_request as Record<string, unknown> | null
+
+      const mapped = {
+        id: loan.id,
+        amount: Number(loan.amount),
+        totalBillAmount: Number(loan.total_bill_amount),
+        outstandingAmount: Number(loan.outstanding_amount),
+        status: loan.status,
+        loanType: loan.loan_type,
+        currency: currency ?? { code: "KES" },
+        createdAt: loan.created_at,
+        updatedAt: loan.created_at,
+        patientMedicalInfoRequest,
+        patientName: loan.patient_name,
+        careProvider: (patientMedicalInfoRequest as Record<string, unknown> | null)?.facility ?? null,
+      }
+
+      setLoan(mapped)
+      return mapped
     },
   })
 

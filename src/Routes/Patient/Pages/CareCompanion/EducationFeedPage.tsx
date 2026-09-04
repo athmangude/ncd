@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react"
 import { Link } from "react-router-dom"
 import {
   BookOpen,
-  Loader2,
   AlertTriangle,
   ChevronRight,
   Check,
@@ -24,7 +23,7 @@ import { useIntakeProfile } from "./hooks/useIntakeProfile"
 import { useLessonProgress } from "./hooks/useLessonProgress"
 import type { EducationFeedCard } from "./hooks/useEducationFeed"
 import type { EducationContentType, ConditionType } from "@/types/care-companion"
-import type { LessonProgress } from "@/mocks/domain/careCompanion"
+import type { LessonProgress } from "@/types/education"
 
 const CONDITION_LABELS: Record<string, string> = {
   DIABETES: "Diabetes",
@@ -318,11 +317,7 @@ export default function EducationFeedPage() {
   const featuredCard = unreadCards[0] ?? filteredCards[0] ?? null
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <EducationFeedSkeleton />
   }
 
   if (error || !data) {
@@ -454,6 +449,89 @@ export default function EducationFeedPage() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function EducationFeedSkeleton() {
+  return (
+    <div className="flex flex-col gap-5 p-4 pb-24 animate-pulse">
+      {/* Header */}
+      <div>
+        <div className="h-5 w-28 rounded bg-muted" />
+        <div className="mt-1.5 h-3 w-36 rounded bg-muted" />
+        <div className="mt-2 h-1.5 w-full rounded-full bg-muted" />
+      </div>
+
+      {/* Condition filter chips */}
+      <div className="flex gap-2 -mx-4 px-4">
+        {Array.from({ length: 4 }, (_, i) => (
+          <div
+            key={i}
+            className="h-7 shrink-0 rounded-full bg-muted"
+            style={{ width: `${[56, 72, 64, 80][i]}px` }}
+          />
+        ))}
+      </div>
+
+      {/* Content type filter chips */}
+      <div className="flex gap-2 -mx-4 px-4">
+        {Array.from({ length: 5 }, (_, i) => (
+          <div
+            key={i}
+            className="h-7 shrink-0 rounded-lg bg-muted"
+            style={{ width: `${[40, 68, 72, 64, 76][i]}px` }}
+          />
+        ))}
+      </div>
+
+      {/* Featured card */}
+      <div className="rounded-2xl border overflow-hidden">
+        <div className="h-36 w-full bg-muted" />
+        <div className="p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-16 rounded-full bg-muted" />
+            <div className="h-5 w-14 rounded-full bg-muted" />
+          </div>
+          <div className="h-5 w-4/5 rounded bg-muted" />
+          <div className="space-y-1.5">
+            <div className="h-3.5 w-full rounded bg-muted" />
+            <div className="h-3.5 w-3/4 rounded bg-muted" />
+          </div>
+          <div className="flex items-center justify-between pt-1">
+            <div className="flex gap-3">
+              <div className="h-3 w-14 rounded bg-muted" />
+              <div className="h-3 w-20 rounded bg-muted" />
+            </div>
+            <div className="h-3 w-16 rounded bg-muted" />
+          </div>
+        </div>
+      </div>
+
+      {/* Article list */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <div className="h-4 w-20 rounded bg-muted" />
+          <div className="h-3 w-16 rounded bg-muted" />
+        </div>
+        <div className="flex flex-col gap-3">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-3 rounded-xl border bg-card p-3.5"
+            >
+              <div className="h-10 w-10 shrink-0 rounded-xl bg-muted" />
+              <div className="flex-1 min-w-0 space-y-2">
+                <div className="h-4 w-3/4 rounded bg-muted" />
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-14 rounded-full bg-muted" />
+                  <div className="h-3 w-16 rounded bg-muted" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

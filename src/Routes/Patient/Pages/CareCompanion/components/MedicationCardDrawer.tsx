@@ -7,7 +7,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
-  Loader2,
+
   Thermometer,
   PackageOpen,
   AlertTriangle,
@@ -158,9 +158,7 @@ export function MedicationCardDrawer({
         </DrawerHeader>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-          </div>
+          <DrawerCardSkeleton />
         ) : cards.length === 0 ? (
           <div className="flex flex-col items-center gap-2 py-12 text-center">
             <Pill className="h-8 w-8 text-muted-foreground" />
@@ -225,6 +223,31 @@ export function MedicationCardDrawer({
         )}
       </DrawerContent>
     </Drawer>
+  )
+}
+
+function DrawerCardSkeleton() {
+  return (
+    <div className="animate-pulse space-y-4 rounded-xl border bg-card p-4 mx-4 mb-6">
+      <div>
+        <div className="h-5 w-36 rounded bg-muted" />
+        <div className="mt-1.5 h-3 w-24 rounded bg-muted" />
+        <div className="mt-1 h-3 w-20 rounded bg-muted" />
+      </div>
+
+      {[1, 2, 3].map((i) => (
+        <div key={i}>
+          <div className="mb-2 flex items-center gap-1.5">
+            <div className="h-4 w-4 rounded bg-muted" />
+            <div className="h-3 w-28 rounded bg-muted" />
+          </div>
+          <div className="space-y-1.5">
+            <div className="h-3 w-full rounded bg-muted" />
+            <div className="h-3 w-4/5 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 

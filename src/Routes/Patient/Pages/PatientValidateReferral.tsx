@@ -1,7 +1,7 @@
 import ErrorBlock from "@/components/ErrorBlock"
 import LoadingPage from "@/Routes/LoadingPage"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useNavigate, useSearchParams } from "react-router-dom"
 
 const validateReferralQueryKey = "validateReferral"
@@ -25,9 +25,10 @@ export default function PatientValidateReferral() {
           localStorage.setItem("referrerId", referrerId)
         }
 
-        await axios.get(
-          import.meta.env.VITE_API_BASE_URL + "/patients/login-details"
-        )
+        await supabase
+          .from("patient_details")
+          .select("data")
+          .single()
 
         navigate(navigateTo)
 

@@ -4,7 +4,7 @@ import healthUserIcon from "@/assets/icons/health-user.png"
 import { usePersistentForm } from "@/hooks/usePersistentForm"
 import PatientDependentSelect from "../../components/PatientDependentSelect"
 import { patientConnectionsQueryKey } from "../Loans/RequestLoan/PatientSelectPatient"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import ErrorBlock from "@/components/ErrorBlock"
 import LoadingPage from "@/Routes/LoadingPage"
@@ -57,12 +57,30 @@ export default function PatientGiftRecipient() {
   const { isLoading, isError, data } = useQuery({
     queryKey: [patientConnectionsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/connections"
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser()
+      if (!authUser) throw new Error("Not authenticated")
+
+      const { data: members, error } = await supabase
+        .from("network_members")
+        .select("*")
+        .eq("user_id", authUser.id)
+      if (error) throw error
+
+      const patients = (members || []).map(
+        (m: Record<string, unknown>) => ({
+          name: `${m.first_name} ${m.last_name}`,
+          value: String(m.id ?? ""),
+          status: String(m.status ?? ""),
+          phoneNumber: String(m.phone_number ?? ""),
+          photo: String(m.profile_photo ?? ""),
+          firstName: String(m.first_name ?? ""),
+          lastName: String(m.last_name ?? ""),
+        })
       )
 
-      return response.data
+      return { patients }
     },
   })
 
@@ -206,17 +224,17 @@ function ConfirmGiftRecipient({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const result = await axios.post(
-        `${
-          import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-        }/patient-network/transfer-care-funds`,
+      const { data: result, error } = await supabase.rpc(
+        "rpc_care_fund_transfer",
         {
-          patientId: transferDetails.patient.value,
-          transferAmount: transferDetails.transferAmount,
+          p_amount: Number(transferDetails.transferAmount),
+          p_receiver_phone: transferDetails.patient.phoneNumber ?? "",
+          p_description: `Gift to ${transferDetails.patient.name}`,
         }
       )
 
-      return result.data
+      if (error) throw error
+      return result
     },
     onSuccess: () => {
       toast({
@@ -231,10 +249,11 @@ function ConfirmGiftRecipient({
         },
       })
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { message?: string }
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: err.message || "Transfer failed",
         variant: "destructive",
       })
     },

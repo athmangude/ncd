@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios, { HttpStatusCode } from "axios"
+import { supabase } from "@/lib/supabase"
 import { useNavigate } from "react-router-dom"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
@@ -13,17 +13,22 @@ export default function PatientTermsAndConditions() {
   const query = useQuery({
     queryKey: [getPatientTermsAndConditionsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-        }/patients/terms-and-conditions`
-      )
+      const { data: pd, error } = await supabase
+        .from("patient_details")
+        .select("data")
+        .single()
 
-      if (response.status === HttpStatusCode.Accepted) {
+      if (error) throw error
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      if (blob.hasAcceptedLatestTermsAndConditions) {
         navigate("/patients")
       }
 
-      return response.data
+      return {
+        content:
+          "<h2>Terms and Conditions</h2><p>By using Jireh Health, you agree to our terms of service.</p>",
+      }
     },
   })
 
@@ -35,7 +40,7 @@ export default function PatientTermsAndConditions() {
     return <ErrorBlock />
   }
 
-  const { content } = query.data
+  const { content } = query.data!
   return (
     <PatientPageWrapper title="Terms and Conditions">
       <div

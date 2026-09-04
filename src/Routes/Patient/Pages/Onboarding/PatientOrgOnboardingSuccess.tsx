@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import PatientAuthWrapper from "../../components/PatientAuthWrapper"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import share from "@/assets/icons/share.png"
@@ -24,10 +24,19 @@ export function PatientOrgOnboardingSuccess() {
   const query = useQuery({
     queryKey: [patientOrgDetailsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/organizations/patients/get-org-details`
-      )
-      return response.data
+      const { data: pd, error } = await supabase
+        .from("patient_details")
+        .select("data")
+        .single()
+
+      if (error) throw error
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      const orgBorrower = blob.orgBorrower as Record<string, unknown> | null
+      return {
+        name: orgBorrower?.orgName ?? "Your organization",
+        orgPlan: orgBorrower?.orgPlan ?? "ADVANCE",
+      }
     },
   })
 
@@ -38,8 +47,8 @@ export function PatientOrgOnboardingSuccess() {
     return <ErrorBlock message={query.error.message} />
   }
 
-  const { name, orgPlan } = query.data || {}
-  const orgName = name?.trim() || "Your organization"
+  const { name, orgPlan } = (query.data ?? {}) as Record<string, any>
+  const orgName = (name as string)?.trim() || "Your organization"
 
   return (
     <PatientAuthWrapper>

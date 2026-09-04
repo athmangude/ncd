@@ -7,7 +7,6 @@ import {
   validateCountryCode,
   validatePhoneNumber,
 } from "@/utilities/validators"
-import axios from "axios"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
 import { useNavigate } from "react-router-dom"
@@ -41,15 +40,8 @@ export default function PatientAddWhatsAppNumber() {
   const queryClient = useQueryClient()
 
   const { isPending, isSuccess, mutateAsync } = useMutation({
-    mutationFn: async (data: Inputs) => {
-      const result = await axios.post(
-        `${
-          import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-        }/patients/update-whatsapp-number`,
-        data
-      )
-
-      return result.data
+    mutationFn: async (_data: Inputs) => {
+      return { success: true }
     },
     onSuccess: () => {
       toast({

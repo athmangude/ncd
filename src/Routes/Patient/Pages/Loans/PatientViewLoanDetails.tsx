@@ -8,7 +8,7 @@ import { Button } from "@/components/Button"
 import { useQuery } from "@tanstack/react-query"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useParams, useNavigate } from "react-router-dom"
 import { usePatientLoanStore } from "../../stores/patientLoanStore"
 import PaymentPortal from "../Payment/PatientPaymentPortal"
@@ -38,12 +38,39 @@ export default function ViewLoanDetails() {
   const query = useQuery({
     queryKey: [getPatientLoanDetailsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/loans/patient/me/${id}`
-      )
+      const { data, error } = await supabase
+        .from("loans")
+        .select("*")
+        .eq("id", id)
+        .single()
+      if (error) throw error
 
-      setLoan(response.data)
-      return response.data
+      const currency = data.currency as { code?: string } | null
+      const patientMedicalInfoRequest = data.patient_medical_info_request as Record<string, unknown> | null
+      const transactions = data.transactions as unknown[]
+
+      const mapped = {
+        id: data.id,
+        amount: Number(data.amount),
+        totalBillAmount: Number(data.total_bill_amount),
+        outstandingAmount: Number(data.outstanding_amount),
+        totalPaid: Number(data.total_paid),
+        careFundDiscountAmount: Number(data.care_fund_discount_amount),
+        accumulatedInterestAmount: Number(data.accumulated_interest_amount),
+        lateFees: Number(data.late_fees),
+        status: data.status,
+        loanType: data.loan_type,
+        currency: currency ?? { code: "KES" },
+        createdAt: data.created_at,
+        loanDueDate: data.loan_due_date,
+        firstPaymentDue: data.first_payment_due,
+        patientName: data.patient_name,
+        patientMedicalInfoRequest,
+        transactions,
+      }
+
+      setLoan(mapped)
+      return mapped
     },
   })
 
@@ -83,9 +110,9 @@ export default function ViewLoanDetails() {
     outstandingAmount,
     careFundDiscountAmount,
     status,
-  } = query.data
+  } = query.data!
 
-  const { facility, patientName } = patientMedicalInfoRequest || {}
+  const { facility, patientName } = (patientMedicalInfoRequest ?? {}) as Record<string, any>
 
   const repaymentPeriodDays = Math.ceil(
     (new Date(loanDueDate).getTime() - new Date(createdAt).getTime()) /
@@ -99,8 +126,8 @@ export default function ViewLoanDetails() {
   // Calculate repaid amount (approximate based on outstanding)
   const totalToRepay =
     amount +
-    (query.data.accumulatedInterestAmount || 0) +
-    (query.data.lateFees || 0)
+    (query.data!.accumulatedInterestAmount || 0) +
+    (query.data!.lateFees || 0)
   const totalRepaid =
     transactions?.reduce(
       (acc: number, curr: any) => acc + Number(curr.amount),
@@ -497,7 +524,7 @@ export function MedicalRequestDetails() {
   const { patientMedicalInfoRequest, status } =
     usePatientLoanStore((state: any) => state.loan) || {}
 
-  const { facility, patientName } = patientMedicalInfoRequest || {}
+  const { facility, patientName } = (patientMedicalInfoRequest ?? {}) as Record<string, any>
   return (
     <section className="border pt-2 p-3 rounded-lg">
       {" "}

@@ -1,24 +1,35 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { DiscountCode } from "../components/DiscountsSection"
 
-// Single source of truth for the patient's eligible discount codes.
-// Shared between the Payments tab (DiscountsSection) and the Explore tab
-// (DiscoveryHomeView) so both surfaces show the same list. React Query
-// dedupes the network call via the shared queryKey.
 export function useEligibleDiscountCodes(enabled: boolean) {
   return useQuery<DiscountCode[]>({
     queryKey: ["eligibleDiscountCodes"],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/discount-codes/eligible`,
-      )
-      const discountsData = response.data?.data || response.data || []
-      return Array.isArray(discountsData)
-        ? discountsData.filter(
-            (d: DiscountCode) => d.isActive && d.isValid,
-          )
-        : []
+      const { data, error } = await supabase
+        .from("discount_codes")
+        .select("*")
+      if (error) throw error
+      return (data ?? [])
+        .map((r) => ({
+          id: r.id,
+          code: r.code,
+          description: r.description,
+          discountType: r.discount_type,
+          discountValue: r.discount_value,
+          currency: r.currency,
+          context: r.context,
+          discountAmount: r.discount_amount,
+          validFrom: r.valid_from,
+          validUntil: r.valid_until,
+          minimumOrderAmount: r.minimum_order_amount,
+          maximumDiscountAmount: r.maximum_discount_amount,
+          isActive: r.is_active,
+          isValid: r.is_valid,
+        }))
+        .filter(
+          (d: DiscountCode) => d.isActive && d.isValid,
+        )
     },
     enabled,
     staleTime: 5 * 60 * 1000,

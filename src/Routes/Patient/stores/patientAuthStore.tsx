@@ -1,7 +1,8 @@
 import { create } from "zustand"
-import Session from "supertokens-web-js/recipe/session"
 import { CountryCode } from "libphonenumber-js"
-import { clearAllParticipantState } from "@/mocks/domain/reset"
+import { clearAllParticipantState } from "@/lib/auth-utils"
+import { supabase } from "@/lib/supabase"
+import type { Session as SupabaseSession } from "@supabase/supabase-js"
 
 interface SignUpDetails {
   phoneNumber: string
@@ -18,14 +19,20 @@ interface SignUpDetails {
 export interface PatientAuthState {
   user: any | null // Replace `any` with a specific type if available
   signUpDetails: SignUpDetails | null
+  supabaseSession: SupabaseSession | null
+  isAuthenticated: boolean
   setSignUpDetails: (details: SignUpDetails) => void
   setUserId: (userId: string, amplitudeToken: string, loginTime: Date) => void
   setUser: (user: any) => void // Replace `any` with a specific type if available
+  setSupabaseSession: (session: SupabaseSession | null) => void
+  initializeAuth: () => Promise<void>
   signOut: () => Promise<void>
 }
 export const usePatientAuthStore = create<PatientAuthState>((set) => ({
   user: null,
   signUpDetails: null,
+  supabaseSession: null,
+  isAuthenticated: false,
   setSignUpDetails: ({
     phoneNumber,
     countryCode,
@@ -65,20 +72,32 @@ export const usePatientAuthStore = create<PatientAuthState>((set) => ({
     set(() => {
       return { user }
     }),
-  signOut: async () => {
-    await Session.signOut()
-
-    // Sign out is the single path back to a fresh, unseeded participant. Wipe
-    // every trace of this participant — mock collections, session + returning-user
-    // flags, app-flow keys, the discovery tab cache and the offline IndexedDB — so
-    // the next load starts logged-out at the phone-number entry. (Reloading without
-    // signing out preserves everything; only this clears state.)
-    try {
-      clearAllParticipantState()
-    } catch {
-      // Best-effort cleanup; don't block logout on failure
+  setSupabaseSession: (session: SupabaseSession | null) =>
+    set(() => ({
+      supabaseSession: session,
+      isAuthenticated: session !== null,
+    })),
+  initializeAuth: async () => {
+    const { data } = await supabase.auth.getSession()
+    if (data.session) {
+      set({ supabaseSession: data.session, isAuthenticated: true })
     }
 
-    set(() => ({ user: null, signUpDetails: null }))
+    supabase.auth.onAuthStateChange((_event, session) => {
+      set({
+        supabaseSession: session,
+        isAuthenticated: session !== null,
+      })
+    })
+  },
+  signOut: async () => {
+    await supabase.auth.signOut()
+    clearAllParticipantState()
+    set(() => ({
+      user: null,
+      signUpDetails: null,
+      supabaseSession: null,
+      isAuthenticated: false,
+    }))
   },
 }))

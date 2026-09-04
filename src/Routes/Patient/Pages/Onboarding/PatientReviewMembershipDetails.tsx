@@ -5,7 +5,7 @@ import { SectionTitle } from "@/components/SectionTitle"
 import { useForm } from "react-hook-form"
 import { useMutation } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import useNextMembershipSetupStep from "../../hooks/useNextMembershipSetupStep"
 import { healthcareFocusAreas } from "../Onboarding/PatientHealthcareFocus"
 import cashIcon from "@/assets/icons/cash.png"
@@ -30,22 +30,20 @@ export default function PatientReviewMembershipDetails() {
   const { toast } = useToast()
   const next = useNextMembershipSetupStep()
   const mutation = useMutation({
-    mutationFn: async (data: any) => {
-      const payload: any = {
-        plan: data.plan,
-        skipCreditLimitUpdate: data.skipCreditLimitUpdate,
+    mutationFn: async (data: Record<string, unknown>) => {
+      const plan = data.plan === "FREE" ? undefined : data.plan
+
+      if (plan) {
+        const { data: result, error } = await supabase.rpc(
+          "rpc_activate_membership",
+          { p_plan: plan },
+        )
+
+        if (error) throw error
+        return result ?? { success: true }
       }
 
-      if (data.plan === "FREE") {
-        delete payload.plan
-      }
-
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/submit-plan-details",
-        payload
-      )
-
-      return response.data
+      return { success: true }
     },
     onSuccess: (data: any) => {
       if (data.authorizationUrl) {

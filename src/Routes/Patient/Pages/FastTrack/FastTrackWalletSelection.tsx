@@ -71,7 +71,7 @@ export default function FastTrackWalletSelection() {
 
   const totalBillAmount = parseFloat(invoiceAmountStr) || 0
   const discountAmount = parseFloat(discountAmountStr) || 0
-  const netAmount = totalBillAmount - discountAmount
+  const netAmount = Math.round(totalBillAmount - discountAmount)
 
   const [activeWalletId, setActiveWalletId] = useState<string | null>(null)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)

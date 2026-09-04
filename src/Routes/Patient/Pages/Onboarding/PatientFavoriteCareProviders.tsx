@@ -1,6 +1,7 @@
 import SearchField from "@/components/SearchField"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { useEffect, useState } from "react"
+import { searchFacilitiesSupabase } from "@/lib/searchFacilitiesSupabase"
 import DeletableItem from "../../components/DeletableItem"
 import FormGroupWrapper from "@/components/form/FormGroupWrapper"
 import { usePersistentForm } from "@/hooks/usePersistentForm"
@@ -77,7 +78,7 @@ export default function PatientFavoriteCareProviders() {
       <form className="flex flex-col gap-5 w-full" onSubmit={onSubmit}>
         <FormGroupWrapper>
           <SearchField
-            searchUrl="/patients/search-facilities"
+            searchFn={searchFacilitiesSupabase}
             dataDetails={{
               titleKey: "name",
               descriptionKey: "plotNumber",

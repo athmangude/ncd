@@ -11,7 +11,7 @@ import { Button } from "@/components/Button"
 import confettiIcon from "@/assets/icons/confetti.png"
 import { useToast } from "@/hooks/useToast"
 import { useState } from "react"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useMutation } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 
@@ -43,15 +43,33 @@ export function WaitlistDialog({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const result = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/join-waitlist`,
-        {
-          waitlistType,
-          metadata,
-        }
-      )
+      const { data: pd, error: pdError } = await supabase
+        .from("patient_details")
+        .select("id, data")
+        .single()
 
-      return result.data
+      if (pdError) throw pdError
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      const existingWaitlists = (blob.waitlists as string[]) ?? []
+
+      const { error: updateError } = await supabase
+        .from("patient_details")
+        .update({
+          data: {
+            ...blob,
+            waitlists: [...existingWaitlists, waitlistType],
+            waitlistMetadata: {
+              ...((blob.waitlistMetadata as Record<string, unknown>) ?? {}),
+              [waitlistType]: metadata,
+            },
+          },
+        })
+        .eq("id", pd.id)
+
+      if (updateError) throw updateError
+
+      return { message: "You have been added to the waitlist" }
     },
     onSuccess: () => {
       toast({
@@ -65,10 +83,11 @@ export function WaitlistDialog({
 
       setOpen(false)
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { message?: string }
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: err.message || "Something went wrong",
         variant: "destructive",
       })
     },

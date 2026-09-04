@@ -4,7 +4,7 @@ import { DualActionFooter, PrimaryCTAFooter } from "@/Routes/shell/footers"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import { PatientInviteInfo } from "./PatientInviteInfo"
@@ -81,11 +81,31 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
   const query = useQuery({
     queryKey: [patientAcceptInviteQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/referrer-details/${referrerId}`
-      )
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("id, first_name, last_name")
+        .eq("id", referrerId)
+        .single()
+      if (error) throw error
 
-      return response.data
+      const { data: userData } = await supabase.auth.getUser()
+      const currentUserId = userData.user?.id
+      let isAlreadyConnected = false
+      if (currentUserId) {
+        const { data: existing } = await supabase
+          .from("network_members")
+          .select("id")
+          .eq("user_id", currentUserId)
+          .limit(1)
+        isAlreadyConnected = (existing?.length ?? 0) > 0
+      }
+
+      return {
+        referrerFirstName: profile.first_name ?? "",
+        referrerLastName: profile.last_name ?? "",
+        referrerId: profile.id,
+        isAlreadyConnected,
+      }
     },
   })
 
@@ -101,17 +121,26 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
 
   const mutation = useMutation({
     mutationFn: async (data: Inputs) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/accept-invite`,
-        {
-          ...data,
-          type: "COPY_LINK",
-        }
-      )
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
 
-      return response.data
+      const memberId = "member-" + Date.now().toString(36)
+      const { error } = await supabase.from("network_members").insert({
+        id: memberId,
+        user_id: userId,
+        first_name: query.data?.referrerFirstName ?? "",
+        last_name: query.data?.referrerLastName ?? "",
+        relationship: data.relationship,
+        type: "NETWORK",
+        status: "ACTIVE",
+        joined_at: new Date().toISOString(),
+      })
+      if (error) throw error
+
+      return { message: "Invite accepted successfully" }
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       toast({
         title: "Success",
         description: data.message,
@@ -128,10 +157,10 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
         },
       })
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: error.message,
         variant: "destructive",
       })
     },
@@ -142,8 +171,8 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
   }
 
   if (query.isError) {
-    const error: any = query.error
-    return <ErrorBlock message={error.response?.data.message} />
+    const error = query.error as Error
+    return <ErrorBlock message={error.message} />
   }
 
   const {
@@ -151,7 +180,7 @@ function InviteDetails({ referrerId }: { referrerId: string }) {
     referrerLastName,
     referrerId: id,
     isAlreadyConnected,
-  } = query.data
+  } = query.data!!
 
   if (isAlreadyConnected) {
     return (

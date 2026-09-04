@@ -1,28 +1,25 @@
 import { useState, useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { Bell, Settings, Check, Copy, Sparkles } from "lucide-react"
+import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/Button"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { usePushNotifications } from "@/hooks/usePushNotifications"
 import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 import { NotificationHelpDialog } from "@/components/EnableNotificationsCard"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import LoadingPage from "@/Routes/LoadingPage"
-import ErrorBlock from "@/components/ErrorBlock"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/useToast"
 import {
-  CircleInviteReminderCard,
-  type CircleInviteSubType,
-} from "./CircleInviteReminderCard"
-import {
-  useNotifications as useCareNotifications,
+  useNotifications,
   useMarkNotificationRead,
+  notificationsQueryKey,
 } from "@/Routes/Patient/Pages/CareCompanion/hooks/useNotifications"
 import type { CareCompanionNotification } from "@/types/care-companion"
 
-const COMPANION_TYPE_LABELS: Record<string, string> = {
+const TYPE_LABELS: Record<string, string> = {
   REFILL_NUDGE: "Refill Reminder",
   MISSED_TEST_FLAG: "Lab Test",
   COST_SAVING_SUGGESTION: "Cost Saving",
@@ -42,43 +39,48 @@ const COMPANION_TYPE_LABELS: Record<string, string> = {
   REFILL_LOAN_OFFER: "Loan Offer",
   PREDICTIVE_CREDIT_OFFER: "Credit Offer",
   EDUCATION_WEEKLY: "Education",
+  EDUCATION_RECOMMENDATION: "Education",
   MEDICATION_CARD_AVAILABLE: "Medication Info",
   LAB_REMINDER: "Lab Test",
+  CASHBACK_EARNED: "Cashback",
+  TEST_TREND: "Test Results",
 }
 
-function getCompanionTypeLabel(n: CareCompanionNotification): string {
-  if (n.type === "AI_INSIGHT" && n.metadata?.actionType) {
-    return COMPANION_TYPE_LABELS[n.metadata.actionType] ?? "AI Insight"
+function getTypeLabel(n: CareCompanionNotification): string {
+  if (n.type === "AI_INSIGHT") {
+    const key = n.metadata?.actionType ?? n.metadata?.insightType
+    if (key) return TYPE_LABELS[key] ?? "AI Insight"
+    return "AI Insight"
   }
-  return COMPANION_TYPE_LABELS[n.type] ?? n.type
+  return (
+    TYPE_LABELS[n.type] ??
+    n.type
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ")
+  )
 }
 
-interface Notification {
-  id: number
-  patientId: string
-  phoneNumber: string
-  message: string
-  type: "LOANS" | "SAVINGS" | "CIRCLE" | "OTHER"
-  status: string
-  readStatus: "READ" | "UNREAD"
-  sentAt: string
-  notificationSubType?: string | null
-  relatedEntityId?: string | null
-  metadata?: { inviteeFirstName?: string } | null
+type FilterType = "ALL" | "COMPANION" | "CIRCLE" | "LOANS" | "SAVINGS"
+
+const FILTER_TYPE_MATCH: Record<Exclude<FilterType, "ALL">, string[]> = {
+  COMPANION: ["AI_INSIGHT"],
+  CIRCLE: ["CIRCLE_PROMPT"],
+  LOANS: [
+    "LOAN_REPAYMENT_PRAISE",
+    "LOAN_REPAYMENT_REMINDER",
+    "LOAN_REPAYMENT_OVERDUE",
+    "LOAN_OFFER",
+    "REFILL_LOAN_OFFER",
+    "PREDICTIVE_CREDIT_OFFER",
+  ],
+  SAVINGS: ["CASHBACK_EARNED", "COST_SAVING_SUGGESTION"],
 }
-
-type FilterType = "ALL" | "CIRCLE" | "LOANS" | "SAVINGS" | "COMPANION"
-
-type DisplayItem =
-  | { source: "general"; data: Notification }
-  | { source: "companion"; data: CareCompanionNotification }
 
 export default function PatientNotificationsPage() {
   const navigate = useNavigate()
   const user = usePatientAuthStore((state: any) => state.user)
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const queryClient = useQueryClient()
   const [showHelp, setShowHelp] = useState(false)
   const [isRequesting, setIsRequesting] = useState(false)
   const [activeFilter, setActiveFilter] = useState<FilterType>("ALL")
@@ -89,13 +91,17 @@ export default function PatientNotificationsPage() {
     error: permissionError,
   } = usePushNotifications(user?.id, "PATIENT")
 
-  const { data: careNotifications = [], isLoading: careLoading } =
-    useCareNotifications()
-  const markCareReadMutation = useMarkNotificationRead()
+  const { data: notifications = [], isLoading } = useNotifications()
+  const markReadMutation = useMarkNotificationRead()
 
-  const sentCareNotifications = useMemo(
-    () => careNotifications.filter((n) => n.sentAt !== null),
-    [careNotifications],
+  const displayItems = useMemo(
+    () => notifications.filter((n) => n.sentAt !== null),
+    [notifications],
+  )
+
+  const unreadCount = useMemo(
+    () => displayItems.filter((n) => !n.readAt).length,
+    [displayItems],
   )
 
   useEffect(() => {
@@ -103,29 +109,6 @@ export default function PatientNotificationsPage() {
       setShowHelp(true)
     }
   }, [permissionError])
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        setIsLoading(true)
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/notifications`,
-        )
-        setNotifications(response.data.notifications)
-      } catch (err: any) {
-        console.error("Error fetching notifications:", err)
-        setError(err.message || "Failed to load notifications")
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    if (notificationPermission === "granted") {
-      fetchNotifications()
-    } else {
-      setIsLoading(false)
-    }
-  }, [notificationPermission])
 
   const handleEnableNotifications = async () => {
     setIsRequesting(true)
@@ -138,56 +121,26 @@ export default function PatientNotificationsPage() {
     }
   }
 
-  const displayItems: DisplayItem[] = useMemo(() => {
-    const items: DisplayItem[] = [
-      ...notifications.map(
-        (n): DisplayItem => ({ source: "general", data: n }),
-      ),
-      ...sentCareNotifications.map(
-        (n): DisplayItem => ({ source: "companion", data: n }),
-      ),
-    ]
-    items.sort(
-      (a, b) =>
-        new Date(b.data.sentAt ?? 0).getTime() -
-        new Date(a.data.sentAt ?? 0).getTime(),
-    )
-    return items
-  }, [notifications, sentCareNotifications])
-
   const filteredItems = useMemo(() => {
     if (activeFilter === "ALL") return displayItems
-    if (activeFilter === "COMPANION")
-      return displayItems.filter((item) => item.source === "companion")
-    return displayItems.filter(
-      (item) =>
-        item.source === "general" && item.data.type === activeFilter,
-    )
+    const types = FILTER_TYPE_MATCH[activeFilter]
+    return displayItems.filter((n) => types.includes(n.type))
   }, [displayItems, activeFilter])
 
   const handleMarkAllAsRead = async () => {
-    const previousNotifications = [...notifications]
-    setNotifications(
-      notifications.map((n) => ({ ...n, readStatus: "READ" as const })),
-    )
-
-    for (const n of sentCareNotifications) {
-      if (!n.readAt) {
-        markCareReadMutation.mutate(n.id)
-      }
-    }
-
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_BASE_URL}/notifications/read-all`,
-      )
+      await supabase
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .is("read_at", null)
+      queryClient.invalidateQueries({
+        queryKey: [notificationsQueryKey],
+      })
       toast({
         title: "Success",
         description: "All notifications marked as read",
       })
-    } catch (err) {
-      console.error("Error marking all as read:", err)
-      setNotifications(previousNotifications)
+    } catch {
       toast({
         title: "Error",
         description: "Failed to mark notifications as read",
@@ -198,10 +151,14 @@ export default function PatientNotificationsPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", { month: "long", day: "numeric" })
+    return date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+    })
   }
 
-  const extractUrl = (text: string) => {
+  const extractUrl = (text: string | undefined | null) => {
+    if (!text) return null
     const urlRegex = /(https?:\/\/[^\s]+)/g
     const match = text.match(urlRegex)
     return match ? match[0] : null
@@ -216,39 +173,16 @@ export default function PatientNotificationsPage() {
     })
   }
 
-  const renderMessageWithLink = (message: string) => {
-    const url = extractUrl(message)
-    if (!url) return message
-
-    const parts = message.split(url)
-    return (
-      <>
-        {parts[0]}
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-600 underline hover:text-blue-800 break-all"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {url}
-        </a>
-        {parts[1]}
-      </>
-    )
-  }
-
-  function handleTapCareNotification(n: CareCompanionNotification) {
+  function handleTapNotification(n: CareCompanionNotification) {
     if (!n.readAt) {
-      markCareReadMutation.mutate(n.id)
+      markReadMutation.mutate(n.id)
     }
     navigate(`/patients/notifications/${n.id}`)
   }
 
-  // State A: No push permission AND no care notifications to show
   if (
     notificationPermission !== "granted" &&
-    sentCareNotifications.length === 0
+    displayItems.length === 0
   ) {
     return (
       <PatientPageWrapper
@@ -318,23 +252,10 @@ export default function PatientNotificationsPage() {
     )
   }
 
-  if (isLoading || careLoading) {
+  if (isLoading) {
     return <LoadingPage />
   }
 
-  if (error && sentCareNotifications.length === 0) {
-    return (
-      <PatientPageWrapper
-        title="Notifications"
-        onBack={() => navigate(-1)}
-        footer={null}
-      >
-        <ErrorBlock message={error} />
-      </PatientPageWrapper>
-    )
-  }
-
-  // State B: Empty State
   if (displayItems.length === 0) {
     return (
       <PatientPageWrapper
@@ -355,10 +276,9 @@ export default function PatientNotificationsPage() {
     )
   }
 
-  // State C: List State
   return (
     <PatientPageWrapper
-      title={`Notifications (${displayItems.length})`}
+      title={`Notifications${unreadCount > 0 ? ` (${unreadCount} Unread)` : ""}`}
       onBack={() => navigate(-1)}
       footer={
         <div className="border-t bg-card dark:bg-neutral-950 flex items-center p-4">
@@ -408,113 +328,48 @@ export default function PatientNotificationsPage() {
             <p>No notifications found in this category.</p>
           </div>
         ) : (
-          filteredItems.map((item) => {
-            if (item.source === "companion") {
-              const n = item.data
-              const isUnread = n.readAt === null
-              return (
-                <button
-                  key={`care-${n.id}`}
-                  type="button"
-                  onClick={() => handleTapCareNotification(n)}
-                  className={cn(
-                    "flex w-full items-start gap-4 p-4 text-left transition-colors hover:bg-muted active:bg-muted/60",
-                    isUnread && "bg-blue-50/30",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "mt-2 h-2 w-2 shrink-0 rounded-full",
-                      isUnread ? "bg-primary" : "bg-transparent",
-                    )}
-                    aria-hidden
-                  />
-                  <div className="flex-1">
-                    <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
-                      {n.type === "AI_INSIGHT" && (
-                        <Sparkles className="h-3 w-3" />
-                      )}
-                      {getCompanionTypeLabel(n)}
-                    </span>
-                    <p
-                      className={cn(
-                        "mt-0.5 text-sm",
-                        isUnread
-                          ? "font-medium text-foreground"
-                          : "text-foreground",
-                      )}
-                    >
-                      {n.title}
-                    </p>
-                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
-                      {n.body}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      {formatDate(n.sentAt!)}
-                    </p>
-                  </div>
-                </button>
-              )
-            }
-
-            const notification = item.data
-            const isCircleReminder =
-              notification.notificationSubType ===
-                "CIRCLE_INVITE_4H_OWNER" ||
-              notification.notificationSubType ===
-                "CIRCLE_INVITE_24H_OWNER"
-
-            if (
-              isCircleReminder &&
-              notification.relatedEntityId &&
-              notification.metadata?.inviteeFirstName
-            ) {
-              return (
-                <div key={notification.id} className="px-4 py-2">
-                  <CircleInviteReminderCard
-                    subType={
-                      notification.notificationSubType as CircleInviteSubType
-                    }
-                    invitationId={notification.relatedEntityId}
-                    inviteeFirstName={
-                      notification.metadata.inviteeFirstName
-                    }
-                    sentAt={notification.sentAt}
-                    readStatus={notification.readStatus}
-                  />
-                </div>
-              )
-            }
-
-            const url = extractUrl(notification.message)
+          filteredItems.map((n) => {
+            const isUnread = n.readAt === null
+            const url = extractUrl(n.body)
             return (
-              <div
-                key={notification.id}
+              <button
+                key={n.id}
+                type="button"
+                onClick={() => handleTapNotification(n)}
                 className={cn(
-                  "flex items-start gap-4 p-4 hover:bg-muted transition-colors cursor-pointer group relative",
-                  notification.readStatus === "UNREAD" ? "bg-blue-50/30" : "",
+                  "flex w-full items-start gap-4 p-4 text-left transition-colors hover:bg-muted active:bg-muted/60 group relative",
+                  isUnread && "bg-blue-50/30",
                 )}
               >
-                {notification.readStatus === "UNREAD" && (
-                  <div className="w-2 h-2 rounded-full bg-primary mt-2 shrink-0" />
-                )}
-                {notification.readStatus === "READ" && (
-                  <div className="w-2 h-2 rounded-full bg-transparent mt-2 shrink-0" />
-                )}
-
-                <div className="flex-1 pr-8">
+                <span
+                  className={cn(
+                    "mt-2 h-2 w-2 shrink-0 rounded-full",
+                    isUnread ? "bg-primary" : "bg-transparent",
+                  )}
+                  aria-hidden
+                />
+                <div className="flex-1">
+                  <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
+                    {n.type === "AI_INSIGHT" && (
+                      <Sparkles className="h-3 w-3" />
+                    )}
+                    {getTypeLabel(n)}
+                  </span>
                   <p
                     className={cn(
-                      "text-sm",
-                      notification.readStatus === "UNREAD"
+                      "mt-0.5 text-sm",
+                      isUnread
                         ? "font-medium text-foreground"
                         : "text-foreground",
                     )}
                   >
-                    {renderMessageWithLink(notification.message)}
+                    {n.title}
                   </p>
-                  <p className="text-muted-foreground text-xs mt-1">
-                    {formatDate(notification.sentAt)}
+                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                    {n.body}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {formatDate(n.sentAt!)}
                   </p>
                 </div>
 
@@ -523,14 +378,17 @@ export default function PatientNotificationsPage() {
                     variant="ghost"
                     size="icon"
                     className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => handleCopyLink(e, url)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleCopyLink(e, url)
+                    }}
                     title="Copy link"
                     aria-label="Copy link"
                   >
                     <Copy className="w-4 h-4 text-muted-foreground" />
                   </Button>
                 )}
-              </div>
+              </button>
             )
           })
         )}

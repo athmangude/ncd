@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import {
   AlertTriangle,
@@ -15,7 +15,18 @@ import {
   useNotifications,
   useMarkNotificationRead,
 } from "@/Routes/Patient/Pages/CareCompanion/hooks/useNotifications"
+import { supabase } from "@/lib/supabase"
 import type { CareCompanionNotification } from "@/types/care-companion"
+
+interface GeneralNotification {
+  id: string
+  type: string
+  title: string
+  body: string
+  deepLink?: string
+  sentAt?: string
+  readAt?: string
+}
 
 const ACTION_TYPE_LABELS: Record<string, string> = {
   REFILL_NUDGE: "Refill Reminder",
@@ -39,6 +50,9 @@ const ACTION_TYPE_LABELS: Record<string, string> = {
   EDUCATION_WEEKLY: "Weekly Education",
   MEDICATION_CARD_AVAILABLE: "Medication Info",
   LAB_REMINDER: "Lab Test",
+  TEST_TREND: "Test Results",
+  EDUCATION_RECOMMENDATION: "Education",
+  CASHBACK_EARNED: "Cashback",
 }
 
 const SEVERITY_CONFIG: Record<
@@ -68,42 +82,154 @@ const GENERIC_DEEP_LINKS = new Set([
   "/patients",
 ])
 
-const ACTION_BUTTON_LABELS: Record<string, string> = {
-  REFILL_NUDGE: "Find nearby pharmacies",
-  MISSED_TEST_FLAG: "Find nearby labs",
-  COST_SAVING_SUGGESTION: "View cost tracker",
-  DRUG_INTERACTION_WARNING: "View medication details",
-  ADHERENCE_PATTERN: "View schedule",
-  INVOICE_POPULATE: "View payment details",
-  DRUG_INFO_SURFACE: "View medication card",
-  TEST_RESULT_PROMPT: "Upload test results",
-  LOAN_REPAYMENT_PRAISE: "View loan details",
-  LOAN_REPAYMENT_REMINDER: "View loan details",
-  LOAN_REPAYMENT_OVERDUE: "View loan details",
-  LOAN_OFFER: "View loan offer",
-  REFILL_REMINDER: "Find nearby pharmacies",
-  REFILL_OVERDUE: "Find nearby pharmacies",
-  REFILL_LOAN_OFFER: "View loan offer",
-  PREDICTIVE_CREDIT_OFFER: "View credit offer",
-  EDUCATION_WEEKLY: "Read article",
-  MEDICATION_CARD_AVAILABLE: "View medication card",
-  LAB_REMINDER: "Find nearby labs",
+const ACTION_CTA: Record<string, { label: string; route: string }> = {
+  REFILL_NUDGE: { label: "Find nearby pharmacies", route: "/patients/explore" },
+  REFILL_REMINDER: {
+    label: "View refill schedule",
+    route: "/patients/companion/refill-schedule",
+  },
+  REFILL_OVERDUE: {
+    label: "Find nearby pharmacies",
+    route: "/patients/explore",
+  },
+  MISSED_TEST_FLAG: { label: "Find nearby labs", route: "/patients/explore" },
+  LAB_REMINDER: { label: "Find nearby labs", route: "/patients/explore" },
+  COST_SAVING_SUGGESTION: {
+    label: "View cost tracker",
+    route: "/patients/companion/cost-tracker",
+  },
+  CASHBACK_EARNED: {
+    label: "View cost tracker",
+    route: "/patients/companion/cost-tracker",
+  },
+  DRUG_INTERACTION_WARNING: {
+    label: "View medication details",
+    route: "/patients/companion/medication-cards",
+  },
+  DRUG_INFO_SURFACE: {
+    label: "View medication card",
+    route: "/patients/companion/medication-cards",
+  },
+  MEDICATION_CARD_AVAILABLE: {
+    label: "View medication card",
+    route: "/patients/companion/medication-cards",
+  },
+  ADHERENCE_PATTERN: {
+    label: "View schedule",
+    route: "/patients/companion/refill-schedule",
+  },
+  TEST_RESULT_PROMPT: {
+    label: "Upload test results",
+    route: "/patients/companion/test-results",
+  },
+  TEST_TREND: {
+    label: "View test results",
+    route: "/patients/companion/test-results",
+  },
+  LOAN_REPAYMENT_PRAISE: {
+    label: "View loan details",
+    route: "/patients/loans",
+  },
+  LOAN_REPAYMENT_REMINDER: {
+    label: "View loan details",
+    route: "/patients/loans",
+  },
+  LOAN_REPAYMENT_OVERDUE: {
+    label: "View loan details",
+    route: "/patients/loans",
+  },
+  LOAN_OFFER: { label: "View loan offer", route: "/patients/loans" },
+  REFILL_LOAN_OFFER: { label: "View loan offer", route: "/patients/loans" },
+  PREDICTIVE_CREDIT_OFFER: {
+    label: "View credit offer",
+    route: "/patients/loans",
+  },
+  EDUCATION_WEEKLY: {
+    label: "Read article",
+    route: "/patients/companion/education",
+  },
+  EDUCATION_RECOMMENDATION: {
+    label: "Read article",
+    route: "/patients/companion/education",
+  },
+  CIRCLE_PROMPT: { label: "View circle", route: "/patients/circle" },
+  INVOICE_POPULATE: {
+    label: "View payment details",
+    route: "/patients/payments",
+  },
+  PROVIDER_FLAG: {
+    label: "View care companion",
+    route: "/patients/companion",
+  },
+}
+
+const VALID_ROUTE_PREFIXES = [
+  "/patients/companion/education/",
+  "/patients/companion/medication-cards/",
+  "/patients/companion/cost-tracker",
+  "/patients/companion/refill-schedule",
+  "/patients/companion/test-results",
+  "/patients/companion/emergency-card",
+  "/patients/companion/medication-timeline",
+  "/patients/companion/assistant",
+  "/patients/companion/intake",
+  "/patients/explore",
+  "/patients/loans",
+  "/patients/payments",
+  "/patients/circle",
+  "/patients/care-fund",
+  "/patients/network",
+  "/patients/fast-track",
+  "/patients/notifications",
+]
+
+function isValidRoute(path: string): boolean {
+  return VALID_ROUTE_PREFIXES.some((prefix) => path.startsWith(prefix))
 }
 
 function getTypeLabel(n: CareCompanionNotification): string {
-  if (n.type === "AI_INSIGHT" && n.metadata?.actionType) {
-    return ACTION_TYPE_LABELS[n.metadata.actionType] ?? "AI Insight"
+  if (n.type === "AI_INSIGHT") {
+    const key = n.metadata?.actionType ?? n.metadata?.insightType
+    if (key) return ACTION_TYPE_LABELS[key] ?? "AI Insight"
+    return "AI Insight"
   }
   return ACTION_TYPE_LABELS[n.type] ?? n.type
 }
 
-function hasUsefulDeepLink(n: CareCompanionNotification): boolean {
-  return !GENERIC_DEEP_LINKS.has(n.deepLink)
+function resolveCtaKey(n: {
+  type: string
+  metadata?: Record<string, string> | null
+}): string {
+  if (n.metadata?.actionType) return n.metadata.actionType
+  if (n.metadata?.insightType) return n.metadata.insightType
+  return n.type
 }
 
-function getActionLabel(n: CareCompanionNotification): string {
-  const actionType = n.metadata?.actionType ?? n.type
-  return ACTION_BUTTON_LABELS[actionType] ?? "View details"
+function getCta(
+  n: CareCompanionNotification,
+): { label: string; route: string } | null {
+  const key = resolveCtaKey(n)
+  const mapped = ACTION_CTA[key]
+  if (mapped) return mapped
+  if (!GENERIC_DEEP_LINKS.has(n.deepLink) && isValidRoute(n.deepLink)) {
+    return { label: "View details", route: n.deepLink }
+  }
+  return null
+}
+
+function getGeneralCta(
+  n: GeneralNotification,
+): { label: string; route: string } | null {
+  const mapped = ACTION_CTA[n.type]
+  if (mapped) return mapped
+  if (
+    n.deepLink &&
+    !GENERIC_DEEP_LINKS.has(n.deepLink) &&
+    isValidRoute(n.deepLink)
+  ) {
+    return { label: "View details", route: n.deepLink }
+  }
+  return null
 }
 
 export default function NotificationDetailPage() {
@@ -111,21 +237,123 @@ export default function NotificationDetailPage() {
   const navigate = useNavigate()
   const { data: notifications = [] } = useNotifications()
   const markRead = useMarkNotificationRead()
+  const [generalNotification, setGeneralNotification] =
+    useState<GeneralNotification | null>(null)
+  const [generalLoading, setGeneralLoading] = useState(false)
 
-  const notification = useMemo(
+  const careNotification = useMemo(
     () => notifications.find((n) => n.id === id) ?? null,
     [notifications, id],
   )
 
+  useEffect(() => {
+    if (careNotification || !id) return
+    setGeneralLoading(true)
+    supabase
+      .from("notifications")
+      .select("*")
+      .eq("id", id)
+      .single()
+      .then(({ data, error }) => {
+        if (!error && data) {
+          setGeneralNotification({
+            id: data.id,
+            type: data.type,
+            title: data.title,
+            body: data.body ?? data.title,
+            deepLink: data.deep_link ?? undefined,
+            sentAt: data.sent_at ?? undefined,
+            readAt: data.read_at ?? undefined,
+          })
+          if (!data.read_at) {
+            supabase
+              .from("notifications")
+              .update({ read_at: new Date().toISOString() })
+              .eq("id", id)
+          }
+        }
+        setGeneralLoading(false)
+      })
+  }, [careNotification, id])
+
   const markedRef = useRef<string | null>(null)
   useEffect(() => {
-    if (notification && !notification.readAt && markedRef.current !== notification.id) {
-      markedRef.current = notification.id
-      markRead.mutate(notification.id)
+    if (
+      careNotification &&
+      !careNotification.readAt &&
+      markedRef.current !== careNotification.id
+    ) {
+      markedRef.current = careNotification.id
+      markRead.mutate(careNotification.id)
     }
-  }, [notification, markRead])
+  }, [careNotification, markRead])
 
-  if (!notification) {
+  if (generalLoading) {
+    return (
+      <PatientPageWrapper title="Notification" onBack={() => navigate(-1)}>
+        <div className="flex items-center justify-center py-16">
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </PatientPageWrapper>
+    )
+  }
+
+  if (generalNotification) {
+    const typeLabel = generalNotification.type
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ")
+
+    return (
+      <PatientPageWrapper title="Notification" onBack={() => navigate(-1)}>
+        <div className="flex flex-col gap-5 py-2">
+          <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
+            {typeLabel}
+          </span>
+
+          <h2 className="text-lg font-semibold text-foreground leading-snug">
+            {generalNotification.title}
+          </h2>
+
+          <div className="flex flex-col gap-3">
+            {generalNotification.body.split("\n\n").map((para, i) => (
+              <p
+                key={i}
+                className="text-sm leading-relaxed text-foreground/90"
+              >
+                {para}
+              </p>
+            ))}
+          </div>
+
+          {generalNotification.sentAt && (
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Clock className="h-3 w-3" />
+              {format(
+                new Date(generalNotification.sentAt),
+                "EEEE, MMMM d 'at' h:mm a",
+              )}
+            </div>
+          )}
+
+          {(() => {
+            const cta = getGeneralCta(generalNotification)
+            return cta ? (
+              <Button
+                className="mt-2"
+                onClick={() => navigate(cta.route)}
+              >
+                {cta.label}
+                <ArrowRight className="h-4 w-4 ml-1" />
+              </Button>
+            ) : null
+          })()}
+        </div>
+      </PatientPageWrapper>
+    )
+  }
+
+  if (!careNotification) {
     return (
       <PatientPageWrapper title="Notification" onBack={() => navigate(-1)}>
         <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -144,13 +372,13 @@ export default function NotificationDetailPage() {
     )
   }
 
-  const typeLabel = getTypeLabel(notification)
-  const severity = notification.metadata?.severity
+  const typeLabel = getTypeLabel(careNotification)
+  const severity = careNotification.metadata?.severity
   const severityConfig = severity ? SEVERITY_CONFIG[severity] : null
   const SeverityIcon = severityConfig?.icon
-  const relatedMedication = notification.metadata?.relatedMedication
-  const isAiInsight = notification.type === "AI_INSIGHT"
-  const showDeepLink = hasUsefulDeepLink(notification)
+  const relatedMedication = careNotification.metadata?.relatedMedication
+  const isAiInsight = careNotification.type === "AI_INSIGHT"
+  const cta = getCta(careNotification)
 
   return (
     <PatientPageWrapper title="Notification" onBack={() => navigate(-1)}>
@@ -174,11 +402,11 @@ export default function NotificationDetailPage() {
         </div>
 
         <h2 className="text-lg font-semibold text-foreground leading-snug">
-          {notification.title}
+          {careNotification.title}
         </h2>
 
         <div className="flex flex-col gap-3">
-          {notification.body.split("\n\n").map((para, i) => (
+          {careNotification.body.split("\n\n").map((para, i) => (
             <p
               key={i}
               className="text-sm leading-relaxed text-foreground/90"
@@ -199,19 +427,22 @@ export default function NotificationDetailPage() {
           </div>
         )}
 
-        {notification.sentAt && (
+        {careNotification.sentAt && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
-            {format(new Date(notification.sentAt), "EEEE, MMMM d 'at' h:mm a")}
+            {format(
+              new Date(careNotification.sentAt),
+              "EEEE, MMMM d 'at' h:mm a",
+            )}
           </div>
         )}
 
-        {showDeepLink && (
+        {cta && (
           <Button
             className="mt-2"
-            onClick={() => navigate(notification.deepLink)}
+            onClick={() => navigate(cta.route)}
           >
-            {getActionLabel(notification)}
+            {cta.label}
             <ArrowRight className="h-4 w-4 ml-1" />
           </Button>
         )}

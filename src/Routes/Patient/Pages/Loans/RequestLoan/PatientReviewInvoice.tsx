@@ -1,7 +1,7 @@
 import { useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import {
   User,
   Building2,
@@ -248,11 +248,28 @@ export default function PatientReviewInvoice() {
           : null,
       }
 
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/payments/manual-review-request`,
-        payload
-      )
-      return data
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) throw new Error("Not authenticated")
+
+      const requestId = crypto.randomUUID()
+      const { data: inserted, error } = await supabase
+        .from("manual_requests")
+        .insert({
+          id: requestId,
+          user_id: authUser.id,
+          care_provider_name: payload.careProviderName,
+          bill_amount: payload.billAmount,
+          payment_info: payload.paymentInfo,
+          status: "PENDING",
+          patient: extractedData.patient,
+          dependent: extractedData.dependent,
+          kmpdc_facility: extractedData.kmpdcFacility,
+          invoice_file: extractedData.invoiceFile,
+        })
+        .select()
+        .single()
+      if (error) throw error
+      return inserted
     },
     onSuccess: (data) => {
       if (data?.id) {
@@ -274,10 +291,10 @@ export default function PatientReviewInvoice() {
         navigate("/patients/payment/request-payment/verification-pending")
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || "An error occurred",
+        description: error.message || "An error occurred",
         variant: "destructive",
       })
     },

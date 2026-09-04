@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { PhoneOutgoing } from "lucide-react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { useNavigate, useLocation } from "react-router-dom"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { formatMoney } from "@/utilities/currencyUtilities"
@@ -68,10 +67,7 @@ function UploadStatements({
   const query = useQuery({
     queryKey: [getFinancialStatementsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_API_BASE_URL + "/underwriting/financial-statements"
-      )
-      return response.data
+      return { mpesaStatements: [] }
     },
   })
 

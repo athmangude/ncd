@@ -1,6 +1,5 @@
 import { useState, useMemo, useCallback } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { ChevronLeft } from "lucide-react"
 import {
   Drawer,
@@ -13,8 +12,12 @@ import { Button } from "@/components/Button"
 import { medicationCardsQueryKey } from "../hooks/useMedicationCards"
 import { intakeProfileQueryKey } from "../hooks/useIntakeProfile"
 import { refillScheduleQueryKey } from "../hooks/useRefillSchedule"
-import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
-import medicationTaxonomy from "@/mocks/fixtures/medication-taxonomy.json"
+import { supabase } from "@/lib/supabase"
+import {
+  useMedicationTaxonomy,
+  getMedicationPrice,
+  type MedicationTaxonomyEntry,
+} from "@/hooks/useMedicationTaxonomy"
 
 interface MedicationEntry {
   id: string
@@ -25,20 +28,14 @@ interface MedicationEntry {
   conditionTags: string[]
 }
 
-const taxonomy = medicationTaxonomy as MedicationEntry[]
-
-function nameToEntry(name: string): MedicationEntry {
-  const found = taxonomy.find(
-    (m) => m.genericName.toLowerCase() === name.toLowerCase(),
-  )
-  if (found) return found
+function toMedicationEntry(row: MedicationTaxonomyEntry): MedicationEntry {
   return {
-    id: `custom-${name.toLowerCase().replace(/\s+/g, "-")}`,
-    genericName: name,
-    brandNames: [],
-    strengths: [],
-    category: "MEDICATION",
-    conditionTags: [],
+    id: row.id,
+    genericName: row.genericName,
+    brandNames: row.brandNames,
+    strengths: row.strengths,
+    category: row.category,
+    conditionTags: row.conditionTags,
   }
 }
 
@@ -76,16 +73,36 @@ export function AddMedicationDrawer({
   existingMedications,
 }: AddMedicationDrawerProps) {
   const queryClient = useQueryClient()
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
+  const taxonomy = useMemo(
+    () => taxonomyData.map(toMedicationEntry),
+    [taxonomyData],
+  )
   const [newMeds, setNewMeds] = useState<MedicationEntry[]>([])
   const [step, setStep] = useState<"select" | "details">("select")
   const [itemDetails, setItemDetails] = useState<ItemDetails[]>([])
+
+  function nameToEntry(name: string): MedicationEntry {
+    const found = taxonomy.find(
+      (m) => m.genericName.toLowerCase() === name.toLowerCase(),
+    )
+    if (found) return found
+    return {
+      id: `custom-${name.toLowerCase().replace(/\s+/g, "-")}`,
+      genericName: name,
+      brandNames: [],
+      strengths: [],
+      category: "MEDICATION",
+      conditionTags: [],
+    }
+  }
 
   const allSelected = useMemo(
     () => [
       ...existingMedications.map(nameToEntry),
       ...newMeds,
     ],
-    [existingMedications, newMeds],
+    [existingMedications, newMeds, taxonomy],
   )
 
   const handleSelect = useCallback(
@@ -110,7 +127,7 @@ export function AddMedicationDrawer({
   function goToDetails() {
     const details = newMeds.map((m) => {
       const isTest = m.category === "LAB_TEST"
-      const defaultPrice = getMedicationPriceKES(m.genericName)
+      const defaultPrice = getMedicationPrice(taxonomyData, m.genericName)
       return {
         name: m.genericName,
         category: m.category,
@@ -141,17 +158,14 @@ export function AddMedicationDrawer({
         tests: { name: string; frequencyMonths: number; estimatedCostPerTest: number }[]
       }
     }) => {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/profile`,
-        {
-          treatment: {
-            currentlyOnMedication: true,
-            medicationNames: payload.medicationNames,
-          },
-          costEstimates: payload.costEstimates,
+      const { error } = await supabase.from("profiles").update({
+        treatment: {
+          currentlyOnMedication: true,
+          medicationNames: payload.medicationNames,
         },
-      )
-      return response.data
+        cost_estimates: payload.costEstimates,
+      })
+      if (error) throw error
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

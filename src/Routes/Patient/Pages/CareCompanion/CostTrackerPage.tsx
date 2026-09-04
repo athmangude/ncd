@@ -1,6 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react"
 import {
-  Loader2,
   AlertTriangle,
   TrendingUp,
   Wallet,
@@ -79,11 +78,7 @@ export default function CostTrackerPage() {
   }, [])
 
   if (summary.isLoading || breakdown.isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <CostTrackerSkeleton />
   }
 
   if (summary.error || breakdown.error || !summary.data) {
@@ -503,6 +498,91 @@ function RecentPaymentsSection({
 // ---------------------------------------------------------------------------
 // Monthly Trend — simple bar chart with colored divs
 // ---------------------------------------------------------------------------
+
+function CostTrackerSkeleton() {
+  return (
+    <div className="flex flex-col gap-5 p-4 animate-pulse">
+      {/* Annual Summary heading */}
+      <section>
+        <div className="mb-3 h-4 w-28 rounded bg-muted" />
+        <div className="grid grid-cols-2 gap-3">
+          {/* First card spans 2 cols */}
+          <div className="col-span-2 flex flex-col gap-2 rounded-xl border p-3">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded bg-muted" />
+              <div className="h-3 w-16 rounded bg-muted" />
+            </div>
+            <div className="h-5 w-24 rounded bg-muted" />
+          </div>
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-xl border bg-card p-3">
+              <div className="flex items-center gap-2">
+                <div className="h-4 w-4 rounded bg-muted" />
+                <div className="h-3 w-16 rounded bg-muted" />
+              </div>
+              <div className="h-5 w-20 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Recent Payments */}
+      <section>
+        <div className="mb-3 h-4 w-32 rounded bg-muted" />
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="flex items-center gap-3 rounded-xl border bg-card p-3">
+              <div className="h-9 w-9 shrink-0 rounded-lg bg-muted" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-4 w-32 rounded bg-muted" />
+                <div className="h-3 w-20 rounded bg-muted" />
+              </div>
+              <div className="h-4 w-16 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Category Breakdown */}
+      <section>
+        <div className="mb-3 h-4 w-36 rounded bg-muted" />
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 3 }, (_, i) => (
+            <div key={i} className="flex flex-col gap-2 rounded-xl border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="h-3 w-20 rounded bg-muted" />
+                <div className="h-3 w-16 rounded bg-muted" />
+              </div>
+              <div className="h-2 w-full rounded-full bg-muted" />
+              <div className="h-3 w-24 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Monthly Trend */}
+      <section>
+        <div className="mb-3 h-4 w-28 rounded bg-muted" />
+        <div className="rounded-xl border bg-card p-4">
+          <div className="flex items-end gap-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <div key={i} className="flex flex-1 flex-col items-center gap-1">
+                <div className="h-3 w-8 rounded bg-muted" />
+                <div className="flex h-28 w-full items-end justify-center">
+                  <div
+                    className="w-full max-w-[28px] rounded-t-md bg-muted"
+                    style={{ height: `${30 + i * 12}%` }}
+                  />
+                </div>
+                <div className="h-3 w-6 rounded bg-muted" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
 
 function MonthlyTrendSection({ trend }: { trend: MonthlySpend[] }) {
   const scrollRef = useRef<HTMLDivElement>(null)

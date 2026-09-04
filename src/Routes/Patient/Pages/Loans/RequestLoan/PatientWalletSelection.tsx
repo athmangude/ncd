@@ -31,7 +31,7 @@ import { usePaymentHistory } from "@/Routes/Patient/hooks/usePaymentHistory"
 import { useToast } from "@/hooks/useToast"
 import landline from "@/assets/icons/landline.png"
 import { useMutation } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import Tag from "@/components/Tag"
 import {
   NotificationPermissionDrawer,
@@ -129,14 +129,24 @@ export default function PatientWalletSelection() {
         payload.healthcareFacilityId = healthcareFacilityId
       }
 
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/discount-codes/validate`,
-        payload,
-        {
-          withCredentials: true,
-        }
+      const { data: codeRow, error } = await supabase
+        .from("discount_codes")
+        .select("*")
+        .eq("code", payload.code as string)
+        .maybeSingle()
+      if (error) throw error
+      if (!codeRow) {
+        return { isValid: false, discountAmount: "0", message: "Invalid discount code" }
+      }
+      const discountAmt = Math.min(
+        Number(codeRow.discount_amount || 0),
+        Number(payload.orderAmount || 0)
       )
-      return response.data.data || response.data
+      return {
+        isValid: true,
+        discountAmount: String(discountAmt),
+        message: codeRow.message || "Discount applied",
+      }
     },
     onSuccess: (data: DiscountCodeResponse) => {
       // Only update the appliedDiscount state - the useEffect will handle allocations
@@ -154,13 +164,11 @@ export default function PatientWalletSelection() {
         })
       }
     },
-    onError: (error: any) => {
-      // Only update the appliedDiscount state - the useEffect will handle allocations
+    onError: (error: Error) => {
       setAppliedDiscount(null)
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to validate discount code",
+        description: error.message || "Failed to validate discount code",
         variant: "destructive",
       })
     },

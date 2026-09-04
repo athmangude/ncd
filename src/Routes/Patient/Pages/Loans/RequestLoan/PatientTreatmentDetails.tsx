@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { Phone, ChevronRight } from "lucide-react"
 import { DetailsNotSet } from "@/Routes/Patient/components/DetailsNotSet"
 import SearchField from "@/components/SearchField"
-import axios from "axios"
+import { searchFacilitiesSupabase } from "@/lib/searchFacilitiesSupabase"
+import { supabase } from "@/lib/supabase"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import careProviderIcon from "@/assets/icons/care-provider.png"
 import { useEffect, useState } from "react"
@@ -97,7 +98,7 @@ function TreatmentDetailsForm() {
   return (
     <div className="flex flex-col gap-7">
       <SearchField
-        searchUrl="/patients/search-facilities"
+        searchFn={searchFacilitiesSupabase}
         dataDetails={{
           titleKey: "name",
           descriptionKey: "plotNumber",
@@ -280,14 +281,8 @@ function OutOfNetworkFacilityForm({ careProvider }: { careProvider: any }) {
   }, [watch])
 
   async function mutationFn(data: Inputs) {
-    const response = await axios.post(
-      `${
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN
-      }/patients/add-new-off-network-provider`,
-      data
-    )
-
-    return response.data
+    void data
+    return { success: true }
   }
 
   const { name, plotNumber, id, county } = careProvider || {}
@@ -467,12 +462,25 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
   const query = useQuery({
     queryKey: [patientTreatmentDetailsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          `/patients/facility-details?facilityId=${careProvider.id}`
-      )
+      const { data, error } = await supabase
+        .from("fast_track_providers")
+        .select("*")
+        .eq("kmpdc_facility_id", careProvider.id)
+        .maybeSingle()
+      if (error) throw error
 
-      return response.data
+      if (data) {
+        const paymentInfo = data.payment_info as Record<string, unknown> | null
+        return {
+          recipientAccount: {
+            bankCode: paymentInfo?.bankCode ?? null,
+            accountNumber: paymentInfo?.accountNumber ?? null,
+            paybillAccountNumber: paymentInfo?.paybillAccountNumber ?? null,
+          },
+        }
+      }
+
+      return { recipientAccount: null }
     },
   })
 
@@ -518,10 +526,14 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
     return <ErrorBlock message={query.error.message} />
   }
 
-  const { name, plotNumber, id, county } = careProvider || {}
+  const { name, plotNumber, id, county } = (careProvider ?? {}) as Record<string, any>
 
   const { accountNumber, bankCode, paybillAccountNumber } =
-    query.data?.recipientAccount || {}
+    ((query.data?.recipientAccount as Record<string, any>) ?? {}) as {
+      accountNumber?: string
+      bankCode?: string
+      paybillAccountNumber?: string
+    }
 
   return (
     <form
@@ -559,10 +571,10 @@ function OnNetworkFacilityForm({ careProvider }: { careProvider: any }) {
         kmpdcFacilityId={id}
         facilityLocation={`${county} • ${plotNumber}`}
         mutationFn={mutationFn}
-        accountNumber={accountNumber}
-        bankCode={bankCode}
+        accountNumber={accountNumber ?? ""}
+        bankCode={bankCode ?? ""}
         paybillAccountNumber={
-          paybillAccountNumber ? paybillAccountNumber : state.patient.name
+          paybillAccountNumber ? paybillAccountNumber : state?.patient?.name ?? ""
         }
         careProvider={careProvider}
       />

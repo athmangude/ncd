@@ -27,9 +27,10 @@ import {
   Upload,
   Wrench,
   UserCog,
+  FlaskConical,
 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import {
   Drawer,
@@ -105,19 +106,39 @@ export default function PatientProfile() {
 
   const uploadPhotoMutation = useMutation({
     mutationFn: async (file: File) => {
-      const formData = new FormData()
-      formData.append("file", file)
+      const fileExt = file.name.split(".").pop() ?? "jpg"
+      const fileName = `${Date.now()}.${fileExt}`
 
-      const response = await axios.post(
-        import.meta.env.VITE_API_BASE_URL + "/patients/upload-profile-photo",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      )
-      return response.data
+      const { error: uploadError } = await supabase.storage
+        .from("profile-photos")
+        .upload(fileName, file, {
+          contentType: file.type,
+          upsert: true,
+        })
+
+      if (uploadError) throw uploadError
+
+      const { data: urlData } = supabase.storage
+        .from("profile-photos")
+        .getPublicUrl(fileName)
+
+      // Persist the photo URL in patient_details so it survives refetch
+      const { data: pd } = await supabase
+        .from("patient_details")
+        .select("id, data")
+        .single()
+
+      if (pd) {
+        const blob = (pd.data ?? {}) as Record<string, unknown>
+        await supabase
+          .from("patient_details")
+          .update({
+            data: { ...blob, profilePhoto: urlData.publicUrl },
+          })
+          .eq("id", pd.id)
+      }
+
+      return { url: urlData.publicUrl, profilePhoto: urlData.publicUrl }
     },
     onSuccess: (data) => {
       const photoUrl = data.url || data.profilePhoto
@@ -131,7 +152,7 @@ export default function PatientProfile() {
         // Close drawer
         setIsDrawerOpen(false)
 
-        // Invalidate query to refetch (optional if not using react-query for this data)
+        // Invalidate query to refetch
         queryClient.invalidateQueries({ queryKey: ["patientLoginDetails"] })
 
         // Manually refetch to update data
@@ -143,10 +164,11 @@ export default function PatientProfile() {
         })
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
+      const err = error as { message?: string }
       toast({
         title: "Upload Failed",
-        description: error.response?.data?.message || "Failed to upload photo",
+        description: err.message || "Failed to upload photo",
         variant: "destructive",
       })
     },
@@ -215,6 +237,12 @@ export default function PatientProfile() {
       description: "Edit balances, approvals and circle (researcher only)",
       icon: <Wrench className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/facilitator"),
+    },
+    {
+      title: "Test Results Utility",
+      description: "Generate mock lab results for testing",
+      icon: <FlaskConical className="h-5 w-5 text-muted-foreground" />,
+      onClick: () => navigate("/patients/profile/test-results-utility"),
     },
   ]
 

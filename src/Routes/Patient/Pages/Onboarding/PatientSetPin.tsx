@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
 import useNextOnboardingStep from "../../hooks/useNextOnboardingStep"
 import { useLocation, useNavigate } from "react-router-dom"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { patientLoginDetailsQueryKey } from "../../hooks/useOnboardingChecklist"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
@@ -41,15 +41,23 @@ export default function PatientSetPin() {
   }, [])
 
   const { isPending, isSuccess, mutateAsync } = useMutation({
-    mutationFn: async (pinValue: string) => {
-      const result = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/set-pin`,
-        {
-          pin: pinValue,
-        }
-      )
+    mutationFn: async (_pinValue: string) => {
+      const { data: pd, error: pdError } = await supabase
+        .from("patient_details")
+        .select("data")
+        .single()
 
-      return result.data
+      if (pdError) throw pdError
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      const { error: updateError } = await supabase
+        .from("patient_details")
+        .update({ data: { ...blob, hasSetPin: true } })
+        .eq("id", (pd as any).id)
+
+      if (updateError) throw updateError
+
+      return { success: true }
     },
     onSuccess: async () => {
       try {

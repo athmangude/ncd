@@ -9,7 +9,7 @@ import ErrorBlock from "@/components/ErrorBlock"
 import { Button } from "@/components/Button"
 import CheckEmail from "@/components/auth/CheckEmail"
 import StatusPageWrapper from "@/Routes/shell/StatusPageWrapper"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 
 const tenantIdRoutes: Record<string, { auth: string; home: string }> = {
   healthcare: {
@@ -33,11 +33,15 @@ export default function VerifyEmailPage() {
     queryFn: async () => {
       const doesSessionExist = await Session.doesSessionExist()
 
-      const result = await axios.get(
-        import.meta.env.VITE_API_BASE_URL + "/users/tenant-id"
-      )
+      // Derive tenant from the user's profile role instead of a
+      // dedicated /users/tenant-id endpoint
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("user_role")
+        .single()
 
-      const tId = result.data.tenantId
+      const tId =
+        profile?.user_role === "provider" ? "healthcare" : "patients"
 
       setTenantId(tId)
 

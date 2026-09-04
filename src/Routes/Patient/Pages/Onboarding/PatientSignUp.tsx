@@ -13,7 +13,7 @@ import {
 } from "@/utilities/validators"
 import { useToast } from "@/hooks/useToast"
 import { Checkbox } from "@/components/Checkbox"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import ErrorBlock from "@/components/ErrorBlock"
 import LoadingPage from "@/Routes/LoadingPage"
 import { Card } from "@/components/Card"
@@ -42,11 +42,17 @@ function SignUpForm() {
   const query = useQuery({
     queryKey: [countryCodesQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/country-codes`
-      )
+      const { data, error } = await supabase
+        .from("country_codes")
+        .select("*")
 
-      return response.data
+      if (error) throw error
+
+      return (data ?? []).map((row: Record<string, unknown>) => ({
+        ...row,
+        countryCode: row.country_code,
+        callingCode: row.calling_code,
+      }))
     },
   })
 

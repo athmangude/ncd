@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import PatientPageWrapper from "@/Routes/Patient/Pages/PatientPageWrapper"
 import { Amount } from "@/components/Amount"
 import LoadingPage from "@/Routes/LoadingPage"
@@ -18,10 +18,20 @@ export default function PatientPaymentBreakdown() {
   const query = useQuery({
     queryKey: [getPatientPaymentDetailsQueryKey, id],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/payments/user/payment-details?paymentId=${id}`
-      )
-      return response.data
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("id", id as string)
+        .single()
+
+      if (error) throw error
+
+      return {
+        totalBillAmount: data.amount,
+        currency: { code: data.currency ?? "KES" },
+        paymentSplits: data.payment_splits as Record<string, unknown>[] | null,
+        discountAmount: 0,
+      }
     },
   })
 
@@ -33,7 +43,7 @@ export default function PatientPaymentBreakdown() {
     currency,
     paymentSplits,
     discountAmount = 0,
-  } = query.data
+  } = query.data!
 
   const currencyCode = currency?.code ?? "KES"
 
@@ -139,7 +149,7 @@ export default function PatientPaymentBreakdown() {
             />
             {discountSplit && (
               <DetailRow
-                label={discountSplit.wallet?.name || "Discount"}
+                label={(discountSplit as any).wallet?.name || "Discount"}
                 value={
                   <Amount
                     value={Number(discountSplit.paymentSplitAmount)}
@@ -173,7 +183,7 @@ export default function PatientPaymentBreakdown() {
           <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
             {sources.map((source: any, idx: number) => (
               <SourceRow
-                key={source.id}
+                key={source.id ?? idx}
                 icon={source.icon}
                 label={source.label}
                 sublabel={source.sublabel}

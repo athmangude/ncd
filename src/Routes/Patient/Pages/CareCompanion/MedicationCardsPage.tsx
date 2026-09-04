@@ -3,7 +3,6 @@ import { useSearchParams, Link } from "react-router-dom"
 import {
   AlertTriangle,
   ChevronRight,
-  Loader2,
   Pill,
   ShieldAlert,
   Info,
@@ -91,11 +90,7 @@ export default function MedicationCardsPage() {
   }, [highlightMed, data])
 
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <MedicationCardsSkeleton />
   }
 
   if (error || !data) {
@@ -194,6 +189,34 @@ export default function MedicationCardsPage() {
           </div>
         )
       })}
+    </div>
+  )
+}
+
+function MedicationCardsSkeleton() {
+  return (
+    <div className="flex flex-col gap-3 p-4 animate-pulse">
+      <div className="mb-1">
+        <div className="h-5 w-40 rounded bg-muted" />
+        <div className="mt-1.5 h-3 w-48 rounded bg-muted" />
+      </div>
+
+      {Array.from({ length: 4 }, (_, i) => (
+        <div
+          key={i}
+          className="flex items-center justify-between rounded-xl border bg-card p-4"
+        >
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-28 rounded bg-muted" />
+              <div className="h-4 w-16 rounded-full bg-muted" />
+            </div>
+            <div className="h-3 w-36 rounded bg-muted" />
+            <div className="h-3 w-24 rounded bg-muted" />
+          </div>
+          <div className="ml-2 h-4 w-4 rounded bg-muted" />
+        </div>
+      ))}
     </div>
   )
 }

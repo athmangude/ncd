@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { format } from "date-fns"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
@@ -79,11 +79,26 @@ export default function PaymentDetails() {
   const connectionsQuery = useQuery({
     queryKey: [patientConnectionsQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        import.meta.env.VITE_SUPERTOKENS_API_DOMAIN +
-          "/patient-network/connections"
-      )
-      return response.data
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) throw new Error("Not authenticated")
+
+      const { data, error } = await supabase
+        .from("patient_connections")
+        .select("*")
+        .eq("user_id", authUser.id)
+      if (error) throw error
+
+      const patients = (data || []).map((m: Record<string, unknown>) => ({
+        name: `${m.first_name} ${m.last_name}`,
+        value: m.id,
+        status: m.status,
+        phoneNumber: m.phone_number,
+        photo: m.profile_photo,
+        firstName: m.first_name,
+        lastName: m.last_name,
+      }))
+
+      return { patients }
     },
   })
 
@@ -163,21 +178,52 @@ export default function PaymentDetails() {
 
   const validateDiscountCodeMutation = useMutation({
     mutationFn: async (code: string) => {
-      const facilityId = provider?.facility?.id
-      const payload: Record<string, unknown> = {
-        code: code.toUpperCase().trim(),
-        orderAmount: parsedAmount,
-        userId: user?.id,
+      const normalizedCode = code.toUpperCase().trim()
+
+      const { data: discount, error } = await supabase
+        .from("discount_codes")
+        .select("*")
+        .eq("code", normalizedCode)
+        .eq("is_active", true)
+        .single()
+
+      if (error || !discount) {
+        return {
+          isValid: false,
+          discountAmount: "0",
+          message: `"${normalizedCode}" is not a valid discount code`,
+        } as DiscountCodeResponse
       }
-      if (facilityId != null) {
-        payload.healthcareFacilityId = facilityId
+
+      const minOrder = parseFloat(discount.minimum_order_amount ?? "0")
+      if (minOrder > 0 && parsedAmount < minOrder) {
+        return {
+          isValid: false,
+          discountAmount: "0",
+          message: `Minimum order amount is KES ${minOrder.toLocaleString()}`,
+        } as DiscountCodeResponse
       }
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/discount-codes/validate`,
-        payload,
-        { withCredentials: true }
-      )
-      return (response.data.data || response.data) as DiscountCodeResponse
+
+      let discountAmt = 0
+      if (discount.discount_type === "PERCENTAGE") {
+        discountAmt = parsedAmount * (parseFloat(discount.discount_value) / 100)
+      } else {
+        discountAmt = parseFloat(discount.discount_value)
+      }
+
+      const maxDiscount = parseFloat(discount.maximum_discount_amount ?? "0")
+      if (maxDiscount > 0 && discountAmt > maxDiscount) {
+        discountAmt = maxDiscount
+      }
+
+      discountAmt = Math.min(discountAmt, parsedAmount)
+
+      return {
+        isValid: true,
+        discountAmount: discountAmt.toFixed(2),
+        message: discount.description,
+        discount,
+      } as DiscountCodeResponse
     },
     onSuccess: (data: DiscountCodeResponse, code: string) => {
       setAppliedDiscount(data)

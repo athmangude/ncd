@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import { circleActivityQueryKey } from "@/Routes/Patient/Pages/Dashboard/hooks/useCircleActivity"
 
@@ -13,16 +13,15 @@ export interface RemoveConnectionInput {
 export function useRemoveConnection() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: async ({ connectionId, type }: RemoveConnectionInput) => {
-      const resp = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/remove-connection`,
-        { connectionId, type }
-      )
-      return resp.data
+    mutationFn: async ({ connectionId }: RemoveConnectionInput) => {
+      const { error } = await supabase
+        .from("network_members")
+        .delete()
+        .eq("id", connectionId)
+      if (error) throw error
+      return { success: true }
     },
     onSuccess: () => {
-      // Removing a member can drop the circle below the loan threshold, so
-      // refresh the gate + pickers alongside the circle list.
       invalidateCircleQueries(qc)
       qc.invalidateQueries({ queryKey: [circleActivityQueryKey] })
     },

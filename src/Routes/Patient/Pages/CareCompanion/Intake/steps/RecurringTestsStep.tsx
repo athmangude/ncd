@@ -3,29 +3,20 @@ import { Plus } from "lucide-react"
 import { Button } from "@/components/Button"
 import { Chip } from "@/components/Chip"
 import IntakeOption from "../components/IntakeOption"
-import recurringTestsData from "@/mocks/fixtures/recurring-tests.json"
+import {
+  useRecurringTests,
+  type RecurringTestEntry,
+} from "@/hooks/useRecurringTests"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
 type RecurringTestsData = CareCompanionProfile["recurringTests"]
 type ConditionValue = CareCompanionProfile["conditions"]["type"][number]
-
-interface RecurringTestEntry {
-  id: string
-  testName: string
-  description: string
-  conditionTags: string[]
-  defaultFrequencyMonths: number
-  estimatedPriceKES: number
-  category: string
-}
 
 interface RecurringTestsStepProps {
   data: RecurringTestsData
   conditions: ConditionValue[]
   onUpdate: (data: RecurringTestsData) => void
 }
-
-const tests = recurringTestsData as RecurringTestEntry[]
 
 const CONDITION_LABELS: Record<string, string> = {
   DIABETES: "Diabetes",
@@ -58,12 +49,13 @@ export default function RecurringTestsStep({
   conditions,
   onUpdate,
 }: RecurringTestsStepProps) {
+  const { data: tests = [] } = useRecurringTests()
   const [showOtherInput, setShowOtherInput] = useState(false)
   const [customTestName, setCustomTestName] = useState("")
 
   const allTestNames = useMemo(
     () => new Set(tests.map((t) => t.testName)),
-    [],
+    [tests],
   )
 
   const customTests = useMemo(
@@ -96,7 +88,7 @@ export default function RecurringTestsStep({
     }
 
     return groups
-  }, [conditions])
+  }, [conditions, tests])
 
   const toggleTest = useCallback(
     (testName: string) => {

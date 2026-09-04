@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 
 export interface Medication {
   id: string
@@ -28,10 +28,49 @@ export function useMedicationList() {
   return useQuery({
     queryKey: [medicationListQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/companion/medications`
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("treatment")
+        .single()
+
+      const treatment = profile?.treatment as {
+        medicationNames?: string[]
+        currentlyOnMedication?: boolean
+      } | null
+
+      const { data: refills } = await supabase
+        .from("refill_schedules")
+        .select("medication_name, next_date, frequency_days")
+
+      const refillMap = new Map(
+        (refills ?? []).map((r: any) => [r.medication_name, r])
       )
-      return response.data as MedicationListData
+
+      const medications: Medication[] = (treatment?.medicationNames ?? []).map(
+        (name, i) => {
+          const refill = refillMap.get(name) as any
+          return {
+            id: `med-${i}`,
+            name,
+            genericName: null,
+            dosage: "",
+            frequency: refill ? `Every ${refill.frequency_days} days` : "Daily",
+            route: "oral",
+            prescribedBy: null,
+            startDate: new Date(Date.now() - 90 * 86400000).toISOString(),
+            endDate: null,
+            isActive: true,
+            refillDueDate: refill?.next_date ?? null,
+            remainingQuantity: null,
+          }
+        }
+      )
+
+      return {
+        medications,
+        totalActive: medications.length,
+        totalInactive: 0,
+      } as MedicationListData
     },
     staleTime: 5 * 60 * 1000,
   })

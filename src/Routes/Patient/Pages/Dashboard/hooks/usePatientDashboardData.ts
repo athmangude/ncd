@@ -1,67 +1,90 @@
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
 import { usePatientLoginDetails } from "@/hooks/usePatientLoginDetails"
 import { DiscountCode } from "../components/DiscountsSection"
 import { useEligibleDiscountCodes } from "./useEligibleDiscountCodes"
+import { supabase } from "@/lib/supabase"
 
 export function usePatientDashboardData(activeTab: string) {
   const { isOffline } = usePatientLoginDetails()
 
-  // 1. Fetch loan stats first
-  // This is the highest priority data for the dashboard
-  const { 
-    data: loanStats, 
+  const {
+    data: loanStats,
     isSuccess: isStatsSuccess,
-    isError: isStatsError
+    isError: isStatsError,
   } = useQuery({
     queryKey: ["loanStats"],
     queryFn: async () => {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/loans/patient/me/stats`)
-      return response.data
+      const { data: loans, error } = await supabase
+        .from("loans")
+        .select("amount, outstanding_amount, total_paid, status")
+      if (error) throw error
+
+      const rows = loans ?? []
+      return {
+        totalLoans: rows.length,
+        activeLoans: rows.filter((l) => l.status === "DISBURSED").length,
+        totalAmountBorrowed: rows.reduce(
+          (s, l) => s + Number(l.amount),
+          0,
+        ),
+        totalAmountRepaid: rows.reduce(
+          (s, l) => s + Number(l.total_paid ?? 0),
+          0,
+        ),
+        outstandingBalance: rows.reduce(
+          (s, l) => s + Number(l.outstanding_amount ?? 0),
+          0,
+        ),
+      }
     },
     enabled: !isOffline,
     staleTime: 5 * 60 * 1000,
     refetchOnMount: "always" as const,
   })
 
-  // 2. Then fetch alerts
-  // Dependent on loanStats success to ensure strict ordering
-  const { 
-    data: dashboardAlert, 
+  const {
+    data: dashboardAlert,
     isSuccess: isAlertSuccess,
-    isError: isAlertError
+    isError: isAlertError,
   } = useQuery({
     queryKey: ["dashboardAlert"],
-    queryFn: async () => {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/alerts/dashboard`)
-      return response.data?.alert_id ? response.data : null
-    },
-    // Only fetch alerts after loan stats are successfully loaded
+    queryFn: async () => null,
     enabled: !isOffline && isStatsSuccess,
     staleTime: 5 * 60 * 1000,
     refetchOnMount: "always" as const,
   })
 
-  // 3. Then fetch manual requests
-  // Dependent on alerts success and active tab
-  const { 
-    data: paymentRequests = [], 
+  const {
+    data: paymentRequests = [],
     isSuccess: isRequestsSuccess,
-    isError: isRequestsError
+    isError: isRequestsError,
   } = useQuery({
     queryKey: ["paymentRequests"],
     queryFn: async () => {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/patients/payments/manual-requests`)
-      return response.data?.requests || []
+      const { data, error } = await supabase
+        .from("manual_requests")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (error) throw error
+      return (data ?? []).map((r: any) => ({
+        id: r.id,
+        careProviderName: r.care_provider_name,
+        billAmount: r.bill_amount,
+        paymentInfo: r.payment_info,
+        reason: r.reason,
+        status: r.status,
+        createdAt: r.created_at,
+        updatedAt: r.updated_at,
+        patient: r.patient,
+        dependent: r.dependent,
+        kmpdcFacility: r.kmpdc_facility,
+        invoiceFile: r.invoice_file,
+      }))
     },
-    // Only fetch requests after alerts are loaded and if we're on the payments tab
     enabled: !isOffline && activeTab === "payments" && isAlertSuccess,
-    staleTime: 1 * 60 * 1000 
+    staleTime: 1 * 60 * 1000,
   })
 
-  // 4. Fetch eligible discount codes (shared with the Explore tab via the
-  // common queryKey in useEligibleDiscountCodes).
-  // Dependent on alerts success and active tab
   const {
     data: discounts = [],
     isSuccess: isDiscountsSuccess,
@@ -70,30 +93,100 @@ export function usePatientDashboardData(activeTab: string) {
     !isOffline && activeTab === "payments" && isAlertSuccess,
   )
 
-  // 5. Fetch payment history (loans, payments, medical requests, cashback)
-  const { 
+  const {
     data: paymentHistory,
     isSuccess: isPaymentHistorySuccess,
-    isError: isPaymentHistoryError
+    isError: isPaymentHistoryError,
   } = useQuery({
     queryKey: ["paymentHistory"],
     queryFn: async () => {
-      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/patients/payment-history`)
-      return response.data
+      const { data: payments, error } = await supabase
+        .from("payments")
+        .select("*")
+        .order("created_at", { ascending: false })
+      if (error) throw error
+
+      const { data: loans } = await supabase
+        .from("loans")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      const { data: wallet } = await supabase
+        .from("wallets")
+        .select("cashback_balance")
+        .single()
+
+      return {
+        payments: (payments ?? []).map((p: any) => ({
+          id: p.id,
+          amount: Number(p.amount),
+          totalBillAmount: String(p.amount),
+          status: p.status,
+          createdAt: p.created_at,
+          facilityName: p.facility_name,
+          facilityType: p.facility_type,
+          currency: p.currency || "KES",
+          lineItems: p.line_items ?? [],
+          fundingSources: p.funding_sources ?? [],
+          cashbackAmount: Number(p.cashback_amount ?? 0),
+          paymentSplits: p.payment_splits ?? [],
+          cashbackDetails: p.cashback_details ?? [],
+          userInfo: p.user_info,
+          patientMedicalInfoRequest: p.patient_medical_info_request,
+          disbursementTransaction: p.disbursement_transaction,
+          description: p.description,
+        })),
+        loans: (loans ?? []).map((l: any) => ({
+          id: l.id,
+          amount: Number(l.amount),
+          totalBillAmount: Number(l.total_bill_amount),
+          outstandingAmount: Number(l.outstanding_amount),
+          totalPaid: Number(l.total_paid),
+          careFundDiscountAmount: Number(l.care_fund_discount_amount ?? 0),
+          status: l.status,
+          loanType: l.loan_type,
+          currency: l.currency,
+          createdAt: l.created_at,
+          loanDueDate: l.loan_due_date,
+          firstPaymentDue: l.first_payment_due,
+          patientName: l.patient_name,
+          patientMedicalInfoRequest: l.patient_medical_info_request,
+          transactions: l.transactions ?? [],
+        })),
+        medicalRequests: [],
+        careFundAccount: {
+          id: 1,
+          careFundBalance: String(wallet?.cashback_balance ?? 0),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          accountOwner: null,
+          currency: { countryName: "Kenya", code: "KES", id: 1 },
+        },
+      }
     },
     enabled: !isOffline,
     staleTime: 5 * 60 * 1000,
     refetchOnMount: "always" as const,
   })
 
-  // Calculate loading state based on the sequence
-  // We consider it loading if a step is pending (not success and not error)
-  // This prevents UI flashing between sequential requests
-  const isLoanStatsPending = !isOffline && !isStatsSuccess && !isStatsError;
-  const isAlertPending = !isOffline && isStatsSuccess && !isAlertSuccess && !isAlertError;
-  const isRequestsPending = !isOffline && activeTab === "payments" && isAlertSuccess && !isRequestsSuccess && !isRequestsError;
-  const isDiscountsPending = !isOffline && activeTab === "payments" && isAlertSuccess && !isDiscountsSuccess && !isDiscountsError;
-  const isPaymentHistoryPending = !isOffline && !isPaymentHistorySuccess && !isPaymentHistoryError;
+  const isLoanStatsPending =
+    !isOffline && !isStatsSuccess && !isStatsError
+  const isAlertPending =
+    !isOffline && isStatsSuccess && !isAlertSuccess && !isAlertError
+  const isRequestsPending =
+    !isOffline &&
+    activeTab === "payments" &&
+    isAlertSuccess &&
+    !isRequestsSuccess &&
+    !isRequestsError
+  const isDiscountsPending =
+    !isOffline &&
+    activeTab === "payments" &&
+    isAlertSuccess &&
+    !isDiscountsSuccess &&
+    !isDiscountsError
+  const isPaymentHistoryPending =
+    !isOffline && !isPaymentHistorySuccess && !isPaymentHistoryError
 
   return {
     dashboardAlert,
@@ -104,7 +197,11 @@ export function usePatientDashboardData(activeTab: string) {
     payments: paymentHistory?.payments || [],
     medicalRequests: paymentHistory?.medicalRequests || [],
     cashback: paymentHistory?.careFundAccount || null,
-    // The aggregate loading state remains true until all required data for the current sequence is resolved
-    isLoading: isLoanStatsPending || isAlertPending || isRequestsPending || isDiscountsPending || isPaymentHistoryPending
+    isLoading:
+      isLoanStatsPending ||
+      isAlertPending ||
+      isRequestsPending ||
+      isDiscountsPending ||
+      isPaymentHistoryPending,
   }
 }

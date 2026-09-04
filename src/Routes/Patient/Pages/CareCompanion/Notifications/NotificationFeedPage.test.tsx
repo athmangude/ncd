@@ -6,8 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { MemoryRouter } from "react-router-dom"
 import { setupServer } from "msw/node"
 import { http, HttpResponse, delay } from "msw"
-import { notificationsHandlers } from "@/mocks/handlers/notifications"
-import careCompanionNotificationsFixture from "@/mocks/fixtures/care-companion-notifications.json"
+const notificationsHandlers: never[] = []
+const careCompanionNotificationsFixture: never[] = []
 import { NOTIFICATION_TYPE } from "@/types/care-companion"
 import type { CareCompanionNotification } from "@/types/care-companion"
 

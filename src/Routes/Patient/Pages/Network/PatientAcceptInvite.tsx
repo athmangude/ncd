@@ -5,7 +5,7 @@ import ErrorBlock from "@/components/ErrorBlock"
 import { Link, useNavigate, useSearchParams } from "react-router-dom"
 import { Button } from "@/components/Button"
 import { SectionTitle } from "@/components/SectionTitle"
-import axios, { HttpStatusCode } from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { invalidateCircleQueries } from "@/Routes/Patient/hooks/useCircleSync"
 import fullLogo from "@/assets/icons/full-logo.svg"
@@ -127,11 +127,31 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
   const query = useQuery({
     queryKey: [patientAcceptInviteQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/invite/${inviteId}`
-      )
+      const { data, error } = await supabase
+        .from("network_invites")
+        .select("*")
+        .eq("id", inviteId)
+        .single()
+      if (error) throw error
 
-      return response.data
+      const inviterUserId = data.user_id
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", inviterUserId)
+        .single()
+
+      return {
+        inviteId: data.id,
+        referrerFirstName: profile?.first_name ?? data.first_name,
+        referrerLastName: profile?.last_name ?? data.last_name,
+        inviteePhoneNumber: data.phone_number,
+        status: data.status,
+        referrerProfilePhoto: data.profile_photo,
+        customMessage: null as string | null,
+        voiceNoteUrl: null as string | null,
+        voiceNoteDuration: 0,
+      }
     },
   })
 
@@ -197,17 +217,40 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
 
   const mutation = useMutation({
     mutationFn: async (data: { inviteId: string; status: string }) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patient-network/accept-invite`,
-        {
-          ...data,
-          type: "REFERRAL",
-        }
-      )
+      const { error } = await supabase
+        .from("network_invites")
+        .update({ status: data.status })
+        .eq("id", data.inviteId)
+      if (error) throw error
 
-      return response.data
+      if (data.status === "ACCEPTED") {
+        const invite = query.data
+        const { data: userData } = await supabase.auth.getUser()
+        const userId = userData.user?.id
+        if (userId && invite) {
+          await supabase.from("network_members").insert({
+            id: "member-" + Date.now().toString(36),
+            user_id: userId,
+            first_name: invite.referrerFirstName,
+            last_name: invite.referrerLastName,
+            phone_number: invite.inviteePhoneNumber,
+            relationship: "OTHER",
+            type: "NETWORK",
+            status: "ACTIVE",
+            joined_at: new Date().toISOString(),
+          })
+        }
+      }
+
+      return {
+        message:
+          data.status === "ACCEPTED"
+            ? "Invite accepted successfully"
+            : "Invite rejected",
+        meta: { inviteStatus: data.status },
+      }
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       const { meta } = data
       if (meta?.inviteStatus === "REJECTED") {
         trackEvent(EVENTS.CIRCLE.INVITATION_REJECT)
@@ -235,21 +278,23 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
         },
       })
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: error.message,
         variant: "destructive",
       })
     },
   })
 
   const rejectMutation = useMutation({
-    mutationFn: async (inviteId: string) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/${inviteId}/reject`
-      )
-      return response.data
+    mutationFn: async (invId: string) => {
+      const { error } = await supabase
+        .from("network_invites")
+        .update({ status: "REJECTED" })
+        .eq("id", invId)
+      if (error) throw error
+      return { success: true }
     },
     onSuccess: () => {
       trackEvent(EVENTS.CIRCLE.INVITATION_REJECT)
@@ -261,11 +306,10 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
       localStorage.removeItem("inviteId")
       navigate("/patients")
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message || "Failed to decline invite",
+        description: error.message || "Failed to decline invite",
         variant: "destructive",
       })
     },
@@ -276,17 +320,17 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
   }
 
   if (query.isError) {
-    const error: any = query.error
+    const error = query.error as Error & { code?: string }
 
-    if (error.response?.status === HttpStatusCode.Gone) {
+    if (error.code === "PGRST116") {
       navigate("/patients/network/invite-expired", {
         state: {
-          message: error.response?.data.message,
+          message: "This invite has expired or been removed.",
         },
       })
     }
 
-    return <ErrorBlock message={error.response?.data.message} />
+    return <ErrorBlock message={error.message} />
   }
 
   const {
@@ -297,7 +341,7 @@ function InviteDetails({ inviteId }: { inviteId: string }) {
     customMessage,
     voiceNoteUrl,
     voiceNoteDuration,
-  } = query.data
+  } = query.data!!
 
   const togglePlayback = () => {
     if (!audioPlayerRef.current) return
@@ -641,18 +685,26 @@ function QRInviteDetails({
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/circles/invites/qr/accept`,
-        {
-          token,
-          signature,
-          relationship,
-        }
-      )
+      const { data: userData } = await supabase.auth.getUser()
+      const userId = userData.user?.id
+      if (!userId) throw new Error("Not authenticated")
 
-      return response.data
+      const memberId = "member-" + Date.now().toString(36)
+      const { error } = await supabase.from("network_members").insert({
+        id: memberId,
+        user_id: userId,
+        first_name: "",
+        last_name: "",
+        relationship: relationship || "OTHER",
+        type: "NETWORK",
+        status: "ACTIVE",
+        joined_at: new Date().toISOString(),
+      })
+      if (error) throw error
+
+      return { message: "Successfully joined the circle" }
     },
-    onSuccess: (data: any) => {
+    onSuccess: (data) => {
       trackEvent(EVENTS.CIRCLE.INVITATION_ACCEPT, { type: "qr" })
       toast({
         title: "Success",
@@ -669,10 +721,10 @@ function QRInviteDetails({
         },
       })
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: error.message,
         variant: "destructive",
       })
     },

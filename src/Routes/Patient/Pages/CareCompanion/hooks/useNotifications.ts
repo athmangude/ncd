@@ -1,45 +1,48 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import type { CareCompanionNotification } from "@/types/care-companion"
 
-// ---------------------------------------------------------------------------
-// Query key
-// ---------------------------------------------------------------------------
-
 export const notificationsQueryKey = "careCompanionNotifications"
-
-// ---------------------------------------------------------------------------
-// useNotifications — fetch notification feed
-// ---------------------------------------------------------------------------
 
 export function useNotifications(unreadOnly?: boolean) {
   return useQuery({
     queryKey: [notificationsQueryKey, { unreadOnly }],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications`,
-        {
-          params: unreadOnly ? { unreadOnly: true } : undefined,
-        }
-      )
-      return response.data as CareCompanionNotification[]
+      let query = supabase
+        .from("notifications")
+        .select("*")
+        .order("sent_at", { ascending: false })
+      if (unreadOnly) {
+        query = query.is("read_at", null)
+      }
+      const { data, error } = await query
+      if (error) throw error
+      return (data ?? []).map((row: Record<string, unknown>) => ({
+        id: row.id as string,
+        type: row.type as string,
+        title: row.title as string,
+        body: (row.body ?? "") as string,
+        deepLink: (row.deep_link ?? "/patients/companion") as string,
+        scheduledAt: (row.sent_at ?? "") as string,
+        sentAt: (row.sent_at ?? null) as string | null,
+        readAt: (row.read_at ?? null) as string | null,
+        metadata: (row.metadata ?? null) as Record<string, string> | null,
+      })) as CareCompanionNotification[]
     },
     staleTime: 2 * 60 * 1000,
   })
 }
-
-// ---------------------------------------------------------------------------
-// useMarkNotificationRead — mark a single notification as read
-// ---------------------------------------------------------------------------
 
 export function useMarkNotificationRead() {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async (id: string) => {
-      await axios.patch(
-        `${import.meta.env.VITE_API_BASE_URL}/api/companion/notifications/${id}/read`
-      )
+      const { error } = await supabase
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .eq("id", id)
+      if (error) throw error
     },
     onMutate: async (id: string) => {
       await queryClient.cancelQueries({
@@ -54,8 +57,8 @@ export function useMarkNotificationRead() {
         { queryKey: [notificationsQueryKey] },
         (old) =>
           old?.map((n) =>
-            n.id === id ? { ...n, readAt: new Date().toISOString() } : n
-          )
+            n.id === id ? { ...n, readAt: new Date().toISOString() } : n,
+          ),
       )
 
       return { previous }

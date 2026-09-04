@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query"
 import LoadingPage from "@/Routes/LoadingPage"
 import ErrorBlock from "@/components/ErrorBlock"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { MEMBER_LOAN_ROLES } from "../../constants/userTypes"
 
 export const patientResolveTypeQueryKey = "patientResolveType"
@@ -12,10 +12,15 @@ export default function PatientResolveType() {
   const query = useQuery({
     queryKey: [patientResolveTypeQueryKey],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/resolve-type`
-      )
-      return response.data
+      const { data: pd, error } = await supabase
+        .from("patient_details")
+        .select("data")
+        .single()
+
+      if (error) throw error
+
+      const blob = (pd?.data ?? {}) as Record<string, unknown>
+      return { type: (blob.type as string) ?? "PUBLIC" }
     },
   })
 
@@ -32,7 +37,7 @@ export default function PatientResolveType() {
 
   if (type === "ORG") {
     navigate("/patients/org-onboarding-success")
-  } else if (MEMBER_LOAN_ROLES.includes(type)) {
+  } else if (MEMBER_LOAN_ROLES.includes(type as any)) {
     navigate("/patients/onboarding-success")
   }
 

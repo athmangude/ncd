@@ -28,7 +28,7 @@ import {
 } from "../hooks/useNextPWAOnboardingStep"
 import pwaSetup from "@/assets/icons/pwa-setup.png"
 import { AlertTriangle, Bell } from "lucide-react"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useEffect } from "react"
 
 export interface DashboardAlertCTA {
@@ -53,11 +53,23 @@ export function AlertCard({ alert }: { alert: DashboardAlert }) {
 
   useEffect(() => {
     if (alert.alert_id === "INSTALL_APP" && stepStatus["01"]) {
-      axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/alerts/INSTALL_APP/resolve`)
-        .catch((err) =>
-          console.error("Failed to resolve INSTALL_APP alert", err)
-        )
+      // Mark the INSTALL_APP alert as resolved in patient_details
+      ;(async () => {
+        const { data: pd } = await supabase
+          .from("patient_details")
+          .select("id, data")
+          .single()
+        if (!pd) return
+        const blob = (pd.data ?? {}) as Record<string, unknown>
+        await supabase
+          .from("patient_details")
+          .update({
+            data: { ...blob, installAppAlertResolved: true },
+          })
+          .eq("id", pd.id)
+      })().catch((err: unknown) =>
+        console.error("Failed to resolve INSTALL_APP alert", err)
+      )
     }
   }, [alert.alert_id, stepStatus])
 

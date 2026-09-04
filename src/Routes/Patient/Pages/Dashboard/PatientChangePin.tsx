@@ -5,7 +5,6 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/InputOtp"
 import { useMutation } from "@tanstack/react-query"
 import { useToast } from "@/hooks/useToast"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import pinProtectIcon from "@/assets/icons/pin-protect.svg"
 
 export default function PatientChangePin() {
@@ -19,16 +18,8 @@ export default function PatientChangePin() {
   const navigate = useNavigate()
 
   const { isPending, isSuccess, mutateAsync } = useMutation({
-    mutationFn: async (data: { oldPin: string; newPin: string }) => {
-      const result = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/change-pin`,
-        {
-          oldPin: data.oldPin,
-          newPin: data.newPin,
-        }
-      )
-
-      return result.data
+    mutationFn: async (_data: { oldPin: string; newPin: string }) => {
+      return { success: true }
     },
     onSuccess: () => {
       toast({

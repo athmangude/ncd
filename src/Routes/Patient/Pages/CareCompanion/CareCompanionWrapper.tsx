@@ -9,7 +9,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/intake": "Health Profile",
   "/cost-tracker": "Cost Tracker",
   "/emergency-card": "Emergency Card",
-  "/medication-timeline": "Medication Timeline",
+  "/medication-timeline": "Care History",
   "/medication-cards": "Medication Cards",
   "/refill-schedule": "Medication & Test Schedule",
   "/education": "Health Education",
@@ -86,7 +86,7 @@ export default function CareCompanionWrapper() {
           <Route
             path="/medication-timeline"
             element={
-              <RouteMetadata title="Medication Timeline">
+              <RouteMetadata title="Care History">
                 <MedicationTimelinePage />
               </RouteMetadata>
             }

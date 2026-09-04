@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { formatMoney } from "@/utilities/currencyUtilities"
 import LoadingPage from "@/Routes/LoadingPage"
@@ -65,13 +65,34 @@ export default function PatientViewPaymentDetails() {
   }, [id])
 
   const query = useQuery({
-    queryKey: [getPatientPaymentDetailsQueryKey],
+    queryKey: [getPatientPaymentDetailsQueryKey, id],
     queryFn: async () => {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_BASE_URL}/payments/user/payment-details?paymentId=${id}`
-      )
-      return response.data
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("id", id)
+        .single()
+      if (error) throw error
+
+      return {
+        id: data.id,
+        totalBillAmount: data.amount,
+        createdAt: data.created_at,
+        currency: { code: data.currency || "KES" },
+        status: data.status,
+        lineItems: data.line_items ?? [],
+        patientMedicalInfoRequest: {
+          facility: data.facility_id
+            ? { id: data.facility_id, name: data.facility_name }
+            : null,
+          medicalInvoiceFile: { careProviderName: data.facility_name },
+        },
+        paymentSplits: data.payment_splits ?? [],
+        user: data.user_info ?? null,
+        cashbackDetails: data.cashback_details ?? [],
+      }
     },
+    enabled: !!id,
   })
 
   const { status: receiptStatus, download: downloadReceipt } =
@@ -117,7 +138,7 @@ export default function PatientViewPaymentDetails() {
     user,
     cashbackDetails,
     lineItems,
-  } = query.data
+  } = query.data!
 
   const currencyCode = currency?.code ?? "KES"
   const providerName =
@@ -129,7 +150,10 @@ export default function PatientViewPaymentDetails() {
     ? `${user.firstName} ${user.lastName} (myself)`
     : "Me (myself)"
 
-  const formattedDate = format(new Date(createdAt), "d MMM • h:mm a")
+  const parsedDate = new Date(createdAt)
+  const formattedDate = isNaN(parsedDate.getTime())
+    ? "—"
+    : format(parsedDate, "d MMM • h:mm a")
 
   // Extract Loan Data
   const discountSplit = paymentSplits?.find(
@@ -272,7 +296,10 @@ export default function PatientViewPaymentDetails() {
   const groupedEvents: { dateLabel: string; items: TimelineEvent[] }[] = []
 
   events.forEach((event) => {
-    const dateLabel = format(new Date(event.date), "dd MMM yyyy")
+    const eventDate = new Date(event.date)
+    const dateLabel = isNaN(eventDate.getTime())
+      ? "—"
+      : format(eventDate, "dd MMM yyyy")
     const lastGroup = groupedEvents[groupedEvents.length - 1]
 
     if (lastGroup && lastGroup.dateLabel === dateLabel) {
@@ -482,7 +509,7 @@ export default function PatientViewPaymentDetails() {
                     icon={event.icon}
                     title={event.title}
                     amount={event.amount}
-                    time={format(new Date(event.date), "h:mm a")} // Display time in AM/PM format
+                    time={isNaN(new Date(event.date).getTime()) ? "—" : format(new Date(event.date), "h:mm a")}
                     subEvents={event.subEvents}
                   />
                 ))}

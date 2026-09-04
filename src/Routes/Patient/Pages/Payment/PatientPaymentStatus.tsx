@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from "react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { CheckCircle2, AlertCircle, Clock, Coins, Receipt } from "lucide-react"
 
 import PatientPageWrapper from "../PatientPageWrapper"
@@ -102,16 +102,40 @@ export default function PatientPaymentStatus() {
       if (!paymentId && !reference)
         throw new Error("No payment ID or reference found")
 
-      let url = ""
-      if (reference) {
-        url = `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/payments/transaction-result/${reference}`
-        // 4. GET /payments/user/payment-details?paymentId={paymentId}
-      } else {
-        url = `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/payments/user/payment-details?paymentId=${paymentId}`
-      }
+      const identifier = paymentId ?? reference
 
-      const response = await axios.get(url)
-      return response.data as PaymentStatusResponse
+      const { data, error } = await supabase
+        .from("payments")
+        .select("*")
+        .eq("id", identifier as string)
+        .single()
+
+      if (error) throw error
+
+      return {
+        id: data.id,
+        currency: {
+          id: 0,
+          countryName: "Kenya",
+          code: data.currency ?? "KES",
+        },
+        paymentSplits: data.payment_splits as PaymentStatusResponse["paymentSplits"],
+        patientMedicalInfoRequest:
+          data.patient_medical_info_request as PaymentStatusResponse["patientMedicalInfoRequest"],
+        facility: {
+          id: data.facility_id ?? 0,
+          name: data.facility_name,
+        },
+        user: data.user_info as PaymentStatusResponse["user"],
+        totalBillAmount: String(data.amount),
+        disbursementTransaction:
+          data.disbursement_transaction as PaymentStatusResponse["disbursementTransaction"],
+        cashbackDetails:
+          data.cashback_details as PaymentStatusResponse["cashbackDetails"],
+        status: data.status,
+        createdAt: data.created_at,
+        updatedAt: data.created_at,
+      } as PaymentStatusResponse
     },
     enabled: !!paymentId || !!reference,
   })

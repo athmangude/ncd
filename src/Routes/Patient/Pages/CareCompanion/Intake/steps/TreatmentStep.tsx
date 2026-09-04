@@ -6,7 +6,10 @@ import { Button } from "@/components/Button"
 import { Chip } from "@/components/Chip"
 import FormGroupWrapper from "@/components/form/FormGroupWrapper"
 import IntakeOption from "../components/IntakeOption"
-import medicationTaxonomy from "@/mocks/fixtures/medication-taxonomy.json"
+import {
+  useMedicationTaxonomy,
+  type MedicationTaxonomyEntry,
+} from "@/hooks/useMedicationTaxonomy"
 import type { CareCompanionProfile } from "@/types/care-companion"
 
 type TreatmentData = CareCompanionProfile["treatment"]
@@ -29,7 +32,16 @@ interface TreatmentStepProps {
   onUpdate: (data: TreatmentData) => void
 }
 
-const taxonomy = medicationTaxonomy as MedicationEntry[]
+function toMedicationEntry(row: MedicationTaxonomyEntry): MedicationEntry {
+  return {
+    id: row.id,
+    genericName: row.genericName,
+    brandNames: row.brandNames,
+    strengths: row.strengths,
+    category: row.category,
+    conditionTags: row.conditionTags,
+  }
+}
 
 const CONDITION_LABELS: Record<string, string> = {
   DIABETES: "Diabetes",
@@ -74,6 +86,12 @@ export default function TreatmentStep({
   conditions,
   onUpdate,
 }: TreatmentStepProps) {
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
+  const taxonomy = useMemo(
+    () => taxonomyData.map(toMedicationEntry),
+    [taxonomyData],
+  )
+
   const [localOnMedication, setLocalOnMedication] = useState<boolean | null>(
     data.currentlyOnMedication === false &&
       data.medicationNames.length === 0
@@ -85,7 +103,7 @@ export default function TreatmentStep({
 
   const allGenericNames = useMemo(
     () => new Set(taxonomy.map((m) => m.genericName)),
-    [],
+    [taxonomy],
   )
 
   const customMedications = useMemo(

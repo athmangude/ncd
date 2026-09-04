@@ -10,7 +10,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Check, Search } from "lucide-react"
 import { useQuery } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { usePaymentHistory } from "../../hooks/usePaymentHistory"
 
 export default function PatientPaymentHistory() {
@@ -27,14 +27,29 @@ export default function PatientPaymentHistory() {
   const { data: cashbackData, isLoading: isLoadingCashback } = useQuery({
     queryKey: ["careFundTransactions"],
     queryFn: async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/care-fund/transactions`
-        )
-        return response.data
-      } catch (err) {
-        console.error("Error fetching transactions:", err)
-        throw err
+      const { data, error } = await supabase
+        .from("care_fund_transactions")
+        .select("*")
+        .order("created_at", { ascending: false })
+
+      if (error) throw error
+
+      return {
+        data: data.map((t) => ({
+          id: t.id,
+          transactionAmount: t.transaction_amount,
+          type: t.type,
+          status: t.status,
+          description: t.description,
+          currency: t.currency,
+          createdAt: t.created_at,
+          updatedAt: t.updated_at,
+          receiver: t.receiver,
+          sender: t.sender,
+          loan: t.loan,
+          expiresAt: t.expires_at,
+          receiverPhoneNumber: t.receiver_phone_number,
+        })),
       }
     },
   })

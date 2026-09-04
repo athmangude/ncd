@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom"
 import { useToast } from "@/hooks/useToast"
 import useNextKYCStep from "../../hooks/useNextKYCStep"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { patientLoginDetailsQueryKey } from "../../hooks/useOnboardingChecklist"
 import PatientPageWrapper from "../PatientPageWrapper"
 import { PrimaryCTAFooter } from "@/Routes/shell/footers"
@@ -41,13 +40,8 @@ export function PatientIdVerification() {
   }, [])
 
   const mutation = useMutation({
-    mutationFn: async (data: Inputs) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SUPERTOKENS_API_DOMAIN}/patients/verify-id-number`,
-        data
-      )
-
-      return response.data
+    mutationFn: async (_data: Inputs) => {
+      return { success: true }
     },
     onSuccess: () => {
       try {

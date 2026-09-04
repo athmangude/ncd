@@ -1213,6 +1213,62 @@ export type CareCompanionEvent =
 export type CareCompanionEventType = CareCompanionEvent["type"]
 
 // ---------------------------------------------------------------------------
+// Timeline Card Types
+//
+// Higher-level card classification used by the care history timeline.
+// The careHistoryClassifier maps raw CareCompanionEvent types into these
+// card types:
+//   PAYMENT                    → VISIT_GROUP
+//   TEST_RESULT                → TEST_RESULT
+//   LLM_ACTION                 → AI_INSIGHT
+//   DRUG_INTERACTION_DETECTED  → DRUG_INTERACTION
+//   REFILL_SCHEDULE_CHANGE     → SCHEDULE_CHANGE
+//   TEST_SCHEDULE_CHANGE       → SCHEDULE_CHANGE
+//   REFILL_SCHEDULE_REMOVE     → SCHEDULE_CHANGE
+//   TEST_SCHEDULE_REMOVE       → SCHEDULE_CHANGE
+//   (enricher-generated)       → UPCOMING
+// ---------------------------------------------------------------------------
+
+export const TIMELINE_CARD_TYPE = {
+  /** Grouped payment events at a single facility on a single day. */
+  VISIT_GROUP: "VISIT_GROUP",
+  /** Lab/test result received. */
+  TEST_RESULT: "TEST_RESULT",
+  /** AI-generated insight or action (from LLM_ACTION events). */
+  AI_INSIGHT: "AI_INSIGHT",
+  /** Drug-drug or drug-herbal interaction detected. */
+  DRUG_INTERACTION: "DRUG_INTERACTION",
+  /** Refill or test schedule change/removal. */
+  SCHEDULE_CHANGE: "SCHEDULE_CHANGE",
+  /** Upcoming scheduled item (refill or test due soon). */
+  UPCOMING: "UPCOMING",
+} as const
+
+export type TimelineCardType =
+  (typeof TIMELINE_CARD_TYPE)[keyof typeof TIMELINE_CARD_TYPE]
+
+// ---------------------------------------------------------------------------
+// CareHistoryEntry
+//
+// A single entry in the care history timeline. Produced by the
+// careHistoryClassifier from raw CareCompanionEvent[]. The `type` field
+// uses TimelineCardType for classified events, plus "ADHERENCE_GAP" for
+// enricher-generated overdue-refill entries.
+// ---------------------------------------------------------------------------
+
+export interface CareHistoryEntry {
+  id: string
+  type: TimelineCardType | "ADHERENCE_GAP"
+  date: string
+  facilityName: string | null
+  facilityType: "PHARMACY" | "LAB" | "HOSPITAL" | "CLINIC" | null
+  title: string
+  sourceEvents: CareCompanionEvent[]
+  totalCost: number | null
+  fundingSources: string[]
+}
+
+// ---------------------------------------------------------------------------
 // Care Companion Profile (intake questionnaire responses)
 // ---------------------------------------------------------------------------
 

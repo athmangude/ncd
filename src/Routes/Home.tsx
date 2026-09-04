@@ -9,7 +9,7 @@ export default function Home() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    Session.doesSessionExist().then((exists) => {
+    Session.doesSessionExist().then((exists: boolean) => {
       if (exists) navigate("/patients/")
     })
   }, [navigate])

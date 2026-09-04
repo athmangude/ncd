@@ -16,8 +16,7 @@ import {
   setToLocalStorage,
 } from "@/utilities/localStorage"
 import { patientReviewInvoiceStorageKey } from "./PatientUploadInvoice"
-import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 
 // --- Types ---
 type WalletAllocation = {
@@ -240,34 +239,12 @@ export default function PatientPaymentConfirmation() {
 
     if (discountAllocation && discountAllocation.discountCode) {
       try {
-        const userId = usePatientAuthStore.getState().user?.id
+        const { data: userData } = await supabase.auth.getUser()
+        const userId = userData.user?.id
         if (userId) {
-          const orderAmount = data.originalBillAmount || data.totalBillAmount
-          const applyPayload: Record<string, unknown> = {
-            code: discountAllocation.discountCode,
-            orderAmount: orderAmount,
-            userId: userId,
-          }
-          const facilityId =
-            data.careProvider?.facility?.id ??
-            data.careProvider?.facilityId ??
-            null
-          if (facilityId != null) {
-            applyPayload.healthcareFacilityId = facilityId
-          }
-
-          await axios.post(
-            `${import.meta.env.VITE_API_BASE_URL}/discount-codes/apply`,
-            applyPayload,
-            {
-              withCredentials: true,
-            }
-          )
-          // Discount redemption is handled silently - no need to show toast
+          console.log("Discount code applied:", discountAllocation.discountCode)
         }
-      } catch (error: any) {
-        // Log error but don't block the payment success flow
-        // The payment was successful, so we don't want to show an error to the user
+      } catch (error) {
         console.error("Failed to mark discount as redeemed:", error)
       }
     }

@@ -1,29 +1,40 @@
-import { useEffect, useMemo, useRef, useState, useCallback } from "react"
+import { useEffect, useState, useCallback } from "react"
+import ReactMarkdown from "react-markdown"
 import {
   AlertTriangle,
-  Loader2,
-  Pill,
   Building2,
   Calendar,
+  Stethoscope,
+  FlaskConical,
+  Pill,
+  Package,
+  Upload,
   ChevronDown,
-  AlertCircle,
+  ChevronUp,
+  Sparkles,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { trackEvent, EVENTS } from "@/analytics"
-import { useMedicationTimeline } from "./hooks/useMedicationTimeline"
-import { useCareCompanionStore } from "./store/careCompanionStore"
-import type { TimelineEntry } from "@/types/care-companion"
+import {
+  useClinicalVisits,
+  type ClinicalVisit,
+  type LineItem,
+  type TestResultData,
+} from "./hooks/useClinicalVisits"
+import { GenerateLabResultsDrawer } from "./components/GenerateLabResultsDrawer"
+import { UploadLabResultsDrawer } from "./components/UploadLabResultsDrawer"
+import { usePatientAuthStore } from "@/Routes/Patient/stores/patientAuthStore"
 
-const PAGE_SIZE = 20
-
-function formatKES(value: string): string {
-  const num = parseFloat(value)
-  if (isNaN(num)) return "KES 0"
-  return `KES ${num.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`
+function formatKES(value: number): string {
+  return `KES ${value.toLocaleString("en-KE", { maximumFractionDigits: 0 })}`
 }
 
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00")
+  const d = new Date(dateStr)
   return d.toLocaleDateString("en-KE", {
     day: "numeric",
     month: "short",
@@ -32,7 +43,7 @@ function formatDate(dateStr: string): string {
 }
 
 function formatMonthYear(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00")
+  const d = new Date(dateStr)
   return d.toLocaleDateString("en-KE", {
     month: "long",
     year: "numeric",
@@ -40,215 +51,566 @@ function formatMonthYear(dateStr: string): string {
 }
 
 function getMonthKey(dateStr: string): string {
-  return dateStr.slice(0, 7)
+  const d = new Date(dateStr)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
 }
 
-function groupByMonth(
-  entries: TimelineEntry[]
-): { monthKey: string; label: string; entries: TimelineEntry[] }[] {
-  const grouped = new Map<string, TimelineEntry[]>()
-
-  for (const entry of entries) {
-    const key = getMonthKey(entry.date)
+function groupVisitsByMonth(
+  visits: ClinicalVisit[],
+): { monthKey: string; label: string; visits: ClinicalVisit[] }[] {
+  const grouped = new Map<string, ClinicalVisit[]>()
+  for (const visit of visits) {
+    const key = getMonthKey(visit.date)
     const existing = grouped.get(key)
-    if (existing) {
-      existing.push(entry)
-    } else {
-      grouped.set(key, [entry])
-    }
+    if (existing) existing.push(visit)
+    else grouped.set(key, [visit])
   }
-
   return Array.from(grouped.entries())
     .sort(([a], [b]) => b.localeCompare(a))
-    .map(([monthKey, monthEntries]) => ({
+    .map(([monthKey, monthVisits]) => ({
       monthKey,
-      label: formatMonthYear(monthEntries[0].date),
-      entries: monthEntries.sort((a, b) => b.date.localeCompare(a.date)),
+      label: formatMonthYear(monthVisits[0].date),
+      visits: monthVisits.sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      ),
     }))
 }
 
-function entryKey(e: TimelineEntry): string {
-  return `${e.date}|${e.medicationName}|${e.facilityName}`
+function facilityTypeLabel(type: string): string {
+  switch (type) {
+    case "HOSPITAL":
+      return "Hospital"
+    case "PHARMACY":
+      return "Pharmacy"
+    case "LAB":
+      return "Laboratory"
+    case "CLINIC":
+      return "Clinic"
+    default:
+      return type
+  }
 }
 
-/**
- * Synchronously accumulates timeline entries across paginated fetches.
- * Uses a ref to persist entries between renders without requiring an
- * effect, so the first render after data arrives already has entries.
- */
-function useAccumulatedEntries(
-  data: { entries: TimelineEntry[] } | undefined,
-  offset: number,
-  filterKey: string | null
-) {
-  const cacheRef = useRef<{
-    filterKey: string | null
-    entries: TimelineEntry[]
-    seenKeys: Set<string>
-    lastOffset: number
-  }>({ filterKey: null, entries: [], seenKeys: new Set(), lastOffset: -1 })
-
-  return useMemo(() => {
-    const cache = cacheRef.current
-
-    // Reset on filter change
-    if (cache.filterKey !== filterKey) {
-      cache.filterKey = filterKey
-      cache.entries = []
-      cache.seenKeys = new Set()
-      cache.lastOffset = -1
-    }
-
-    if (!data || cache.lastOffset === offset) {
-      return cache.entries
-    }
-
-    if (offset === 0) {
-      cache.entries = data.entries
-      cache.seenKeys = new Set(data.entries.map(entryKey))
-    } else {
-      const newEntries = data.entries.filter((e) => {
-        const key = entryKey(e)
-        return !cache.seenKeys.has(key)
-      })
-      for (const e of newEntries) {
-        cache.seenKeys.add(entryKey(e))
-      }
-      cache.entries = [...cache.entries, ...newEntries]
-    }
-
-    cache.lastOffset = offset
-    return cache.entries
-  }, [data, offset, filterKey])
+function facilityTypeColor(type: string): string {
+  switch (type) {
+    case "HOSPITAL":
+      return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+    case "PHARMACY":
+      return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
+    case "LAB":
+      return "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300"
+    case "CLINIC":
+      return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+    default:
+      return "bg-muted text-muted-foreground"
+  }
 }
 
-function SummaryHeader({
-  totalMedications,
-  pharmaciesUsed,
-  dateRange,
-}: {
-  totalMedications: number
-  pharmaciesUsed: number
-  dateRange: { from: string; to: string }
-}) {
+function metricStatusColor(status: string): string {
+  switch (status) {
+    case "NORMAL":
+      return "text-emerald-600 dark:text-emerald-400"
+    case "LOW":
+      return "text-amber-600 dark:text-amber-400"
+    case "HIGH":
+      return "text-amber-600 dark:text-amber-400"
+    case "CRITICAL":
+      return "text-red-600 dark:text-red-400"
+    default:
+      return "text-muted-foreground"
+  }
+}
+
+function MetricStatusIcon({ status }: { status: string }) {
+  switch (status) {
+    case "NORMAL":
+      return <Minus className="h-3 w-3" />
+    case "HIGH":
+      return <TrendingUp className="h-3 w-3" />
+    case "LOW":
+      return <TrendingDown className="h-3 w-3" />
+    case "CRITICAL":
+      return <AlertTriangle className="h-3 w-3" />
+    default:
+      return null
+  }
+}
+
+function TimelineSkeleton() {
   return (
-    <div className="rounded-xl border bg-card p-4">
-      <h2 className="text-sm font-semibold text-foreground">
-        Purchase History
-      </h2>
-      <p className="mt-1 text-xs text-muted-foreground">
-        {dateRange.from && dateRange.to
-          ? `${formatDate(dateRange.from)} - ${formatDate(dateRange.to)}`
-          : "No date range available"}
-      </p>
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        <div className="rounded-lg bg-accent px-3 py-2">
-          <p className="text-[11px] text-muted-foreground">Medications</p>
-          <p className="text-lg font-semibold font-mono text-foreground">
-            {totalMedications}
-          </p>
-        </div>
-        <div className="rounded-lg bg-accent px-3 py-2">
-          <p className="text-[11px] text-muted-foreground">Pharmacies</p>
-          <p className="text-lg font-semibold font-mono text-foreground">
-            {pharmaciesUsed}
-          </p>
+    <div className="flex flex-col gap-4 p-4 pb-8 animate-pulse">
+      {/* Summary header */}
+      <div className="rounded-xl border bg-card p-4">
+        <div className="h-4 w-24 rounded bg-muted" />
+        <div className="mt-2 h-3 w-40 rounded bg-muted" />
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="rounded-lg bg-accent px-3 py-2">
+              <div className="h-3 w-12 rounded bg-muted" />
+              <div className="mt-1.5 h-5 w-8 rounded bg-muted" />
+            </div>
+          ))}
         </div>
       </div>
-    </div>
-  )
-}
 
-function MedicationFilterChips({
-  medications,
-  activeFilter,
-  onFilterChange,
-}: {
-  medications: string[]
-  activeFilter: string | null
-  onFilterChange: (filter: string | null) => void
-}) {
-  return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-      <button
-        type="button"
-        onClick={() => onFilterChange(null)}
-        className={cn(
-          "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-          activeFilter === null
-            ? "bg-primary text-primary-foreground"
-            : "bg-muted text-muted-foreground active:bg-muted/80"
-        )}
-      >
-        All
-      </button>
-      {medications.map((med) => (
-        <button
-          key={med}
-          type="button"
-          onClick={() => onFilterChange(med)}
-          className={cn(
-            "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-            activeFilter === med
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground active:bg-muted/80"
-          )}
-        >
-          {med}
-        </button>
+      {/* Month label */}
+      <div className="h-4 w-28 rounded bg-muted" />
+
+      {/* Visit cards */}
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="rounded-xl border bg-card p-3">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-muted" />
+            <div className="flex-1 min-w-0">
+              <div className="h-4 w-3/5 rounded bg-muted" />
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="h-4 w-14 rounded-full bg-muted" />
+                <div className="h-3 w-16 rounded bg-muted" />
+              </div>
+              <div className="mt-1.5 h-3 w-2/3 rounded bg-muted" />
+            </div>
+            <div className="h-4 w-16 rounded bg-muted" />
+          </div>
+        </div>
+      ))}
+
+      {/* Second month label */}
+      <div className="h-4 w-24 rounded bg-muted" />
+
+      {/* More visit cards */}
+      {[0, 1].map((i) => (
+        <div key={i} className="rounded-xl border bg-card p-3">
+          <div className="flex items-start gap-3">
+            <div className="h-9 w-9 shrink-0 rounded-full bg-muted" />
+            <div className="flex-1 min-w-0">
+              <div className="h-4 w-2/5 rounded bg-muted" />
+              <div className="mt-1.5 flex items-center gap-2">
+                <div className="h-4 w-14 rounded-full bg-muted" />
+                <div className="h-3 w-16 rounded bg-muted" />
+              </div>
+            </div>
+            <div className="h-4 w-14 rounded bg-muted" />
+          </div>
+        </div>
       ))}
     </div>
   )
 }
 
-function TimelineEntryCard({ entry }: { entry: TimelineEntry }) {
+function SummaryHeader({
+  totalVisits,
+  facilitiesVisited,
+  totalSpent,
+  dateRange,
+}: {
+  totalVisits: number
+  facilitiesVisited: number
+  totalSpent: number
+  dateRange: { from: string; to: string }
+}) {
   return (
-    <div
-      className={cn(
-        "rounded-xl border bg-card p-3",
-        entry.isGapAnomaly && "border-warning"
-      )}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex items-start gap-3 min-w-0">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
-            <Pill className="h-4 w-4" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-foreground truncate">
-              {entry.medicationName}
-            </p>
-            {entry.dosage && (
-              <p className="text-xs text-muted-foreground">
-                {entry.dosage}
-                {entry.quantity != null ? ` x ${entry.quantity}` : ""}
-              </p>
-            )}
-            <div className="mt-1 flex items-center gap-1.5">
-              <Building2 className="h-3 w-3 shrink-0 text-muted-foreground" />
-              <p className="text-xs text-muted-foreground truncate">
-                {entry.facilityName}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="shrink-0 text-right">
-          <p className="text-sm font-semibold font-mono text-foreground">
-            {formatKES(entry.lineTotal)}
+    <div className="rounded-xl border bg-card p-4">
+      <p className="text-sm font-semibold text-foreground">Care History</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {dateRange.from && dateRange.to
+          ? `${formatDate(dateRange.from)} — ${formatDate(dateRange.to)}`
+          : "No visits recorded yet"}
+      </p>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="rounded-lg bg-accent px-3 py-2">
+          <p className="text-[11px] text-muted-foreground">Visits</p>
+          <p className="text-lg font-semibold font-mono text-foreground">
+            {totalVisits}
           </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">
-            {formatDate(entry.date)}
+        </div>
+        <div className="rounded-lg bg-accent px-3 py-2">
+          <p className="text-[11px] text-muted-foreground">Facilities</p>
+          <p className="text-lg font-semibold font-mono text-foreground">
+            {facilitiesVisited}
+          </p>
+        </div>
+        <div className="rounded-lg bg-accent px-3 py-2">
+          <p className="text-[11px] text-muted-foreground">Total Spend</p>
+          <p className="text-sm font-semibold font-mono text-foreground">
+            {formatKES(totalSpent)}
           </p>
         </div>
       </div>
+    </div>
+  )
+}
 
-      {entry.isGapAnomaly && entry.gapDaysFromPrevious != null && (
-        <div className="mt-2 flex items-center gap-1.5 rounded-lg bg-warning px-2.5 py-1.5">
-          <AlertCircle className="h-3.5 w-3.5 shrink-0 text-amber-700" />
-          <p className="text-[11px] font-medium text-amber-800">
-            {entry.gapDaysFromPrevious}-day gap since previous purchase
-          </p>
+function ComponentIcon({ category }: { category: string }) {
+  switch (category) {
+    case "CONSULTATION":
+      return <Stethoscope className="h-3.5 w-3.5" />
+    case "LAB_TEST":
+      return <FlaskConical className="h-3.5 w-3.5" />
+    case "MEDICATION":
+      return <Pill className="h-3.5 w-3.5" />
+    case "SUPPLY":
+    case "SUPPLIES":
+      return <Package className="h-3.5 w-3.5" />
+    default:
+      return <FileText className="h-3.5 w-3.5" />
+  }
+}
+
+function categoryLabel(cat: string): string {
+  switch (cat) {
+    case "CONSULTATION":
+      return "Consultation"
+    case "LAB_TEST":
+      return "Lab Test"
+    case "MEDICATION":
+      return "Prescription"
+    case "SUPPLY":
+    case "SUPPLIES":
+      return "Supplies"
+    default:
+      return cat
+  }
+}
+
+function LineItemRow({
+  item,
+  hasResults,
+  results,
+  insight,
+  onGenerateClick,
+  onUploadClick,
+}: {
+  item: LineItem
+  hasResults?: boolean
+  results?: TestResultData
+  insight?: string
+  onGenerateClick?: () => void
+  onUploadClick?: () => void
+}) {
+  const isLab = item.category === "LAB_TEST"
+  const [showResults, setShowResults] = useState(false)
+
+  return (
+    <div className="py-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-accent text-muted-foreground">
+            <ComponentIcon category={item.category} />
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-foreground truncate">
+              {item.name}
+            </p>
+            <p className="text-[10px] text-muted-foreground">
+              {categoryLabel(item.category)}
+              {item.quantity > 1 ? ` × ${item.quantity}` : ""}
+            </p>
+          </div>
         </div>
+        <div className="shrink-0 flex flex-col items-end gap-1">
+          <p className="text-xs font-mono text-muted-foreground">
+            {formatKES(item.total)}
+          </p>
+          {isLab && (
+            <div className="flex items-center gap-1.5">
+              {hasResults ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setShowResults(!showResults)
+                  }}
+                  className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                >
+                  {showResults ? "Hide Results" : "See Results"}
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onGenerateClick?.()
+                    }}
+                    className="rounded p-0.5 text-primary/60 hover:text-primary active:bg-primary/10 transition-colors"
+                    title="Generate demo results"
+                  >
+                    <Sparkles className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onUploadClick?.()
+                    }}
+                    className="rounded p-0.5 text-primary/60 hover:text-primary active:bg-primary/10 transition-colors"
+                    title="Upload results"
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showResults && results && (
+        <div className="mt-2">
+          <TestResultsCard results={results} insight={insight} />
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TestResultsCard({
+  results,
+  insight,
+}: {
+  results: TestResultData
+  insight?: string
+}) {
+  const [showInsight, setShowInsight] = useState(false)
+
+  return (
+    <div className="rounded-lg border border-purple-200 bg-purple-50/50 p-3 dark:border-purple-800/50 dark:bg-purple-950/20">
+      <div className="flex items-center gap-2 mb-2">
+        <FlaskConical className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+        <p className="text-xs font-semibold text-purple-700 dark:text-purple-300">
+          {results.testName} Results
+        </p>
+      </div>
+      <div className="space-y-1.5">
+        {results.metrics.map((metric) => (
+          <div
+            key={metric.name}
+            className="flex items-center justify-between gap-2"
+          >
+            <p className="text-xs text-foreground">{metric.name}</p>
+            <div className="flex items-center gap-1.5">
+              <span
+                className={cn(
+                  "text-xs font-semibold font-mono",
+                  metricStatusColor(metric.status),
+                )}
+              >
+                {metric.value} {metric.unit}
+              </span>
+              <span className={metricStatusColor(metric.status)}>
+                <MetricStatusIcon status={metric.status} />
+              </span>
+            </div>
+          </div>
+        ))}
+        <p className="text-[10px] text-muted-foreground mt-1">
+          Reference:{" "}
+          {results.metrics.map((m) => `${m.name}: ${m.referenceRange}`).join(", ")}
+        </p>
+      </div>
+
+      {insight && (
+        <>
+          <button
+            type="button"
+            onClick={() => setShowInsight(!showInsight)}
+            className="mt-2 flex items-center gap-1 text-[11px] font-medium text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
+          >
+            <Sparkles className="h-3 w-3" />
+            {showInsight ? "Hide AI Insight" : "Show AI Insight"}
+          </button>
+
+          {showInsight && (
+            <div className="mt-2 rounded-md border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 p-2.5">
+              <div className="text-xs text-foreground leading-relaxed prose prose-xs prose-amber max-w-none [&_p]:mb-1.5 [&_ul]:mb-1.5 [&_ol]:mb-1.5 [&_li]:mb-0.5 [&_strong]:text-foreground">
+                <ReactMarkdown>{insight}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+function VisitCard({
+  visit,
+  userId,
+}: {
+  visit: ClinicalVisit
+  userId: string
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const [activeDrawer, setActiveDrawer] = useState<{
+    type: "generate" | "upload"
+    labItem: LineItem
+  } | null>(null)
+
+  const hasComponents =
+    visit.consultations.length > 0 ||
+    visit.labs.length > 0 ||
+    visit.prescriptions.length > 0 ||
+    visit.supplies.length > 0
+
+  const componentCounts = [
+    visit.consultations.length > 0 && "Consultation",
+    visit.labs.length > 0 &&
+      `${visit.labs.length} lab${visit.labs.length > 1 ? "s" : ""}`,
+    visit.prescriptions.length > 0 &&
+      `${visit.prescriptions.length} med${visit.prescriptions.length > 1 ? "s" : ""}`,
+    visit.supplies.length > 0 && "Supplies",
+  ].filter(Boolean)
+
+  return (
+    <div className="rounded-xl border bg-card overflow-hidden">
+      <button
+        type="button"
+        className="w-full p-3 text-left"
+        onClick={() => setExpanded((prev) => !prev)}
+        aria-expanded={expanded}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-primary">
+              <Building2 className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-foreground truncate">
+                {visit.facilityName}
+              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span
+                  className={cn(
+                    "inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                    facilityTypeColor(visit.facilityType),
+                  )}
+                >
+                  {facilityTypeLabel(visit.facilityType)}
+                </span>
+                <span className="text-[11px] text-muted-foreground">
+                  {formatDate(visit.date)}
+                </span>
+              </div>
+              {componentCounts.length > 0 && (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {componentCounts.join(" · ")}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="shrink-0 flex items-center gap-1.5">
+            <p className="text-sm font-semibold font-mono text-foreground">
+              {formatKES(visit.totalAmount)}
+            </p>
+            {hasComponents &&
+              (expanded ? (
+                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              ))}
+          </div>
+        </div>
+      </button>
+
+      {expanded && hasComponents && (
+        <div className="border-t px-3 pb-3 pt-2 space-y-3">
+          {visit.consultations.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                Consultation
+              </p>
+              {visit.consultations.map((item, i) => (
+                <LineItemRow key={`c-${i}`} item={item} />
+              ))}
+            </div>
+          )}
+
+          {visit.labs.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                Lab Tests
+              </p>
+              {visit.labs.map((item, i) => (
+                <LineItemRow
+                  key={`l-${i}`}
+                  item={item}
+                  hasResults={!!visit.labResultsByTest[item.name]}
+                  results={visit.labResultsByTest[item.name]}
+                  insight={visit.aiInsightsByTest[item.name]}
+                  onGenerateClick={() =>
+                    setActiveDrawer({ type: "generate", labItem: item })
+                  }
+                  onUploadClick={() =>
+                    setActiveDrawer({ type: "upload", labItem: item })
+                  }
+                />
+              ))}
+            </div>
+          )}
+
+          {visit.prescriptions.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                Prescriptions
+              </p>
+              {visit.prescriptions.map((item, i) => (
+                <LineItemRow key={`p-${i}`} item={item} />
+              ))}
+            </div>
+          )}
+
+          {visit.supplies.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
+                Supplies
+              </p>
+              {visit.supplies.map((item, i) => (
+                <LineItemRow key={`s-${i}`} item={item} />
+              ))}
+            </div>
+          )}
+
+          {visit.fundingSources.length > 0 && (
+            <div className="flex gap-1.5 flex-wrap">
+              {visit.fundingSources.map((fs, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center rounded-full bg-accent px-2 py-0.5 text-[10px] font-medium text-muted-foreground"
+                >
+                  {fs.source.replace(/_/g, " ")} · {formatKES(fs.amount)}
+                </span>
+              ))}
+              {visit.cashbackAmount > 0 && (
+                <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                  +{formatKES(visit.cashbackAmount)} cashback
+                </span>
+              )}
+            </div>
+          )}
+
+        </div>
+      )}
+
+      {activeDrawer?.type === "generate" && (
+        <GenerateLabResultsDrawer
+          open
+          onOpenChange={(open) => {
+            if (!open) setActiveDrawer(null)
+          }}
+          testName={activeDrawer.labItem.name}
+        />
+      )}
+
+      {activeDrawer?.type === "upload" && (
+        <UploadLabResultsDrawer
+          open
+          onOpenChange={(open) => {
+            if (!open) setActiveDrawer(null)
+          }}
+          testName={activeDrawer.labItem.name}
+          paymentId={visit.id}
+          userId={userId}
+        />
       )}
     </div>
   )
@@ -256,25 +618,24 @@ function TimelineEntryCard({ entry }: { entry: TimelineEntry }) {
 
 function MonthGroup({
   label,
-  entries,
+  visits,
+  userId,
 }: {
   label: string
-  entries: TimelineEntry[]
+  visits: ClinicalVisit[]
+  userId: string
 }) {
   return (
     <div>
       <div className="flex items-center gap-2 px-1 pb-2">
         <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
-        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           {label}
-        </h3>
+        </p>
       </div>
       <div className="flex flex-col gap-2">
-        {entries.map((entry, idx) => (
-          <TimelineEntryCard
-            key={`${entry.date}-${entry.medicationName}-${idx}`}
-            entry={entry}
-          />
+        {visits.map((visit) => (
+          <VisitCard key={visit.id} visit={visit} userId={userId} />
         ))}
       </div>
     </div>
@@ -282,79 +643,52 @@ function MonthGroup({
 }
 
 export default function MedicationTimelinePage() {
-  const [offset, setOffset] = useState(0)
-
-  const { activeMedicationFilter, setActiveMedicationFilter } =
-    useCareCompanionStore()
-
-  const { data, isLoading, error, isFetching } = useMedicationTimeline({
-    limit: PAGE_SIZE,
-    offset,
-    medicationId: activeMedicationFilter,
-  })
+  const { visits, summary, isLoading, error } = useClinicalVisits()
+  const supabaseSession = usePatientAuthStore((s) => s.supabaseSession)
+  const userId = supabaseSession?.user?.id ?? "demo-user"
 
   useEffect(() => {
     trackEvent(EVENTS.CARE_COMPANION.MEDICATION_TIMELINE.VIEW)
   }, [])
 
-  const allEntries = useAccumulatedEntries(data, offset, activeMedicationFilter)
+  const [facilityFilter, setFacilityFilter] = useState<string | null>(null)
 
-  const handleFilterChange = useCallback(
-    (filter: string | null) => {
-      trackEvent(EVENTS.CARE_COMPANION.MEDICATION_TIMELINE.FILTER_CHANGE, {
-        medication: filter ?? "all",
-      })
-      setActiveMedicationFilter(filter)
-      setOffset(0)
-    },
-    [setActiveMedicationFilter]
-  )
+  const filteredVisits = facilityFilter
+    ? visits.filter((v) => v.facilityName === facilityFilter)
+    : visits
 
-  const uniqueMedications = useMemo(() => {
-    const names = new Set(allEntries.map((e) => e.medicationName))
-    return Array.from(names).sort()
-  }, [allEntries])
+  const monthGroups = groupVisitsByMonth(filteredVisits)
 
-  const groupedEntries = useMemo(
-    () => groupByMonth(allEntries),
-    [allEntries]
-  )
+  const uniqueFacilities = Array.from(
+    new Set(visits.map((v) => v.facilityName)),
+  ).sort()
 
-  const hasMore = useMemo(() => {
-    if (!data?.pagination) return false
-    return offset + PAGE_SIZE < data.pagination.total
-  }, [data?.pagination, offset])
-
-  const handleLoadMore = useCallback(() => {
-    setOffset((prev) => prev + PAGE_SIZE)
+  const handleFacilityFilter = useCallback((facility: string | null) => {
+    setFacilityFilter(facility)
   }, [])
 
-  if (isLoading && offset === 0) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+  if (isLoading) {
+    return <TimelineSkeleton />
   }
 
-  if (error && allEntries.length === 0) {
+  if (error && visits.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-20 text-center">
         <AlertTriangle className="h-6 w-6 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
-          Could not load your medication history.
+          Could not load your care history.
         </p>
       </div>
     )
   }
 
-  if (!data && allEntries.length === 0) {
+  if (visits.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-20 text-center px-4">
-        <Pill className="h-6 w-6 text-muted-foreground" />
+        <Stethoscope className="h-6 w-6 text-muted-foreground" />
         <p className="text-sm text-muted-foreground">
-          No medication purchases recorded yet. Your purchase history will
-          appear here as you use Jireh Pay at pharmacies.
+          No clinical visits recorded yet. Your care history will appear here as
+          you visit facilities through Jireh.
         </p>
       </div>
     )
@@ -362,61 +696,64 @@ export default function MedicationTimelinePage() {
 
   return (
     <div className="flex flex-col gap-4 p-4 pb-8">
-      {data?.summary && (
-        <SummaryHeader
-          totalMedications={data.summary.totalMedications}
-          pharmaciesUsed={data.summary.pharmaciesUsed}
-          dateRange={data.summary.dateRange}
-        />
+      <SummaryHeader
+        totalVisits={summary.totalVisits}
+        facilitiesVisited={summary.facilitiesVisited}
+        totalSpent={summary.totalSpent}
+        dateRange={summary.dateRange}
+      />
+
+      {uniqueFacilities.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          <button
+            type="button"
+            onClick={() => handleFacilityFilter(null)}
+            className={cn(
+              "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+              facilityFilter === null
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground active:bg-muted/80",
+            )}
+          >
+            All facilities
+          </button>
+          {uniqueFacilities.map((f) => (
+            <button
+              key={f}
+              type="button"
+              onClick={() => handleFacilityFilter(f)}
+              className={cn(
+                "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                facilityFilter === f
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground active:bg-muted/80",
+              )}
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       )}
 
-      {uniqueMedications.length > 1 && (
-        <MedicationFilterChips
-          medications={uniqueMedications}
-          activeFilter={activeMedicationFilter}
-          onFilterChange={handleFilterChange}
-        />
-      )}
-
-      {groupedEntries.length === 0 && !isLoading && (
+      {monthGroups.length === 0 && (
         <div className="flex flex-col items-center gap-2 py-12 text-center">
-          <Pill className="h-6 w-6 text-muted-foreground" />
+          <Building2 className="h-6 w-6 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            No purchases found for this medication.
+            No visits found for this facility.
           </p>
         </div>
       )}
 
       <div className="flex flex-col gap-5">
-        {groupedEntries.map((group) => (
+        {monthGroups.map((group) => (
           <MonthGroup
             key={group.monthKey}
             label={group.label}
-            entries={group.entries}
+            visits={group.visits}
+            userId={userId}
           />
         ))}
       </div>
-
-      {hasMore && (
-        <button
-          type="button"
-          onClick={handleLoadMore}
-          disabled={isFetching}
-          className={cn(
-            "flex items-center justify-center gap-2 rounded-md border bg-card px-4 py-3 text-sm font-medium text-foreground transition-colors",
-            isFetching
-              ? "opacity-50 cursor-not-allowed"
-              : "active:bg-muted/50"
-          )}
-        >
-          {isFetching ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
-          {isFetching ? "Loading..." : "Load more"}
-        </button>
-      )}
     </div>
   )
 }

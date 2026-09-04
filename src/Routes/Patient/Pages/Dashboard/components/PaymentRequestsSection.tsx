@@ -8,7 +8,7 @@ import {
 import { patientReviewInvoiceStorageKey } from "../../Loans/RequestLoan/PatientUploadInvoice"
 import { useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { useToast } from "@/hooks/useToast"
 import { Trash2 } from "lucide-react"
 import { ConfirmDialog } from "@/components/ConfirmDialog"
@@ -116,12 +116,12 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
 
   const deleteMutation = useMutation({
     mutationFn: async (requestId: string) => {
-      await axios.delete(
-        `${import.meta.env.VITE_API_BASE_URL}/patients/payments/manual-requests/${requestId}`,
-        {
-          withCredentials: true,
-        }
-      )
+      const { error } = await supabase
+        .from("manual_requests")
+        .delete()
+        .eq("id", requestId)
+
+      if (error) throw error
     },
     onMutate: async (requestId: string) => {
       // Cancel any outgoing refetches to avoid overwriting optimistic update
@@ -143,17 +143,18 @@ function PaymentRequestCard({ request }: { request: PaymentRequest }) {
       // Return a context object with the snapshotted value
       return { previousRequests }
     },
-    onError: (error: any, _requestId: string, context: any) => {
+    onError: (
+      error: Error,
+      _requestId: string,
+      context: { previousRequests?: PaymentRequest[] } | undefined
+    ) => {
       // If the mutation fails, roll back to the previous value
       if (context?.previousRequests) {
         queryClient.setQueryData(["paymentRequests"], context.previousRequests)
       }
       toast({
         title: "Error",
-        description:
-          error.response?.data?.message ||
-          error.message ||
-          "Failed to delete payment request",
+        description: error.message || "Failed to delete payment request",
         variant: "destructive",
       })
     },

@@ -7,7 +7,7 @@ import CopyButton from "@/components/CopyButton"
 import YourTreatments from "../../components/YourTreatments"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import { trackEvent, EVENTS } from "@/analytics"
 import { LoanStats } from "@/types/LoanStats"
 
@@ -28,12 +28,20 @@ export default function PatientAllLoans() {
 
     const fetchLoanStats = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/loans/patient/me/stats`
+        const { data, error } = await supabase
+          .from("loans")
+          .select("outstanding_amount, currency")
+        if (error) throw error
+        const totalOutstanding = (data ?? []).reduce(
+          (sum, l) => sum + Number(l.outstanding_amount ?? 0),
+          0,
         )
-        if (response.data) {
-          setLoanStats(response.data)
-        }
+        const currency =
+          (data?.[0]?.currency as { code?: string })?.code || "KES"
+        setLoanStats({
+          outstandingAmount: totalOutstanding,
+          currency,
+        })
       } catch (error) {
         console.error("Failed to fetch loan stats", error)
       }

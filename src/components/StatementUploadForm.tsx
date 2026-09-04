@@ -1,6 +1,5 @@
 import { useToast } from "@/hooks/useToast"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import AccordionMenu from "./AccordionMenu"
@@ -43,39 +42,22 @@ export default function StatementUploadForm({
 
   const mutation = useMutation({
     mutationFn: async ({
-      file,
-      passcode,
+      file: _file,
+      passcode: _passcode,
     }: {
       file: File
       passcode?: string
     }) => {
-      const formData = new FormData()
-      formData.append("financialStatementFile", file)
-      if (passcode) {
-        formData.append("passcode", passcode)
-      }
-
-      // Reset progress at start
+      // Stub: simulate upload progress without a real network call.
+      // Replace with a Supabase Storage upload when the backend is ready.
       setUploadProgress(0)
 
-      await axios.post(
-        import.meta.env.VITE_API_BASE_URL +
-          "/underwriting/upload-mpesa-statement",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (progressEvent) => {
-            if (progressEvent.total) {
-              const percentCompleted = Math.round(
-                (progressEvent.loaded * 100) / progressEvent.total
-              )
-              setUploadProgress(percentCompleted)
-            }
-          },
-        }
-      )
+      for (const pct of [25, 50, 75, 100]) {
+        await new Promise((r) => setTimeout(r, 200))
+        setUploadProgress(pct)
+      }
+
+      return { success: true }
     },
     onSuccess: () => {
       reset()
@@ -88,12 +70,13 @@ export default function StatementUploadForm({
         queryKey: [getFinancialStatementsQueryKey],
       })
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       reset()
       setUploadProgress(0)
+      const err = error as { message?: string }
       toast({
         title: "Error",
-        description: error.response?.data?.message || error.message,
+        description: err.message || "Upload failed",
         variant: "destructive",
       })
     },

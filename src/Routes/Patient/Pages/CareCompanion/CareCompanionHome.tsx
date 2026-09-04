@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import axios from "axios"
+import { supabase } from "@/lib/supabase"
 import {
   Calendar,
   Check,
@@ -11,9 +11,7 @@ import {
   BookOpen,
   AlertTriangle,
   Loader2,
-  Pill,
   Clock,
-  CreditCard,
   Sparkles,
   Pencil,
   Plus,
@@ -22,7 +20,10 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { trackEvent, EVENTS } from "@/analytics"
-import { getMedicationPriceKES } from "@/mocks/fixtures/medication-prices"
+import {
+  useMedicationTaxonomy,
+  getMedicationPrice,
+} from "@/hooks/useMedicationTaxonomy"
 import { SectionErrorBoundary } from "./components/SectionErrorBoundary"
 import { EmergencyCardStaticFallback } from "./components/EmergencyCardStaticFallback"
 import { MedicationCardDrawer } from "./components/MedicationCardDrawer"
@@ -67,6 +68,7 @@ export default function CareCompanionHome() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [addMedOpen, setAddMedOpen] = useState(false)
   const { data: medCardsData } = useMedicationCards()
+  const { data: taxonomyData = [] } = useMedicationTaxonomy()
   useAiPipeline(profile ?? null)
   const navigate = useNavigate()
   const { data: notifications = [] } = useNotifications()
@@ -75,11 +77,7 @@ export default function CareCompanionHome() {
   )
 
   if (profileLoading || isLoading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    )
+    return <CareCompanionHomeSkeleton />
   }
 
   if (!profile?.completedAt) {
@@ -119,7 +117,7 @@ export default function CareCompanionHome() {
   for (const s of data.refillSchedule?.schedules ?? []) {
     const key = s.medicationName.toLowerCase()
     if (medPriceMap[key] == null) {
-      medPriceMap[key] = getMedicationPriceKES(s.medicationName)
+      medPriceMap[key] = getMedicationPrice(taxonomyData,s.medicationName)
     }
   }
   const testPriceMap: Record<string, number> = {}
@@ -129,7 +127,7 @@ export default function CareCompanionHome() {
   for (const t of data.testSchedule?.schedules ?? []) {
     const key = t.testName.toLowerCase()
     if (testPriceMap[key] == null) {
-      testPriceMap[key] = getMedicationPriceKES(t.testName)
+      testPriceMap[key] = getMedicationPrice(taxonomyData,t.testName)
     }
   }
 
@@ -182,10 +180,12 @@ export default function CareCompanionHome() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">
-              {`${unreadInsights.length} new insight${unreadInsights.length === 1 ? "" : "s"}`}
+              {`${unreadInsights.length} update${unreadInsights.length === 1 ? "" : "s"} for you`}
             </p>
-            <p className="text-xs text-muted-foreground">
-              Tap to view in notifications
+            <p className="truncate text-xs text-muted-foreground">
+              {unreadInsights.length === 1
+                ? unreadInsights[0].title
+                : `${unreadInsights[0].title} and ${unreadInsights.length - 1} more`}
             </p>
           </div>
           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
@@ -211,6 +211,71 @@ export default function CareCompanionHome() {
           profile?.treatment?.medicationNames ?? []
         }
       />
+    </div>
+  )
+}
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 shrink-0 rounded-full bg-muted" />
+        <div className="flex-1 space-y-1.5">
+          <div className="h-4 w-2/5 rounded bg-muted" />
+          <div className="h-3 w-3/5 rounded bg-muted" />
+        </div>
+        <div className="h-5 w-5 rounded bg-muted" />
+      </div>
+      <div className="mt-3 space-y-2">
+        <div className="rounded-lg bg-muted/50 px-3 py-2 space-y-1.5">
+          <div className="h-3 w-3/4 rounded bg-muted" />
+          <div className="h-3 w-1/2 rounded bg-muted" />
+        </div>
+        <div className="rounded-lg bg-muted/50 px-3 py-2 space-y-1.5">
+          <div className="h-3 w-2/3 rounded bg-muted" />
+          <div className="h-3 w-2/5 rounded bg-muted" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CareCompanionHomeSkeleton() {
+  return (
+    <div className="flex flex-col gap-4 p-4 animate-pulse">
+      <div className="rounded-xl bg-muted/40 px-4 py-3">
+        <div className="h-4 w-4/5 rounded bg-muted" />
+      </div>
+
+      <SkeletonCard />
+      <SkeletonCard />
+
+      <div className="rounded-xl border border-red-200 bg-red-50/30 p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-10 w-10 shrink-0 rounded-full bg-red-100/50" />
+          <div className="flex-1 space-y-1.5">
+            <div className="h-4 w-2/5 rounded bg-red-100/50" />
+            <div className="h-3 w-4/5 rounded bg-red-100/50" />
+          </div>
+        </div>
+      </div>
+
+      <SkeletonCard />
+
+      <div>
+        <div className="mb-2 h-3 w-24 rounded bg-muted" />
+        <div className="grid grid-cols-3 gap-2">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="flex flex-col items-center gap-1.5 rounded-xl border bg-card p-3"
+            >
+              <div className="h-9 w-9 rounded-full bg-muted" />
+              <div className="h-3 w-12 rounded bg-muted" />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -922,16 +987,22 @@ function RefillScheduleCard({
   const overdueCount = allOverdue.length
   const dueCount = allDue.length
 
-  const baseUrl = import.meta.env.VITE_API_BASE_URL
-
   const logEvent = useMutation({
-    mutationFn: (event: Record<string, unknown>) =>
-      axios.post(`${baseUrl}/companion/events`, event).then((r) => r.data),
+    mutationFn: async (event: Record<string, unknown>) => {
+      const { error } = await supabase.from("events").insert({
+        id: event.id as string,
+        type: event.type as string,
+        data: event,
+      })
+      if (error) throw error
+    },
   })
 
   const patchProfile = useMutation({
-    mutationFn: (patch: Record<string, unknown>) =>
-      axios.patch(`${baseUrl}/companion/profile`, patch).then((r) => r.data),
+    mutationFn: async (patch: Record<string, unknown>) => {
+      const { error } = await supabase.from("profiles").update(patch)
+      if (error) throw error
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [refillScheduleQueryKey] })
       queryClient.invalidateQueries({ queryKey: [intakeProfileQueryKey] })
@@ -980,14 +1051,15 @@ function RefillScheduleCard({
         reason: reasonLabel,
         frequencyDays,
       })
-      axios.patch(
-        `${baseUrl}/companion/refill-schedules/${id}`,
-        { nextDate, frequencyDays },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ next_date: nextDate, frequency_days: frequencyDays })
+        .eq("id", id)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, schedules, patchProfile, logEvent, baseUrl],
+    [profile, schedules, patchProfile, logEvent],
   )
 
   const handleTestSave = useCallback(
@@ -1030,14 +1102,18 @@ function RefillScheduleCard({
         reason: reasonLabel,
         frequencyMonths,
       })
-      axios.patch(
-        `${baseUrl}/companion/test-schedules/${encodeURIComponent(testName)}`,
-        { nextDate, frequencyMonths },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({
+          next_date: nextDate,
+          frequency_days: frequencyMonths * 30,
+        })
+        .eq("medication_name", testName)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, testSchedules, patchProfile, logEvent, baseUrl],
+    [profile, testSchedules, patchProfile, logEvent],
   )
 
   const handleRefillRemove = useCallback(
@@ -1077,14 +1153,15 @@ function RefillScheduleCard({
         status: item.status,
         reason: reasonLabel,
       })
-      axios.patch(
-        `${baseUrl}/companion/refill-schedules/${id}`,
-        { status: "CANCELLED" },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ status: "CANCELLED" })
+        .eq("id", id)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, schedules, patchProfile, logEvent, baseUrl],
+    [profile, schedules, patchProfile, logEvent],
   )
 
   const handleTestRemove = useCallback(
@@ -1123,14 +1200,15 @@ function RefillScheduleCard({
         status: item?.status ?? "UPCOMING",
         reason: reasonLabel,
       })
-      axios.patch(
-        `${baseUrl}/companion/test-schedules/${encodeURIComponent(testName)}`,
-        { status: "CANCELLED" },
-      ).then(() => {
-        patchProfile.mutate({ costEstimates: updatedCostEstimates })
-      })
+      supabase
+        .from("refill_schedules")
+        .update({ status: "CANCELLED" })
+        .eq("medication_name", testName)
+        .then(() => {
+          patchProfile.mutate({ cost_estimates: updatedCostEstimates })
+        })
     },
-    [profile, testSchedules, patchProfile, logEvent, baseUrl],
+    [profile, testSchedules, patchProfile, logEvent],
   )
 
   return (
@@ -1363,22 +1441,16 @@ function EmergencyCardCard({ data }: { data: CareCompanionHomeData }) {
 
 const QUICK_ACTIONS = [
   {
-    label: "My Medications",
-    icon: Pill,
-    path: "/patients/companion/medication-cards",
-    color: "bg-violet-100 text-violet-600",
-  },
-  {
-    label: "Purchase History",
+    label: "Care History",
     icon: Clock,
     path: "/patients/companion/medication-timeline",
     color: "bg-sky-100 text-sky-600",
   },
   {
-    label: "Medication Loan",
-    icon: CreditCard,
-    path: "/patients/companion/medication-loan",
-    color: "bg-amber-100 text-amber-600",
+    label: "Health Education",
+    icon: BookOpen,
+    path: "/patients/companion/education",
+    color: "bg-emerald-100 text-emerald-600",
   },
 ]
 
