@@ -117,6 +117,10 @@ export default function ConfirmPayment() {
       discount_applied: safeAmount(discountAmount),
     })
 
+    supabase.functions.invoke("generate-invoice-line-items", {
+      body: { paymentId: txnId },
+    }).catch(() => {})
+
     setTransaction(transaction)
     setPaymentSubmitted(true)
 

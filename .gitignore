@@ -32,3 +32,4 @@ dist-ssr
 # Local QA screenshots (scripts/screenshot-routes.mjs)
 .screenshots
 
+.vercel
