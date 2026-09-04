@@ -185,13 +185,10 @@ export default function NotificationFeedPage() {
   const markReadMutation = useMarkNotificationRead()
 
   function handleTap(notification: CareCompanionNotification) {
-    // Fire mark-read in background; navigate immediately regardless of
-    // network outcome (spec: "notification still navigates but dot remains"
-    // on error).
     if (notification.readAt === null) {
       markReadMutation.mutate(notification.id)
     }
-    navigate(notification.deepLink)
+    navigate(`/patients/notifications/${notification.id}`)
   }
 
   if (isLoading) return <NotificationSkeleton />

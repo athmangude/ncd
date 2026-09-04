@@ -273,6 +273,23 @@ export default function PatientNotificationsPage() {
     navigate(`/patients/notifications/${n.id}`)
   }
 
+  async function handleTapGeneralNotification(n: Notification) {
+    if (n.readStatus === "UNREAD") {
+      await supabase
+        .from("notifications")
+        .update({ read_at: new Date().toISOString() })
+        .eq("id", n.id)
+      setNotifications((prev) =>
+        prev.map((notif) =>
+          notif.id === n.id
+            ? { ...notif, readAt: new Date().toISOString(), readStatus: "READ" }
+            : notif,
+        ) as Notification[],
+      )
+    }
+    navigate(`/patients/notifications/${n.id}`)
+  }
+
   // State A: No push permission AND no care notifications to show
   if (
     notificationPermission !== "granted" &&
@@ -516,10 +533,12 @@ export default function PatientNotificationsPage() {
 
             const url = extractUrl(notification.message)
             return (
-              <div
+              <button
                 key={notification.id}
+                type="button"
+                onClick={() => handleTapGeneralNotification(notification)}
                 className={cn(
-                  "flex items-start gap-4 p-4 hover:bg-muted transition-colors cursor-pointer group relative",
+                  "flex items-start gap-4 p-4 hover:bg-muted transition-colors cursor-pointer group relative w-full text-left",
                   notification.readStatus === "UNREAD" ? "bg-blue-50/30" : "",
                 )}
               >
@@ -561,14 +580,17 @@ export default function PatientNotificationsPage() {
                     variant="ghost"
                     size="icon"
                     className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={(e) => handleCopyLink(e, url)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleCopyLink(e, url)
+                    }}
                     title="Copy link"
                     aria-label="Copy link"
                   >
                     <Copy className="w-4 h-4 text-muted-foreground" />
                   </Button>
                 )}
-              </div>
+              </button>
             )
           })
         )}
