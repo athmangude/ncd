@@ -8,6 +8,7 @@ import { PrimaryCTAFooter } from "@/Routes/shell/footers"
 import { CountryCode, parsePhoneNumber } from "libphonenumber-js"
 import { validatePhoneNumber } from "@/utilities/validators"
 import { useToast } from "@/hooks/useToast"
+import { supabase } from "@/lib/supabase"
 
 type Inputs = {
   phoneNumber: string
@@ -36,10 +37,19 @@ export default function PhoneEntryPage() {
     mutationFn: async (data: Inputs) => {
       const parsed = parsePhoneNumber(data.phoneNumber, data.countryCode)
       const phone = parsed.number
+      const phoneDisplay = parsed.formatInternational()
 
-      navigate("/patients/auth/pin", {
-        state: { phone, phoneDisplay: parsed.formatInternational() },
+      const { data: exists } = await supabase.rpc("check_phone_exists", {
+        phone_input: phone,
       })
+
+      if (exists) {
+        navigate("/patients/auth/pin", { state: { phone, phoneDisplay } })
+      } else {
+        navigate("/patients/auth/create-account", {
+          state: { phone, phoneDisplay },
+        })
+      }
     },
     onError: (error: Error) => {
       toast({

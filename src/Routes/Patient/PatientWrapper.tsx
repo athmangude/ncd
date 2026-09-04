@@ -11,6 +11,8 @@ import { lazy, Suspense } from "react"
 
 const PhoneEntryPage = lazy(() => import("./Pages/Auth/PhoneEntryPage"))
 const PinVerifyPage = lazy(() => import("./Pages/Auth/PinVerifyPage"))
+const CreateAccountPage = lazy(() => import("./Pages/Auth/CreateAccountPage"))
+const SignUpDetailsPage = lazy(() => import("./Pages/Auth/SignUpDetailsPage"))
 
 function RedirectIfSupabaseSession({
   children,
@@ -61,6 +63,26 @@ export default function PatientWrapper() {
                 </Suspense>
               </RouteMetadata>
             </RedirectIfSupabaseSession>
+          }
+        />
+        <Route
+          path="/auth/create-account"
+          element={
+            <RouteMetadata title="Create Account">
+              <Suspense fallback={null}>
+                <CreateAccountPage />
+              </Suspense>
+            </RouteMetadata>
+          }
+        />
+        <Route
+          path="/auth/sign-up-details"
+          element={
+            <RouteMetadata title="Your Details">
+              <Suspense fallback={null}>
+                <SignUpDetailsPage />
+              </Suspense>
+            </RouteMetadata>
           }
         />
 
