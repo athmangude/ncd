@@ -118,6 +118,8 @@ export default function PatientNotificationsPage() {
         setNotifications(
           (data ?? []).map((row: Record<string, unknown>) => ({
             ...row,
+            title: row.title as string,
+            message: row.body as string ?? row.title as string ?? "",
             deepLink: row.deep_link,
             readAt: row.read_at,
             sentAt: row.sent_at,
@@ -518,16 +520,23 @@ export default function PatientNotificationsPage() {
                 )}
 
                 <div className="flex-1 pr-8">
-                  <p
-                    className={cn(
-                      "text-sm",
-                      notification.readStatus === "UNREAD"
-                        ? "font-medium text-foreground"
-                        : "text-foreground",
-                    )}
-                  >
-                    {renderMessageWithLink(notification.message)}
-                  </p>
+                  {notification.title && (
+                    <p
+                      className={cn(
+                        "text-sm",
+                        notification.readStatus === "UNREAD"
+                          ? "font-medium text-foreground"
+                          : "text-foreground",
+                      )}
+                    >
+                      {notification.title}
+                    </p>
+                  )}
+                  {notification.message && (
+                    <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
+                      {renderMessageWithLink(notification.message)}
+                    </p>
+                  )}
                   <p className="text-muted-foreground text-xs mt-1">
                     {formatDate(notification.sentAt)}
                   </p>
