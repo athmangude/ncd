@@ -25,6 +25,9 @@ const AI_INSIGHT_LABELS: Record<string, string> = {
   LOAN_REPAYMENT_REMINDER: "Due Soon",
   LOAN_REPAYMENT_OVERDUE: "Overdue",
   LOAN_OFFER: "Loan Offer",
+  TEST_TREND: "Test Results",
+  EDUCATION_RECOMMENDATION: "Education",
+  MEDICATION_CARD_AVAILABLE: "Medication Info",
 }
 
 // ---------------------------------------------------------------------------
@@ -147,7 +150,7 @@ function NotificationCard({
         {notification.type === "AI_INSIGHT" && (
           <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-primary">
             <Sparkles className="h-3 w-3" />
-            {AI_INSIGHT_LABELS[notification.metadata?.actionType ?? ""] ?? "AI Insight"}
+            {AI_INSIGHT_LABELS[notification.metadata?.actionType ?? notification.metadata?.insightType ?? ""] ?? "AI Insight"}
           </span>
         )}
         <span

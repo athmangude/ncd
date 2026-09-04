@@ -50,6 +50,9 @@ const ACTION_TYPE_LABELS: Record<string, string> = {
   EDUCATION_WEEKLY: "Weekly Education",
   MEDICATION_CARD_AVAILABLE: "Medication Info",
   LAB_REMINDER: "Lab Test",
+  TEST_TREND: "Test Results",
+  EDUCATION_RECOMMENDATION: "Education",
+  CASHBACK_EARNED: "Cashback",
 }
 
 const SEVERITY_CONFIG: Record<
@@ -185,8 +188,10 @@ function isValidRoute(path: string): boolean {
 }
 
 function getTypeLabel(n: CareCompanionNotification): string {
-  if (n.type === "AI_INSIGHT" && n.metadata?.actionType) {
-    return ACTION_TYPE_LABELS[n.metadata.actionType] ?? "AI Insight"
+  if (n.type === "AI_INSIGHT") {
+    const key = n.metadata?.actionType ?? n.metadata?.insightType
+    if (key) return ACTION_TYPE_LABELS[key] ?? "AI Insight"
+    return "AI Insight"
   }
   return ACTION_TYPE_LABELS[n.type] ?? n.type
 }

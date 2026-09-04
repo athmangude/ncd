@@ -214,6 +214,7 @@ INSERT INTO events (user_id, type, data, created_at) VALUES
 -- ============================================================
 -- 7. Notifications
 -- ============================================================
+DELETE FROM notifications WHERE user_id = demo_uid;
 INSERT INTO notifications (user_id, type, title, body, metadata, deep_link, read_at, sent_at) VALUES
   (demo_uid, 'CASHBACK_EARNED',
    'KES 90 cashback earned',

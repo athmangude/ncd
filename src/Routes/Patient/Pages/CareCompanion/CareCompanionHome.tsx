@@ -180,10 +180,12 @@ export default function CareCompanionHome() {
           </div>
           <div className="flex-1">
             <p className="text-sm font-medium">
-              {`${unreadInsights.length} new insight${unreadInsights.length === 1 ? "" : "s"}`}
+              {`${unreadInsights.length} update${unreadInsights.length === 1 ? "" : "s"} for you`}
             </p>
-            <p className="text-xs text-muted-foreground">
-              Tap to view in notifications
+            <p className="truncate text-xs text-muted-foreground">
+              {unreadInsights.length === 1
+                ? unreadInsights[0].title
+                : `${unreadInsights[0].title} and ${unreadInsights.length - 1} more`}
             </p>
           </div>
           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
