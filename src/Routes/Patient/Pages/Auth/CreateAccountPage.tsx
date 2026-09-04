@@ -33,30 +33,25 @@ export default function CreateAccountPage() {
 
   const signUpMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.auth.signUp({
-        phone: phone!,
-        password: confirmPin,
-      })
+      const { error: createError } = await supabase.functions.invoke(
+        "create-account",
+        { body: { phone: phone!, password: confirmPin } },
+      )
 
-      if (error) throw error
+      if (createError) throw createError
 
-      if (!data.session) {
-        const { data: signInData, error: signInError } =
-          await supabase.auth.signInWithPassword({
-            phone: phone!,
-            password: confirmPin,
-          })
+      const { data: signInData, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          phone: phone!,
+          password: confirmPin,
+        })
 
-        if (signInError) throw signInError
-        if (signInData.session) {
-          setSupabaseSession(signInData.session)
-        }
-
-        return signInData
+      if (signInError) throw signInError
+      if (signInData.session) {
+        setSupabaseSession(signInData.session)
       }
 
-      setSupabaseSession(data.session)
-      return data
+      return signInData
     },
     onSuccess: () => {
       navigate("/patients/auth/sign-up-details", {

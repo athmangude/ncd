@@ -55,7 +55,7 @@ export default function SignUpDetailsPage() {
     },
     onSuccess: () => {
       toast({ title: "Welcome to Jireh!", description: "Your account has been created." })
-      navigate("/patients/companion/intake", { replace: true })
+      navigate("/patients/", { replace: true })
     },
     onError: (error: Error) => {
       toast({
