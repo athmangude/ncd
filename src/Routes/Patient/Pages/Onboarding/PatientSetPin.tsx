@@ -41,21 +41,29 @@ export default function PatientSetPin() {
   }, [])
 
   const { isPending, isSuccess, mutateAsync } = useMutation({
-    mutationFn: async (_pinValue: string) => {
-      const { data: pd, error: pdError } = await supabase
+    mutationFn: async (pinValue: string) => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+      if (!user) throw new Error("Not authenticated")
+
+      const { error: pinError } = await supabase
+        .from("profiles")
+        .update({ pin: pinValue })
+        .eq("id", user.id)
+
+      if (pinError) throw pinError
+
+      const { data: pd } = await supabase
         .from("patient_details")
         .select("data")
-        .single()
-
-      if (pdError) throw pdError
+        .maybeSingle()
 
       const blob = (pd?.data ?? {}) as Record<string, unknown>
-      const { error: updateError } = await supabase
-        .from("patient_details")
-        .update({ data: { ...blob, hasSetPin: true } })
-        .eq("id", (pd as any).id)
-
-      if (updateError) throw updateError
+      await supabase.from("patient_details").upsert(
+        { user_id: user.id, data: { ...blob, hasSetPin: true } },
+        { onConflict: "user_id" },
+      )
 
       return { success: true }
     },

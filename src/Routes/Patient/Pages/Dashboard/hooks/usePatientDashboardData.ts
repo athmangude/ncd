@@ -114,7 +114,7 @@ export function usePatientDashboardData(activeTab: string) {
       const { data: wallet } = await supabase
         .from("wallets")
         .select("cashback_balance")
-        .single()
+        .maybeSingle()
 
       return {
         payments: (payments ?? []).map((p: any) => ({

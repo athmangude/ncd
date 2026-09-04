@@ -13,13 +13,13 @@ export function useOnboardingChecklist() {
       const { data: profile, error } = await supabase
         .from("profiles")
         .select("*")
-        .single()
+        .maybeSingle()
       if (error) throw error
 
       const { data: wallet } = await supabase
         .from("wallets")
         .select("cashback_balance")
-        .single()
+        .maybeSingle()
 
       const userDetails = {
         id: profile.id,

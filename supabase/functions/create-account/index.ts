@@ -37,8 +37,25 @@ Deno.serve(async (req) => {
       )
     }
 
+    const userId = data.user.id
+
+    await admin.from("profiles").insert({
+      id: userId,
+      phone,
+    })
+
+    await admin.from("wallets").insert({
+      user_id: userId,
+      cashback_balance: 0,
+    })
+
+    await admin.from("patient_details").insert({
+      user_id: userId,
+      data: { hasSetPin: false },
+    })
+
     return new Response(
-      JSON.stringify({ user: { id: data.user.id, phone: data.user.phone } }),
+      JSON.stringify({ user: { id: userId, phone: data.user.phone } }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     )
   } catch (err) {

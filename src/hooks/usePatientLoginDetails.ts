@@ -98,14 +98,14 @@ export function usePatientLoginDetails() {
       const { data: pd, error: pdError } = await supabase
         .from("patient_details")
         .select("data")
-        .single()
+        .maybeSingle()
 
       if (pdError && pdError.code !== "PGRST116") throw pdError
 
       const { data: wallet } = await supabase
         .from("wallets")
         .select("cashback_balance")
-        .single()
+        .maybeSingle()
 
       const blob = (pd?.data ?? {}) as Record<string, any>
       const cashbackBalance = wallet?.cashback_balance ?? 0
