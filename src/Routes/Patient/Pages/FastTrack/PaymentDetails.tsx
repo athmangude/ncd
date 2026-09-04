@@ -88,14 +88,14 @@ export default function PaymentDetails() {
         .eq("user_id", authUser.id)
       if (error) throw error
 
-      const patients = (data || []).map((m: Record<string, unknown>) => ({
-        name: `${m.first_name} ${m.last_name}`,
-        value: m.id,
-        status: m.status,
-        phoneNumber: m.phone_number,
-        photo: m.profile_photo,
-        firstName: m.first_name,
-        lastName: m.last_name,
+      const patients = (data || []).map((m) => ({
+        name: `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim(),
+        value: String(m.id),
+        status: String(m.status ?? ""),
+        phoneNumber: String(m.phone_number ?? ""),
+        photo: String(m.profile_photo ?? ""),
+        firstName: String(m.first_name ?? ""),
+        lastName: String(m.last_name ?? ""),
       }))
 
       return { patients }
@@ -105,10 +105,12 @@ export default function PaymentDetails() {
   const patientOptions = useMemo(() => {
     const selfOption = {
       name: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
-      value: user?.id,
+      value: user?.id as string,
       status: "SELF",
       phoneNumber: user?.phoneNumber || "",
       photo: user?.idVerification?.photo || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
     }
 
     const connections = connectionsQuery.data?.patients || []

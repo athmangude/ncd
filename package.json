@@ -14,7 +14,7 @@
     "test:watch": "vitest"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.2.8",
