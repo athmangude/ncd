@@ -214,7 +214,8 @@ export default function PatientNotificationsPage() {
     return date.toLocaleDateString("en-US", { month: "long", day: "numeric" })
   }
 
-  const extractUrl = (text: string) => {
+  const extractUrl = (text: string | undefined | null) => {
+    if (!text) return null
     const urlRegex = /(https?:\/\/[^\s]+)/g
     const match = text.match(urlRegex)
     return match ? match[0] : null
@@ -229,7 +230,8 @@ export default function PatientNotificationsPage() {
     })
   }
 
-  const renderMessageWithLink = (message: string) => {
+  const renderMessageWithLink = (message: string | undefined | null) => {
+    if (!message) return ""
     const url = extractUrl(message)
     if (!url) return message
 
