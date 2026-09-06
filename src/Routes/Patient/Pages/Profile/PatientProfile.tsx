@@ -25,9 +25,7 @@ import {
   History,
   Share2,
   Upload,
-  Wrench,
   UserCog,
-  FlaskConical,
 } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { supabase } from "@/lib/supabase"
@@ -231,18 +229,6 @@ export default function PatientProfile() {
       description: "Share Jireh with friends and get rewarded",
       icon: <Share2 className="h-5 w-5 text-muted-foreground" />,
       onClick: () => navigate("/patients/referral-and-earn"),
-    },
-    {
-      title: "Facilitator Tools",
-      description: "Edit balances, approvals and circle (researcher only)",
-      icon: <Wrench className="h-5 w-5 text-muted-foreground" />,
-      onClick: () => navigate("/facilitator"),
-    },
-    {
-      title: "Test Results Utility",
-      description: "Generate mock lab results for testing",
-      icon: <FlaskConical className="h-5 w-5 text-muted-foreground" />,
-      onClick: () => navigate("/patients/profile/test-results-utility"),
     },
   ]
 

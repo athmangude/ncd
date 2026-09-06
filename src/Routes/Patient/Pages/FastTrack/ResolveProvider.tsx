@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import * as amplitude from "@amplitude/analytics-browser"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import {
@@ -21,11 +21,19 @@ import {
 import PatientPageWrapper from "../PatientPageWrapper"
 import { useToast } from "@/hooks/useToast"
 import { trackEvent, EVENTS } from "@/analytics"
-import { resolveProvider } from "./api"
+import { resolveProvider, fetchAllProviders } from "./api"
 import { useFastTrackStore } from "./useFastTrackStore"
 import type { FastTrackPaymentPoint } from "./types"
 import { formatPaymentNumber } from "./formatters"
-import { ChevronRight, Search, AlertCircle, Loader2 } from "lucide-react"
+import { Button } from "@/components/Button"
+import {
+  ChevronRight,
+  Search,
+  AlertCircle,
+  Loader2,
+  Building2,
+  MapPin,
+} from "lucide-react"
 import resolveProviderIllustration from "@/assets/images/resolve-provider-Illustration.png"
 export default function ResolveProvider() {
   const navigate = useNavigate()
@@ -65,6 +73,11 @@ export default function ResolveProvider() {
         err.response?.data?.message || "Could not find that payment number"
       toast({ title: "Error", description: message, variant: "destructive" })
     },
+  })
+
+  const { data: allProviders } = useQuery({
+    queryKey: ["fast-track-providers"],
+    queryFn: fetchAllProviders,
   })
 
   const providerData = resolvedProvider ?? storedProvider
@@ -229,6 +242,52 @@ export default function ResolveProvider() {
                 </ItemContent>
               </Item>
             </ItemGroup>
+          </div>
+        )}
+
+        {allProviders && allProviders.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <h2>In-network facilities</h2>
+            <div className="flex flex-col gap-2">
+              {allProviders.map((p) => (
+                <div
+                  key={p.id}
+                  className="flex items-center gap-3 border rounded-xl p-3"
+                >
+                  <div className="shrink-0 w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-secondary-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {p.facility?.name}
+                    </p>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <MapPin className="w-3 h-3 shrink-0" />
+                      <span className="truncate">
+                        {p.facility?.locationName}
+                        {p.facility?.county
+                          ? `, ${p.facility.county}`
+                          : ""}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {p.name} &middot;{" "}
+                      {formatPaymentNumber(p.paymentNumber)}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setPaymentNumber(p.paymentNumber)
+                      handleContinue(p)
+                    }}
+                  >
+                    Pay here
+                  </Button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>

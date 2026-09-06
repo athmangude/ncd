@@ -6,6 +6,24 @@ import type {
   VerifyInvoiceResponse,
 } from "./types"
 
+export async function fetchAllProviders(): Promise<FastTrackPaymentPoint[]> {
+  const { data, error } = await supabase
+    .from("fast_track_providers")
+    .select("*")
+    .eq("is_active", true)
+    .order("id")
+
+  if (error) throw error
+
+  return (data ?? []).map((d: any) => ({
+    ...d,
+    paymentNumber: d.payment_number,
+    paymentCode: d.payment_code,
+    smsPhoneNumbers: d.sms_phone_numbers,
+    isActive: d.is_active,
+  })) as FastTrackPaymentPoint[]
+}
+
 export async function resolveProvider(
   paymentNumber: string
 ): Promise<FastTrackPaymentPoint> {
