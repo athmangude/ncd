@@ -225,11 +225,14 @@
     padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
   }
   /* Bottom clearance for the fixed dashboard tab bar. The scrolling tab content
-     reserves exactly this ONCE (--tabbar-h = the bar's height incl. safe-area,
-     + a 1.5rem breathing gap) so every tab clears the bar by the same amount —
-     individual tabs must NOT add their own pb-*. */
+     reserves exactly this ONCE so every tab clears the bar by the same amount —
+     individual tabs must NOT add their own pb-*.
+     The tab bar covers mt-5 (20px) + h-20 (80px) + safe-area from viewport
+     bottom, and <main> owns p-4 (16px) + safe-pb below the scroll container —
+     the safe-areas cancel, leaving a constant 84px overlap. 6rem (96px) adds a
+     12px breathing gap above the bar on every device. */
   .pb-tabbar {
-    padding-bottom: calc(var(--tabbar-h) + 1.5rem);
+    padding-bottom: 6rem;
   }
   /* Extra clearance the home tab adds ONLY while its DashboardStickyFooter (the
      "Pay Medical Bill" / upgrade bar) is showing — that bar is fixed just above

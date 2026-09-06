@@ -9,7 +9,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <Toaster />
       <RouterWrapper />
-      <Agentation />
+      {import.meta.env.DEV && <Agentation />}
     </QueryClientProvider>
   )
 }

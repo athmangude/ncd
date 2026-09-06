@@ -57,7 +57,7 @@ export default function AppShell({
   cardClassName,
 }: AppShellProps) {
   return (
-    <div className="min-h-screen w-full flex justify-center bg-neutral-100 dark:bg-neutral-900">
+    <div className="min-h-[100dvh] w-full flex justify-center bg-neutral-100 dark:bg-neutral-900">
       <div
         className={cn(
           "w-full max-w-md bg-white dark:bg-neutral-950 overflow-hidden flex flex-col relative h-[100dvh]",
