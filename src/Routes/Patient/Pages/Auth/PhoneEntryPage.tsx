@@ -9,7 +9,6 @@ import { CountryCode, parsePhoneNumber } from "libphonenumber-js"
 import { validatePhoneNumber } from "@/utilities/validators"
 import { useToast } from "@/hooks/useToast"
 import { supabase } from "@/lib/supabase"
-import { Button } from "@/components/Button"
 import { User } from "lucide-react"
 
 const DEMO_USERS = [
